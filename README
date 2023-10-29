@@ -1,0 +1,11 @@
+DENO のインストール
+deno install -qAf https://deno.land/x/deno/cli.ts
+または
+brew install deno (←Macはこっち)
+
+コンパイラのインストール
+npm install --save-exact --save-dev esbuild  
+
+
+index.tsをbundle.jsというファイルにコンパイルし、サーバーを立ち上げる
+./node_modules/.bin/esbuild index.ts --bundle --outfile=bundle.js && deno run --allow-net --allow-read https://deno.land/std@0.59.0/http/file_server.ts
