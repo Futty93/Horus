@@ -42,19 +42,19 @@
       return randomCallsign;
     }
     isAltitudeValid(altitude) {
-      return altitude !== void 0 && altitude >= 0;
+      return altitude !== void 0 && (altitude >= 0 && altitude < 500);
     }
     getRandomAltitude() {
       return Math.floor(Math.random() * 490 + 10);
     }
     isHeadingValid(heading) {
-      return heading !== void 0 && (heading >= 0 && 36 < heading);
+      return heading !== void 0 && (heading >= 0 && heading < 36);
     }
     getRandomHeading() {
       return Math.floor(Math.random() * 35);
     }
     isSpeedValid(speed) {
-      return speed !== void 0 && (speed >= 100 && 500 < speed);
+      return speed !== void 0 && (speed >= 100 && speed < 500);
     }
     getRandomSpeed() {
       return Math.floor(Math.random() * 400 + 100);
@@ -101,10 +101,29 @@
       const heading = String(this.heading);
       const speed = String(this.speed);
       const altitude = String(this.altitude);
+      const commandedHeading = String(this.commandedHeading);
+      const commandedSpeed = String(this.commandedSpeed);
+      const commandedAltitude = String(this.commandedAltitude);
       const destination = this.destination;
       const labelX = this.labelLocation.x;
       const labelY = this.labelLocation.y;
-      return { callsign, heading, speed, altitude, destination, labelX, labelY };
+      return { callsign, heading, speed, altitude, commandedHeading, commandedSpeed, commandedAltitude, destination, labelX, labelY };
+    }
+    changeCommandedInfo(inputAltitude, inputSpeed, inputHeading) {
+      const newAltitude = this.isAltitudeValid(inputAltitude) ? inputAltitude : this.altitude;
+      this.commandedAltitude = newAltitude;
+      const newSpeed = this.isSpeedValid(inputSpeed) ? inputSpeed : this.speed;
+      this.commandedSpeed = newSpeed;
+      const newHeading = this.isHeadingValid(inputHeading) ? inputHeading : this.heading;
+      this.commandedHeading = newHeading;
+      this.altitude = this.commandedAltitude;
+      this.speed = this.commandedSpeed;
+      this.heading = this.commandedHeading;
+      return {
+        newAltitude: String(newAltitude),
+        newSpeed: String(newSpeed),
+        newHeading: String(newHeading)
+      };
     }
   };
 
@@ -118,21 +137,36 @@
     ctx;
     clickedPosition;
     //クリックされた座標を取得
+    displayCallsign;
+    inputAltitude;
+    inputSpeed;
+    inputHeading;
+    confirmButton;
     inGame;
     //シミュレーションゲーム中かどうかを判断する
     bg;
     //ダブルバッファの背景と表示を切り替えるためのインデックスを管理
     controlledAirplane = [];
+    selectedAircraft = null;
+    //選択中の航空機を保持するための変数
     constructor() {
       this.canvas = [this.createCanvas("radar"), this.createCanvas("radar2")];
       this.ctx = this.canvas.map(
         (c) => c.getContext("2d")
       );
       this.clickedPosition = null;
+      this.displayCallsign = document.getElementById("callsign");
+      this.inputAltitude = document.getElementById("altitude");
+      this.inputSpeed = document.getElementById("speed");
+      this.inputHeading = document.getElementById("heading");
+      this.confirmButton = document.getElementById(
+        "confirmButton"
+      );
       this.inGame = false;
       this.bg = 0;
       this.canvas[0].addEventListener("click", (e) => this.handleClick(e));
       this.canvas[1].addEventListener("click", (e) => this.handleClick(e));
+      this.confirmButton.addEventListener("click", () => this.send_command());
       for (let i = 1; i <= 10; i++) {
         const airplane = new Airplane();
         this.controlledAirplane.push(airplane);
@@ -162,11 +196,22 @@
         const position = airplane.currentPosition();
         const aircraftRadius = 50;
         if (x >= position.currentX - aircraftRadius && x <= position.currentX + aircraftRadius && y >= position.currentY - aircraftRadius && y <= position.currentY + aircraftRadius) {
-          console.log("Clicked Aircraft Info:");
-          console.log(airplane.getAirplaneInfo());
+          const airplaneInfo = airplane.getAirplaneInfo();
+          this.changeDisplayCallsign(airplaneInfo.callsign);
+          this.inputAltitude.value = airplaneInfo.commandedAltitude;
+          this.inputSpeed.value = airplaneInfo.commandedSpeed;
+          this.inputHeading.value = airplaneInfo.commandedHeading;
+          this.selectedAircraft = airplane;
+          break;
         }
       }
     }
+    //表示しているコールサインを変更する
+    changeDisplayCallsign(newCallsign) {
+      const fontElement = this.displayCallsign.querySelector("font");
+      fontElement.textContent = newCallsign;
+    }
+    //航空機およびデータラベルの表示
     drawRect(index, airplane) {
       const position = airplane.currentPosition();
       const airplaneInfo = airplane.getAirplaneInfo();
@@ -177,7 +222,10 @@
       this.ctx[index].fillStyle = "white";
       this.ctx[index].fill();
       this.ctx[index].beginPath();
-      this.ctx[index].moveTo((position.currentX * 8 + labelX * 2) / 10, (position.currentY * 8 + labelY * 2) / 10);
+      this.ctx[index].moveTo(
+        (position.currentX * 8 + labelX * 2) / 10,
+        (position.currentY * 8 + labelY * 2) / 10
+      );
       this.ctx[index].lineTo(labelX - 5, labelY + 15);
       this.ctx[index].strokeStyle = "white";
       this.ctx[index].stroke();
@@ -187,12 +235,29 @@
       this.ctx[index].fillText(airplaneInfo.callsign, labelX, labelY);
       this.ctx[index].fillText(airplaneInfo.altitude, labelX, labelY + 15);
       this.ctx[index].fillText(airplaneInfo.speed, labelX, labelY + 30);
-      this.ctx[index].fillText(airplaneInfo.destination, labelX + 40, labelY + 30);
+      this.ctx[index].fillText(
+        airplaneInfo.destination,
+        labelX + 40,
+        labelY + 30
+      );
     }
     toggleCanvasDisplay() {
       this.canvas[1 - this.bg].style.display = "none";
       this.canvas[this.bg].style.display = "block";
       this.bg = 1 - this.bg;
+    }
+    send_command() {
+      if (this.selectedAircraft) {
+        const { newAltitude, newSpeed, newHeading } = this.selectedAircraft.changeCommandedInfo(
+          Number(this.inputAltitude.value),
+          Number(this.inputSpeed.value),
+          Number(this.inputHeading.value)
+        );
+        this.inputAltitude.value = newAltitude;
+        this.inputSpeed.value = newSpeed;
+        this.inputHeading.value = newHeading;
+      }
+      console.log(this.selectedAircraft);
     }
     update() {
       this.clearCanvas(this.bg);

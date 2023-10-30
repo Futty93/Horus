@@ -5,13 +5,71 @@
     <meta charset="UTF-8" />
     <!DOCTYPE html>
     <title>ATC Radar</title>
+    <style>
+        /* Add CSS styles to control layout */
+        .container {
+            display: flex; /* Use flex layout */
+        }
+
+        .radarArea {
+            flex: 1; /* Make radarArea flexible to take available space */
+        }
+
+        .controlPanel {
+            flex: 0; /* Control panel does not grow, so it will be its natural size */
+            min-width: 300px; /* Adjust the width as needed */
+            background-color: #ddd;
+            padding: 10px;
+        }
+
+        .controlPanel .tagArea {
+            padding-right: 10px;
+        }
+
+        .controlPanel input {
+            margin-bottom: 17px;
+        }
+    </style>
 </head>
 
 <body>
-    <canvas id="radar" width="1000" height="1000"></canvas>
-    <canvas id="radar2" width="1000" height="1000"></canvas>
+    <div class="container">
+        <div class="radarArea">
+            <canvas id="radar" width="1000" height="1000"></canvas>
+            <canvas id="radar2" width="1000" height="1000"></canvas>
+        </div>
+        <div class="controlPanel">
+            <div id="callsign">
+                <b><font size="6">　</font></b>
+            </div>
+            <div class="inputWrap">
+                <div class="tagArea">
+                    Altitude<br>
+                </div>
+                <div class="inputArea">
+                    <input type="number" id="altitude" placeholder="0"> 
+                </div>
+            </div>
+            <div>
+                <div class="tagArea">
+                    Speed<br>
+                </div>
+                <div class="inputArea">
+                    <input type="number" id="speed" placeholder="0"> 
+                </div>
+            </div>
+            <div>
+                <div class="tagArea">
+                    Heading<br>
+                </div>
+                <div class="inputArea">
+                    <input type="number" id="heading" placeholder="0">
+                </div>
+            </div>
+            <input type="button" value="Confirm" id="confirmButton">
+        </div>
+    </div>
   
     <script src="bundle.js"></script>
   </body>
-
 </html>
