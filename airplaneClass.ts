@@ -1,6 +1,78 @@
 const airlines: string[] = ["ANA", "JAL", "APJ", "IBX", "SFJ", "SKY"];
-const destAirport: string[] = ["HND", "NRT", "KIX", "ITM", "CTS", "FUK", "NGO", "OKA", "KOJ", "KMJ", "HIJ", "KOI", "FSZ", "NGS", "KCZ", "TAK", "MYJ", "TOY", "AOJ", "AKJ", "AOJ", "AXT", "GAJ", "HKD", "IZO", "IWJ", "MMB", "OKD", "OIT", "ONJ", "RIS", "SDJ", "SYO", "TNE", "TNA", "UBJ", "MMJ", "KKJ", "YGJ", "AOJ", "AXT", "GAJ", "HKD", "IZO", "IWJ", "MMB", "OKD", "OIT", "ONJ", "RIS", "SDJ", "SYO", "TNE", "TNA", "UBJ", "MMJ", "KKJ", "YGJ"];
-  
+const destAirport: string[] = [
+  "HND",
+  "NRT",
+  "KIX",
+  "ITM",
+  "CTS",
+  "FUK",
+  "NGO",
+  "OKA",
+  "KOJ",
+  "KMJ",
+  "HIJ",
+  "KOI",
+  "FSZ",
+  "NGS",
+  "KCZ",
+  "TAK",
+  "MYJ",
+  "TOY",
+  "AOJ",
+  "AKJ",
+  "AOJ",
+  "AXT",
+  "GAJ",
+  "HKD",
+  "IZO",
+  "IWJ",
+  "MMB",
+  "OKD",
+  "OIT",
+  "ONJ",
+  "RIS",
+  "SDJ",
+  "SYO",
+  "TNE",
+  "TNA",
+  "UBJ",
+  "MMJ",
+  "KKJ",
+  "YGJ",
+  "AOJ",
+  "AXT",
+  "GAJ",
+  "HKD",
+  "IZO",
+  "IWJ",
+  "MMB",
+  "OKD",
+  "OIT",
+  "ONJ",
+  "RIS",
+  "SDJ",
+  "SYO",
+  "TNE",
+  "TNA",
+  "UBJ",
+  "MMJ",
+  "KKJ",
+  "YGJ",
+];
+
+/**
+ * 航空機の情報の保持、更新に関するクラス
+ * @param {string} callsign 初期値を渡さなかった場合ランダムなコールサインを生成
+ * @param {number} altitude 高度を保持する変数。初期値を与えなかったまたは不正な値だった場合、ランダムな高度を生成
+ * @param {number} commandedAltitude 指示された高度を保持する変数。初期値はaltitudeと同じ
+ * @param location 航空機の現在位置を保持する変数。初期値を与えなかった場合はランダムな座標を生成
+ * @param {number} heading 進行方向を保持する変数。初期値を与えなかった場合はランダムな進行方向を生成
+ * @param {number} commandedHeading 指示された進行方向を保持する変数。初期値はheadingと同じ
+ * @param {number} speed 速度を保持する変数。初期値を与えなかったまたは不正な値だった場合、ランダムな速度を生成
+ * @param {number} commandedSpeed 指示された速度を保持する変数。初期値はspeedと同じ
+ * @param {string} destination 目的地となる空港の3レターを保持する変数。初期値を与えなかった場合ランダムな目的地を生成
+ * @param labelLocation ラベルを表示する位置を保持する変数。初期値では航空機の右上50px
+ */
 
 export class Airplane {
   private callsign: string;
@@ -40,14 +112,18 @@ export class Airplane {
       ? destination
       : this.getRandomDestination();
     this.labelLocation = {
-        //デフォルトでは右上に表示
+      //デフォルトでは右上に表示
       x: this.location.positionX + 50,
       y: this.location.positionY - 50,
     };
   }
 
+  /**
+   * コールサインとして適切なものが入力されているかどうかを判定する関数
+   * @param callsign 
+   * @returns {boolean} callsingが入力されており、かつ""でない時にtrueを返す
+   */
   private isCallsignValid(callsign: string | undefined): callsign is string {
-    //callsingが入力されており、かつ""でない時にtrueを返す
     return callsign !== undefined && callsign !== "";
   }
 
@@ -143,7 +219,18 @@ export class Airplane {
     return { currentX, currentY };
   }
 
-  getAirplaneInfo(): { callsign: string; heading: string; speed: string; altitude: string; commandedHeading: string; commandedSpeed: string; commandedAltitude: string; destination: string, labelX: number; labelY: number } {
+  getAirplaneInfo(): {
+    callsign: string;
+    heading: string;
+    speed: string;
+    altitude: string;
+    commandedHeading: string;
+    commandedSpeed: string;
+    commandedAltitude: string;
+    destination: string;
+    labelX: number;
+    labelY: number;
+  } {
     //ラベルの表示など必要なときに航空機の情報を返す
     const callsign = this.callsign;
     const heading = String(this.heading);
@@ -152,29 +239,50 @@ export class Airplane {
     const commandedHeading = String(this.commandedHeading);
     const commandedSpeed = String(this.commandedSpeed);
     const commandedAltitude = String(this.commandedAltitude);
-    const destination = this.destination
-    const labelX = this.labelLocation.x
-    const labelY = this.labelLocation.y
-    return {callsign, heading, speed, altitude, commandedHeading, commandedSpeed, commandedAltitude, destination, labelX, labelY}
+    const destination = this.destination;
+    const labelX = this.labelLocation.x;
+    const labelY = this.labelLocation.y;
+    return {
+      callsign,
+      heading,
+      speed,
+      altitude,
+      commandedHeading,
+      commandedSpeed,
+      commandedAltitude,
+      destination,
+      labelX,
+      labelY,
+    };
   }
 
-  changeCommandedInfo(inputAltitude: number, inputSpeed: number, inputHeading: number): { newAltitude: string; newSpeed: string; newHeading: string } {
-    const newAltitude: number = this.isAltitudeValid(inputAltitude) ? inputAltitude : this.altitude;
+  changeCommandedInfo(
+    inputAltitude: number,
+    inputSpeed: number,
+    inputHeading: number,
+  ): { newAltitude: string; newSpeed: string; newHeading: string } {
+    const newAltitude: number = this.isAltitudeValid(inputAltitude)
+      ? inputAltitude
+      : this.altitude;
     this.commandedAltitude = newAltitude;
-    const newSpeed: number = this.isSpeedValid(inputSpeed) ? inputSpeed : this.speed;
+    const newSpeed: number = this.isSpeedValid(inputSpeed)
+      ? inputSpeed
+      : this.speed;
     this.commandedSpeed = newSpeed;
-    const newHeading: number = this.isHeadingValid(inputHeading) ? inputHeading : this.heading;
+    const newHeading: number = this.isHeadingValid(inputHeading)
+      ? inputHeading
+      : this.heading;
     this.commandedHeading = newHeading;
-  
+
     //将来的に徐々に変化するように変更したい
     this.altitude = this.commandedAltitude;
     this.speed = this.commandedSpeed;
     this.heading = this.commandedHeading;
-  
+
     return {
       newAltitude: String(newAltitude),
       newSpeed: String(newSpeed),
-      newHeading: String(newHeading)
+      newHeading: String(newHeading),
     };
-  }  
+  }
 }
