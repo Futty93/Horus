@@ -107,8 +107,11 @@ class RadarGame {
   //表示しているコールサインを変更する
   private changeDisplayCallsign(newCallsign: string): void {
     const fontElement = this.displayCallsign.querySelector("font");
-    fontElement.textContent = newCallsign;
+    if (fontElement) {
+      fontElement.textContent = newCallsign;
+    }
   }
+  
 
   //航空機およびデータラベルの表示
   private drawRect(index: number, airplane: Airplane): void {
