@@ -217,6 +217,7 @@
     inputSpeed;
     inputHeading;
     confirmButton;
+    sendButton;
     inGame;
     //シミュレーションゲーム中かどうかを判断する
     bg;
@@ -234,14 +235,14 @@
       this.inputAltitude = document.getElementById("altitude");
       this.inputSpeed = document.getElementById("speed");
       this.inputHeading = document.getElementById("heading");
-      this.confirmButton = document.getElementById(
-        "confirmButton"
-      );
+      this.confirmButton = document.getElementById("confirmButton");
+      this.sendButton = document.getElementById("sendButton");
       this.inGame = false;
       this.bg = 0;
       this.canvas[0].addEventListener("click", (e) => this.handleClick(e));
       this.canvas[1].addEventListener("click", (e) => this.handleClick(e));
       this.confirmButton.addEventListener("click", () => this.send_command());
+      this.sendButton.addEventListener("click", () => sendToServer());
       for (let i = 1; i <= 10; i++) {
         const airplane = new Airplane();
         this.controlledAirplane.push(airplane);
@@ -336,6 +337,31 @@
       }
       console.log(this.selectedAircraft);
     }
+    send_to_server() {
+      const dataToSend = { key: "value" };
+      fetch("http://localhost:8080", {
+        method: "POST",
+        // 送信方法（POSTなど）
+        headers: {
+          "Content-Type": "application/json",
+          // 送信するデータの種類
+          // サーバー側にCORSリクエストを送るためのヘッダーを追加
+          "Access-Control-Allow-Origin": "*"
+          // サーバーの設定によって適切な値に変更
+        },
+        body: JSON.stringify(dataToSend)
+        // 送信するデータをJSON文字列に変換
+      }).then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok.");
+        }
+        return response.json();
+      }).then((data) => {
+        console.log("Server response:", data);
+      }).catch((error) => {
+        console.error("There was a problem with the fetch operation:", error);
+      });
+    }
     update() {
       this.clearCanvas(this.bg);
       for (let i = 0; i < this.controlledAirplane.length; i++) {
@@ -356,4 +382,30 @@
   };
   var radarGame = new RadarGame();
   radarGame.start();
+  var socket = null;
+  function connectToServer() {
+    socket = new WebSocket("ws://localhost:8080/ws");
+    socket.addEventListener("open", (event) => {
+      console.log("Connected to server");
+    });
+    socket.addEventListener("message", (event) => {
+      console.log("Received message from server:", event.data);
+    });
+    socket.addEventListener("error", (event) => {
+      console.error("Error with WebSocket connection:", event);
+    });
+    socket.addEventListener("close", (event) => {
+      console.log("Connection closed");
+    });
+  }
+  function sendToServer() {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      const dataToSend = { key: "value" };
+      socket.send(JSON.stringify(dataToSend));
+      console.log("send!");
+    } else {
+      console.error("WebSocket connection is not open");
+    }
+  }
+  connectToServer();
 })();

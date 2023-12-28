@@ -15,6 +15,7 @@ class RadarGame {
   private inputSpeed: HTMLInputElement;
   private inputHeading: HTMLInputElement;
   private confirmButton: HTMLInputElement;
+  private sendButton: HTMLInputElement;
   private inGame: boolean; //シミュレーションゲーム中かどうかを判断する
   private bg: number; //ダブルバッファの背景と表示を切り替えるためのインデックスを管理
   private controlledAirplane: Airplane[] = [];
@@ -32,14 +33,14 @@ class RadarGame {
     this.inputAltitude = <HTMLInputElement> document.getElementById("altitude");
     this.inputSpeed = <HTMLInputElement> document.getElementById("speed");
     this.inputHeading = <HTMLInputElement> document.getElementById("heading");
-    this.confirmButton = <HTMLInputElement> document.getElementById(
-      "confirmButton",
-    );
+    this.confirmButton = <HTMLInputElement> document.getElementById("confirmButton");
+    this.sendButton = <HTMLInputElement> document.getElementById("sendButton");
     this.inGame = false;
     this.bg = 0;
     this.canvas[0].addEventListener("click", (e) => this.handleClick(e));
     this.canvas[1].addEventListener("click", (e) => this.handleClick(e));
     this.confirmButton.addEventListener("click", () => this.send_command());
+    this.sendButton.addEventListener("click", () => sendToServer());
 
     //とりあえず10機の航空機を生成する
     for (let i = 1; i <= 10; i++) {
@@ -179,6 +180,36 @@ class RadarGame {
     console.log(this.selectedAircraft);
   }
 
+  private send_to_server(): void {
+    // データを準備（例: JSONデータ）
+    const dataToSend = { key: 'value' };
+
+    // fetchを使ってサーバーにデータを送信
+    fetch('http://localhost:8080', {
+        method: 'POST', // 送信方法（POSTなど）
+        headers: {
+            'Content-Type': 'application/json', // 送信するデータの種類
+            // サーバー側にCORSリクエストを送るためのヘッダーを追加
+            'Access-Control-Allow-Origin': '*', // サーバーの設定によって適切な値に変更
+        },
+        body: JSON.stringify(dataToSend), // 送信するデータをJSON文字列に変換
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok.');
+        }
+        return response.json(); // サーバーからのレスポンスをJSONとして処理
+    })
+    .then(data => {
+        console.log('Server response:', data); // サーバーからのレスポンスをログに出力
+        // ここでサーバーからのレスポンスを適切に処理する（UIに反映するなど）
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error); // エラーをログに出力
+        // エラー処理を行う（例: エラーメッセージをユーザーに表示するなど）
+    });
+}
+
   private update(): void {
     //画面全体を更新する
     this.clearCanvas(this.bg);
@@ -204,3 +235,48 @@ class RadarGame {
 // Initialize and start the game
 const radarGame = new RadarGame();
 radarGame.start();
+
+
+let socket: WebSocket | null = null;
+
+function connectToServer() {
+  // サーバーにWebSocket接続を確立
+  socket = new WebSocket('ws://localhost:8080/ws');
+
+  // 接続が確立されたときの処理
+  socket.addEventListener('open', (event) => {
+      console.log('Connected to server');
+  });
+
+  // メッセージを受信したときの処理
+  socket.addEventListener('message', (event) => {
+      console.log('Received message from server:', event.data);
+      // サーバーからのメッセージを適切に処理する（UIに反映するなど）
+  });
+
+  // エラーが発生したときの処理
+  socket.addEventListener('error', (event) => {
+      console.error('Error with WebSocket connection:', event);
+      // エラー処理を行う（例: エラーメッセージをユーザーに表示するなど）
+  });
+
+  // 接続が閉じられたときの処理
+  socket.addEventListener('close', (event) => {
+      console.log('Connection closed');
+  });
+}
+
+function sendToServer() {
+  if (socket && socket.readyState === WebSocket.OPEN) {
+      const dataToSend = { key: 'value' };
+      // サーバーにデータを送信
+      socket.send(JSON.stringify(dataToSend));
+      console.log("send!")
+  } else {
+      console.error('WebSocket connection is not open');
+      // WebSocket接続が開かれていない場合のエラー処理
+  }
+}
+
+// サーバーに接続
+connectToServer();
