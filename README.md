@@ -35,4 +35,4 @@ npm install --save-exact --save-dev esbuild
     - コマンドプロンプトやターミナルで以下のコマンドを実行して、`main.go` を実行します。
     - `go run main.go`
 
-以上で、Goの環境をセットアップし、`main.go` を実行する準備が整いました。適切にインストールされている場合、`go run main.go`を実行することで、コンソールに`Hello, Go!`と表示されるはずです。
+ブラウザでhttp://localhost:8080/wsにアクセスすることで、サーバー側のコンソールなどを確認できます。
