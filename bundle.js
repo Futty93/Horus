@@ -1,7 +1,66 @@
 (() => {
   // airplaneClass.ts
   var airlines = ["ANA", "JAL", "APJ", "IBX", "SFJ", "SKY"];
-  var destAirport = ["HND", "NRT", "KIX", "ITM", "CTS", "FUK", "NGO", "OKA", "KOJ", "KMJ", "HIJ", "KOI", "FSZ", "NGS", "KCZ", "TAK", "MYJ", "TOY", "AOJ", "AKJ", "AOJ", "AXT", "GAJ", "HKD", "IZO", "IWJ", "MMB", "OKD", "OIT", "ONJ", "RIS", "SDJ", "SYO", "TNE", "TNA", "UBJ", "MMJ", "KKJ", "YGJ", "AOJ", "AXT", "GAJ", "HKD", "IZO", "IWJ", "MMB", "OKD", "OIT", "ONJ", "RIS", "SDJ", "SYO", "TNE", "TNA", "UBJ", "MMJ", "KKJ", "YGJ"];
+  var destAirport = [
+    "HND",
+    "NRT",
+    "KIX",
+    "ITM",
+    "CTS",
+    "FUK",
+    "NGO",
+    "OKA",
+    "KOJ",
+    "KMJ",
+    "HIJ",
+    "KOI",
+    "FSZ",
+    "NGS",
+    "KCZ",
+    "TAK",
+    "MYJ",
+    "TOY",
+    "AOJ",
+    "AKJ",
+    "AOJ",
+    "AXT",
+    "GAJ",
+    "HKD",
+    "IZO",
+    "IWJ",
+    "MMB",
+    "OKD",
+    "OIT",
+    "ONJ",
+    "RIS",
+    "SDJ",
+    "SYO",
+    "TNE",
+    "TNA",
+    "UBJ",
+    "MMJ",
+    "KKJ",
+    "YGJ",
+    "AOJ",
+    "AXT",
+    "GAJ",
+    "HKD",
+    "IZO",
+    "IWJ",
+    "MMB",
+    "OKD",
+    "OIT",
+    "ONJ",
+    "RIS",
+    "SDJ",
+    "SYO",
+    "TNE",
+    "TNA",
+    "UBJ",
+    "MMJ",
+    "KKJ",
+    "YGJ"
+  ];
   var Airplane = class {
     callsign;
     altitude;
@@ -29,6 +88,11 @@
         y: this.location.positionY - 50
       };
     }
+    /**
+     * コールサインとして適切なものが入力されているかどうかを判定する関数
+     * @param callsign 
+     * @returns {boolean} callsingが入力されており、かつ""でない時にtrueを返す
+     */
     isCallsignValid(callsign) {
       return callsign !== void 0 && callsign !== "";
     }
@@ -107,7 +171,18 @@
       const destination = this.destination;
       const labelX = this.labelLocation.x;
       const labelY = this.labelLocation.y;
-      return { callsign, heading, speed, altitude, commandedHeading, commandedSpeed, commandedAltitude, destination, labelX, labelY };
+      return {
+        callsign,
+        heading,
+        speed,
+        altitude,
+        commandedHeading,
+        commandedSpeed,
+        commandedAltitude,
+        destination,
+        labelX,
+        labelY
+      };
     }
     changeCommandedInfo(inputAltitude, inputSpeed, inputHeading) {
       const newAltitude = this.isAltitudeValid(inputAltitude) ? inputAltitude : this.altitude;
@@ -209,7 +284,9 @@
     //表示しているコールサインを変更する
     changeDisplayCallsign(newCallsign) {
       const fontElement = this.displayCallsign.querySelector("font");
-      fontElement.textContent = newCallsign;
+      if (fontElement) {
+        fontElement.textContent = newCallsign;
+      }
     }
     //航空機およびデータラベルの表示
     drawRect(index, airplane) {
