@@ -1,0 +1,14 @@
+syntax = "proto3";
+option go_package = "takahashi.qse.tohoku.ac.jp/atcGameProject/pb/airplane";
+
+service airplane {
+  rpc Location ( LocationRequest ) returns ( LocationReply ){}
+}
+
+message LocationRequest {
+  string text = 1;
+}
+
+message LocationReply{
+  string text = 1;
+}

@@ -10,6 +10,7 @@ func main() {
 	a.PrintPosition()
 
 	// サーバーを作成
+	msg.Start()
 	messenger := msg.Messenger{}
 	messenger.CreateMessageServer()
 }

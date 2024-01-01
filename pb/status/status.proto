@@ -1,0 +1,18 @@
+syntax  = "proto3";
+option go_package = "takahashi.qse.tohoku.ac.jp/atcGameProject/pb/status";
+
+// The greeting service definition.
+service ServerStatus {
+  // Sends a greeting
+  rpc Status (StatusRequest) returns (StatusReply) {}
+}
+
+// The request message containing the user's name.
+message StatusRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings
+message StatusReply {
+  string message = 1;
+}
