@@ -2,61 +2,41 @@
 package msg
 
 import (
+	"flag"
 	"fmt"
-	"github.com/gorilla/websocket"
-	"net/http"
+	"google.golang.org/grpc"
+	"log"
+	"net"
+	aircraftsPb "takahashi.qse.tohoku.ac.jp/atcGameProject/pb/airplane"
+	statusPb "takahashi.qse.tohoku.ac.jp/atcGameProject/pb/status"
 )
 
-// Messenger is server for client.
+// Messenger is server.
 type Messenger struct {
 }
 
-var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		// クロスオリジンリクエストのチェック
-		return true
-	},
+var (
+	port = flag.Int("port", 50051, "The server port")
+)
+
+// server is used to implement status.GreeterServer.
+type server struct {
+	statusPb.UnimplementedServerStatusServer
+	aircraftsPb.UnimplementedAirplaneServer
 }
 
-// CreateMessageServer initialize the server and endpoint.
-func (m Messenger) CreateMessageServer() {
-	// WebSocket用のエンドポイントを作成
-	http.HandleFunc("/ws", wsTestHandler)
-	fmt.Println("Server is listening on port 8080...")
-	err := http.ListenAndServe(":8080", nil)
+func Start() {
+	flag.Parse()
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
-		fmt.Println("Server couldn't start:", err)
+		log.Fatalf("failed to listen: %v", err)
 	}
-}
-
-// wsTestHandler is for test endpoint handler. It returns the same message and display it.
-func wsTestHandler(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		fmt.Println("Error upgrading to WebSocket:", err)
-		return
-	}
-	defer func() {
-		if err = conn.Close(); err != nil {
-			fmt.Println("Connection close failed")
-		}
-	}()
-
-	// WebSocket接続の処理
-	for {
-		// メッセージの読み取り
-		_, msg, err := conn.ReadMessage()
-		if err != nil {
-			fmt.Println("Error reading message:", err)
-			break
-		}
-		fmt.Printf("Received message: %s\n", msg)
-
-		// メッセージの書き込み
-		if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
-			fmt.Println("Error writing message:", err)
-			break
-		}
+	s := grpc.NewServer()
+	statusPb.RegisterServerStatusServer(s, &server{})
+	aircraftsPb.RegisterAirplaneServer(s, &server{})
+	log.Printf("server listening at %v", lis.Addr())
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
 	}
 }
 

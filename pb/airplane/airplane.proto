@@ -10,5 +10,8 @@ message LocationRequest {
 }
 
 message LocationReply{
-  string text = 1;
+  float posX = 1;
+  float posY = 2;
+  int32 heading = 3;
+  int64 altitude = 4;
 }

@@ -10,6 +10,11 @@ type CommercialAircraft struct {
 	instruction instruction
 }
 
-func (ca CommercialAircraft) Proceed(t int) {
+func (ca *CommercialAircraft) Proceed(t int) {
 
+}
+
+func (ca *CommercialAircraft) NewTestCommercialAircraft() CommercialAircraft {
+	a := CommercialAircraft{pos: position{heading: 360}}
+	return a
 }

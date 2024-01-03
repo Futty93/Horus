@@ -21,40 +21,12 @@ package msg
 
 import (
 	"context"
-	"flag"
-	"fmt"
 	"log"
-	"net"
-
-	"google.golang.org/grpc"
-	pb "takahashi.qse.tohoku.ac.jp/atcGameProject/pb/status"
+	statusPb "takahashi.qse.tohoku.ac.jp/atcGameProject/pb/status"
 )
-
-var (
-	port = flag.Int("port", 50051, "The server port")
-)
-
-// server is used to implement status.GreeterServer.
-type server struct {
-	pb.UnimplementedServerStatusServer
-}
 
 // Status implements status.GreeterServer
-func (s *server) Status(ctx context.Context, in *pb.StatusRequest) (*pb.StatusReply, error) {
+func (s *server) Status(ctx context.Context, in *statusPb.StatusRequest) (*statusPb.StatusReply, error) {
 	log.Printf("Received Status Check Request")
-	return &pb.StatusReply{Message: "Hello" + in.GetName() + " :Server is running..."}, nil
-}
-
-func Start() {
-	flag.Parse()
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	s := grpc.NewServer()
-	pb.RegisterServerStatusServer(s, &server{})
-	log.Printf("server listening at %v", lis.Addr())
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
+	return &statusPb.StatusReply{Message: "Hello" + in.GetName() + " :Server is running..."}, nil
 }
