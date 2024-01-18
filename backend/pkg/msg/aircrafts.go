@@ -3,7 +3,6 @@ package msg
 import (
 	"fmt"
 	aircraftsPb "takahashi.qse.tohoku.ac.jp/atcGameProject/pkg/pb/airplane"
-	"time"
 )
 
 func (s *server) GetAirplanesPositionStream(req *aircraftsPb.PositionRequest, stream aircraftsPb.Airplane_GetAirplanesPositionStreamServer) error {
@@ -17,7 +16,6 @@ func (s *server) GetAirplanesPositionStream(req *aircraftsPb.PositionRequest, st
 		}); err != nil {
 			return err
 		}
-		time.Sleep(time.Second * 3)
 	}
 	return nil
 }

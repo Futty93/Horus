@@ -1,10 +1,11 @@
 package aircraft
 
 import (
+	"fmt"
 	"math"
 )
 
-// Base is the class for the stuff in the sky.
+// Base is the class for the stuff in the airspace.
 // Parameters
 type position struct {
 	// 飛行機の位置
@@ -35,4 +36,8 @@ func headingToVec(heading int) [2]float64 {
 // result is just the number of difference, not distance like m or mile
 func difference(p1 [2]float64, p2 [2]float64) float64 {
 	return math.Sqrt(math.Pow(p1[0]-p2[0], 2) + math.Pow(p1[1]-p2[1], 2))
+}
+
+func (p *position) String() string {
+	return fmt.Sprintf("Position: %v", p.location)
 }
