@@ -7,8 +7,8 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
-	aircraftsPb "takahashi.qse.tohoku.ac.jp/atcGameProject/pb/airplane"
-	statusPb "takahashi.qse.tohoku.ac.jp/atcGameProject/pb/status"
+	aircraftsPb "takahashi.qse.tohoku.ac.jp/atcGameProject/pkg/pb/airplane"
+	statusPb "takahashi.qse.tohoku.ac.jp/atcGameProject/pkg/pb/status"
 )
 
 // Messenger is server.
