@@ -6,10 +6,8 @@ import (
 )
 
 func main() {
-	a := aircraft.NewAircraft([2]float64{1.0, 1.0}, 1)
-	a.PrintPosition()
-
-	// サーバーを作成
-	messenger := msg.Messenger{}
-	messenger.CreateMessageServer()
+	a := aircraft.CommercialAircraft{}
+	a = a.NewTestCommercialAircraft()
+	// クライアントと通信するサーバーを作成
+	msg.Start()
 }
