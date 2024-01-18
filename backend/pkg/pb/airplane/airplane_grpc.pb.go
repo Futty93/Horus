@@ -22,7 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AirplaneClient interface {
-	Location(ctx context.Context, in *LocationRequest, opts ...grpc.CallOption) (*LocationReply, error)
+	GetAirplanesPositionStream(ctx context.Context, in *PositionRequest, opts ...grpc.CallOption) (Airplane_GetAirplanesPositionStreamClient, error)
 }
 
 type airplaneClient struct {
@@ -33,20 +33,43 @@ func NewAirplaneClient(cc grpc.ClientConnInterface) AirplaneClient {
 	return &airplaneClient{cc}
 }
 
-func (c *airplaneClient) Location(ctx context.Context, in *LocationRequest, opts ...grpc.CallOption) (*LocationReply, error) {
-	out := new(LocationReply)
-	err := c.cc.Invoke(ctx, "/airplane/Location", in, out, opts...)
+func (c *airplaneClient) GetAirplanesPositionStream(ctx context.Context, in *PositionRequest, opts ...grpc.CallOption) (Airplane_GetAirplanesPositionStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Airplane_ServiceDesc.Streams[0], "/airplane/GetAirplanesPositionStream", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &airplaneGetAirplanesPositionStreamClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Airplane_GetAirplanesPositionStreamClient interface {
+	Recv() (*PositionReply, error)
+	grpc.ClientStream
+}
+
+type airplaneGetAirplanesPositionStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *airplaneGetAirplanesPositionStreamClient) Recv() (*PositionReply, error) {
+	m := new(PositionReply)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 // AirplaneServer is the server API for Airplane service.
 // All implementations must embed UnimplementedAirplaneServer
 // for forward compatibility
 type AirplaneServer interface {
-	Location(context.Context, *LocationRequest) (*LocationReply, error)
+	GetAirplanesPositionStream(*PositionRequest, Airplane_GetAirplanesPositionStreamServer) error
 	mustEmbedUnimplementedAirplaneServer()
 }
 
@@ -54,8 +77,8 @@ type AirplaneServer interface {
 type UnimplementedAirplaneServer struct {
 }
 
-func (UnimplementedAirplaneServer) Location(context.Context, *LocationRequest) (*LocationReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Location not implemented")
+func (UnimplementedAirplaneServer) GetAirplanesPositionStream(*PositionRequest, Airplane_GetAirplanesPositionStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetAirplanesPositionStream not implemented")
 }
 func (UnimplementedAirplaneServer) mustEmbedUnimplementedAirplaneServer() {}
 
@@ -70,22 +93,25 @@ func RegisterAirplaneServer(s grpc.ServiceRegistrar, srv AirplaneServer) {
 	s.RegisterService(&Airplane_ServiceDesc, srv)
 }
 
-func _Airplane_Location_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LocationRequest)
-	if err := dec(in); err != nil {
-		return nil, err
+func _Airplane_GetAirplanesPositionStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(PositionRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
 	}
-	if interceptor == nil {
-		return srv.(AirplaneServer).Location(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/airplane/Location",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AirplaneServer).Location(ctx, req.(*LocationRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+	return srv.(AirplaneServer).GetAirplanesPositionStream(m, &airplaneGetAirplanesPositionStreamServer{stream})
+}
+
+type Airplane_GetAirplanesPositionStreamServer interface {
+	Send(*PositionReply) error
+	grpc.ServerStream
+}
+
+type airplaneGetAirplanesPositionStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *airplaneGetAirplanesPositionStreamServer) Send(m *PositionReply) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 // Airplane_ServiceDesc is the grpc.ServiceDesc for Airplane service.
@@ -94,12 +120,13 @@ func _Airplane_Location_Handler(srv interface{}, ctx context.Context, dec func(i
 var Airplane_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "airplane",
 	HandlerType: (*AirplaneServer)(nil),
-	Methods: []grpc.MethodDesc{
+	Methods:     []grpc.MethodDesc{},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "Location",
-			Handler:    _Airplane_Location_Handler,
+			StreamName:    "GetAirplanesPositionStream",
+			Handler:       _Airplane_GetAirplanesPositionStream_Handler,
+			ServerStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "pb/airplane/airplane.proto",
 }

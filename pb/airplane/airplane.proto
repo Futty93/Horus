@@ -2,14 +2,14 @@ syntax = "proto3";
 option go_package = "takahashi.qse.tohoku.ac.jp/atcGameProject/pb/airplane";
 
 service airplane {
-  rpc Location ( LocationRequest ) returns ( LocationReply ){}
+  rpc GetAirplanesPositionStream ( PositionRequest ) returns ( stream PositionReply ){}
 }
 
-message LocationRequest {
+message PositionRequest {
   string text = 1;
 }
 
-message LocationReply{
+message PositionReply{
   float posX = 1;
   float posY = 2;
   int32 heading = 3;

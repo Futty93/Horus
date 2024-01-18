@@ -22,7 +22,7 @@ package msg
 import (
 	"context"
 	"log"
-	statusPb "takahashi.qse.tohoku.ac.jp/atcGameProject/pb/status"
+	statusPb "takahashi.qse.tohoku.ac.jp/atcGameProject/pkg/pb/status"
 )
 
 // Status implements status.GreeterServer
