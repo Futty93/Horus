@@ -23,5 +23,5 @@ func (ca *CommercialAircraft) NewTestCommercialAircraft() CommercialAircraft {
 }
 
 func (ca *CommercialAircraft) String() string {
-	return fmt.Sprintf("Position: %s ", ca.pos.String())
+	return fmt.Sprintf("Aircraft Details: %s \n", ca.pos.String())
 }

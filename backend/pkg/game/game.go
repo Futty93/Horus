@@ -48,6 +48,7 @@ func (m *Manager) Next() {
 }
 
 func (m *Manager) LogSnapShot() {
-	fmt.Println("***Game Logger")
+	fmt.Println("***Game Logger Started***")
 	fmt.Println(m.snp.as.String())
+	fmt.Println("***Game Logger Ended***")
 }
