@@ -3,8 +3,8 @@ package main
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"log"
+	"sync"
 	"takahashi.qse.tohoku.ac.jp/atcGameProject/pkg/game"
-	"takahashi.qse.tohoku.ac.jp/atcGameProject/pkg/msg"
 )
 
 func main() {
@@ -13,13 +13,19 @@ func main() {
 	g.Start()
 	g.Next()
 
-	// クライアントと通信するサーバーを作成
-	msg.Start()
+	// wait group
+	var wg sync.WaitGroup
 
+	wg.Add(1)
 	// create console program
 	p := tea.NewProgram(initialModel())
-	_, err := p.Run()
-	if err != nil {
-		log.Fatal(err)
-	}
+	go func() {
+		_, err := p.Run()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	// waiting for ends each process
+	wg.Wait()
 }
