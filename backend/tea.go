@@ -1,15 +1,23 @@
 package main
 
 import (
-	"fmt"
+	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"takahashi.qse.tohoku.ac.jp/atcGameProject/pkg/msg"
 )
 
 var ms = msg.GetGameMessageServerInstance()
 
+const (
+	exit = iota
+	mainMenu
+	serverMenu
+)
+
 type model struct {
-	count        int
+	mode         int        // mode of menu
+	mainList     list.Model // List for main menu
+	serverList   list.Model // List for Server menu
 	serverStatus string
 }
 
@@ -17,8 +25,33 @@ type serverStatusMsg struct {
 	serverStatus string
 }
 
+type mainMenuItem struct {
+	title, description string
+	nextMode           int
+}
+
+func (i mainMenuItem) Description() string {
+	return i.description
+}
+func (i mainMenuItem) Title() string {
+	return i.title
+}
+func (i mainMenuItem) FilterValue() string {
+	return i.title
+}
+
+var _ list.DefaultItem = (*mainMenuItem)(nil)
+var mainMenuItems = []list.Item{
+	mainMenuItem{title: "1.server menu", description: "grpc server menu", nextMode: serverMenu},
+	mainMenuItem{title: "2.Exit", description: "Exit", nextMode: exit},
+}
+
 func initialModel() model {
-	return model{serverStatus: "NOT CREATED"}
+	return model{
+		mode:         mainMenu,
+		mainList:     list.New(mainMenuItems, list.NewDefaultDelegate(), 1, 10),
+		serverList:   list.New(serverMenuItems, list.NewDefaultDelegate(), 1, 20),
+		serverStatus: "NOT CREATED"}
 }
 
 func (model) Init() tea.Cmd {
@@ -26,50 +59,47 @@ func (model) Init() tea.Cmd {
 }
 
 func (m model) View() string {
-	// ui is message shown to user.
-	var ui string
-	ui = fmt.Sprintf("*** Simulator Console *** \n")
-	ui += fmt.Sprintf("--- Server Status ---  \n")
-	ui += m.serverStatus + "\n"
-	return ui
+	switch m.mode {
+	case mainMenu:
+		// Here is main menu view
+		var mainList = m.mainList
+		return mainList.View()
+	case serverMenu:
+		return m.ServerMenuView()
+	default:
+		return "mode is missing..."
+	}
 }
 
 func (m model) Update(tm tea.Msg) (tea.Model, tea.Cmd) {
-	switch tm := tm.(type) {
-	case tea.KeyMsg:
-		switch tm.String() {
-		case "r":
-			return m, m.GetMessagePortNumber
+	switch m.mode {
+	case serverMenu:
+		return m.ServerMenuUpdate(tm)
+	case mainMenu:
+		var cmd tea.Cmd
+		m.mainList, cmd = m.mainList.Update(tm)
+		switch tm := tm.(type) {
+		case tea.WindowSizeMsg:
+			m.mainList.SetSize(tm.Width, tm.Height)
+		case tea.KeyMsg:
+			switch keypress := tm.String(); keypress {
+			case "q", "ctl+c":
+				return m, tea.Quit
+			case "enter":
+				i, ok := m.mainList.SelectedItem().(mainMenuItem)
+				if ok {
+					if i.nextMode == exit {
+						return m, tea.Quit
+					}
+					m.mode = i.nextMode
+				}
+			}
 
-		case "s":
-			return m, m.StartGameMessageServer
-
-		case "t":
-			return m, m.StopMessageServer
-
-		case "q", "ctl+c":
-			return m, tea.Quit
 		}
-	case serverStatusMsg:
-		m.serverStatus = tm.serverStatus
-		return m, nil
+		return m, cmd
+
+	default:
+		return m, tea.Quit
 	}
 
-	return m, nil
-}
-
-func (m model) GetMessagePortNumber() tea.Msg {
-	return serverStatusMsg{serverStatus: ms.GetStatusMessage()}
-}
-
-func (m model) StartGameMessageServer() tea.Msg {
-	if !ms.IsActive() {
-		ms.Start()
-	}
-	return serverStatusMsg{serverStatus: "Server is running."}
-}
-
-func (m model) StopMessageServer() tea.Msg {
-	ms.Stop()
-	return serverStatusMsg{serverStatus: "server stopped"}
 }
