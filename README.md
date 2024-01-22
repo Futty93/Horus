@@ -13,12 +13,14 @@ brew install deno
 ```
 
 ## コンパイラのインストール
-
+```
 npm install --save-exact --save-dev esbuild
+```
 
 ## index.tsをbundle.jsにコンパイルし、サーバーを立ち上げる
-
+```
 ./node_modules/.bin/esbuild index.ts --bundle --outfile=bundle.js && deno run --allow-net --allow-read https://deno.land/std@0.59.0/http/file_server.ts
+```
 
 以上で、DENOとesbuildのインストール、およびindex.tsをbundle.jsにコンパイルしてサーバーを立ち上げる準備が整いました。最後のコマンドは、esbuildを使ってTypeScriptファイルをバンドルし、DENOの標準ライブラリを使用してファイルサーバーを立ち上げます。必要に応じてコマンドを実行してください。
 

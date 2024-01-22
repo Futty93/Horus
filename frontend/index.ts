@@ -3,7 +3,7 @@ const CANVAS_WIDTH: number = 1000;
 const CANVAS_HEIGHT: number = 1000;
 const REFRESH_RATE: number = 30; //画面の更新頻度(fps)
 
-import { Airplane } from "./airplaneClass";
+import { Airplane } from "./airplaneClass.ts";
 
 // Define a class to encapsulate the game
 class RadarGame {
