@@ -3,10 +3,14 @@
 ## DENOのインストール
 
 ### Linux / macOS
-deno install -qAf https://deno.land/x/deno/cli.ts　
+```
+deno install -qAf https://deno.land/x/deno/cli.ts
+```
 
 ### macOS (Homebrew)
+```
 brew install deno
+```
 
 ## コンパイラのインストール
 
