@@ -89,7 +89,7 @@ func (m model) GetMessagePortNumber() tea.Msg {
 
 func (m model) StartGameMessageServer() tea.Msg {
 	if !ms.IsActive() {
-		ms.Start()
+		go ms.Start()
 	}
 	return serverStatusMsg{serverStatus: "Server is running."}
 }

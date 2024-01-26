@@ -49,8 +49,8 @@ var mainMenuItems = []list.Item{
 func initialModel() model {
 	return model{
 		mode:         mainMenu,
-		mainList:     list.New(mainMenuItems, list.NewDefaultDelegate(), 1, 10),
-		serverList:   list.New(serverMenuItems, list.NewDefaultDelegate(), 1, 20),
+		mainList:     list.New(mainMenuItems, list.NewDefaultDelegate(), 1, 15),
+		serverList:   list.New(serverMenuItems, list.NewDefaultDelegate(), 1, 15),
 		serverStatus: "NOT CREATED"}
 }
 
