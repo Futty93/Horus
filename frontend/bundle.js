@@ -1,5 +1,5 @@
 (() => {
-  // airplaneClass.ts
+  // frontend/airplaneClass.ts
   var airlines = ["ANA", "JAL", "APJ", "IBX", "SFJ", "SKY"];
   var destAirport = [
     "HND",
@@ -202,10 +202,10 @@
     }
   };
 
-  // index.ts
+  // frontend/index.ts
   var CANVAS_WIDTH = 1e3;
   var CANVAS_HEIGHT = 1e3;
-  var REFRESH_RATE = 30;
+  var REFRESH_RATE = 0.1;
   var RadarGame = class {
     canvas;
     //ダブルバッファで画面を切り替えてアニメーションを実現するために配列で定義
@@ -217,7 +217,7 @@
     inputSpeed;
     inputHeading;
     confirmButton;
-    sendButton;
+    // private sendButton: HTMLInputElement;
     inGame;
     //シミュレーションゲーム中かどうかを判断する
     bg;
@@ -236,13 +236,11 @@
       this.inputSpeed = document.getElementById("speed");
       this.inputHeading = document.getElementById("heading");
       this.confirmButton = document.getElementById("confirmButton");
-      this.sendButton = document.getElementById("sendButton");
       this.inGame = false;
       this.bg = 0;
       this.canvas[0].addEventListener("click", (e) => this.handleClick(e));
       this.canvas[1].addEventListener("click", (e) => this.handleClick(e));
       this.confirmButton.addEventListener("click", () => this.send_command());
-      this.sendButton.addEventListener("click", () => sendToServer());
       for (let i = 1; i <= 10; i++) {
         const airplane = new Airplane();
         this.controlledAirplane.push(airplane);
@@ -284,7 +282,7 @@
     }
     //表示しているコールサインを変更する
     changeDisplayCallsign(newCallsign) {
-      const fontElement = this.displayCallsign.querySelector("font");
+      const fontElement = document.getElementById("callsign");
       if (fontElement) {
         fontElement.textContent = newCallsign;
       }
@@ -295,8 +293,9 @@
       const airplaneInfo = airplane.getAirplaneInfo();
       const labelX = airplaneInfo.labelX;
       const labelY = airplaneInfo.labelY;
+      const radius = 5;
       this.ctx[index].beginPath();
-      this.ctx[index].rect(position.currentX - 5, position.currentY - 5, 10, 10);
+      this.ctx[index].arc(position.currentX, position.currentY, radius, 0, 2 * Math.PI);
       this.ctx[index].fillStyle = "white";
       this.ctx[index].fill();
       this.ctx[index].beginPath();
@@ -375,6 +374,7 @@
         console.error("Failed to get 2D context");
         return;
       }
+      this.update();
       setInterval(() => {
         this.update();
       }, 1e3 / REFRESH_RATE);
@@ -397,15 +397,6 @@
     socket.addEventListener("close", (event) => {
       console.log("Connection closed");
     });
-  }
-  function sendToServer() {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      const dataToSend = { key: "value" };
-      socket.send(JSON.stringify(dataToSend));
-      console.log("send!");
-    } else {
-      console.error("WebSocket connection is not open");
-    }
   }
   connectToServer();
 })();
