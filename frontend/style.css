@@ -1,0 +1,24 @@
+.container {
+    display: flex; /* Use flex layout */
+}
+
+.radarArea {
+    flex: 1; /* Make radarArea flexible to take available space */
+}
+
+.controlPanel {
+    flex: 0; /* Control panel does not grow, so it will be its natural size */
+    min-width: 300px; /* Adjust the width as needed */
+    background-color: #ddd;
+    padding: 10px;
+}
+
+.controlPanel input {
+    margin-bottom: 17px;
+}
+
+
+#callsign {
+    font-size: x-large;
+    font-weight: bold;
+}

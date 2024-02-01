@@ -1,7 +1,7 @@
 // Define constants for canvas dimensions
 const CANVAS_WIDTH: number = 1000;
 const CANVAS_HEIGHT: number = 1000;
-const REFRESH_RATE: number = 30; //画面の更新頻度(fps)
+const REFRESH_RATE: number = 0.1; //画面の更新頻度(fps)
 
 import { Airplane } from "./airplaneClass.ts";
 
@@ -15,7 +15,7 @@ class RadarGame {
   private inputSpeed: HTMLInputElement;
   private inputHeading: HTMLInputElement;
   private confirmButton: HTMLInputElement;
-  private sendButton: HTMLInputElement;
+  // private sendButton: HTMLInputElement;
   private inGame: boolean; //シミュレーションゲーム中かどうかを判断する
   private bg: number; //ダブルバッファの背景と表示を切り替えるためのインデックスを管理
   private controlledAirplane: Airplane[] = [];
@@ -34,13 +34,13 @@ class RadarGame {
     this.inputSpeed = <HTMLInputElement> document.getElementById("speed");
     this.inputHeading = <HTMLInputElement> document.getElementById("heading");
     this.confirmButton = <HTMLInputElement> document.getElementById("confirmButton");
-    this.sendButton = <HTMLInputElement> document.getElementById("sendButton");
+    // this.sendButton = <HTMLInputElement> document.getElementById("sendButton");
     this.inGame = false;
     this.bg = 0;
     this.canvas[0].addEventListener("click", (e) => this.handleClick(e));
     this.canvas[1].addEventListener("click", (e) => this.handleClick(e));
     this.confirmButton.addEventListener("click", () => this.send_command());
-    this.sendButton.addEventListener("click", () => sendToServer());
+    // this.sendButton.addEventListener("click", () => sendToServer());
 
     //とりあえず10機の航空機を生成する
     for (let i = 1; i <= 10; i++) {
@@ -107,7 +107,7 @@ class RadarGame {
 
   //表示しているコールサインを変更する
   private changeDisplayCallsign(newCallsign: string): void {
-    const fontElement = this.displayCallsign.querySelector("font");
+    const fontElement = <HTMLParagraphElement>document.getElementById("callsign");
     if (fontElement) {
       fontElement.textContent = newCallsign;
     }
@@ -120,10 +120,11 @@ class RadarGame {
     const airplaneInfo = airplane.getAirplaneInfo();
     const labelX = airplaneInfo.labelX;
     const labelY = airplaneInfo.labelY;
+    const radius: number = 5; //航空機のノードの半径
 
     //航空機のポジションに描画する
     this.ctx[index].beginPath();
-    this.ctx[index].rect(position.currentX - 5, position.currentY - 5, 10, 10); //左上が原点となっているため、航空機の中心に描画できるようにオフセットする
+    this.ctx[index].arc(position.currentX, position.currentY, radius, 0, 2 * Math.PI); //原点を中心に、半径 radius の円弧を描画する
     this.ctx[index].fillStyle = "white";
     this.ctx[index].fill();
 
@@ -208,7 +209,7 @@ class RadarGame {
         console.error('There was a problem with the fetch operation:', error); // エラーをログに出力
         // エラー処理を行う（例: エラーメッセージをユーザーに表示するなど）
     });
-}
+  }
 
   private update(): void {
     //画面全体を更新する
@@ -225,7 +226,7 @@ class RadarGame {
       console.error("Failed to get 2D context");
       return;
     }
-
+    this.update(); //最初期の画面を表示
     setInterval(() => {
       this.update();
     }, 1000 / REFRESH_RATE);

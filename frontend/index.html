@@ -5,31 +5,7 @@
     <meta charset="UTF-8" />
     <!DOCTYPE html>
     <title>ATC Radar</title>
-    <style>
-        /* Add CSS styles to control layout */
-        .container {
-            display: flex; /* Use flex layout */
-        }
-
-        .radarArea {
-            flex: 1; /* Make radarArea flexible to take available space */
-        }
-
-        .controlPanel {
-            flex: 0; /* Control panel does not grow, so it will be its natural size */
-            min-width: 300px; /* Adjust the width as needed */
-            background-color: #ddd;
-            padding: 10px;
-        }
-
-        .controlPanel .tagArea {
-            padding-right: 10px;
-        }
-
-        .controlPanel input {
-            margin-bottom: 17px;
-        }
-    </style>
+    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
@@ -39,35 +15,36 @@
             <canvas id="radar2" width="1000" height="1000"></canvas>
         </div>
         <div class="controlPanel">
-            <div id="callsign">
-                <b><font size="6"> </font></b>
+            <div id="callsignDisplay">
+                <!-- <b><font size="6">&nbsp;</font></b> -->
+                <p id="callsign">Hello</p>
             </div>
-            <div class="inputWrap">
+            <div id="AltitudeInput">
                 <div class="tagArea">
-                    Altitude<br>
+                    Altitude
                 </div>
                 <div class="inputArea">
                     <input type="number" id="altitude" placeholder="0"> 
                 </div>
             </div>
-            <div>
+            <div id="SpeedInput">
                 <div class="tagArea">
-                    Speed<br>
+                    Speed
                 </div>
                 <div class="inputArea">
                     <input type="number" id="speed" placeholder="0"> 
                 </div>
             </div>
-            <div>
+            <div id="HeadingInput">
                 <div class="tagArea">
-                    Heading<br>
+                    Heading
                 </div>
                 <div class="inputArea">
                     <input type="number" id="heading" placeholder="0">
                 </div>
             </div>
             <input type="button" value="Confirm" id="confirmButton">
-            <input type="button" value="Send" id="sendButton">
+            <!-- <input type="button" value="Send" id="sendButton"> -->
         </div>
     </div>
   
