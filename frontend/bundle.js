@@ -61,6 +61,7 @@
     "KKJ",
     "YGJ"
   ];
+  var updateRange = 50;
   var Airplane = class {
     callsign;
     altitude;
@@ -137,23 +138,26 @@
     }
     // 航空機の表示を操作するための関数↓↓↓↓↓↓↓↓↓↓
     updateLocation() {
-      const speedComponents = this.calculateSpeedComponents(
-        this.speed,
-        this.heading
-      );
-      this.location.positionX += speedComponents.x / 1e3;
-      this.location.positionY += speedComponents.y / 1e3;
-      this.labelLocation.x += speedComponents.x / 1e3;
-      this.labelLocation.y += speedComponents.y / 1e3;
+      const speedComponents = this.calculateSpeedComponents(this.speed, this.heading);
+      this.location.positionX += speedComponents.xSpeed;
+      this.location.positionY += speedComponents.ySpeed;
+      this.labelLocation.x += speedComponents.xSpeed;
+      this.labelLocation.y += speedComponents.ySpeed;
     }
+    /**
+     * スピードとヘディングから現在のx方向のスピードとy方向のスピードを計算して返します。
+      * @param {number} speed - 速度
+      * @param {number} heading - 方位（0から36の範囲）
+      * @returns {SpeedVector} - 速度のX成分とY成分を含むオブジェクト
+     */
     calculateSpeedComponents(speed, heading) {
       if (heading < 0 || heading > 36) {
         throw new Error("Invalid heading. Heading should be between 0 and 36.");
       }
       const radians = heading * 10 * Math.PI / 180;
-      const xSpeed = Math.sin(radians) * speed;
-      const ySpeed = -Math.cos(radians) * speed;
-      return { x: xSpeed, y: ySpeed };
+      const xSpeed = Math.sin(radians) * speed / updateRange;
+      const ySpeed = -Math.cos(radians) * speed / updateRange;
+      return new SpeedVector(xSpeed, ySpeed);
     }
     currentPosition() {
       const currentX = this.location.positionX;
@@ -199,6 +203,12 @@
         newSpeed: String(newSpeed),
         newHeading: String(newHeading)
       };
+    }
+  };
+  var SpeedVector = class {
+    constructor(xSpeed, ySpeed) {
+      this.xSpeed = xSpeed;
+      this.ySpeed = ySpeed;
     }
   };
 
@@ -293,11 +303,20 @@
       const airplaneInfo = airplane.getAirplaneInfo();
       const labelX = airplaneInfo.labelX;
       const labelY = airplaneInfo.labelY;
+      const speed = Number(airplaneInfo.speed);
+      const heading = Number(airplaneInfo.heading);
       const radius = 5;
       this.ctx[index].beginPath();
       this.ctx[index].arc(position.currentX, position.currentY, radius, 0, 2 * Math.PI);
       this.ctx[index].fillStyle = "white";
       this.ctx[index].fill();
+      this.ctx[index].beginPath();
+      this.ctx[index].moveTo(position.currentX, position.currentY);
+      const radianHeading = -heading / 18 * Math.PI;
+      const currentSpeed = airplane.calculateSpeedComponents(speed, heading);
+      this.ctx[index].lineTo(position.currentX + currentSpeed.xSpeed * REFRESH_RATE * 60, position.currentY + currentSpeed.ySpeed * REFRESH_RATE * 60);
+      this.ctx[index].strokeStyle = "white";
+      this.ctx[index].stroke();
       this.ctx[index].beginPath();
       this.ctx[index].moveTo(
         (position.currentX * 8 + labelX * 2) / 10,
@@ -336,31 +355,6 @@
       }
       console.log(this.selectedAircraft);
     }
-    send_to_server() {
-      const dataToSend = { key: "value" };
-      fetch("http://localhost:8080", {
-        method: "POST",
-        // 送信方法（POSTなど）
-        headers: {
-          "Content-Type": "application/json",
-          // 送信するデータの種類
-          // サーバー側にCORSリクエストを送るためのヘッダーを追加
-          "Access-Control-Allow-Origin": "*"
-          // サーバーの設定によって適切な値に変更
-        },
-        body: JSON.stringify(dataToSend)
-        // 送信するデータをJSON文字列に変換
-      }).then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok.");
-        }
-        return response.json();
-      }).then((data) => {
-        console.log("Server response:", data);
-      }).catch((error) => {
-        console.error("There was a problem with the fetch operation:", error);
-      });
-    }
     update() {
       this.clearCanvas(this.bg);
       for (let i = 0; i < this.controlledAirplane.length; i++) {
@@ -382,21 +376,4 @@
   };
   var radarGame = new RadarGame();
   radarGame.start();
-  var socket = null;
-  function connectToServer() {
-    socket = new WebSocket("ws://localhost:8080/ws");
-    socket.addEventListener("open", (event) => {
-      console.log("Connected to server");
-    });
-    socket.addEventListener("message", (event) => {
-      console.log("Received message from server:", event.data);
-    });
-    socket.addEventListener("error", (event) => {
-      console.error("Error with WebSocket connection:", event);
-    });
-    socket.addEventListener("close", (event) => {
-      console.log("Connection closed");
-    });
-  }
-  connectToServer();
 })();

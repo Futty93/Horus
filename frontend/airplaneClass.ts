@@ -1,4 +1,5 @@
-const airlines: string[] = ["ANA", "JAL", "APJ", "IBX", "SFJ", "SKY"];
+const airlines: string[] = ["ANA", "JAL", "APJ", "IBX", "SFJ", "SKY", "FDA", "ADO", "SNJ", "AHX"];
+const CALLSIGN: string[] = ["all nippon", "japan air", "air peach", "ibex", "star flyer", "sky mark", "fuji dream", "air do", "new sky", "amakusa air"] 
 const destAirport: string[] = [
   "HND",
   "NRT",
@@ -59,6 +60,8 @@ const destAirport: string[] = [
   "KKJ",
   "YGJ",
 ];
+
+const updateRange = 50;
 
 /**
  * 航空機の情報の保持、更新に関するクラス
@@ -184,20 +187,24 @@ export class Airplane {
 
   // 航空機の表示を操作するための関数↓↓↓↓↓↓↓↓↓↓
   updateLocation(): void {
-    const speedComponents = this.calculateSpeedComponents(
-      this.speed,
-      this.heading,
-    );
-    this.location.positionX += speedComponents.x / 1000;
-    this.location.positionY += speedComponents.y / 1000;
-    this.labelLocation.x += speedComponents.x / 1000;
-    this.labelLocation.y += speedComponents.y / 1000;
+    const speedComponents = this.calculateSpeedComponents(this.speed, this.heading);
+
+    this.location.positionX += speedComponents.xSpeed;
+    this.location.positionY += speedComponents.ySpeed;
+    this.labelLocation.x += speedComponents.xSpeed;
+    this.labelLocation.y += speedComponents.ySpeed;
   }
 
-  private calculateSpeedComponents(
+  /**
+   * スピードとヘディングから現在のx方向のスピードとy方向のスピードを計算して返します。
+    * @param {number} speed - 速度
+    * @param {number} heading - 方位（0から36の範囲）
+    * @returns {SpeedVector} - 速度のX成分とY成分を含むオブジェクト
+   */
+  calculateSpeedComponents(
     speed: number,
     heading: number,
-  ): { x: number; y: number } {
+  ): SpeedVector {
     if (heading < 0 || heading > 36) {
       throw new Error("Invalid heading. Heading should be between 0 and 36.");
     }
@@ -206,10 +213,10 @@ export class Airplane {
     const radians = (heading * 10 * Math.PI) / 180;
 
     // Calculate the x and y components of the speed
-    const xSpeed = Math.sin(radians) * speed;
-    const ySpeed = -Math.cos(radians) * speed;
+    const xSpeed = Math.sin(radians) * speed / updateRange;
+    const ySpeed = -Math.cos(radians) * speed / updateRange;
 
-    return { x: xSpeed, y: ySpeed };
+    return new SpeedVector(xSpeed, ySpeed);
   }
 
   currentPosition(): { currentX: number; currentY: number } {
@@ -285,4 +292,8 @@ export class Airplane {
       newHeading: String(newHeading),
     };
   }
+}
+
+class SpeedVector {
+  constructor(public xSpeed: number, public ySpeed: number) {}
 }

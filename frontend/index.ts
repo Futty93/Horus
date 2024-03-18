@@ -118,8 +118,10 @@ class RadarGame {
   private drawRect(index: number, airplane: Airplane): void {
     const position = airplane.currentPosition();
     const airplaneInfo = airplane.getAirplaneInfo();
-    const labelX = airplaneInfo.labelX;
-    const labelY = airplaneInfo.labelY;
+    const labelX: number = airplaneInfo.labelX;
+    const labelY: number = airplaneInfo.labelY;
+    const speed: number = Number(airplaneInfo.speed);
+    const heading: number = Number(airplaneInfo.heading);
     const radius: number = 5; //航空機のノードの半径
 
     //航空機のポジションに描画する
@@ -127,6 +129,15 @@ class RadarGame {
     this.ctx[index].arc(position.currentX, position.currentY, radius, 0, 2 * Math.PI); //原点を中心に、半径 radius の円弧を描画する
     this.ctx[index].fillStyle = "white";
     this.ctx[index].fill();
+
+    // 進行方向に速度に応じた長さの線を表示
+    this.ctx[index].beginPath();
+    this.ctx[index].moveTo(position.currentX, position.currentY); // 航空機の中心から始める
+    const radianHeading: number = (-heading / 18) * Math.PI //headingをラジアンに直す　headingは時計回り、ラジアンは反時計回りなのでマイナス
+    const currentSpeed = airplane.calculateSpeedComponents(speed, heading);
+    this.ctx[index].lineTo(position.currentX + (currentSpeed.xSpeed * REFRESH_RATE * 60), position.currentY + (currentSpeed.ySpeed * REFRESH_RATE * 60)); // 航空機のheading側にspeedに応じた長さの線
+    this.ctx[index].strokeStyle = "white";
+    this.ctx[index].stroke();
 
     // ラベルと航空機を線で結ぶ
     this.ctx[index].beginPath();
@@ -181,36 +192,6 @@ class RadarGame {
     console.log(this.selectedAircraft);
   }
 
-  private send_to_server(): void {
-    // データを準備（例: JSONデータ）
-    const dataToSend = { key: 'value' };
-
-    // fetchを使ってサーバーにデータを送信
-    fetch('http://localhost:8080', {
-        method: 'POST', // 送信方法（POSTなど）
-        headers: {
-            'Content-Type': 'application/json', // 送信するデータの種類
-            // サーバー側にCORSリクエストを送るためのヘッダーを追加
-            'Access-Control-Allow-Origin': '*', // サーバーの設定によって適切な値に変更
-        },
-        body: JSON.stringify(dataToSend), // 送信するデータをJSON文字列に変換
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok.');
-        }
-        return response.json(); // サーバーからのレスポンスをJSONとして処理
-    })
-    .then(data => {
-        console.log('Server response:', data); // サーバーからのレスポンスをログに出力
-        // ここでサーバーからのレスポンスを適切に処理する（UIに反映するなど）
-    })
-    .catch(error => {
-        console.error('There was a problem with the fetch operation:', error); // エラーをログに出力
-        // エラー処理を行う（例: エラーメッセージをユーザーに表示するなど）
-    });
-  }
-
   private update(): void {
     //画面全体を更新する
     this.clearCanvas(this.bg);
@@ -236,48 +217,3 @@ class RadarGame {
 // Initialize and start the game
 const radarGame = new RadarGame();
 radarGame.start();
-
-
-let socket: WebSocket | null = null;
-
-function connectToServer() {
-  // サーバーにWebSocket接続を確立
-  socket = new WebSocket('ws://localhost:8080/ws');
-
-  // 接続が確立されたときの処理
-  socket.addEventListener('open', (event) => {
-      console.log('Connected to server');
-  });
-
-  // メッセージを受信したときの処理
-  socket.addEventListener('message', (event) => {
-      console.log('Received message from server:', event.data);
-      // サーバーからのメッセージを適切に処理する（UIに反映するなど）
-  });
-
-  // エラーが発生したときの処理
-  socket.addEventListener('error', (event) => {
-      console.error('Error with WebSocket connection:', event);
-      // エラー処理を行う（例: エラーメッセージをユーザーに表示するなど）
-  });
-
-  // 接続が閉じられたときの処理
-  socket.addEventListener('close', (event) => {
-      console.log('Connection closed');
-  });
-}
-
-function sendToServer() {
-  if (socket && socket.readyState === WebSocket.OPEN) {
-      const dataToSend = { key: 'value' };
-      // サーバーにデータを送信
-      socket.send(JSON.stringify(dataToSend));
-      console.log("send!")
-  } else {
-      console.error('WebSocket connection is not open');
-      // WebSocket接続が開かれていない場合のエラー処理
-  }
-}
-
-// サーバーに接続
-connectToServer();
