@@ -1,6 +1,6 @@
 (() => {
-  // frontend/airplaneClass.ts
-  var airlines = ["ANA", "JAL", "APJ", "IBX", "SFJ", "SKY"];
+  // frontend/scripts/airplaneClass.ts
+  var airlines = ["ANA", "JAL", "APJ", "IBX", "SFJ", "SKY", "FDA", "ADO", "SNJ", "AHX"];
   var destAirport = [
     "HND",
     "NRT",
@@ -85,8 +85,8 @@
       this.destination = this.isCallsignValid(destination) ? destination : this.getRandomDestination();
       this.labelLocation = {
         //デフォルトでは右上に表示
-        x: this.location.positionX + 50,
-        y: this.location.positionY - 50
+        x: 50,
+        y: 50
       };
     }
     /**
@@ -141,8 +141,6 @@
       const speedComponents = this.calculateSpeedComponents(this.speed, this.heading);
       this.location.positionX += speedComponents.xSpeed;
       this.location.positionY += speedComponents.ySpeed;
-      this.labelLocation.x += speedComponents.xSpeed;
-      this.labelLocation.y += speedComponents.ySpeed;
     }
     /**
      * スピードとヘディングから現在のx方向のスピードとy方向のスピードを計算して返します。
@@ -212,7 +210,7 @@
     }
   };
 
-  // frontend/index.ts
+  // frontend/scripts/index.ts
   var CANVAS_WIDTH = 1e3;
   var CANVAS_HEIGHT = 1e3;
   var REFRESH_RATE = 0.1;
@@ -245,11 +243,15 @@
       this.inputAltitude = document.getElementById("altitude");
       this.inputSpeed = document.getElementById("speed");
       this.inputHeading = document.getElementById("heading");
-      this.confirmButton = document.getElementById("confirmButton");
+      this.confirmButton = document.getElementById(
+        "confirmButton"
+      );
       this.inGame = false;
       this.bg = 0;
-      this.canvas[0].addEventListener("click", (e) => this.handleClick(e));
-      this.canvas[1].addEventListener("click", (e) => this.handleClick(e));
+      this.canvas[0].addEventListener("click", (e) => this.onMouseDown(e));
+      this.canvas[1].addEventListener("click", (e) => this.onMouseDown(e));
+      this.canvas[0].addEventListener("click", (e) => this.onMouseMove(e));
+      this.canvas[1].addEventListener("click", (e) => this.onMouseMove(e));
       this.confirmButton.addEventListener("click", () => this.send_command());
       for (let i = 1; i <= 10; i++) {
         const airplane = new Airplane();
@@ -270,61 +272,120 @@
     updatePosition(airplane) {
       airplane.updateLocation();
     }
-    handleClick(event) {
+    /**
+     * Gets a mouse click event and returns the aircraft closest to the clicked location.
+     * @param MouseEvent - get mouse click event
+     * @return - None
+     */
+    onMouseDown(event) {
       const canvas = event.target;
       const rect = canvas.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
       this.clickedPosition = { x, y };
+      const aircraftRadius = 30;
       for (const airplane of this.controlledAirplane) {
         const position = airplane.currentPosition();
-        const aircraftRadius = 50;
+        const airplaneInfo = airplane.getAirplaneInfo();
+        const labelX = airplane.currentPosition().currentX + airplaneInfo.labelX;
+        const labelY = airplane.currentPosition().currentY - airplaneInfo.labelY;
         if (x >= position.currentX - aircraftRadius && x <= position.currentX + aircraftRadius && y >= position.currentY - aircraftRadius && y <= position.currentY + aircraftRadius) {
-          const airplaneInfo = airplane.getAirplaneInfo();
           this.changeDisplayCallsign(airplaneInfo.callsign);
           this.inputAltitude.value = airplaneInfo.commandedAltitude;
           this.inputSpeed.value = airplaneInfo.commandedSpeed;
           this.inputHeading.value = airplaneInfo.commandedHeading;
           this.selectedAircraft = airplane;
+          console.log("clicked Airplane!");
           break;
+        } else if (x >= labelX - 50 && //position.currentX - aircraftRadius &&
+        x <= labelX + 50 && y >= labelY - 40 && y <= labelY + 40) {
+          console.log("Label clicked!");
+          console.log(airplaneInfo.callsign);
         }
       }
     }
-    //表示しているコールサインを変更する
+    onMouseMove(event) {
+      const canvas = event.target;
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      console.log(x, y);
+    }
+    onMouseUp() {
+    }
     changeDisplayCallsign(newCallsign) {
-      const fontElement = document.getElementById("callsign");
+      const fontElement = document.getElementById(
+        "callsign"
+      );
       if (fontElement) {
         fontElement.textContent = newCallsign;
       }
     }
-    //航空機およびデータラベルの表示
-    drawRect(index, airplane) {
+    /**
+     * Draw the airplane representation on the canvas.
+     * @param index - Index of the airplane in the list.
+     * @param airplane - Instance of the Airplane class.
+     */
+    drawAirplane(index, airplane) {
       const position = airplane.currentPosition();
-      const airplaneInfo = airplane.getAirplaneInfo();
-      const labelX = airplaneInfo.labelX;
-      const labelY = airplaneInfo.labelY;
-      const speed = Number(airplaneInfo.speed);
-      const heading = Number(airplaneInfo.heading);
       const radius = 5;
       this.ctx[index].beginPath();
-      this.ctx[index].arc(position.currentX, position.currentY, radius, 0, 2 * Math.PI);
+      this.ctx[index].arc(
+        position.currentX,
+        position.currentY,
+        radius,
+        0,
+        2 * Math.PI
+      );
       this.ctx[index].fillStyle = "white";
       this.ctx[index].fill();
+    }
+    /**
+     * Draw the heading line representing airplane movement direction.
+     * @param index - Index of the airplane in the list.
+     * @param airplane - Instance of the Airplane class.
+     */
+    drawHeadingLine(index, airplane) {
+      const position = airplane.currentPosition();
+      const airplaneInfo = airplane.getAirplaneInfo();
+      const speed = Number(airplaneInfo.speed);
+      const heading = Number(airplaneInfo.heading);
       this.ctx[index].beginPath();
       this.ctx[index].moveTo(position.currentX, position.currentY);
-      const radianHeading = -heading / 18 * Math.PI;
       const currentSpeed = airplane.calculateSpeedComponents(speed, heading);
-      this.ctx[index].lineTo(position.currentX + currentSpeed.xSpeed * REFRESH_RATE * 60, position.currentY + currentSpeed.ySpeed * REFRESH_RATE * 60);
+      this.ctx[index].lineTo(
+        position.currentX + currentSpeed.xSpeed * REFRESH_RATE * 60,
+        position.currentY + currentSpeed.ySpeed * REFRESH_RATE * 60
+      );
       this.ctx[index].strokeStyle = "white";
       this.ctx[index].stroke();
+    }
+    /**
+     * Draw the line connecting airplane to its label position.
+     * @param index - Index of the airplane in the list.
+     * @param airplane - Instance of the Airplane class.
+     */
+    drawLabelLine(index, airplane) {
+      const position = airplane.currentPosition();
+      const airplaneInfo = airplane.getAirplaneInfo();
+      const labelX = airplane.currentPosition().currentX + airplaneInfo.labelX;
+      const labelY = airplane.currentPosition().currentY - airplaneInfo.labelY;
       this.ctx[index].beginPath();
-      this.ctx[index].moveTo(
-        (position.currentX * 8 + labelX * 2) / 10,
-        (position.currentY * 8 + labelY * 2) / 10
-      );
+      this.ctx[index].moveTo(position.currentX + 10, position.currentY - 10);
       this.ctx[index].lineTo(labelX - 5, labelY + 15);
       this.ctx[index].strokeStyle = "white";
       this.ctx[index].stroke();
+    }
+    /**
+     * Draw the label containing airplane information.
+     * @param index - Index of the airplane in the list.
+     * @param airplane - Instance of the Airplane class.
+     */
+    drawLabel(index, airplane) {
+      const airplaneInfo = airplane.getAirplaneInfo();
+      const airplanePosition = airplane.currentPosition();
+      const labelX = airplanePosition.currentX + airplaneInfo.labelX;
+      const labelY = airplanePosition.currentY - airplaneInfo.labelY;
       this.ctx[index].fillStyle = "white";
       this.ctx[index].font = "12px Arial";
       this.ctx[index].textAlign = "left";
@@ -336,6 +397,17 @@
         labelX + 40,
         labelY + 30
       );
+    }
+    /**
+     * Draw the airplane details on the canvas.
+     * @param index - Index of the airplane in the list.
+     * @param airplane - Instance of the Airplane class.
+     */
+    drawAirplaneDetails(index, airplane) {
+      this.drawAirplane(index, airplane);
+      this.drawHeadingLine(index, airplane);
+      this.drawLabelLine(index, airplane);
+      this.drawLabel(index, airplane);
     }
     toggleCanvasDisplay() {
       this.canvas[1 - this.bg].style.display = "none";
@@ -359,7 +431,7 @@
       this.clearCanvas(this.bg);
       for (let i = 0; i < this.controlledAirplane.length; i++) {
         this.updatePosition(this.controlledAirplane[i]);
-        this.drawRect(this.bg, this.controlledAirplane[i]);
+        this.drawAirplaneDetails(this.bg, this.controlledAirplane[i]);
       }
       this.toggleCanvasDisplay();
     }

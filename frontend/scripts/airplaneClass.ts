@@ -74,7 +74,7 @@ const updateRange = 50;
  * @param {number} speed 速度を保持する変数。初期値を与えなかったまたは不正な値だった場合、ランダムな速度を生成
  * @param {number} commandedSpeed 指示された速度を保持する変数。初期値はspeedと同じ
  * @param {string} destination 目的地となる空港の3レターを保持する変数。初期値を与えなかった場合ランダムな目的地を生成
- * @param labelLocation ラベルを表示する位置を保持する変数。初期値では航空機の右上50px
+ * @param labelLocation ラベルを表示する位置を保持する変数。初期値では航空機の右上50px。航空機の表示位置からの相対座標。
  */
 
 export class Airplane {
@@ -116,8 +116,8 @@ export class Airplane {
       : this.getRandomDestination();
     this.labelLocation = {
       //デフォルトでは右上に表示
-      x: this.location.positionX + 50,
-      y: this.location.positionY - 50,
+      x: 50,
+      y: 50,
     };
   }
 
@@ -191,8 +191,6 @@ export class Airplane {
 
     this.location.positionX += speedComponents.xSpeed;
     this.location.positionY += speedComponents.ySpeed;
-    this.labelLocation.x += speedComponents.xSpeed;
-    this.labelLocation.y += speedComponents.ySpeed;
   }
 
   /**

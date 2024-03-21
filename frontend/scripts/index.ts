@@ -4,7 +4,6 @@ const CANVAS_HEIGHT: number = 1000;
 const REFRESH_RATE: number = 0.1; //画面の更新頻度(fps)
 
 import { Airplane } from "./airplaneClass.ts";
-
 // Define a class to encapsulate the game
 class RadarGame {
   private canvas: HTMLCanvasElement[]; //ダブルバッファで画面を切り替えてアニメーションを実現するために配列で定義
@@ -33,12 +32,16 @@ class RadarGame {
     this.inputAltitude = <HTMLInputElement> document.getElementById("altitude");
     this.inputSpeed = <HTMLInputElement> document.getElementById("speed");
     this.inputHeading = <HTMLInputElement> document.getElementById("heading");
-    this.confirmButton = <HTMLInputElement> document.getElementById("confirmButton");
+    this.confirmButton = <HTMLInputElement> document.getElementById(
+      "confirmButton",
+    );
     // this.sendButton = <HTMLInputElement> document.getElementById("sendButton");
     this.inGame = false;
     this.bg = 0;
-    this.canvas[0].addEventListener("click", (e) => this.handleClick(e));
-    this.canvas[1].addEventListener("click", (e) => this.handleClick(e));
+    this.canvas[0].addEventListener("click", (e) => this.onMouseDown(e));
+    this.canvas[1].addEventListener("click", (e) => this.onMouseDown(e));
+    this.canvas[0].addEventListener("click", (e) => this.onMouseMove(e));
+    this.canvas[1].addEventListener("click", (e) => this.onMouseMove(e));
     this.confirmButton.addEventListener("click", () => this.send_command());
     // this.sendButton.addEventListener("click", () => sendToServer());
 
@@ -69,7 +72,12 @@ class RadarGame {
     airplane.updateLocation();
   }
 
-  private handleClick(event: MouseEvent): void {
+  /**
+   * Gets a mouse click event and returns the aircraft closest to the clicked location.
+   * @param MouseEvent - get mouse click event
+   * @return - None
+   */
+  private onMouseDown(event: MouseEvent): void {
     // Get the clicked position relative to the canvas
     const canvas = event.target as HTMLCanvasElement;
     const rect = canvas.getBoundingClientRect();
@@ -79,10 +87,16 @@ class RadarGame {
     // Store the clicked position
     this.clickedPosition = { x, y };
 
+    const aircraftRadius = 30; // Adjust the radius as needed
+
     // Iterate through the aircraft to check if they are near the clicked position
     for (const airplane of this.controlledAirplane) {
       const position = airplane.currentPosition();
-      const aircraftRadius = 50; // Adjust the radius as needed
+      const airplaneInfo = airplane.getAirplaneInfo();
+      const labelX: number = airplane.currentPosition().currentX +
+        airplaneInfo.labelX;
+      const labelY: number = airplane.currentPosition().currentY -
+        airplaneInfo.labelY;
 
       // Check if the clicked position is near the aircraft's position
       if (
@@ -92,81 +106,158 @@ class RadarGame {
         y <= position.currentY + aircraftRadius
       ) {
         // Log the aircraft information to the console
-        const airplaneInfo = airplane.getAirplaneInfo();
         this.changeDisplayCallsign(airplaneInfo.callsign);
         this.inputAltitude.value = airplaneInfo.commandedAltitude;
         this.inputSpeed.value = airplaneInfo.commandedSpeed;
         this.inputHeading.value = airplaneInfo.commandedHeading;
         //選ばれている航空機を保持する
         this.selectedAircraft = airplane;
+        console.log("clicked Airplane!");
 
         break;
+      } else if (
+        x >= labelX - 50 && //position.currentX - aircraftRadius &&
+        x <= labelX + 50 &&
+        y >= labelY - 40 &&
+        y <= labelY + 40
+      ) {
+        console.log("Label clicked!");
+        console.log(airplaneInfo.callsign);
       }
     }
   }
 
-  //表示しているコールサインを変更する
+  private onMouseMove(event: MouseEvent): void {
+    const canvas = event.target as HTMLCanvasElement;
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    console.log(x, y)
+  }
+
+  private onMouseUp(): void {
+    // this.draggingLabelIndex = -1; // Reset dragging label index
+  }
+
   private changeDisplayCallsign(newCallsign: string): void {
-    const fontElement = <HTMLParagraphElement>document.getElementById("callsign");
+    /**
+     * change displaying callsign
+     * @param newCallsign - New call sign to change
+     */
+    const fontElement = <HTMLParagraphElement> document.getElementById(
+      "callsign",
+    );
     if (fontElement) {
       fontElement.textContent = newCallsign;
     }
   }
-  
 
-  //航空機およびデータラベルの表示
-  private drawRect(index: number, airplane: Airplane): void {
+  /**
+   * Draw the airplane representation on the canvas.
+   * @param index - Index of the airplane in the list.
+   * @param airplane - Instance of the Airplane class.
+   */
+  private drawAirplane(index: number, airplane: Airplane): void {
     const position = airplane.currentPosition();
-    const airplaneInfo = airplane.getAirplaneInfo();
-    const labelX: number = airplaneInfo.labelX;
-    const labelY: number = airplaneInfo.labelY;
-    const speed: number = Number(airplaneInfo.speed);
-    const heading: number = Number(airplaneInfo.heading);
-    const radius: number = 5; //航空機のノードの半径
+    const radius: number = 5;
 
-    //航空機のポジションに描画する
+    // Draw airplane as a filled white circle
     this.ctx[index].beginPath();
-    this.ctx[index].arc(position.currentX, position.currentY, radius, 0, 2 * Math.PI); //原点を中心に、半径 radius の円弧を描画する
+    this.ctx[index].arc(
+      position.currentX,
+      position.currentY,
+      radius,
+      0,
+      2 * Math.PI,
+    );
     this.ctx[index].fillStyle = "white";
     this.ctx[index].fill();
+  }
 
-    // 進行方向に速度に応じた長さの線を表示
+  /**
+   * Draw the heading line representing airplane movement direction.
+   * @param index - Index of the airplane in the list.
+   * @param airplane - Instance of the Airplane class.
+   */
+  private drawHeadingLine(index: number, airplane: Airplane): void {
+    const position = airplane.currentPosition();
+    const airplaneInfo = airplane.getAirplaneInfo();
+    const speed: number = Number(airplaneInfo.speed);
+    const heading: number = Number(airplaneInfo.heading);
+
+    // Draw a line indicating the direction of airplane movement
     this.ctx[index].beginPath();
-    this.ctx[index].moveTo(position.currentX, position.currentY); // 航空機の中心から始める
-    const radianHeading: number = (-heading / 18) * Math.PI //headingをラジアンに直す　headingは時計回り、ラジアンは反時計回りなのでマイナス
+    this.ctx[index].moveTo(position.currentX, position.currentY);
+
     const currentSpeed = airplane.calculateSpeedComponents(speed, heading);
-    this.ctx[index].lineTo(position.currentX + (currentSpeed.xSpeed * REFRESH_RATE * 60), position.currentY + (currentSpeed.ySpeed * REFRESH_RATE * 60)); // 航空機のheading側にspeedに応じた長さの線
+    this.ctx[index].lineTo(
+      position.currentX + (currentSpeed.xSpeed * REFRESH_RATE * 60),
+      position.currentY + (currentSpeed.ySpeed * REFRESH_RATE * 60),
+    );
+
     this.ctx[index].strokeStyle = "white";
     this.ctx[index].stroke();
+  }
 
-    // ラベルと航空機を線で結ぶ
+  /**
+   * Draw the line connecting airplane to its label position.
+   * @param index - Index of the airplane in the list.
+   * @param airplane - Instance of the Airplane class.
+   */
+  private drawLabelLine(index: number, airplane: Airplane): void {
+    const position = airplane.currentPosition();
+    const airplaneInfo = airplane.getAirplaneInfo();
+    const labelX: number = airplane.currentPosition().currentX +
+      airplaneInfo.labelX;
+    const labelY: number = airplane.currentPosition().currentY -
+      airplaneInfo.labelY;
+
+    // Draw a line connecting airplane to its label
     this.ctx[index].beginPath();
-    this.ctx[index].moveTo(
-      (position.currentX * 8 + labelX * 2) / 10,
-      (position.currentY * 8 + labelY * 2) / 10,
-    ); // 航空機から少し離れたところから始める
-    this.ctx[index].lineTo(labelX - 5, labelY + 15); // 高度のあたりに終点が来るようにする
+    this.ctx[index].moveTo(position.currentX + 10, position.currentY - 10);
+    this.ctx[index].lineTo(labelX - 5, labelY + 15);
     this.ctx[index].strokeStyle = "white";
     this.ctx[index].stroke();
+  }
 
-    // Display aircraft information at labelLocation
+  /**
+   * Draw the label containing airplane information.
+   * @param index - Index of the airplane in the list.
+   * @param airplane - Instance of the Airplane class.
+   */
+  private drawLabel(index: number, airplane: Airplane): void {
+    const airplaneInfo = airplane.getAirplaneInfo();
+    const airplanePosition = airplane.currentPosition();
+    const labelX: number = airplanePosition.currentX + airplaneInfo.labelX;
+    const labelY: number = airplanePosition.currentY - airplaneInfo.labelY;
+
+    // Draw labels with airplane information
     this.ctx[index].fillStyle = "white";
     this.ctx[index].font = "12px Arial";
     this.ctx[index].textAlign = "left";
 
-    // Display callsign on the first line
     this.ctx[index].fillText(airplaneInfo.callsign, labelX, labelY);
-
-    // Display altitude on the second line
     this.ctx[index].fillText(airplaneInfo.altitude, labelX, labelY + 15);
-
-    // Display heading and speed on the third line
     this.ctx[index].fillText(airplaneInfo.speed, labelX, labelY + 30);
     this.ctx[index].fillText(
       airplaneInfo.destination,
       labelX + 40,
       labelY + 30,
     );
+  }
+
+  /**
+   * Draw the airplane details on the canvas.
+   * @param index - Index of the airplane in the list.
+   * @param airplane - Instance of the Airplane class.
+   */
+  public drawAirplaneDetails(index: number, airplane: Airplane): void {
+    // Draw airplane representation, heading line, label line, and label
+    this.drawAirplane(index, airplane);
+    this.drawHeadingLine(index, airplane);
+    this.drawLabelLine(index, airplane);
+    this.drawLabel(index, airplane);
   }
 
   private toggleCanvasDisplay(): void {
@@ -178,16 +269,17 @@ class RadarGame {
 
   private send_command(): void {
     if (this.selectedAircraft) {
-        const { newAltitude, newSpeed, newHeading } = this.selectedAircraft.changeCommandedInfo(
-            Number(this.inputAltitude.value),
-            Number(this.inputSpeed.value),
-            Number(this.inputHeading.value)
-          );
-      
-          // Now you have the extracted values in newAltitude, newSpeed, and newHeading
-          this.inputAltitude.value = newAltitude;
-          this.inputSpeed.value = newSpeed;
-          this.inputHeading.value = newHeading;
+      const { newAltitude, newSpeed, newHeading } = this.selectedAircraft
+        .changeCommandedInfo(
+          Number(this.inputAltitude.value),
+          Number(this.inputSpeed.value),
+          Number(this.inputHeading.value),
+        );
+
+      // Now you have the extracted values in newAltitude, newSpeed, and newHeading
+      this.inputAltitude.value = newAltitude;
+      this.inputSpeed.value = newSpeed;
+      this.inputHeading.value = newHeading;
     }
     console.log(this.selectedAircraft);
   }
@@ -197,7 +289,7 @@ class RadarGame {
     this.clearCanvas(this.bg);
     for (let i = 0; i < this.controlledAirplane.length; i++) {
       this.updatePosition(this.controlledAirplane[i]);
-      this.drawRect(this.bg, this.controlledAirplane[i]);
+      this.drawAirplaneDetails(this.bg, this.controlledAirplane[i]);
     }
     this.toggleCanvasDisplay();
   }
