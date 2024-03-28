@@ -222,27 +222,29 @@ class RadarGame {
   private drawLabelLine(index: number, airplane: Airplane): void {
     const position = airplane.currentPosition();
     const airplaneInfo = airplane.getAirplaneInfo();
-    const labelX: number = airplane.currentPosition().currentX +
-      airplaneInfo.labelLocation.x;
-    const labelY: number = airplane.currentPosition().currentY -
-      airplaneInfo.labelLocation.y;
+    const labelX: number = position.currentX + airplaneInfo.labelLocation.x;
+    const labelY: number = position.currentY - airplaneInfo.labelLocation.y;
+    const labelDistance = Math.sqrt(Math.pow(airplaneInfo.labelLocation.x, 2) + Math.pow(airplaneInfo.labelLocation.y, 2));
+    const sin = airplaneInfo.labelLocation.y / labelDistance;
+    const cos = airplaneInfo.labelLocation.x / labelDistance;
 
     // Draw a line connecting airplane to its label
     this.ctx[index].beginPath();
-    this.ctx[index].moveTo(position.currentX + 10, position.currentY - 10);
+    this.ctx[index].moveTo(position.currentX + (10 * cos), position.currentY - (10 * sin));
     this.ctx[index].lineTo(labelX - 5, labelY + 15);
     this.ctx[index].strokeStyle = "white";
     this.ctx[index].stroke();
 
-    this.ctx[index].beginPath();
-    this.ctx[index].strokeStyle = "white";
-    this.ctx[index].lineWidth = 2;
-    this.ctx[index].moveTo(labelX-5, labelY-20); // Move to the starting point
-    this.ctx[index].lineTo(labelX + 70, labelY-20); // Draw top line
-    this.ctx[index].lineTo(labelX + 70, labelY + 40); // Draw right line
-    this.ctx[index].lineTo(labelX-5, labelY + 40); // Draw bottom line
-    this.ctx[index].lineTo(labelX-5, labelY-20); // Draw left line to close the rectangle
-    this.ctx[index].stroke(); // Stroke the path
+    //ラベルの周りを線で囲いたいとき↓↓
+    // this.ctx[index].beginPath();
+    // this.ctx[index].strokeStyle = "white";
+    // this.ctx[index].lineWidth = 2;
+    // this.ctx[index].moveTo(labelX-5, labelY-20); // Move to the starting point
+    // this.ctx[index].lineTo(labelX + 70, labelY-20); // Draw top line
+    // this.ctx[index].lineTo(labelX + 70, labelY + 40); // Draw right line
+    // this.ctx[index].lineTo(labelX-5, labelY + 40); // Draw bottom line
+    // this.ctx[index].lineTo(labelX-5, labelY-20); // Draw left line to close the rectangle
+    // this.ctx[index].stroke(); // Stroke the path
   }
 
   /**

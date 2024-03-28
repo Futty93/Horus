@@ -301,15 +301,12 @@
           this.inputSpeed.value = airplaneInfo.commandedSpeed;
           this.inputHeading.value = airplaneInfo.commandedHeading;
           this.selectedAircraft = this.controlledAirplane[i];
-          console.log("clicked Airplane!");
           break;
         } else if (x >= labelX - 5 && x <= labelX + 70 && y >= labelY - 20 && y <= labelY + 40) {
           this.draggingLabelIndex = i;
           this.offsetX = x - labelX;
           this.offsetY = y - labelY;
           break;
-        } else {
-          console.log("Now Clicked!!");
         }
       }
     }
@@ -384,21 +381,15 @@
     drawLabelLine(index, airplane) {
       const position = airplane.currentPosition();
       const airplaneInfo = airplane.getAirplaneInfo();
-      const labelX = airplane.currentPosition().currentX + airplaneInfo.labelLocation.x;
-      const labelY = airplane.currentPosition().currentY - airplaneInfo.labelLocation.y;
+      const labelX = position.currentX + airplaneInfo.labelLocation.x;
+      const labelY = position.currentY - airplaneInfo.labelLocation.y;
+      const labelDistance = Math.sqrt(Math.pow(airplaneInfo.labelLocation.x, 2) + Math.pow(airplaneInfo.labelLocation.y, 2));
+      const sin = airplaneInfo.labelLocation.y / labelDistance;
+      const cos = airplaneInfo.labelLocation.x / labelDistance;
       this.ctx[index].beginPath();
-      this.ctx[index].moveTo(position.currentX + 10, position.currentY - 10);
+      this.ctx[index].moveTo(position.currentX + 10 * cos, position.currentY - 10 * sin);
       this.ctx[index].lineTo(labelX - 5, labelY + 15);
       this.ctx[index].strokeStyle = "white";
-      this.ctx[index].stroke();
-      this.ctx[index].beginPath();
-      this.ctx[index].strokeStyle = "white";
-      this.ctx[index].lineWidth = 2;
-      this.ctx[index].moveTo(labelX - 5, labelY - 20);
-      this.ctx[index].lineTo(labelX + 70, labelY - 20);
-      this.ctx[index].lineTo(labelX + 70, labelY + 40);
-      this.ctx[index].lineTo(labelX - 5, labelY + 40);
-      this.ctx[index].lineTo(labelX - 5, labelY - 20);
       this.ctx[index].stroke();
     }
     /**
