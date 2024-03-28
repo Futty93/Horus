@@ -88,6 +88,7 @@ export class Airplane {
   private commandedSpeed: number;
   private destination: string;
   private labelLocation: { x: number; y: number };
+  private draggingLabelIndex: number;
 
   constructor(
     callsign?: string,
@@ -119,6 +120,7 @@ export class Airplane {
       x: 50,
       y: 50,
     };
+    this.draggingLabelIndex = -1;
   }
 
   /**
@@ -186,11 +188,11 @@ export class Airplane {
   }
 
   // 航空機の表示を操作するための関数↓↓↓↓↓↓↓↓↓↓
-  updateLocation(): void {
+  updateLocation(refleshRate: number): void {
     const speedComponents = this.calculateSpeedComponents(this.speed, this.heading);
 
-    this.location.positionX += speedComponents.xSpeed;
-    this.location.positionY += speedComponents.ySpeed;
+    this.location.positionX += speedComponents.xSpeed / refleshRate;
+    this.location.positionY += speedComponents.ySpeed / refleshRate;
   }
 
   /**
@@ -233,8 +235,7 @@ export class Airplane {
     commandedSpeed: string;
     commandedAltitude: string;
     destination: string;
-    labelX: number;
-    labelY: number;
+    labelLocation: {x: number, y: number}
   } {
     //ラベルの表示など必要なときに航空機の情報を返す
     const callsign = this.callsign;
@@ -245,8 +246,7 @@ export class Airplane {
     const commandedSpeed = String(this.commandedSpeed);
     const commandedAltitude = String(this.commandedAltitude);
     const destination = this.destination;
-    const labelX = this.labelLocation.x;
-    const labelY = this.labelLocation.y;
+    const labelLocation = this.labelLocation;
     return {
       callsign,
       heading,
@@ -256,8 +256,7 @@ export class Airplane {
       commandedSpeed,
       commandedAltitude,
       destination,
-      labelX,
-      labelY,
+      labelLocation
     };
   }
 

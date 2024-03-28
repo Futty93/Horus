@@ -73,6 +73,7 @@
     commandedSpeed;
     destination;
     labelLocation;
+    draggingLabelIndex;
     constructor(callsign, altitude, location, heading, speed, destination) {
       this.callsign = this.isCallsignValid(callsign) ? callsign : this.getRandomCallsing();
       this.altitude = this.isAltitudeValid(altitude) ? altitude : this.getRandomAltitude();
@@ -88,6 +89,7 @@
         x: 50,
         y: 50
       };
+      this.draggingLabelIndex = -1;
     }
     /**
      * コールサインとして適切なものが入力されているかどうかを判定する関数
@@ -137,10 +139,10 @@
       return randomDestination;
     }
     // 航空機の表示を操作するための関数↓↓↓↓↓↓↓↓↓↓
-    updateLocation() {
+    updateLocation(refleshRate) {
       const speedComponents = this.calculateSpeedComponents(this.speed, this.heading);
-      this.location.positionX += speedComponents.xSpeed;
-      this.location.positionY += speedComponents.ySpeed;
+      this.location.positionX += speedComponents.xSpeed / refleshRate;
+      this.location.positionY += speedComponents.ySpeed / refleshRate;
     }
     /**
      * スピードとヘディングから現在のx方向のスピードとy方向のスピードを計算して返します。
@@ -171,8 +173,7 @@
       const commandedSpeed = String(this.commandedSpeed);
       const commandedAltitude = String(this.commandedAltitude);
       const destination = this.destination;
-      const labelX = this.labelLocation.x;
-      const labelY = this.labelLocation.y;
+      const labelLocation = this.labelLocation;
       return {
         callsign,
         heading,
@@ -182,8 +183,7 @@
         commandedSpeed,
         commandedAltitude,
         destination,
-        labelX,
-        labelY
+        labelLocation
       };
     }
     changeCommandedInfo(inputAltitude, inputSpeed, inputHeading) {
@@ -213,7 +213,7 @@
   // frontend/scripts/index.ts
   var CANVAS_WIDTH = 1e3;
   var CANVAS_HEIGHT = 1e3;
-  var REFRESH_RATE = 0.1;
+  var REFRESH_RATE = 10;
   var RadarGame = class {
     canvas;
     //ダブルバッファで画面を切り替えてアニメーションを実現するために配列で定義
@@ -231,6 +231,10 @@
     bg;
     //ダブルバッファの背景と表示を切り替えるためのインデックスを管理
     controlledAirplane = [];
+    draggingLabelIndex = -1;
+    // Index of the label being dragged
+    offsetX = 0;
+    offsetY = 0;
     selectedAircraft = null;
     //選択中の航空機を保持するための変数
     constructor() {
@@ -248,10 +252,12 @@
       );
       this.inGame = false;
       this.bg = 0;
-      this.canvas[0].addEventListener("click", (e) => this.onMouseDown(e));
-      this.canvas[1].addEventListener("click", (e) => this.onMouseDown(e));
-      this.canvas[0].addEventListener("click", (e) => this.onMouseMove(e));
-      this.canvas[1].addEventListener("click", (e) => this.onMouseMove(e));
+      this.canvas[0].addEventListener("mousedown", (e) => this.onMouseDown(e));
+      this.canvas[1].addEventListener("mousedown", (e) => this.onMouseDown(e));
+      this.canvas[0].addEventListener("mousemove", (e) => this.onMouseMove(e));
+      this.canvas[1].addEventListener("mousemove", (e) => this.onMouseMove(e));
+      this.canvas[0].addEventListener("mouseup", () => this.onMouseUp());
+      this.canvas[1].addEventListener("mouseup", () => this.onMouseUp());
       this.confirmButton.addEventListener("click", () => this.send_command());
       for (let i = 1; i <= 10; i++) {
         const airplane = new Airplane();
@@ -270,7 +276,7 @@
       this.ctx[index].fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     }
     updatePosition(airplane) {
-      airplane.updateLocation();
+      airplane.updateLocation(REFRESH_RATE);
     }
     /**
      * Gets a mouse click event and returns the aircraft closest to the clicked location.
@@ -284,34 +290,42 @@
       const y = event.clientY - rect.top;
       this.clickedPosition = { x, y };
       const aircraftRadius = 30;
-      for (const airplane of this.controlledAirplane) {
-        const position = airplane.currentPosition();
-        const airplaneInfo = airplane.getAirplaneInfo();
-        const labelX = airplane.currentPosition().currentX + airplaneInfo.labelX;
-        const labelY = airplane.currentPosition().currentY - airplaneInfo.labelY;
+      for (let i = 0; i < this.controlledAirplane.length; i++) {
+        const position = this.controlledAirplane[i].currentPosition();
+        const airplaneInfo = this.controlledAirplane[i].getAirplaneInfo();
+        const labelX = this.controlledAirplane[i].currentPosition().currentX + airplaneInfo.labelLocation.x;
+        const labelY = this.controlledAirplane[i].currentPosition().currentY - airplaneInfo.labelLocation.y;
         if (x >= position.currentX - aircraftRadius && x <= position.currentX + aircraftRadius && y >= position.currentY - aircraftRadius && y <= position.currentY + aircraftRadius) {
           this.changeDisplayCallsign(airplaneInfo.callsign);
           this.inputAltitude.value = airplaneInfo.commandedAltitude;
           this.inputSpeed.value = airplaneInfo.commandedSpeed;
           this.inputHeading.value = airplaneInfo.commandedHeading;
-          this.selectedAircraft = airplane;
+          this.selectedAircraft = this.controlledAirplane[i];
           console.log("clicked Airplane!");
           break;
-        } else if (x >= labelX - 50 && //position.currentX - aircraftRadius &&
-        x <= labelX + 50 && y >= labelY - 40 && y <= labelY + 40) {
-          console.log("Label clicked!");
-          console.log(airplaneInfo.callsign);
+        } else if (x >= labelX - 5 && x <= labelX + 70 && y >= labelY - 20 && y <= labelY + 40) {
+          this.draggingLabelIndex = i;
+          this.offsetX = x - labelX;
+          this.offsetY = y - labelY;
+          break;
+        } else {
+          console.log("Now Clicked!!");
         }
       }
     }
     onMouseMove(event) {
-      const canvas = event.target;
-      const rect = canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      console.log(x, y);
+      if (this.draggingLabelIndex !== -1) {
+        const canvas = event.target;
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        const label = this.controlledAirplane[this.draggingLabelIndex].getAirplaneInfo().labelLocation;
+        label.x = x - this.offsetX - this.controlledAirplane[this.draggingLabelIndex].currentPosition().currentX;
+        label.y = -(y - this.offsetY - this.controlledAirplane[this.draggingLabelIndex].currentPosition().currentY);
+      }
     }
     onMouseUp() {
+      this.draggingLabelIndex = -1;
     }
     changeDisplayCallsign(newCallsign) {
       const fontElement = document.getElementById(
@@ -354,8 +368,10 @@
       this.ctx[index].moveTo(position.currentX, position.currentY);
       const currentSpeed = airplane.calculateSpeedComponents(speed, heading);
       this.ctx[index].lineTo(
-        position.currentX + currentSpeed.xSpeed * REFRESH_RATE * 60,
-        position.currentY + currentSpeed.ySpeed * REFRESH_RATE * 60
+        position.currentX + currentSpeed.xSpeed * 60,
+        // * REFRESH_RATE * 60),
+        position.currentY + currentSpeed.ySpeed * 60
+        // * REFRESH_RATE * 60),
       );
       this.ctx[index].strokeStyle = "white";
       this.ctx[index].stroke();
@@ -368,12 +384,21 @@
     drawLabelLine(index, airplane) {
       const position = airplane.currentPosition();
       const airplaneInfo = airplane.getAirplaneInfo();
-      const labelX = airplane.currentPosition().currentX + airplaneInfo.labelX;
-      const labelY = airplane.currentPosition().currentY - airplaneInfo.labelY;
+      const labelX = airplane.currentPosition().currentX + airplaneInfo.labelLocation.x;
+      const labelY = airplane.currentPosition().currentY - airplaneInfo.labelLocation.y;
       this.ctx[index].beginPath();
       this.ctx[index].moveTo(position.currentX + 10, position.currentY - 10);
       this.ctx[index].lineTo(labelX - 5, labelY + 15);
       this.ctx[index].strokeStyle = "white";
+      this.ctx[index].stroke();
+      this.ctx[index].beginPath();
+      this.ctx[index].strokeStyle = "white";
+      this.ctx[index].lineWidth = 2;
+      this.ctx[index].moveTo(labelX - 5, labelY - 20);
+      this.ctx[index].lineTo(labelX + 70, labelY - 20);
+      this.ctx[index].lineTo(labelX + 70, labelY + 40);
+      this.ctx[index].lineTo(labelX - 5, labelY + 40);
+      this.ctx[index].lineTo(labelX - 5, labelY - 20);
       this.ctx[index].stroke();
     }
     /**
@@ -384,8 +409,8 @@
     drawLabel(index, airplane) {
       const airplaneInfo = airplane.getAirplaneInfo();
       const airplanePosition = airplane.currentPosition();
-      const labelX = airplanePosition.currentX + airplaneInfo.labelX;
-      const labelY = airplanePosition.currentY - airplaneInfo.labelY;
+      const labelX = airplanePosition.currentX + airplaneInfo.labelLocation.x;
+      const labelY = airplanePosition.currentY - airplaneInfo.labelLocation.y;
       this.ctx[index].fillStyle = "white";
       this.ctx[index].font = "12px Arial";
       this.ctx[index].textAlign = "left";

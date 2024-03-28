@@ -1,7 +1,7 @@
 // Define constants for canvas dimensions
 const CANVAS_WIDTH: number = 1000;
 const CANVAS_HEIGHT: number = 1000;
-const REFRESH_RATE: number = 0.1; //画面の更新頻度(fps)
+const REFRESH_RATE: number = 10; //画面の更新頻度(fps)
 
 import { Airplane } from "./airplaneClass.ts";
 // Define a class to encapsulate the game
@@ -18,6 +18,9 @@ class RadarGame {
   private inGame: boolean; //シミュレーションゲーム中かどうかを判断する
   private bg: number; //ダブルバッファの背景と表示を切り替えるためのインデックスを管理
   private controlledAirplane: Airplane[] = [];
+  private draggingLabelIndex: number = -1; // Index of the label being dragged
+  private offsetX: number = 0;
+  private offsetY: number = 0;
 
   private selectedAircraft: Airplane | null = null; //選択中の航空機を保持するための変数
 
@@ -35,15 +38,16 @@ class RadarGame {
     this.confirmButton = <HTMLInputElement> document.getElementById(
       "confirmButton",
     );
-    // this.sendButton = <HTMLInputElement> document.getElementById("sendButton");
+    
     this.inGame = false;
     this.bg = 0;
-    this.canvas[0].addEventListener("click", (e) => this.onMouseDown(e));
-    this.canvas[1].addEventListener("click", (e) => this.onMouseDown(e));
-    this.canvas[0].addEventListener("click", (e) => this.onMouseMove(e));
-    this.canvas[1].addEventListener("click", (e) => this.onMouseMove(e));
+    this.canvas[0].addEventListener("mousedown", (e) => this.onMouseDown(e));
+    this.canvas[1].addEventListener("mousedown", (e) => this.onMouseDown(e));
+    this.canvas[0].addEventListener("mousemove", (e) => this.onMouseMove(e));
+    this.canvas[1].addEventListener("mousemove", (e) => this.onMouseMove(e));
+    this.canvas[0].addEventListener("mouseup", () => this.onMouseUp());
+    this.canvas[1].addEventListener("mouseup", () => this.onMouseUp());
     this.confirmButton.addEventListener("click", () => this.send_command());
-    // this.sendButton.addEventListener("click", () => sendToServer());
 
     //とりあえず10機の航空機を生成する
     for (let i = 1; i <= 10; i++) {
@@ -69,7 +73,7 @@ class RadarGame {
 
   private updatePosition(airplane: Airplane): void {
     //航空機の速度に合わせてポジションを更新する
-    airplane.updateLocation();
+    airplane.updateLocation(REFRESH_RATE);
   }
 
   /**
@@ -90,13 +94,13 @@ class RadarGame {
     const aircraftRadius = 30; // Adjust the radius as needed
 
     // Iterate through the aircraft to check if they are near the clicked position
-    for (const airplane of this.controlledAirplane) {
-      const position = airplane.currentPosition();
-      const airplaneInfo = airplane.getAirplaneInfo();
-      const labelX: number = airplane.currentPosition().currentX +
-        airplaneInfo.labelX;
-      const labelY: number = airplane.currentPosition().currentY -
-        airplaneInfo.labelY;
+    for (let i = 0; i < this.controlledAirplane.length; i++) {//(const airplane of this.controlledAirplane) {
+      const position = this.controlledAirplane[i].currentPosition();
+      const airplaneInfo = this.controlledAirplane[i].getAirplaneInfo();
+      const labelX: number = this.controlledAirplane[i].currentPosition().currentX +
+        airplaneInfo.labelLocation.x;
+      const labelY: number = this.controlledAirplane[i].currentPosition().currentY -
+        airplaneInfo.labelLocation.y;
 
       // Check if the clicked position is near the aircraft's position
       if (
@@ -111,33 +115,43 @@ class RadarGame {
         this.inputSpeed.value = airplaneInfo.commandedSpeed;
         this.inputHeading.value = airplaneInfo.commandedHeading;
         //選ばれている航空機を保持する
-        this.selectedAircraft = airplane;
-        console.log("clicked Airplane!");
-
+        this.selectedAircraft = this.controlledAirplane[i];
+        // console.log("clicked Airplane!");
         break;
+
       } else if (
-        x >= labelX - 50 && //position.currentX - aircraftRadius &&
-        x <= labelX + 50 &&
-        y >= labelY - 40 &&
+        x >= labelX - 5 &&
+        x <= labelX + 70 &&
+        y >= labelY - 20 &&
         y <= labelY + 40
+        
       ) {
-        console.log("Label clicked!");
-        console.log(airplaneInfo.callsign);
+        // console.log("Label clicked!");
+        // console.log(airplaneInfo.callsign);
+        this.draggingLabelIndex = i;
+        this.offsetX = x - labelX;
+        this.offsetY = y - labelY;
+        break; // Exit loop once a label is found
       }
     }
   }
 
   private onMouseMove(event: MouseEvent): void {
-    const canvas = event.target as HTMLCanvasElement;
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-
-    console.log(x, y)
+    if (this.draggingLabelIndex !== -1) {
+      const canvas = event.target as HTMLCanvasElement;
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+  
+      // Update the label position based on the mouse movement
+      const label = this.controlledAirplane[this.draggingLabelIndex].getAirplaneInfo().labelLocation;
+      label.x = x - this.offsetX - this.controlledAirplane[this.draggingLabelIndex].currentPosition().currentX;
+      label.y = - (y - this.offsetY - this.controlledAirplane[this.draggingLabelIndex].currentPosition().currentY);
+    }
   }
 
   private onMouseUp(): void {
-    // this.draggingLabelIndex = -1; // Reset dragging label index
+    this.draggingLabelIndex = -1; // Reset dragging label index
   }
 
   private changeDisplayCallsign(newCallsign: string): void {
@@ -192,8 +206,8 @@ class RadarGame {
 
     const currentSpeed = airplane.calculateSpeedComponents(speed, heading);
     this.ctx[index].lineTo(
-      position.currentX + (currentSpeed.xSpeed * REFRESH_RATE * 60),
-      position.currentY + (currentSpeed.ySpeed * REFRESH_RATE * 60),
+      position.currentX + (currentSpeed.xSpeed * 60),// * REFRESH_RATE * 60),
+      position.currentY + (currentSpeed.ySpeed * 60)// * REFRESH_RATE * 60),
     );
 
     this.ctx[index].strokeStyle = "white";
@@ -209,9 +223,9 @@ class RadarGame {
     const position = airplane.currentPosition();
     const airplaneInfo = airplane.getAirplaneInfo();
     const labelX: number = airplane.currentPosition().currentX +
-      airplaneInfo.labelX;
+      airplaneInfo.labelLocation.x;
     const labelY: number = airplane.currentPosition().currentY -
-      airplaneInfo.labelY;
+      airplaneInfo.labelLocation.y;
 
     // Draw a line connecting airplane to its label
     this.ctx[index].beginPath();
@@ -219,6 +233,16 @@ class RadarGame {
     this.ctx[index].lineTo(labelX - 5, labelY + 15);
     this.ctx[index].strokeStyle = "white";
     this.ctx[index].stroke();
+
+    this.ctx[index].beginPath();
+    this.ctx[index].strokeStyle = "white";
+    this.ctx[index].lineWidth = 2;
+    this.ctx[index].moveTo(labelX-5, labelY-20); // Move to the starting point
+    this.ctx[index].lineTo(labelX + 70, labelY-20); // Draw top line
+    this.ctx[index].lineTo(labelX + 70, labelY + 40); // Draw right line
+    this.ctx[index].lineTo(labelX-5, labelY + 40); // Draw bottom line
+    this.ctx[index].lineTo(labelX-5, labelY-20); // Draw left line to close the rectangle
+    this.ctx[index].stroke(); // Stroke the path
   }
 
   /**
@@ -229,8 +253,8 @@ class RadarGame {
   private drawLabel(index: number, airplane: Airplane): void {
     const airplaneInfo = airplane.getAirplaneInfo();
     const airplanePosition = airplane.currentPosition();
-    const labelX: number = airplanePosition.currentX + airplaneInfo.labelX;
-    const labelY: number = airplanePosition.currentY - airplaneInfo.labelY;
+    const labelX: number = airplanePosition.currentX + airplaneInfo.labelLocation.x;
+    const labelY: number = airplanePosition.currentY - airplaneInfo.labelLocation.y;
 
     // Draw labels with airplane information
     this.ctx[index].fillStyle = "white";
