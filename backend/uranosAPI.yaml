@@ -1,0 +1,86 @@
+openapi: "3.1.0"
+
+info:
+  title: "Uranos API"
+  description: "Local API for Omotenou to receive data from Uranos."
+  version: "1.0.0"
+
+servers:
+  - url: "http://localhost:50051"
+    description: "Local server"
+
+tags:
+  - name: "startGame"
+    description: "Start a new game."
+  - name: "inGame"
+    description: "In game actions."
+  - name: "endGame"
+    description: "End a game."
+
+paths:
+  "/startGame":
+    post:
+      tags: ["startGame"]
+      summary: "Start a new game."
+      description: "Sent only once when the game starts."
+      deprecated: false
+      requestBody:
+        description: "Initial value of airspace. The initial value is sent from the front desk. To be able to read scenario files."
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required: ["areaInfo"]
+              properties:
+                areaInfo:
+                  type: "array"
+                  items:
+                    type: "object"
+                    required: ["callsign", "altitude", "latitude", "longitude", "heading", "groundSpeed", "destination"]
+                    properties:
+                      callsign:
+                        type: "string"
+                        description: "Each airplane's callsign."
+                        example: "AAL123"
+                      altitude:
+                        type: "number"
+                        description: "Each airplane's altitude. Expressed in flightLevel"
+                        example: 350
+                      latitude:
+                        type: "number"
+                        description: "Each airplane's latitude."
+                        example: 35.553333
+                      longitude:
+                        type: "number"
+                        description: "Each airplane's longitude."
+                        example: 139.781113
+                      heading:
+                        type: "number"
+                        description: "Each airplane's heading."
+                        example: 15
+                      groundSpeed:
+                        type: "number"
+                        description: "Each airplane's ground speed. Expressed in knots."
+                        example: 250
+                      destination:
+                        type: "string"
+                        description: "Each airplane's destination. Expressed in ICAO code."
+                        example: "RJTT"
+      responses:
+        "200":
+          description: "Game started."
+
+        "400":
+          description: "Bad request."
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                    description: "Error message indicating which property is missing."
+
+  "/inGame":
+# components:
