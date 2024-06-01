@@ -1,0 +1,1015 @@
+openapi: 3.1.0
+externalDocs:
+  description: API Developer portal
+  url: https://fr24api.flightradar24.com
+info:
+  title: Flightradar24 API Documentation
+  version: v1.0
+paths:
+  '/api/airlines/{icao}':
+    parameters:
+      - schema:
+          type: string
+        name: icao
+        in: path
+        description: Airline ICAO code.
+        required: true
+        examples:
+          code:
+            value: SAS
+          code2:
+            value: DLH
+          code3:
+            value: THY
+    get:
+      x-codeSamples:
+        - lang: 'bash'
+          label: 'CLI'
+          source: |
+            curl --location 'https://fr24api.flightradar24.com/api/airlines/afl' \
+            --header 'Accept: application/json' \
+            --header 'Authorization: Bearer <token>'
+        - lang: 'Javascript'
+          source: |
+            const axios = require('axios');
+
+            let config = {
+              method: 'get',
+              maxBodyLength: Infinity,
+              url: 'https://fr24api.flightradar24.com/api/airlines/afl',
+              headers: {
+                'Accept': 'application/json',
+                'Authorization': 'Bearer <token>'
+              }
+            };
+
+            axios.request(config)
+              .then((response) => {
+                console.log(JSON.stringify(response.data));
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+
+
+        - lang: 'Javascript'
+          label: 'PHP'
+          source: |
+            <?php
+            $client = new GuzzleHttp\Client();
+            $headers = [
+              'Accept' => 'application/json',
+              'Authorization' => 'Bearer <token>'
+            ];
+            $request = new Request('GET', 'https://fr24api.flightradar24.com/api/airlines/afl', $headers);
+            $res = $client->sendAsync($request)->wait();
+            echo $res->getBody();
+
+        - lang: 'CSharp'
+          label: 'C#'
+          source: |
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://fr24api.flightradar24.com/api/airlines/afl");
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("Authorization", "Bearer <token>");
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+        - lang: 'Java'
+          source: |
+            OkHttpClient client = new OkHttpClient().newBuilder()
+              .build();
+            MediaType mediaType = MediaType.parse("text/plain");
+            RequestBody body = RequestBody.create(mediaType, "");
+            Request request = new Request.Builder()
+              .url("https://fr24api.flightradar24.com/api/airlines/afl")
+              .method("GET", body)
+              .addHeader("Accept", "application/json")
+              .addHeader("Authorization", "Bearer <token>")
+              .build();
+            Response response = client.newCall(request).execute();
+        - lang: 'Go'
+          source: |
+            package main
+
+            import (
+              "fmt"
+              "net/http"
+              "io/ioutil"
+            )
+
+            func main() {
+
+              url := "https://fr24api.flightradar24.com/api/airlines/afl"
+              method := "GET"
+
+              client := &http.Client {
+              }
+              req, err := http.NewRequest(method, url, nil)
+
+              if err != nil {
+                fmt.Println(err)
+                return
+              }
+              req.Header.Add("Accept", "application/json")
+              req.Header.Add("Authorization", "Bearer <token>")
+
+              res, err := client.Do(req)
+              if err != nil {
+                fmt.Println(err)
+                return
+              }
+              defer res.Body.Close()
+
+              body, err := ioutil.ReadAll(res.Body)
+              if err != nil {
+                fmt.Println(err)
+                return
+              }
+              fmt.Println(string(body))
+            }
+        - lang: 'Python'
+          source: |
+            import http.client
+
+            conn = http.client.HTTPSConnection("https://fr24api.flightradar24.com")
+            payload = ''
+            headers = {
+              'Accept': 'application/json',
+              'Authorization': 'Bearer <token>'
+            }
+            conn.request("GET", "/api/airlines/afl", payload, headers)
+            res = conn.getresponse()
+            data = res.read()
+            print(data.decode("utf-8"))
+
+      summary: Find airline by ICAO
+      tags:
+        - Airlines
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Airline'
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Validation failed
+                  details: The icao is not a valid ICAO code.
+                properties:
+                  message:
+                    type: string
+                  details:
+                    type: string
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "402":
+          $ref: "#/components/responses/PaymentRequired"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      operationId: get-airlines
+      description: Get airline name by ICAO code
+      parameters: [ ]
+      security:
+        - Authorization: [ ]
+
+
+  "/api/airports/{code}":
+    parameters:
+      - schema:
+          type: string
+        name: code
+        in: path
+        required: true
+        description: Airports IATA or ICAO code.
+        examples:
+          IATA1:
+            value: LHR
+          IATA2:
+            value: DXB
+          ICAO1:
+            value: EGLL
+          ICAO2:
+            value: OMDB
+    get:
+      x-codeSamples:
+        - lang: 'bash'
+          label: 'CLI'
+          source: |
+            curl --location 'https://fr24api.flightradar24.com/api/airports/WAW' \
+            --header 'Accept: application/json' \
+            --header 'Authorization: Bearer <token>'
+        - lang: 'Javascript'
+          source: |
+            const axios = require('axios');
+
+            let config = {
+              method: 'get',
+              maxBodyLength: Infinity,
+              url: 'https://fr24api.flightradar24.com/api/airports/WAW',
+              headers: {
+                'Accept': 'application/json',
+                'Authorization': 'Bearer <token>'
+              }
+            };
+
+            axios.request(config)
+            .then((response) => {
+              console.log(JSON.stringify(response.data));
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        - lang: 'Javascript'
+          label: 'PHP'
+          source: |
+            <?php
+            $client = new GuzzleHttp\Client();
+            $headers = [
+              'Accept' => 'application/json',
+              'Authorization' => 'Bearer <token>'
+            ];
+            $request = new Request('GET', 'https://fr24api.flightradar24.com/api/airports/WAW', $headers);
+            $res = $client->sendAsync($request)->wait();
+            echo $res->getBody();
+        - lang: 'CSharp'
+          label: 'C#'
+          source: |
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://fr24api.flightradar24.com/api/airports/WAW");
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("Authorization", "Bearer <token>");
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+        - lang: 'Java'
+          source: |
+            OkHttpClient client = new OkHttpClient().newBuilder()
+              .build();
+            MediaType mediaType = MediaType.parse("text/plain");
+            RequestBody body = RequestBody.create(mediaType, "");
+            Request request = new Request.Builder()
+              .url("https://fr24api.flightradar24.com/api/airports/WAW")
+              .method("GET", body)
+              .addHeader("Accept", "application/json")
+              .addHeader("Authorization", "Bearer <token>")
+              .build();
+            Response response = client.newCall(request).execute();
+        - lang: 'Go'
+          source: |
+            package main
+
+            import (
+              "fmt"
+              "net/http"
+              "io/ioutil"
+            )
+
+            func main() {
+
+              url := "https://fr24api.flightradar24.com/api/airports/WAW"
+              method := "GET"
+
+              client := &http.Client {
+              }
+              req, err := http.NewRequest(method, url, nil)
+
+              if err != nil {
+                fmt.Println(err)
+                return
+              }
+              req.Header.Add("Accept", "application/json")
+              req.Header.Add("Authorization", "Bearer <token>")
+
+              res, err := client.Do(req)
+              if err != nil {
+                fmt.Println(err)
+                return
+              }
+              defer res.Body.Close()
+
+              body, err := ioutil.ReadAll(res.Body)
+              if err != nil {
+                fmt.Println(err)
+                return
+              }
+              fmt.Println(string(body))
+            }
+        - lang: 'Python'
+          source: |
+            import http.client
+
+            conn = http.client.HTTPSConnection("https://fr24api.flightradar24.com")
+            payload = ''
+            headers = {
+              'Accept': 'application/json',
+              'Authorization': 'Bearer <token>'
+            }
+            conn.request("GET", "/api/airports/WAW", payload, headers)
+            res = conn.getresponse()
+            data = res.read()
+            print(data.decode("utf-8"))
+      summary: Get airport by code
+      tags:
+        - Airports
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Airport"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Validation error
+                  details: The code is not a valid IATA or ICAO code.
+                properties:
+                  message:
+                    type: string
+                  details:
+                    type: string
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "402":
+          $ref: "#/components/responses/PaymentRequired"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      operationId: get-airports
+      description: Get airport information by IATA or ICAO code.
+      parameters: [ ]
+      security:
+        - Authorization: [ ]
+
+  "/api/flights":
+    parameters: [ ]
+    get:
+      x-codeSamples:
+        - lang: 'bash'
+          label: 'CLI'
+          source: |
+            curl --location 'https://fr24api.flightradar24.com/api/flights?bounds=50.682%2C46.218%2C14.422%2C22.243' \
+            --header 'Accept: application/json' \
+            --header 'Authorization: Bearer <token>'
+        - lang: 'Javascript'
+          source: |
+            const axios = require('axios');
+
+            let config = {
+              method: 'get',
+              maxBodyLength: Infinity,
+              url: 'https://fr24api.flightradar24.com/api/flights?bounds=50.682,46.218,14.422,22.243',
+              headers: {
+                'Accept': 'application/json',
+                'Authorization': 'Bearer <token>'
+              }
+            };
+
+            axios.request(config)
+            .then((response) => {
+              console.log(JSON.stringify(response.data));
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+
+        - lang: 'Javascript'
+          label: 'PHP'
+          source: |
+            <?php
+            $client = new GuzzleHttp\Client();
+            $headers = [
+              'Accept' => 'application/json',
+              'Authorization' => 'Bearer <token>'
+            ];
+            $request = new Request('GET', 'https://fr24api.flightradar24.com/api/flights?bounds=50.682,46.218,14.422,22.243', $headers);
+            $res = $client->sendAsync($request)->wait();
+            echo $res->getBody();
+
+        - lang: 'CSharp'
+          label: 'C#'
+          source: |
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://fr24api.flightradar24.com/api/flights?bounds=50.682,46.218,14.422,22.243");
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("Authorization", "Bearer <token>");
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+        - lang: 'Java'
+          source: |
+            OkHttpClient client = new OkHttpClient().newBuilder()
+              .build();
+            MediaType mediaType = MediaType.parse("text/plain");
+            RequestBody body = RequestBody.create(mediaType, "");
+            Request request = new Request.Builder()
+              .url("https://fr24api.flightradar24.com/api/flights?bounds=50.682,46.218,14.422,22.243")
+              .method("GET", body)
+              .addHeader("Accept", "application/json")
+              .addHeader("Authorization", "Bearer <token>")
+              .build();
+            Response response = client.newCall(request).execute();
+        - lang: 'Go'
+          source: |
+            package main
+
+            import (
+              "fmt"
+              "net/http"
+              "io/ioutil"
+            )
+
+            func main() {
+
+              url := "https://fr24api.flightradar24.com/api/flights?bounds=50.682%2C46.218%2C14.422%2C22.243"
+              method := "GET"
+
+              client := &http.Client {
+              }
+              req, err := http.NewRequest(method, url, nil)
+
+              if err != nil {
+                fmt.Println(err)
+                return
+              }
+              req.Header.Add("Accept", "application/json")
+              req.Header.Add("Authorization", "Bearer <token>")
+
+              res, err := client.Do(req)
+              if err != nil {
+                fmt.Println(err)
+                return
+              }
+              defer res.Body.Close()
+
+              body, err := ioutil.ReadAll(res.Body)
+              if err != nil {
+                fmt.Println(err)
+                return
+              }
+              fmt.Println(string(body))
+            }
+        - lang: 'Python'
+          source: |
+            import http.client
+
+            conn = http.client.HTTPSConnection("https://fr24api.flightradar24.com")
+            payload = ''
+            headers = {
+              'Accept': 'application/json',
+              'Authorization': 'Bearer <token>'
+            }
+            conn.request("GET", "/api/flights?bounds=50.682,46.218,14.422,22.243", payload, headers)
+            res = conn.getresponse()
+            data = res.read()
+            print(data.decode("utf-8"))
+      summary: Get flights by filters
+      tags:
+        - Flights
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Flight"
+          headers: { }
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Validation error
+                  details: The registration is not a valid aircraft registration code.
+                properties:
+                  message:
+                    type: string
+                  details:
+                    type: string
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "402":
+          $ref: "#/components/responses/PaymentRequired"
+      operationId: get-flights
+      description: Get flight information for one or more live flights.
+      parameters:
+        - name: bounds
+          schema:
+            type: string
+            example: "42.473,37.331,-10.014,-4.115"
+          in: query
+          description: "Coordinates of an area. Order: north, south, west, east (comma-separated float values). Up to 3 decimal points will be processed."
+
+        - name: flights
+          schema:
+            type: string
+            example: "CA4515,UA1742"
+          in: query
+          description: Flight numbers (comma-separated values).
+
+        - name: callsigns
+          schema:
+            type: string
+            example: "WJA329,WSW102"
+          in: query
+          description: Flight callsigns (comma-separated values).
+
+        - name: registrations
+          schema:
+            type: string
+            example: "D-AFAM,EC-MQM"
+          in: query
+          description: Aircraft registration numbers (comma-separated values).
+
+        - name: painted_as
+          schema:
+            type: string
+            example: "SAS, ART"
+          in: query
+          description: Aircraft wearing an airline\'s livery, but not necessarily operated by that airline, such as a regional airline operating a flight for a larger airline. (comma-separated values).
+
+        - name: operating_as
+          schema:
+            type: string
+            example: "SAS, ART"
+          in: query
+          description: Aircraft operating under an airline\'s call sign, but not necessarily an aircraft belonging to that airline, such as an aircraft on lease from another airline. (comma-separated values).
+
+        - name: airports
+          schema:
+            type: string
+            example: "LHR,SE,inbound:WAW,US,outbound:JFK,both:ESSA"
+          in: query
+          description: |
+            Airports by IATA or ICAO codes or countries by ISO 3166-1 alpha-2 codes (comma-separated values)
+            To determine direction use format: &#60;direction&#62;:&#60;code&#62; (colon-separated)<br><br>
+            Available directions:
+            - both - both directions (default direction when the code doesn't specify it)
+            - inbound - flights to airport
+            - outbound - flight from airport
+
+        - name: routes
+          schema:
+            type: string
+            example: "SE-US, ESSA-JFK"
+          in: query
+          description: Flights between different airports or countries. Airports by IATA or ICAO codes or countries by ISO 3166-1 alpha-2 codes (comma-separated values).
+
+        - name: aircraft
+          schema:
+            type: string
+            example: "B38M,B738"
+          in: query
+          description: Aircraft ICAO type codes (comma-separated values).
+
+        - name: altitude_ranges
+          schema:
+            type: string
+            example: "0-3000,5000-7000"
+          in: query
+          description: "Flight altitude ranges (comma-separated values). Unit: feet. Min value: 0"
+
+        - name: squawks
+          schema:
+            type: string
+            example: "6135,7070"
+          in: query
+          description: "Squawk codes in hex format (comma-separated values)."
+
+        - name: categories
+          schema:
+            type: string
+            example: "P,C"
+          in: query
+          description: |
+            Categories of Flights (comma-separated values).
+            Available values:
+            - <b>P</b> - PASSENGER - Commercial aircraft that carry passengers as their primary purpose
+            - <b>C</b> - CARGO - Aircraft that carry only cargo
+            - <b>M</b> - MILITARY_AND_GOVERNMENT - Aircraft operated by military or a governmental agency
+            - <b>J</b> - BUSINESS_JETS - Larger private aircraft, such as Gulfstream, Bombardier, and Pilatus
+            - <b>T</b> - GENERAL_AVIATION - Non-commercial transport flights, including private, ambulance, aerial survey, flight training and instrument calibration aircraft
+            - <b>H</b> - HELICOPTERS - Rotary wing aircraft
+            - <b>B</b> - LIGHTER_THAN_AIR - Lighter-than-air aircraft include gas-filled airships of all kinds
+            - <b>G</b> - GLIDERS - Unpowered aircraft
+            - <b>D</b> - DRONES - Uncrewed aircraft, ranging from small consumer drones to larger UAVs
+            - <b>V</b> - GROUND_VEHICLES - Transponder equipped vehicles, such as push-back tugs, fire trucks, and operations vehicles
+            - <b>O</b> - OTHER - Aircraft appearing on Flightradar24 not classified elsewhere (International Space Station, UFOs, Santa, etc)
+            - <b>N</b> - NON_CATEGORIZED - Aircraft not yet placed into a category in the Flightradar24 database
+
+        - name: data_sources
+          schema:
+            type: string
+            example: "ADSB, MLAT, ESTIMATED"
+          in: query
+          description: |
+            Source of information about flights (comma-separated values).
+            Available values:
+              - ADSB
+              - MLAT
+              - ESTIMATED
+              - <i>An empty paramter include all sources.</i>
+
+        - name: limit
+          schema:
+            type: integer
+            example: 100
+          in: query
+          description: "Limit of results. Max value 30000."
+
+      security:
+        - Authorization: [ ]
+
+  "/api/usage":
+    get:
+      x-codeSamples:
+        - lang: 'bash'
+          label: 'CLI'
+          source: |
+            curl --location 'https://fr24api.flightradar24.com/api/usage' \
+            --header 'Authorization: Bearer <token>'
+        - lang: 'Javascript'
+          source: |
+            const axios = require('axios');
+
+            let config = {
+              method: 'get',
+              maxBodyLength: Infinity,
+              url: 'https://fr24api.flightradar24.com/api/usage',
+              headers: {
+                'Authorization': 'Bearer <token>'
+              }
+            };
+
+            axios.request(config)
+            .then((response) => {
+              console.log(JSON.stringify(response.data));
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+
+        - lang: 'Javascript'
+          label: 'PHP'
+          source: |
+            <?php
+            $client = new GuzzleHttp\Client();
+            $headers = [
+              'Authorization' => 'Bearer <token>'
+            ];
+            $request = new Request('GET', 'https://fr24api.flightradar24.com/api/usage', $headers);
+            $res = $client->sendAsync($request)->wait();
+            echo $res->getBody();
+
+        - lang: 'Csharp'
+          label: 'C#'
+          source: |
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://fr24api.flightradar24.com/api/usage");
+            request.Headers.Add("Authorization", "Bearer <token>");
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
+        - lang: 'Java'
+          source: |
+            OkHttpClient client = new OkHttpClient().newBuilder()
+              .build();
+            MediaType mediaType = MediaType.parse("text/plain");
+            RequestBody body = RequestBody.create(mediaType, "");
+            Request request = new Request.Builder()
+              .url("https://fr24api.flightradar24.com/api/usage")
+              .method("GET", body)
+              .addHeader("Authorization", "Bearer <token>")
+              .build();
+            Response response = client.newCall(request).execute();
+        - lang: 'Go'
+          source: |
+            package main
+
+            import (
+              "fmt"
+              "net/http"
+              "io/ioutil"
+            )
+
+            func main() {
+
+              url := "https://fr24api.flightradar24.com/api/usage"
+              method := "GET"
+
+              client := &http.Client {
+              }
+              req, err := http.NewRequest(method, url, nil)
+
+              if err != nil {
+                fmt.Println(err)
+                return
+              }
+              req.Header.Add("Authorization", "Bearer <token>")
+
+              res, err := client.Do(req)
+              if err != nil {
+                fmt.Println(err)
+                return
+              }
+              defer res.Body.Close()
+
+              body, err := ioutil.ReadAll(res.Body)
+              if err != nil {
+                fmt.Println(err)
+                return
+              }
+              fmt.Println(string(body))
+            }
+        - lang: 'Python'
+          source: |
+            import http.client
+
+            conn = http.client.HTTPSConnection("https://fr24api.flightradar24.com")
+            payload = ''
+            headers = {
+              'Authorization': 'Bearer <token>'
+            }
+            conn.request("GET", "/api/usage", payload, headers)
+            res = conn.getresponse()
+            data = res.read()
+            print(data.decode("utf-8"))
+      summary: Get info on API account usage
+      tags:
+        - Usage
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/UsageLogSummary"
+        "400":
+          $ref: "#/components/responses/UsageLogSummaryValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      operationId: get-api-usage
+      parameters:
+        - schema:
+            type: string
+            enum:
+              - 24h
+              - 7d
+              - 30d
+              - 1y
+            default: 24h
+            example: 30d
+          in: query
+          name: period
+      description: ""
+      security:
+        - Authorization: [ ]
+components:
+  schemas:
+    Flight:
+      type: object
+      example:
+        fr24_id: 321a0cc3
+        flight: AF1463
+        callsign: AFR1463
+        lat: -0.08806
+        lon: -168.07118
+        track: 219
+        alt: 38000
+        gspeed: 500
+        vspeed: 340
+        squawk: 6135
+        timestamp: "2023-11-08T10:10:00Z"
+        source: ADSB
+        hex: 394C19
+        type: A321
+        reg: F-GTAZ
+        painted_as: THY
+        operating_as: THY
+        orig_iata: ARN
+        orig_icao: ESSA
+        dest_iata: LHR
+        dest_icao: EGLL
+        eta: "2023-11-08T16:12:24Z"
+      properties:
+        fr24_id:
+          type: string
+          description: Unique identifier assigned by Flightradar24 to each flight leg.
+        flight:
+          type: string
+          nullable: true
+          description: Commercial flight number.
+        callsign:
+          type: string
+          nullable: true
+          description: Callsign used by Air Traffic Control to denote a specific flight (as sent by aircraft transponder).
+        lat:
+          type: number
+          format: float
+          description: Latest latitude expressed in decimal degrees.
+        lon:
+          type: number
+          format: float
+          description: Latest longitude expressed in decimal degrees.
+        track:
+          type: integer
+          description: True track (over ground) expressed in integer degrees as 0-360. Please note that 0 can in some cases mean unknown.
+        alt:
+          type: integer
+          description: Barometric pressure altitude above mean sea level (AMSL) reported at a standard atmospheric pressure (1013.25 hPa / 29.92 in. Hg.) expressed in feet.
+        gspeed:
+          type: integer
+          description: Speed relative to the ground expressed in knots.
+        vspeed:
+          type: integer
+          description: The rate at which the aircraft is ascending or descending in feet per minute.
+        squawk:
+          type: string
+          description: 4 digit unique identifying code for ATC expressed in octal format.
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the flight position expressed in UTC (ISO 8601 date format).
+        source:
+          type: string
+          description: Data source of the provided flight position.
+        hex:
+          type: string
+          description: 24 bit Mode-S identifier expressed in hexadecimal format.
+        type:
+          type: string
+          nullable: true
+          description: Aircraft ICAO type code.
+        reg:
+          type: string
+          nullable: true
+          description: Aircraft registration as matched from Mode-S identifier.
+        painted_as:
+          type: string
+          description: ICAO code of the carrier mapped from FR24's internal database.
+        operating_as:
+          type: string
+          description: ICAO code of the airline carrier as derived from flight callsign.
+        orig_iata:
+          type: string
+          example: ARN
+          description: Origin airport IATA code
+        orig_icao:
+          type: string
+          example: ESSA
+          description: Origin airport ICAO code
+        dest_iata:
+          type: string
+          example: ARN
+          description: Destination airport IATA code
+        dest_icao:
+          type: string
+          example: ESSA
+          description: Destination airport ICAO code
+        eta:
+          type: string
+          nullable: true
+          description: Estimated time of arrival (ISO 8601 date format)
+    Airline:
+      title: Airline
+      type: object
+      properties:
+        name:
+          type: string
+          example: American Airlines
+          description: Name of the airline
+        iata:
+          type: string
+          example: AA
+          description: Airline IATA code
+        icao:
+          type: string
+          example: AAL
+          description: Airline ICAO code
+    Airport:
+      type: object
+      description: Contains airport information.
+      example:
+        name: Stockholm Arlanda Airport
+        iata: ARN
+        icao: ESSA
+      properties:
+        name:
+          type: string
+          example: Stockholm Arlanda Airport
+          description: Name of the airport
+        iata:
+          type: string
+          example: ARN
+          description: Airport IATA code
+        icao:
+          type: string
+          example: ESSA
+          description: Airport ICAO code
+    UsageLogSummary:
+      type: object
+      properties:
+        endpoint:
+          type: string
+          description: "Endpoint of the API call"
+        metadata:
+          type: string
+          description: "Request information, filters and params of the API call"
+        request_count:
+          type: integer
+          description: "Number of requests"
+        results:
+          type: integer
+          description: "Number of entities returned"
+        credits:
+          type: integer
+          description: "Number of credits used"
+      example:
+        endpoint: "flights?{filters}"
+        metadata: "filters[origins]"
+        request_count: 10
+        results: 150
+        credits: 1500
+  securitySchemes:
+    Authorization:
+      type: http
+      scheme: bearer
+  responses:
+    PaymentRequired:
+      description: Payment Required
+      content:
+        application/json:
+          schema:
+            type: object
+            example:
+              message: Forbidden
+              details: Credit limit reached. Please top up your account.
+            properties:
+              message:
+                type: string
+              details:
+                type: string
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            example:
+              message: Unauthenticated.
+            properties:
+              message:
+                type: string
+              details:
+                type: string
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            type: object
+            example:
+              message: Not found
+            properties:
+              message:
+                type: string
+              details:
+                type: string
+    UsageLogSummaryValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            type: object
+            example:
+              message: Validation failed
+              details: The selected period is invalid.
+            properties:
+              message:
+                type: string
+              details:
+                type: string
