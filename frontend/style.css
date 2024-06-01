@@ -1,14 +1,15 @@
 .container {
-    display: flex; /* Use flex layout */
+    display: flex; /* フレックスレイアウトを使用 */
+    margin-bottom: 20px; /* settingButtonAreaとの間にスペースを作る */
 }
 
 .radarArea {
-    flex: 1; /* Make radarArea flexible to take available space */
+    flex: 1; /* radarAreaが利用可能なスペースを取る */
 }
 
 .controlPanel {
-    flex: 0; /* Control panel does not grow, so it will be its natural size */
-    min-width: 300px; /* Adjust the width as needed */
+    flex: 0; /* controlPanelは自然なサイズで表示 */
+    min-width: 300px; /* 必要に応じて幅を調整 */
     background-color: #ddd;
     padding: 10px;
 }
@@ -17,8 +18,13 @@
     margin-bottom: 17px;
 }
 
-
 #callsign {
     font-size: x-large;
     font-weight: bold;
+}
+
+.settingButtonArea {
+    display: flex; /* 横並びにする */
+    justify-content: center; /* 中央に配置する */
+    gap: 10px; /* ボタン間のスペースを作る */
 }

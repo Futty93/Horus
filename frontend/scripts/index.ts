@@ -4,6 +4,10 @@ const CANVAS_HEIGHT: number = 1000;
 const REFRESH_RATE: number = 10; //画面の更新頻度(fps)
 
 import { Airplane } from "./airplaneClass.ts";
+import { Waypoint } from "./waypointManager.ts";
+import { WaypointManager } from "./waypointManager.ts";
+import { CoordinateManager } from "./CoordinateManager.ts";
+
 // Define a class to encapsulate the game
 class RadarGame {
   private canvas: HTMLCanvasElement[]; //ダブルバッファで画面を切り替えてアニメーションを実現するために配列で定義
@@ -14,10 +18,13 @@ class RadarGame {
   private inputSpeed: HTMLInputElement;
   private inputHeading: HTMLInputElement;
   private confirmButton: HTMLInputElement;
+  private waypointManager: WaypointManager;
+  private coordinateManager: CoordinateManager;
   // private sendButton: HTMLInputElement;
   private inGame: boolean; //シミュレーションゲーム中かどうかを判断する
   private bg: number; //ダブルバッファの背景と表示を切り替えるためのインデックスを管理
   private controlledAirplane: Airplane[] = [];
+  private displayingWaypoints: Waypoint[] = [];
   private draggingLabelIndex: number = -1; // Index of the label being dragged
   private offsetX: number = 0;
   private offsetY: number = 0;
@@ -35,9 +42,7 @@ class RadarGame {
     this.inputAltitude = <HTMLInputElement> document.getElementById("altitude");
     this.inputSpeed = <HTMLInputElement> document.getElementById("speed");
     this.inputHeading = <HTMLInputElement> document.getElementById("heading");
-    this.confirmButton = <HTMLInputElement> document.getElementById(
-      "confirmButton",
-    );
+    this.confirmButton = <HTMLInputElement> document.getElementById("confirmButton");
     
     this.inGame = false;
     this.bg = 0;
@@ -48,6 +53,9 @@ class RadarGame {
     this.canvas[0].addEventListener("mouseup", () => this.onMouseUp());
     this.canvas[1].addEventListener("mouseup", () => this.onMouseUp());
     this.confirmButton.addEventListener("click", () => this.send_command());
+
+    this.waypointManager = new WaypointManager();
+    this.coordinateManager = new CoordinateManager(CANVAS_WIDTH, CANVAS_HEIGHT);
 
     //とりあえず10機の航空機を生成する
     for (let i = 1; i <= 10; i++) {
@@ -286,6 +294,33 @@ class RadarGame {
     this.drawLabel(index, airplane);
   }
 
+  public drawWaypoint(index: number, name: string, latitude: number, longitude: number): void {
+    const radius: number = 5;
+    const sides: number = 5; // 5角形
+    const angle: number = (2 * Math.PI) / sides;
+
+    this.ctx[index].beginPath();
+    for (let i = 0; i <= sides; i++) {
+        const x = latitude + radius * Math.cos(i * angle);
+        const y = longitude + radius * Math.sin(i * angle);
+        if (i === 0) {
+            this.ctx[index].moveTo(x, y);
+        } else {
+            this.ctx[index].lineTo(x, y);
+        }
+    }
+    this.ctx[index].closePath();
+    this.ctx[index].strokeStyle = "gray";
+    this.ctx[index].stroke();
+
+    // 五角形の右上にテキストを描画
+    const textX = latitude + radius * Math.cos(angle / 2); // 右上の頂点のX座標
+    const textY = longitude - radius; // 五角形の上の方に少し離す
+    this.ctx[index].fillStyle = "gray";
+    this.ctx[index].font = "12px Arial";
+    this.ctx[index].fillText(name, textX, textY);
+  }
+
   private toggleCanvasDisplay(): void {
     //ダブルバッファの表示するキャンバスを切り替える
     this.canvas[1 - this.bg].style.display = "none";
@@ -313,6 +348,9 @@ class RadarGame {
   private update(): void {
     //画面全体を更新する
     this.clearCanvas(this.bg);
+    for (let i = 0; i < this.displayingWaypoints.length; i++) {
+      this.drawWaypoint(this.bg, this.displayingWaypoints[i].name, this.displayingWaypoints[i].latitude, this.displayingWaypoints[i].longitude);
+    }
     for (let i = 0; i < this.controlledAirplane.length; i++) {
       this.updatePosition(this.controlledAirplane[i]);
       this.drawAirplaneDetails(this.bg, this.controlledAirplane[i]);
@@ -320,12 +358,25 @@ class RadarGame {
     this.toggleCanvasDisplay();
   }
 
-  public start(): void {
+  public async start(): Promise<void> {
     if (!this.ctx[0] || !this.ctx[1]) {
       console.error("Failed to get 2D context");
       return;
     }
-    this.update(); //最初期の画面を表示
+    await this.waypointManager.loadWaypoints();
+    this.waypointManager.updateFilteredWaypoints({ latitude: 38.267371894248924, longitude: 140.86859473251855 }, 200);
+    this.displayingWaypoints = this.waypointManager.getFilteredWaypoints();
+    // console.log(2, this.displayingWaypoints);
+    for (let i = 0; i < this.displayingWaypoints.length; i++) {
+      const { x, y } = this.coordinateManager.calculateCanvasCoordinates(38.267371894248924, 140.86859473251855, 200, this.displayingWaypoints[i].latitude, this.displayingWaypoints[i].longitude);
+      // console.log(x,y)
+      this.displayingWaypoints[i].latitude = x;
+      this.displayingWaypoints[i].longitude = y;
+      // console.log(this.displayingWaypoints[i].name, this.displayingWaypoints[i].latitude, this.displayingWaypoints[i].longitude);
+    }
+    // console.log(3, this.displayingWaypoints);
+    this.update(); //最初期の画面を表示する
+  
     setInterval(() => {
       this.update();
     }, 1000 / REFRESH_RATE);
