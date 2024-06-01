@@ -36,6 +36,8 @@ go.work
 # Icon must end with two \r
 Icon
 
+# The compiled js file is not necessary, so do not upload it.
+frontend/bundle.js
 
 # Thumbnails
 ._*
