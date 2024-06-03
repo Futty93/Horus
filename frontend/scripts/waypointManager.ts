@@ -9,21 +9,29 @@ export class WaypointManager {
   private filteredWaypoints: Waypoint[] = [];
   static loadWaypoints: any;
 
-  constructor() {
-      this.loadWaypoints();
-  }
+  // constructor() {
+  //     this.loadWaypoints();
+  // }
 
   /**
    * ウェイポイントをJSONファイルから読み込みます。
    */
   async loadWaypoints() {
-      try {
-          const response = await fetch('./Waypoints.json'); //bundle.jsからの相対パス
-          this.waypoints = await response.json();
-          console.log('ウェイポイントの読み込みに成功しました:', this.waypoints);
-      } catch (error) {
-          console.error('ウェイポイントの読み込みに失敗しました:', error);
-      }
+    try {
+      const response = await fetch('./Waypoints.json'); // relative path from bundle.js
+      const loadedWaypoints = await response.json();
+
+      // Freeze each waypoint object to prevent modifications
+      loadedWaypoints.forEach((waypoint: Waypoint) => Object.freeze(waypoint));
+      
+      // Assign the frozen waypoints array to this.waypoints and freeze it
+      this.waypoints = Object.freeze(loadedWaypoints);
+      
+      console.log('Successfully loaded waypoints:', this.waypoints);
+
+    } catch (error) {
+      console.error('Failed to load waypoints:', error);
+    }
   }
 
   /**
@@ -32,9 +40,10 @@ export class WaypointManager {
    * @param range 表示範囲
    */
   public　updateFilteredWaypoints(center: { latitude: number, longitude: number }, range: number): void {
-      this.filteredWaypoints = this.waypoints.filter(waypoint => {
-          return this.isWithinRange(center, range, waypoint);
-      });
+    // console.log(range)
+    this.filteredWaypoints = this.waypoints.filter(waypoint => {
+        return this.isWithinRange(center, range, waypoint);
+    });
   }
 
   /**
@@ -84,9 +93,7 @@ export class WaypointManager {
    * @returns フィルタリングされたウェイポイントの配列
    */
   public getFilteredWaypoints(): Waypoint[] {
-    console.log(0, this.waypoints);
-    console.log(1, this.filteredWaypoints);
-    return this.waypoints;
+    return this.filteredWaypoints.map(waypoint => ({ ...waypoint }));
   }
 }
 

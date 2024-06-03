@@ -8,8 +8,11 @@ import { Waypoint } from "./waypointManager.ts";
 import { WaypointManager } from "./waypointManager.ts";
 import { CoordinateManager } from "./CoordinateManager.ts";
 
-// Define a class to encapsulate the game
+/**
+ * Represents the RadarGame class that encapsulates the game.
+ */
 class RadarGame {
+  private updateInterval: any;
   private canvas: HTMLCanvasElement[]; //ダブルバッファで画面を切り替えてアニメーションを実現するために配列で定義
   private ctx: CanvasRenderingContext2D[];
   private clickedPosition: { x: number; y: number } | null; //クリックされた座標を取得
@@ -29,8 +32,14 @@ class RadarGame {
   private offsetX: number = 0;
   private offsetY: number = 0;
 
+  private centerCoordinates = { latitude: 38.267371894248924, longitude: 140.86859473251855 };
+  public displayRange: number;
+
   private selectedAircraft: Airplane | null = null; //選択中の航空機を保持するための変数
 
+  /**
+   * Initializes a new instance of the RadarGame class.
+   */
   constructor() {
     //初期変数を初期化する
     this.canvas = [this.createCanvas("radar"), this.createCanvas("radar2")];
@@ -57,6 +66,9 @@ class RadarGame {
     this.waypointManager = new WaypointManager();
     this.coordinateManager = new CoordinateManager(CANVAS_WIDTH, CANVAS_HEIGHT);
 
+
+    this.displayRange = 100; // Default display range in kilometers
+
     //とりあえず10機の航空機を生成する
     for (let i = 1; i <= 10; i++) {
       const airplane = new Airplane();
@@ -64,6 +76,11 @@ class RadarGame {
     }
   }
 
+  /**
+   * Creates a canvas element with the specified id.
+   * @param id - The id of the canvas element.
+   * @returns The created HTMLCanvasElement.
+   */
   private createCanvas(id: string): HTMLCanvasElement {
     //HTMLからキャンバスを取得してきて、もし取得できなければエラーを出力
     const canvas = document.getElementById(id) as HTMLCanvasElement;
@@ -73,12 +90,20 @@ class RadarGame {
     return canvas;
   }
 
+  /**
+   * Clears the canvas at the specified index.
+   * @param index - The index of the canvas to clear.
+   */
   private clearCanvas(index: number): void {
     //ダブルバッファで新しい画面を描画する前に一旦消す
     this.ctx[index].fillStyle = "black";
     this.ctx[index].fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
   }
 
+  /**
+   * Updates the position of the specified airplane.
+   * @param airplane - The airplane to update the position for.
+   */
   private updatePosition(airplane: Airplane): void {
     //航空機の速度に合わせてポジションを更新する
     airplane.updateLocation(REFRESH_RATE);
@@ -86,8 +111,7 @@ class RadarGame {
 
   /**
    * Gets a mouse click event and returns the aircraft closest to the clicked location.
-   * @param MouseEvent - get mouse click event
-   * @return - None
+   * @param event - The mouse click event.
    */
   private onMouseDown(event: MouseEvent): void {
     // Get the clicked position relative to the canvas
@@ -144,6 +168,10 @@ class RadarGame {
     }
   }
 
+  /**
+   * Handles the mouse move event.
+   * @param event - The mouse move event.
+   */
   private onMouseMove(event: MouseEvent): void {
     if (this.draggingLabelIndex !== -1) {
       const canvas = event.target as HTMLCanvasElement;
@@ -158,15 +186,18 @@ class RadarGame {
     }
   }
 
+  /**
+   * Handles the mouse up event.
+   */
   private onMouseUp(): void {
     this.draggingLabelIndex = -1; // Reset dragging label index
   }
 
+  /**
+   * Changes the displayed callsign.
+   * @param newCallsign - The new callsign to display.
+   */
   private changeDisplayCallsign(newCallsign: string): void {
-    /**
-     * change displaying callsign
-     * @param newCallsign - New call sign to change
-     */
     const fontElement = <HTMLParagraphElement> document.getElementById(
       "callsign",
     );
@@ -176,9 +207,9 @@ class RadarGame {
   }
 
   /**
-   * Draw the airplane representation on the canvas.
-   * @param index - Index of the airplane in the list.
-   * @param airplane - Instance of the Airplane class.
+   * Draws the airplane representation on the canvas.
+   * @param index - The index of the airplane in the list.
+   * @param airplane - The instance of the Airplane class.
    */
   private drawAirplane(index: number, airplane: Airplane): void {
     const position = airplane.currentPosition();
@@ -198,9 +229,9 @@ class RadarGame {
   }
 
   /**
-   * Draw the heading line representing airplane movement direction.
-   * @param index - Index of the airplane in the list.
-   * @param airplane - Instance of the Airplane class.
+   * Draws the heading line representing airplane movement direction.
+   * @param index - The index of the airplane in the list.
+   * @param airplane - The instance of the Airplane class.
    */
   private drawHeadingLine(index: number, airplane: Airplane): void {
     const position = airplane.currentPosition();
@@ -223,9 +254,9 @@ class RadarGame {
   }
 
   /**
-   * Draw the line connecting airplane to its label position.
-   * @param index - Index of the airplane in the list.
-   * @param airplane - Instance of the Airplane class.
+   * Draws the line connecting airplane to its label position.
+   * @param index - The index of the airplane in the list.
+   * @param airplane - The instance of the Airplane class.
    */
   private drawLabelLine(index: number, airplane: Airplane): void {
     const position = airplane.currentPosition();
@@ -358,31 +389,85 @@ class RadarGame {
     this.toggleCanvasDisplay();
   }
 
-  public async start(): Promise<void> {
+  public updateWaypoints(): void {
+    this.waypointManager.updateFilteredWaypoints(this.centerCoordinates, this.displayRange);
+    this.displayingWaypoints = this.waypointManager.getFilteredWaypoints();
+    for (let i = 0; i < this.displayingWaypoints.length; i++) {
+      const { x, y } = this.coordinateManager.calculateCanvasCoordinates(
+        this.centerCoordinates.latitude, 
+        this.centerCoordinates.longitude, 
+        this.displayRange, 
+        this.displayingWaypoints[i].latitude, 
+        this.displayingWaypoints[i].longitude
+      );
+      this.displayingWaypoints[i].latitude = x;
+      this.displayingWaypoints[i].longitude = y;
+    }
+    this.update(); // Update the display with new waypoints
+  }
+
+  public async makeFirstCanvas(): Promise<void> {
     if (!this.ctx[0] || !this.ctx[1]) {
       console.error("Failed to get 2D context");
       return;
     }
     await this.waypointManager.loadWaypoints();
-    this.waypointManager.updateFilteredWaypoints({ latitude: 38.267371894248924, longitude: 140.86859473251855 }, 200);
+    this.waypointManager.updateFilteredWaypoints(this.centerCoordinates, this.displayRange);
     this.displayingWaypoints = this.waypointManager.getFilteredWaypoints();
     // console.log(2, this.displayingWaypoints);
     for (let i = 0; i < this.displayingWaypoints.length; i++) {
-      const { x, y } = this.coordinateManager.calculateCanvasCoordinates(38.267371894248924, 140.86859473251855, 200, this.displayingWaypoints[i].latitude, this.displayingWaypoints[i].longitude);
+      const { x, y } = this.coordinateManager.calculateCanvasCoordinates(this.centerCoordinates.latitude, this.centerCoordinates.longitude, this.displayRange, this.displayingWaypoints[i].latitude, this.displayingWaypoints[i].longitude);
       // console.log(x,y)
       this.displayingWaypoints[i].latitude = x;
       this.displayingWaypoints[i].longitude = y;
       // console.log(this.displayingWaypoints[i].name, this.displayingWaypoints[i].latitude, this.displayingWaypoints[i].longitude);
     }
+    console.log(this.displayingWaypoints)
     // console.log(3, this.displayingWaypoints);
     this.update(); //最初期の画面を表示する
-  
-    setInterval(() => {
+  }
+
+
+  public async start(): Promise<void> {
+    this.updateInterval = setInterval(() => {
       this.update();
     }, 1000 / REFRESH_RATE);
+  }
+
+  public stop(): void {
+    if (this.updateInterval) {
+      clearInterval(this.updateInterval);
+      this.updateInterval = null;
+      console.log('Game stopped');
+    }
   }
 }
 
 // Initialize and start the game
 const radarGame = new RadarGame();
-radarGame.start();
+
+// when the page is loaded, make the first canvas
+radarGame.makeFirstCanvas();
+
+// when the start button is clicked, start the game
+const startButton = document.getElementById('startButton');
+startButton?.addEventListener('click', () => {
+  radarGame.start();
+});
+
+// when the stop button is clicked, stop the game
+const stopButton = document.getElementById('stopButton');
+if (stopButton) {
+  stopButton.addEventListener('click', () => {
+    radarGame.stop();
+  });
+}
+
+const displayRangeElement = document.getElementById('displayRange');
+if (displayRangeElement) {
+  displayRangeElement.addEventListener('input', (event) => {
+    const newRange = parseFloat((event.target as HTMLInputElement).value);
+    radarGame.displayRange = newRange;
+    radarGame.updateWaypoints();
+  });
+}
