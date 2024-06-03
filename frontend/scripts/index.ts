@@ -390,8 +390,10 @@ class RadarGame {
   }
 
   public updateWaypoints(): void {
+    // Update the waypoints based on the center coordinates and display range
     this.waypointManager.updateFilteredWaypoints(this.centerCoordinates, this.displayRange);
     this.displayingWaypoints = this.waypointManager.getFilteredWaypoints();
+    // Calculate the canvas coordinates for the waypoints
     for (let i = 0; i < this.displayingWaypoints.length; i++) {
       const { x, y } = this.coordinateManager.calculateCanvasCoordinates(
         this.centerCoordinates.latitude, 
@@ -412,19 +414,7 @@ class RadarGame {
       return;
     }
     await this.waypointManager.loadWaypoints();
-    this.waypointManager.updateFilteredWaypoints(this.centerCoordinates, this.displayRange);
-    this.displayingWaypoints = this.waypointManager.getFilteredWaypoints();
-    // console.log(2, this.displayingWaypoints);
-    for (let i = 0; i < this.displayingWaypoints.length; i++) {
-      const { x, y } = this.coordinateManager.calculateCanvasCoordinates(this.centerCoordinates.latitude, this.centerCoordinates.longitude, this.displayRange, this.displayingWaypoints[i].latitude, this.displayingWaypoints[i].longitude);
-      // console.log(x,y)
-      this.displayingWaypoints[i].latitude = x;
-      this.displayingWaypoints[i].longitude = y;
-      // console.log(this.displayingWaypoints[i].name, this.displayingWaypoints[i].latitude, this.displayingWaypoints[i].longitude);
-    }
-    console.log(this.displayingWaypoints)
-    // console.log(3, this.displayingWaypoints);
-    this.update(); //最初期の画面を表示する
+    this.updateWaypoints();
   }
 
 
