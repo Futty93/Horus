@@ -4,17 +4,20 @@ package aircraft
 import "fmt"
 
 type Aircraft interface {
-	Proceed(t int)
+	Proceed(t float64)
 	String() string
 }
 
 type CommercialAircraft struct {
 	pos         position
 	instruction instruction
+	m           Movable
 }
 
-func (ca *CommercialAircraft) Proceed(t int) {
+var _ Movable = (*position)(nil)
 
+func (ca *CommercialAircraft) Proceed(t float64) {
+	ca.m.GoForward(t)
 }
 
 func (ca *CommercialAircraft) NewTestCommercialAircraft() CommercialAircraft {

@@ -5,6 +5,10 @@ import (
 	"math"
 )
 
+type Movable interface {
+	GoForward(t float64)
+}
+
 // Base is the class for the stuff in the airspace.
 // Parameters
 type position struct {
