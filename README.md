@@ -2,7 +2,7 @@
 
 ## システム概要
 
-**Horus**は、日本のレーダー管制システムを対象としたオープンソースのシミュレーターです。バックエンドは**ウラノス** (Uranus) という愛称で、Go言語で実装されています。フロントエンドは**オモテノス** (Omotenus) という愛称で、TypeScriptで書かれています。Horusという名前はエジプト神話の天空の神ホルスに由来し、ウラノスはギリシャ神話の天空の神ウラノスに由来しています。
+**Horus**は、日本のレーダー管制システムを対象としたオープンソースのシミュレーターです。バックエンドは**ウラノス** (Uranus) という愛称で、Java言語で実装されています。フロントエンドは**オモテノス** (Omotenus) という愛称で、TypeScriptで書かれています。Horusという名前はエジプト神話の天空の神ホルスに由来し、ウラノスはギリシャ神話の天空の神ウラノスに由来しています。
 
 ### 開発背景
 
@@ -15,46 +15,46 @@
 ## DENOのインストール
 
 ### Linux / macOS
+
 ```
 deno install -qAf https://deno.land/x/deno/cli.ts
 ```
 
 ### macOS (Homebrew)
+
 ```
 brew install deno
 ```
 
 ## コンパイラのインストール
+
 ```
 npm install --save-exact --save-dev esbuild
 ```
 
 ## index.tsをbundle.jsにコンパイルし、サーバーを立ち上げる
+
 ```
 ./node_modules/.bin/esbuild ./frontend/scripts/index.ts --bundle --outfile=./frontend/bundle.js && deno run --allow-net --allow-read https://deno.land/std@0.59.0/http/file_server.ts
 ```
 
 以上で、DENOとesbuildのインストール、およびindex.tsをbundle.jsにコンパイルしてサーバーを立ち上げる準備が整いました。最後のコマンドは、esbuildを使ってTypeScriptファイルをバンドルし、DENOの標準ライブラリを使用してファイルサーバーを立ち上げます。必要に応じてコマンドを実行してください。
 
-
-
 # Go環境のセットアップとmain.goの実行手順
 
-1. **Goのインストール**
+1. **Javaのインストール**
 
-    - [Goの公式サイト](https://golang.org/)からGoをダウンロードしてインストールします。
+    - [JDKのダウンロードサイト](https://www.oracle.com/jp/java/technologies/downloads/#java22)からJavaをダウンロードしてインストールします。
 
-2. **Goの環境設定**
+2. **Javaの環境設定**
 
-    - インストールが完了したら、コマンドラインで `go version` を実行し、Goが正しくインストールされていることを確認します。
+    - インストールが完了したら、コマンドラインで `java --version` を実行し、Goが正しくインストールされていることを確認します。
   
 3. **依存関係のダウンロード**
-    - `go mod tidy` コマンドは、`go.mod`ファイルを整理し、使用されていない依存関係を削除し、必要な依存関係を追加します。
-    - `go mod tidy`
+    - Gradleを使用しています。実行時によしなにしてくれるはずです。
 
 4. **コマンドラインでmain.goを実行**
 
-    - コマンドプロンプトやターミナルで以下のコマンドを実行して、`main.go` を実行します。
-    - `go run main.go`
+`cd ./backend`と`./gradlew bootRun`を実行してバックエンドを起動します。
 
-ブラウザでhttp://localhost:8080/wsにアクセスすることで、サーバー側のコンソールなどを確認できます。
+ブラウザで<http://localhost:8080/docs.htmlにアクセスすることで、サーバー側のコマンドを確認できます。>
