@@ -40,7 +40,7 @@ npm install --save-exact --save-dev esbuild
 
 以上で、DENOとesbuildのインストール、およびindex.tsをbundle.jsにコンパイルしてサーバーを立ち上げる準備が整いました。最後のコマンドは、esbuildを使ってTypeScriptファイルをバンドルし、DENOの標準ライブラリを使用してファイルサーバーを立ち上げます。必要に応じてコマンドを実行してください。
 
-# Go環境のセットアップとmain.goの実行手順
+# Java環境のセットアップとmain.goの実行手順
 
 1. **Javaのインストール**
 
