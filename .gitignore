@@ -37,7 +37,7 @@ go.work
 Icon
 
 # The compiled js file is not necessary, so do not upload it.
-frontend/bundle.js
+Frontend/bundle.js
 
 # Thumbnails
 ._*
