@@ -59,6 +59,6 @@ deno task dev
 
 4. **コマンドラインで実行**
 
-`cd ./backend`と`./gradlew bootRun`を実行してバックエンドを起動します。
+`cd ./Backend`と`./gradlew bootRun`を実行してバックエンドを起動します。
 
 ブラウザで<http://localhost:8080/docs.htmlにアクセスすることで、サーバー側のコマンドを確認できます。>

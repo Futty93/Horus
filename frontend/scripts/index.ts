@@ -461,3 +461,35 @@ if (displayRangeElement) {
     radarGame.updateWaypoints();
   });
 }
+
+// Resetボタンの参照を取得
+const resetButton = document.getElementById('resetButton');
+
+// ボタンがクリックされたときにAPIリクエストを送信する関数
+const handleResetButtonClick = async () => {
+  console.log('Reset button clicked');
+  try {
+    // APIリクエストを送信
+    const response = await fetch('http://localhost:8080/hello/', {
+      method: 'GET',
+      headers: {
+        'accept': '*/*'
+      }
+    });
+
+    // レスポンスのステータスコードを確認
+    if (response.ok) {
+      // レスポンスデータを取得し、コンソールに表示
+      const data = await response.text(); // .json() から .text() へ変更
+      console.log('Response Data:', data);
+    } else {
+      console.error('Request failed with status:', response.status);
+    }
+  } catch (error) {
+    // エラーハンドリング
+    console.error('Error occurred:', error);
+  }
+};
+
+// ボタンにクリックイベントリスナーを追加
+resetButton?.addEventListener('click', handleResetButtonClick);
