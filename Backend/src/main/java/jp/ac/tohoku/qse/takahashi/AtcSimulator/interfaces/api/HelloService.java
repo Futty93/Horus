@@ -1,6 +1,5 @@
-package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces;
+package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.api;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

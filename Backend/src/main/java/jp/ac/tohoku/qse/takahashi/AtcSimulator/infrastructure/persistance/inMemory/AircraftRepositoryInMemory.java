@@ -1,8 +1,10 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.persistance.inMemory;
 
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aircraft.Aircraft;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aircraft.AircraftRepository;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aircraft.CommercialAircraft;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Company;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.FlightNumber;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -22,9 +24,9 @@ public class AircraftRepositoryInMemory implements AircraftRepository {
         aircrafts.add(aircraft);
     }
 
-    public Aircraft find(int id) {
+    public Aircraft find(Callsign callsign) {
         return aircrafts.stream()
-                .filter(aircraft -> aircraft.getId() == id)
+                .filter(aircraft -> aircraft.IsEqualCallsign(callsign))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Aircraft not found"));
     }
