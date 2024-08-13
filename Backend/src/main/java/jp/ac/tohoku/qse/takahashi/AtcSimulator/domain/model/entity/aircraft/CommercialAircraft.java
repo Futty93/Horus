@@ -6,30 +6,30 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 
 public final class CommercialAircraft implements Aircraft {
-    private double speed;
+    private double speed_kt;
     private double heading;
-    private double verticalSpeed;
+    private double verticalSpeed_ft_sec;
     private AircraftPosition position;
     private final Callsign callsign;
 
-    public CommercialAircraft(double speed, double altitude, double heading, double latitude, double longitude, double verticalSpeed, String companyName, String flightNumber) {
+    public CommercialAircraft(double speed_kt, double altitude, double heading, double latitude, double longitude, double verticalSpeed_ft_sec, String companyName, String flightNumber) {
         this.position = new AircraftPosition(latitude, longitude, altitude);
-        this.speed = speed;
+        this.speed_kt = speed_kt;
         this.heading = heading;
-        this.verticalSpeed = verticalSpeed;
+        this.verticalSpeed_ft_sec = verticalSpeed_ft_sec;
         this.callsign = new Callsign(new Company(companyName), new FlightNumber(flightNumber));
     }
 
-    public void setSpeed(double speed) {
-        this.speed = speed;
+    public void setSpeed_kt(double speed_kt) {
+        this.speed_kt = speed_kt;
     }
 
     public void setHeading(double heading) {
         this.heading = heading;
     }
 
-    public void setVerticalSpeed(double verticalSpeed) {
-        this.verticalSpeed = verticalSpeed;
+    public void setVerticalSpeed_ft_sec(double verticalSpeed_ft_sec) {
+        this.verticalSpeed_ft_sec = verticalSpeed_ft_sec;
     }
 
 
@@ -38,7 +38,7 @@ public final class CommercialAircraft implements Aircraft {
     }
 
     public void NextStep() {
-        this.position = new AircraftPosition(this.position.getLatitude(), this.position.getLongitude(), this.position.getAltitude() + this.verticalSpeed);
+        this.position = new AircraftPosition(this.position.getLatitude()+speed_kt*Math.sin(heading*Math.PI/180), this.position.getLongitude()+speed_kt*Math.cos(heading*Math.PI/180), this.position.getAltitude() + this.verticalSpeed_ft_sec);
     }
 
     public boolean IsEqualCallsign(Callsign callsign){
