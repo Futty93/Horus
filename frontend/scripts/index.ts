@@ -245,8 +245,8 @@ class RadarGame {
 
     const currentSpeed = airplane.calculateSpeedComponents(speed, heading);
     this.ctx[index].lineTo(
-      position.currentX + (currentSpeed.xSpeed * 60),// * REFRESH_RATE * 60),
-      position.currentY + (currentSpeed.ySpeed * 60)// * REFRESH_RATE * 60),
+      position.currentX + (currentSpeed.xSpeed * 10),// * REFRESH_RATE * 60),
+      position.currentY + (currentSpeed.ySpeed * 10)// * REFRESH_RATE * 60),
     );
 
     this.ctx[index].strokeStyle = "white";
@@ -274,16 +274,53 @@ class RadarGame {
     this.ctx[index].strokeStyle = "white";
     this.ctx[index].stroke();
 
-    //ラベルの周りを線で囲いたいとき↓↓
-    // this.ctx[index].beginPath();
-    // this.ctx[index].strokeStyle = "white";
-    // this.ctx[index].lineWidth = 2;
-    // this.ctx[index].moveTo(labelX-5, labelY-20); // Move to the starting point
-    // this.ctx[index].lineTo(labelX + 70, labelY-20); // Draw top line
-    // this.ctx[index].lineTo(labelX + 70, labelY + 40); // Draw right line
-    // this.ctx[index].lineTo(labelX-5, labelY + 40); // Draw bottom line
-    // this.ctx[index].lineTo(labelX-5, labelY-20); // Draw left line to close the rectangle
-    // this.ctx[index].stroke(); // Stroke the path
+
+    // コールサイン等のラベルの背景に色をつける
+    // if ( airplaneInfo.heading == '26' ) {
+    //   //ラベルの周りを線で囲いたいとき↓↓
+    //   // this.ctx[index].beginPath();
+    //   // this.ctx[index].strokeStyle = "white";
+    //   // this.ctx[index].lineWidth = 2;
+    //   // this.ctx[index].moveTo(labelX-5, labelY-20); // Move to the starting point
+    //   // this.ctx[index].lineTo(labelX + 70, labelY-20); // Draw top line
+    //   // this.ctx[index].lineTo(labelX + 70, labelY + 40); // Draw right line
+    //   // this.ctx[index].lineTo(labelX-5, labelY + 40); // Draw bottom line
+    //   // this.ctx[index].lineTo(labelX-5, labelY-20); // Draw left line to close the rectangle
+    //   // this.ctx[index].stroke(); // Stroke the path
+    //   const cornerRadius = 5;
+    //   const labelWidth = 75;  // 70 + 5 for padding
+    //   const labelHeight = 60; // 40 + 20 for padding
+
+    //   this.ctx[index].beginPath();
+    //   this.ctx[index].moveTo(labelX - 5 + cornerRadius, labelY - 20);
+
+    //   // Top Line with top-right corner
+    //   this.ctx[index].lineTo(labelX - 5 + labelWidth - cornerRadius, labelY - 20);
+    //   this.ctx[index].arcTo(labelX - 5 + labelWidth, labelY - 20, labelX - 5 + labelWidth, labelY - 20 + cornerRadius, cornerRadius);
+
+    //   // Right Line with bottom-right corner
+    //   this.ctx[index].lineTo(labelX - 5 + labelWidth, labelY + 40 - cornerRadius);
+    //   this.ctx[index].arcTo(labelX - 5 + labelWidth, labelY + 40, labelX - 5 + labelWidth - cornerRadius, labelY + 40, cornerRadius);
+
+    //   // Bottom Line with bottom-left corner
+    //   this.ctx[index].lineTo(labelX - 5 + cornerRadius, labelY + 40);
+    //   this.ctx[index].arcTo(labelX - 5, labelY + 40, labelX - 5, labelY + 40 - cornerRadius, cornerRadius);
+
+    //   // Left Line with top-left corner
+    //   this.ctx[index].lineTo(labelX - 5, labelY - 20 + cornerRadius);
+    //   this.ctx[index].arcTo(labelX - 5, labelY - 20, labelX - 5 + cornerRadius, labelY - 20, cornerRadius);
+
+    //   this.ctx[index].closePath();
+
+    //   // Fill with light green color
+    //   this.ctx[index].fillStyle = "#008000";
+    //   this.ctx[index].fill();
+
+    //   // // Draw the border with white color
+    //   // this.ctx[index].strokeStyle = "white";
+    //   // this.ctx[index].lineWidth = 2;
+    //   // this.ctx[index].stroke();
+    // }
   }
 
   /**
