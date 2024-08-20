@@ -14,16 +14,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class AtcSimulatorApplicationConfig
-{
-    @Autowired
-    AircraftRepository aircraftRepository;
+public class AtcSimulatorApplicationConfig {
 
     @Autowired
-    AirSpace airSpace;
+    private AircraftRepository aircraftRepository;
+
+    @Autowired
+    private AirSpace airSpace;
 
     @Bean
-    public AircraftRadarService aircraftLocationService() {
+    public AircraftRadarService aircraftRadarService() {
         return new AircraftRadarServiceImpl(aircraftRepository);
     }
 
