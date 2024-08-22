@@ -2,40 +2,34 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.persistance.inMem
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Company;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.FlightNumber;
-import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
-@Repository
 public class AircraftRepositoryInMemory implements AircraftRepository {
-    private final List<Aircraft> aircrafts = new ArrayList<>();
 
-    public AircraftRepositoryInMemory() {
-//        aircrafts.add(new CommercialAircraft(1,0,0,0,0,0,0,"Company 1","Flight 1"));
-//        aircrafts.add(new CommercialAircraft(2, 0, 0, 0, 0, 0, 0, "Company 2", "Flight 2"));
-//        aircrafts.add(new CommercialAircraft(3, 0, 0, 0, 0, 0, 0, "Company 3", "Flight 3"));
-    }
+    private final ConcurrentMap<String, Aircraft> aircraftMap = new ConcurrentHashMap<>();
 
-    public void add(Aircraft aircraft) {
-        aircrafts.add(aircraft);
-    }
-
-    public Aircraft find(Callsign callsign) {
-        return aircrafts.stream()
-                .filter(aircraft -> aircraft.IsEqualCallsign(callsign))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Aircraft not found"));
-    }
-
+    @Override
     public List<Aircraft> findAll() {
-        return aircrafts;
+        return new ArrayList<>(aircraftMap.values());
     }
 
-    public void remove(Aircraft airplane) {
-        aircrafts.remove(airplane);
+    @Override
+    public Optional<Aircraft> findById(String callsign) {
+        return Optional.ofNullable(aircraftMap.get(callsign));
+    }
+
+    @Override
+    public void save(Aircraft aircraft) {
+        aircraftMap.put(aircraft.getCallsign(), aircraft);
+    }
+
+    @Override
+    public void deleteById(String callsign) {
+        aircraftMap.remove(callsign);
     }
 }

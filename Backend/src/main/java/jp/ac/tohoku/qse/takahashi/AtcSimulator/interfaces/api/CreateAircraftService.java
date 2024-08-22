@@ -1,25 +1,35 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.api;
 
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aggregate.airspace.AirspaceManagement;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.service.scenario.ScenarioService;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.CreateAircraftDto;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.AircraftRadarService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/aircraft")
+@RequestMapping("/api/aircraft")
+@Validated
 public class CreateAircraftService {
 
-    private final ScenarioService scenarioService;
+    private final AircraftRadarService aircraftRadarService;
 
-    public CreateAircraftService(ScenarioService scenarioService) {
-        this.scenarioService = scenarioService;
+    @Autowired
+    public CreateAircraftService(AircraftRadarService aircraftRadarService) {
+        this.aircraftRadarService = aircraftRadarService;
     }
 
-    @RequestMapping(path = "/create", method = RequestMethod.POST)
-    public String createAircraft(CreateAircraftDto createAircraftDto) {
-        scenarioService.spawnAircraft(createAircraftDto);
-        return "Aircraft created:" + createAircraftDto.companyName + "-" +createAircraftDto.flightNumber;
+    @PostMapping("/create")
+    public ResponseEntity<Aircraft> createAircraft(@RequestBody CreateAircraftDto createAircraftDto) {
+        // サービス層を使って新しい航空機を作成
+        Aircraft createdAircraft = aircraftRadarService.createAircraft(createAircraftDto);
+        
+        // 作成した航空機情報を返す
+        return new ResponseEntity<>(createdAircraft, HttpStatus.CREATED);
     }
 }

@@ -231,10 +231,21 @@ Configuration class for setting up CORS (Cross-Origin Resource Sharing) in the a
 
 # Aircraft.java
 
-Interface representing an aircraft entity.
+航空機を表現するためのエンティティクラス
 
-## Contents
-- Method definitions for aircraft properties and operations.
+- **`Callsign`**: 航空機のコールサインを表すためのオブジェクト（`Callsign` クラスを使用）。
+- **`AircraftPosition`**: 航空機の位置（緯度・経度）を表すオブジェクト（`AircraftPosition` クラスを使用）。
+- **`altitude`**: 高度をフィートで表す整数値。
+- **`groundSpeed`**: 地上速度をノットで表す整数値。
+- **`verticalSpeed`**: 上昇または下降速度をフィート毎分で表す整数値。
+- **`heading`**: 航空機の機首方向を0度から360度で表す整数値。
+- **`type`**: 航空機のICAO機種コードを表す文字列。
+- **`originIata`, `originIcao`, `destinationIata`, `destinationIcao`**: 出発地と目的地のIATAおよびICAOコードを表す文字列。
+- **`eta`**: 到着予定時刻をISO 8601形式で表す文字列。
+
+### Method
+
+- **`updatePosition`**: 経過時間（秒）に基づいて航空機の位置を更新するメソッド。このメソッドは、機首方向と速度を基にして位置を計算し、また垂直速度を基に高度を更新します。
 
 
 #### `domain/model/entity/aircraft/AircraftRepository.java`
@@ -242,10 +253,14 @@ Interface representing an aircraft entity.
 
 # AircraftRepository.java
 
-Interface for repository operations related to aircraft.
+航空機 (Aircraft) エンティティを保存・取得するためのリポジトリインターフェース
 
 ## Contents
-- Method definitions for accessing and managing aircraft data.
+- **`save(Aircraft aircraft)`**: 航空機エンティティを保存するメソッド。新しい航空機を追加するか、既存の航空機を更新します。
+- **`findByCallsign(Callsign callsign)`**: 指定されたコールサインに基づいて航空機を取得するメソッド。存在しない場合は空の `Optional<Aircraft>` を返します。
+- **`findAll()`**: 保存されているすべての航空機エンティティをリストとして取得するメソッド。
+- **`deleteByCallsign(Callsign callsign)`**: 指定されたコールサインに基づいて航空機を削除するメソッド。
+- **`update(Aircraft aircraft)`**: 航空機の情報を更新するメソッド。このメソッドは `save()` メソッドと同様の役割を果たしますが、更新時には特定の処理を追加することができます。
 
 
 #### `domain/model/entity/aircraft/CommercialAircraft.java`
@@ -253,7 +268,7 @@ Interface for repository operations related to aircraft.
 
 # CommercialAircraft.java
 
-Implementation of the `Aircraft` interface, representing a commercial aircraft.
+Aircraft クラスを拡張した商業航空機を表すエンティティクラス
 
 ## Contents
 - Specific properties and methods for commercial aircraft.
@@ -265,10 +280,28 @@ Implementation of the `Aircraft` interface, representing a commercial aircraft.
 
 # ScenarioService.java
 
-Interface for handling scenarios involving aircraft and airspace.
+シナリオに基づいて空域や航空機の状態を管理するためのサービスを提供するインターフェース
 
 ## Contents
-- Method definitions for managing and processing flight scenarios.
+1. **`initializeScenario()`**:
+   - シナリオを初期化するメソッドです。シナリオが開始される前に必要な設定や準備を行います。
+
+2. **`generateAircraftsForScenario()`**:
+   - シナリオに基づいて航空機を生成し、リストとして返すメソッドです。シナリオによって異なる航空機が生成されます。
+
+3. **`updateScenarioAircraftPositions()`**:
+   - シナリオに基づいて航空機の位置や状態を更新するメソッドです。時間の経過やシナリオの進行に応じて、航空機の動きをシミュレーションします。
+
+4. **`getScenarioStatus()`**:
+   - 現在のシナリオのステータスや進行状況を取得するメソッドです。フロントエンドや他のシステムと連携する際に使用します。
+
+5. **`terminateScenario()`**:
+   - シナリオを終了するための処理を行うメソッドです。シナリオの終了後に必要なクリーンアップやデータの保存を行います。
+
+### 利用例
+
+`ScenarioService` は、シナリオベースのシミュレーションを行うための基盤となります。例えば、航空機が登場するシナリオを開始するときには `initializeScenario()` を呼び出し、シナリオ進行中に `updateScenarioAircraftPositions()` を使って航空機の位置を更新します。また、シナリオの進行状況を確認したいときには `getScenarioStatus()` を使用し、シナリオが終了したら `terminateScenario()` で後処理を行います。
+
 
 
 #### `domain/model/service/scenario/ScenarioServiceImpl.java`
@@ -276,10 +309,24 @@ Interface for handling scenarios involving aircraft and airspace.
 
 # ScenarioServiceImpl.java
 
-Implementation of `ScenarioService`.
+`ScenarioService` インターフェースを実装するクラス
+シナリオの初期化、航空機の生成、位置の更新など、シナリオに基づいたシステムの動作を具体的に制御する
 
 ## Contents
-- Logic for processing flight scenarios and updating aircraft information.
+1. **`initializeScenario()`**:
+   - シナリオを初期化し、空域をクリアします。シナリオのステータスを「初期化済み」に設定し、初期化メッセージを表示します。
+
+2. **`generateAircraftsForScenario()`**:
+   - シナリオに基づいて新しい航空機を生成し、その航空機をリポジトリに保存します。例として、`Aircraft` オブジェクトを作成してリストに追加します。この方法で他の航空機も生成できます。
+
+3. **`updateScenarioAircraftPositions()`**:
+   - シナリオに基づいて、すべての航空機の位置を更新します。航空機リストを取得し、それぞれの航空機の位置を更新し、再度リポジトリに保存します。
+
+4. **`getScenarioStatus()`**:
+   - 現在のシナリオのステータスを返します。これにより、システムの外部からシナリオの進行状況を把握できます。
+
+5. **`terminateScenario()`**:
+   - シナリオを終了し、ステータスを「終了済み」に設定します。終了メッセージを表示します。
 
 
 #### `domain/model/valueObject/Callsign/Callsign.java`
@@ -287,10 +334,24 @@ Implementation of `ScenarioService`.
 
 # Callsign.java
 
-Value object representing the aircraft's callsign.
+航空機のコールサイン（無線呼び出し符号）を表すクラス
+コールサインに関連する情報や操作をカプセル化
 
 ## Contents
-- Properties and methods for handling aircraft callsigns.
+1. **コンストラクタ**:
+   - `airlineCode` と `flightNumber` の2つのパラメータを受け取り、コールサインを初期化します。これらのフィールドは、コールサインを一意に識別するために使用されます。入力がnullや空文字の場合は、`IllegalArgumentException`をスローして入力の妥当性を保証します。
+
+2. **`getFullCallsign()`**:
+   - 完全なコールサイン（航空会社コード + フライトナンバー）を返します。これは、コールサインをフルフォーマットで表示するために使用されます。
+
+3. **`getAirlineCode()`** および **`getFlightNumber()`**:
+   - それぞれ航空会社コードとフライトナンバーを個別に取得するためのメソッドです。
+
+4. **`equals()`** および **`hashCode()`**:
+   - コールサインが等しいかどうかを判断するために `equals` をオーバーライドし、`hashCode` メソッドもオーバーライドして、コールサインが同じ場合に同じハッシュコードを返すようにしています。
+
+5. **`toString()`**:
+   - `Callsign` オブジェクトを文字列として表現するためのメソッドです。デバッグやログ出力時に役立ちます。
 
 
 #### `domain/model/valueObject/Callsign/Company.java`
@@ -298,10 +359,21 @@ Value object representing the aircraft's callsign.
 
 # Company.java
 
-Value object representing an airline company.
+航空会社の情報を管理するクラス
+航空会社コードや名前など、航空会社に関連するデータを格納し、必要に応じて操作する機能を提供
 
 ## Contents
-- Properties and methods for airline company information.
+1. **コンストラクタ**:
+   - `airlineCode` と `airlineName` の2つのパラメータを受け取り、航空会社を初期化します。これらのフィールドは、航空会社を一意に識別するために使用されます。入力がnullや空文字の場合は、`IllegalArgumentException`をスローして入力の妥当性を保証します。
+
+2. **`getAirlineCode()`** および **`getAirlineName()`**:
+   - それぞれ航空会社コードと航空会社名を個別に取得するためのメソッドです。
+
+3. **`equals()`** および **`hashCode()`**:
+   - 航空会社が等しいかどうかを判断するために `equals` をオーバーライドし、`hashCode` メソッドもオーバーライドして、航空会社が同じ場合に同じハッシュコードを返すようにしています。
+
+4. **`toString()`**:
+   - `Company` オブジェクトを文字列として表現するためのメソッドです。デバッグやログ出力時に役立ちます。
 
 
 #### `domain/model/valueObject/Callsign/FlightNumber.java`
@@ -309,10 +381,21 @@ Value object representing an airline company.
 
 # FlightNumber.java
 
-Value object representing a flight number.
+航空機のフライト番号を管理するクラス
 
 ## Contents
-- Properties and methods for managing flight numbers.
+1. **コンストラクタ**:
+   - `flightNumber` パラメータを受け取り、フライト番号を初期化します。入力されたフライト番号が `null` または空文字の場合、`IllegalArgumentException` をスローします。
+   - 正規表現 `\\d+` を使用して、フライト番号が数字で構成されているかどうかを検証します。数字以外の文字が含まれている場合、例外をスローします。
+
+2. **`getFlightNumber()`**:
+   - フライト番号を返すためのメソッドです。このメソッドを使用して、フライト番号を取得できます。
+
+3. **`equals()`** および **`hashCode()`**:
+   - フライト番号が等しいかどうかを判断するために `equals` メソッドをオーバーライドし、`hashCode` メソッドもオーバーライドして、一意性を保証します。
+
+4. **`toString()`**:
+   - `FlightNumber` オブジェクトを文字列として表現するためのメソッドです。このメソッドはデバッグやログの出力時に役立ちます。
 
 
 #### `domain/model/valueObject/Position/AircraftPosition.java`
@@ -320,10 +403,21 @@ Value object representing a flight number.
 
 # AircraftPosition.java
 
-Value object representing the position of an aircraft.
+航空機の位置情報を管理するためのクラス
+緯度、経度、機首方向、速度、垂直速度、高度などの航空機の位置情報を保持し、航空機の状態を追跡するために使用
 
 ## Contents
-- Properties and methods for handling aircraft positions, including latitude, longitude, altitude, etc.
+1. **コンストラクタ**:
+   - 緯度、経度、機首方向、高度、対地速度、垂直速度を受け取り、航空機の位置情報を初期化します。
+
+2. **ゲッター**:
+   - 各フィールドの値を取得するためのメソッド (`getLatitude()`, `getLongitude()`, `getHeading()`, `getAltitude()`, `getGroundSpeed()`, `getVerticalSpeed()`) を提供します。
+
+3. **`equals()` および `hashCode()`**:
+   - 同じ航空機の位置情報であるかどうかを判定するための `equals` メソッドをオーバーライドし、一意性を保証するために `hashCode` メソッドもオーバーライドしています。
+
+4. **`toString()`**:
+   - 航空機の位置情報を文字列として表現するためのメソッドです。デバッグやログ出力時に役立ちます。
 
 
 #### `infrastructure/persistance/inMemory/AircraftRepositoryInMemory.java`
@@ -331,11 +425,25 @@ Value object representing the position of an aircraft.
 
 # AircraftRepositoryInMemory.java
 
-In-memory implementation of `AircraftRepository`.
+航空機情報をメモリ内で管理するリポジトリクラス
+航空機情報を格納・取得・更新・削除するための機能を提供
+通常、リポジトリクラスはデータベースにアクセスしますが、この場合はインメモリでのデータ管理を行う
 
 ## Contents
-- Methods for storing and retrieving aircraft data in-memory.
-- Used for testing or development purposes.
+1. **`ConcurrentMap`**:
+   - `ConcurrentMap<String, Aircraft>` はスレッドセーフなマップで、航空機情報を `callsign` をキーにして格納しています。この構造は、並行アクセスが必要な状況でも安全に動作します。
+
+2. **`findAll()`**:
+   - メモリ内に格納されたすべての航空機情報をリストとして返します。このメソッドは、すべての航空機の情報を取得するために使用されます。
+
+3. **`findById()`**:
+   - 指定された `callsign` に対応する航空機情報を返します。航空機が存在する場合は `Optional` でラップされた `Aircraft` を返し、存在しない場合は `Optional.empty()` を返します。
+
+4. **`save()`**:
+   - メモリ内に航空機情報を保存します。既存の `callsign` がある場合は、そのエントリを更新します。
+
+5. **`deleteById()`**:
+   - 指定された `callsign` に対応する航空機情報を削除します。
 
 
 #### `interfaces/api/CreateAircraftService.java`
@@ -343,10 +451,27 @@ In-memory implementation of `AircraftRepository`.
 
 # CreateAircraftService.java
 
-API interface for creating aircraft.
+API 層で使用されるコントローラクラスであり、新しい航空機を作成するためのエンドポイント
 
 ## Contents
-- Method definitions for handling aircraft creation requests.
+1. **依存関係の注入**:
+   - `AircraftRadarService` は、Spring の `@Autowired` アノテーションを使用して依存関係として注入されます。このサービスクラスは、航空機の作成ロジックを実行します。
+
+2. **エンドポイントの設定**:
+   - `@RestController` と `@RequestMapping` により、このクラスは REST API のコントローラとして機能します。すべてのリクエストは `/api/aircraft` のパスに関連付けられます。
+   - `@PostMapping("/create")` によって、HTTP POST リクエストが `/api/aircraft/create` にマッピングされます。このエンドポイントは、新しい航空機を作成するために使用されます。
+
+3. **`createAircraft()` メソッド**:
+   - このメソッドは、`@RequestBody` アノテーションを使用して、リクエストボディから `CreateAircraftDto` を受け取ります。
+   - サービス層の `createAircraft()` メソッドを呼び出して、新しい航空機を作成します。
+   - 作成された航空機を含む `ResponseEntity` を返し、HTTP ステータスコードとして `HttpStatus.CREATED`（201 Created）を設定します。
+
+### 期待する使用シナリオ
+
+- フロントエンドから新しい航空機を作成するリクエストを送信すると、このエンドポイントが呼び出されます。
+- リクエストボディには、航空機の情報が `CreateAircraftDto` として含まれます。
+- サービス層が呼び出され、新しい航空機が作成されます。
+- 作成された航空機の情報がクライアントに返されます。
 
 
 #### `interfaces/api/HelloService.java`
@@ -366,10 +491,35 @@ Controller for handling basic API requests for testing purposes.
 
 # LocationService.java
 
-API interface for handling aircraft location requests.
+航空機の位置情報を取得するためのリクエストを受け付け、サービス層と連携して必要なデータを返す
 
 ## Contents
-- Method definitions for retrieving the locations of aircraft within the airspace.
+1. **依存関係の注入**:
+   - `AircraftRadarService` は、航空機の位置情報を取得するために使用されるサービスクラスです。Spring の `@Autowired` アノテーションを使用して依存関係として注入されています。
+
+2. **エンドポイントの設定**:
+   - `@RestController` と `@RequestMapping("/api/location")` により、このクラスは REST API のコントローラとして機能します。すべてのリクエストは `/api/location` のパスに関連付けられます。
+
+3. **`getAllAircraftPositions()` メソッド**:
+   - `@GetMapping("/all")` により、このエンドポイントはすべての航空機の位置情報を取得するために使用されます。
+   - `AircraftRadarService` のメソッドを呼び出し、全航空機の位置情報をリストで返します。
+
+4. **`getAircraftPosition()` メソッド**:
+   - `@GetMapping("/{callsign}")` により、特定の航空機の位置情報を取得するエンドポイントが定義されています。
+   - `@PathVariable` アノテーションを使用して、URL パスから `callsign` を取得し、対応する航空機の位置情報を取得します。
+
+### 期待する使用シナリオ
+
+- **全航空機の位置情報取得**:
+  - `/api/location/all` エンドポイントを使用して、管制空域内のすべての航空機の位置情報を取得します。このデータはフロントエンドで航空機の位置を表示する際に使用されます。
+
+- **特定の航空機の位置情報取得**:
+  - `/api/location/{callsign}` エンドポイントを使用して、指定されたコールサイン（`callsign`）に基づいて、特定の航空機の位置情報を取得します。
+
+### 注意点
+
+- **エラーハンドリング**:
+  - 特定の航空機が存在しない場合や、位置情報が取得できない場合のエラーハンドリングが必要です。`AircraftRadarService` 内で適切な例外処理を行うことが推奨されます。
 
 
 #### `interfaces/api/ControlService.java`

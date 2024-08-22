@@ -1,27 +1,60 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign;
 
-public class Callsign {
-    private final Company company;
-    private final FlightNumber flightNumber;
+import java.util.Objects;
 
-    public Callsign(Company company, FlightNumber flightNumber) {
-        this.company = company;
+public class Callsign {
+
+    private final String airlineCode;
+    private final String flightNumber;
+
+    // コンストラクタ
+    public Callsign(String airlineCode, String flightNumber) {
+        if (airlineCode == null || airlineCode.isEmpty()) {
+            throw new IllegalArgumentException("Airline code cannot be null or empty");
+        }
+        if (flightNumber == null || flightNumber.isEmpty()) {
+            throw new IllegalArgumentException("Flight number cannot be null or empty");
+        }
+
+        this.airlineCode = airlineCode;
         this.flightNumber = flightNumber;
     }
 
-    public Company getCompany() {
-        return this.company;
+    // コールサインを完全な形式で返すメソッド
+    public String getFullCallsign() {
+        return airlineCode + flightNumber;
     }
 
-    public FlightNumber getFlightNumber() {
-        return this.flightNumber;
+    // 航空会社コードを返すメソッド
+    public String getAirlineCode() {
+        return airlineCode;
     }
 
+    // フライトナンバーを返すメソッド
+    public String getFlightNumber() {
+        return flightNumber;
+    }
+
+    // equalsとhashCodeをオーバーライド
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Callsign callsign = (Callsign) o;
+        return airlineCode.equals(callsign.airlineCode) && flightNumber.equals(callsign.flightNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(airlineCode, flightNumber);
+    }
+
+    // toStringメソッドをオーバーライド
+    @Override
     public String toString() {
-        return this.company.name() + this.flightNumber.number();
-    }
-
-    public boolean equals(Callsign callsign){
-        return this.company.equals(callsign.getCompany()) && this.flightNumber.equals(callsign.getFlightNumber());
+        return "Callsign{" +
+                "airlineCode='" + airlineCode + '\'' +
+                ", flightNumber='" + flightNumber + '\'' +
+                '}';
     }
 }
