@@ -1,70 +1,39 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.valueObject.Callsign;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.valueObject.Position;
+import java.util.List;
+import java.util.Optional;
 
-public class CommercialAircraft extends Aircraft {
+public interface AircraftRepository {
 
-    private String aircraftType;  // 機種（例: "Boeing 777"）
-    private String originAirport; // 出発地空港（例: "RJTT"）
-    private String destinationAirport; // 目的地空港（例: "KLAX"）
-    private String airline; // 航空会社（例: "All Nippon Airways"）
+    /**
+     * 航空機を保存するメソッド。
+     * @param aircraft 保存する航空機エンティティ
+     */
+    void save(Aircraft aircraft);
 
-    public CommercialAircraft(Callsign callsign, Position position, int altitude, int speed, int heading,
-                              String aircraftType, String originAirport, String destinationAirport, String airline) {
-        super(callsign, position, altitude, speed, heading);
-        this.aircraftType = aircraftType;
-        this.originAirport = originAirport;
-        this.destinationAirport = destinationAirport;
-        this.airline = airline;
-    }
+    /**
+     * コールサインによって航空機を取得するメソッド。
+     * @param callsign 取得する航空機のコールサイン
+     * @return 航空機エンティティのオプショナル
+     */
+    Optional<Aircraft> findByCallsign(Callsign callsign);
 
-    // Getter and Setter methods
+    /**
+     * すべての航空機を取得するメソッド。
+     * @return すべての航空機エンティティのリスト
+     */
+    List<Aircraft> findAll();
 
-    public String getAircraftType() {
-        return aircraftType;
-    }
+    /**
+     * コールサインによって航空機を削除するメソッド。
+     * @param callsign 削除する航空機のコールサイン
+     */
+    void deleteByCallsign(Callsign callsign);
 
-    public void setAircraftType(String aircraftType) {
-        this.aircraftType = aircraftType;
-    }
-
-    public String getOriginAirport() {
-        return originAirport;
-    }
-
-    public void setOriginAirport(String originAirport) {
-        this.originAirport = originAirport;
-    }
-
-    public String getDestinationAirport() {
-        return destinationAirport;
-    }
-
-    public void setDestinationAirport(String destinationAirport) {
-        this.destinationAirport = destinationAirport;
-    }
-
-    public String getAirline() {
-        return airline;
-    }
-
-    public void setAirline(String airline) {
-        this.airline = airline;
-    }
-
-    @Override
-    public String toString() {
-        return "CommercialAircraft{" +
-                "callsign=" + getCallsign() +
-                ", position=" + getPosition() +
-                ", altitude=" + getAltitude() +
-                ", speed=" + getSpeed() +
-                ", heading=" + getHeading() +
-                ", aircraftType='" + aircraftType + '\'' +
-                ", originAirport='" + originAirport + '\'' +
-                ", destinationAirport='" + destinationAirport + '\'' +
-                ", airline='" + airline + '\'' +
-                '}';
-    }
+    /**
+     * 航空機の情報を更新するメソッド。
+     * @param aircraft 更新する航空機エンティティ
+     */
+    void update(Aircraft aircraft);
 }

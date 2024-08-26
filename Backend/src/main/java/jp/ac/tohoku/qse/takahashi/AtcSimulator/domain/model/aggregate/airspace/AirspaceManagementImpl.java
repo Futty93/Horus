@@ -1,11 +1,13 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aggregate.airspace;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.valueObject.Position;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.swing.text.Position;
 
 // TODO: Airspaceを複数にする
 public class AirspaceManagementImpl implements AirspaceManagement {
@@ -33,7 +35,7 @@ public class AirspaceManagementImpl implements AirspaceManagement {
     }
 
     @Override
-    public void updateAircraftPositionInAirspace(String callsign, Position newPosition) {
+    public void updateAircraftPositionInAirspace(String callsign, AircraftPosition newPosition) {
         Aircraft aircraft = aircraftsInAirspace.get(callsign);
         if (aircraft != null) {
             aircraft.setPosition(newPosition);
@@ -46,7 +48,7 @@ public class AirspaceManagementImpl implements AirspaceManagement {
     }
 
     @Override
-    public boolean isAircraftOverlappingInAirspace(Position position) {
+    public boolean isAircraftOverlappingInAirspace(AircraftPosition position) {
         for (Aircraft aircraft : aircraftsInAirspace.values()) {
             if (aircraft.getPosition().equals(position)) {
                 return true;

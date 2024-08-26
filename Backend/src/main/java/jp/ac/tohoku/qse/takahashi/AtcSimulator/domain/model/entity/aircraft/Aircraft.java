@@ -1,7 +1,7 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft;
 
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.valueObject.Callsign;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.valueObject.Position.AircraftPosition;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 
 public class Aircraft {
 

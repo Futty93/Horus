@@ -1,47 +1,70 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Company;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.FlightNumber;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 
-public final class CommercialAircraft implements Aircraft {
-    private double speed;
-    private double heading;
-    private double verticalSpeed;
-    private AircraftPosition position;
-    private final Callsign callsign;
+public class CommercialAircraft extends Aircraft {
 
-    public CommercialAircraft(double speed, double altitude, double heading, double latitude, double longitude, double verticalSpeed, String companyName, String flightNumber) {
-        this.position = new AircraftPosition(latitude, longitude, altitude);
-        this.speed = speed;
-        this.heading = heading;
-        this.verticalSpeed = verticalSpeed;
-        this.callsign = new Callsign(new Company(companyName), new FlightNumber(flightNumber));
+    private String aircraftType;  // 機種（例: "Boeing 777"）
+    private String originAirport; // 出発地空港（例: "RJTT"）
+    private String destinationAirport; // 目的地空港（例: "KLAX"）
+    private String airline; // 航空会社（例: "All Nippon Airways"）
+
+    public CommercialAircraft(Callsign callsign, AircraftPosition position, int altitude, int speed, int heading,
+                              String aircraftType, String originAirport, String destinationAirport, String airline) {
+        super(callsign, position, altitude, speed, heading);
+        this.aircraftType = aircraftType;
+        this.originAirport = originAirport;
+        this.destinationAirport = destinationAirport;
+        this.airline = airline;
     }
 
-    public void setSpeed(double speed) {
-        this.speed = speed;
+    // Getter and Setter methods
+
+    public String getAircraftType() {
+        return aircraftType;
     }
 
-    public void setHeading(double heading) {
-        this.heading = heading;
+    public void setAircraftType(String aircraftType) {
+        this.aircraftType = aircraftType;
     }
 
-    public void setVerticalSpeed(double verticalSpeed) {
-        this.verticalSpeed = verticalSpeed;
+    public String getOriginAirport() {
+        return originAirport;
     }
 
-
-    public String getLocation() {
-        return "Flight: " + this.callsign + ", Latitude: " + this.position.getLatitude() + ", Longitude: " + this.position.getLongitude();
+    public void setOriginAirport(String originAirport) {
+        this.originAirport = originAirport;
     }
 
-    public void NextStep() {
-        this.position = new AircraftPosition(this.position.getLatitude(), this.position.getLongitude(), this.position.getAltitude() + this.verticalSpeed);
+    public String getDestinationAirport() {
+        return destinationAirport;
     }
 
-    public boolean IsEqualCallsign(Callsign callsign){
-        return this.callsign.equals(callsign);
+    public void setDestinationAirport(String destinationAirport) {
+        this.destinationAirport = destinationAirport;
+    }
+
+    public String getAirline() {
+        return airline;
+    }
+
+    public void setAirline(String airline) {
+        this.airline = airline;
+    }
+
+    @Override
+    public String toString() {
+        return "CommercialAircraft{" +
+                "callsign=" + getCallsign() +
+                ", position=" + getPosition() +
+                ", altitude=" + getAltitude() +
+                ", speed=" + getSpeed() +
+                ", heading=" + getHeading() +
+                ", aircraftType='" + aircraftType + '\'' +
+                ", originAirport='" + originAirport + '\'' +
+                ", destinationAirport='" + destinationAirport + '\'' +
+                ", airline='" + airline + '\'' +
+                '}';
     }
 }

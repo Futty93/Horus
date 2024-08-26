@@ -1,7 +1,7 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aggregate.airspace;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.valueObject.Position;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 
 import java.util.Collection;
 
@@ -30,7 +30,7 @@ public interface AirspaceManagement {
      * @param callsign 更新する航空機のコールサイン
      * @param newPosition 更新する位置情報
      */
-    void updateAircraftPositionInAirspace(String callsign, Position newPosition);
+    void updateAircraftPositionInAirspace(String callsign, AircraftPosition newPosition);
 
     /**
      * 空域内に存在する航空機の数を取得します。
@@ -43,5 +43,5 @@ public interface AirspaceManagement {
      * @param position 確認する位置情報
      * @return 重複している場合は true、そうでない場合は false
      */
-    boolean isAircraftOverlappingInAirspace(Position position);
+    boolean isAircraftOverlappingInAirspace(AircraftPosition position);
 }

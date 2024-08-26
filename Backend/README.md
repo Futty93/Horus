@@ -8,8 +8,10 @@
 ├── AtcSimulatorApplication.java
 ├── application
 │   ├── AircraftRadarService.java
+│   ├── AircraftControlService.java
 │   └── aircraft
 │       └── AircraftRadarServiceImpl.java
+│       └── AircraftControlServiceImpl.java 
 ├── config
 │   ├── AtcSimulatorApplicationConfig.java
 │   └── WebConfig.java
@@ -70,10 +72,23 @@ This is the main application class for starting the Spring Boot application. It 
 
 # AircraftRadarService.java
 
-Interface for managing aircraft radar services.
+航空機のレーダーデータを管理するサービスインターフェース
 
 ## Contents
-- Method definitions for retrieving and managing aircraft information.
+- **`getAllAircraft`**:
+  - 現在空域内にいるすべての航空機のリストを取得するメソッド。
+
+- **`getAircraftByCallsign`**:
+  - 指定されたコールサインの航空機を取得するメソッド。航空機が見つからなければ `null` を返します。
+
+- **`updateAircraft`**:
+  - 指定されたコールサインの航空機の状態を更新するメソッド。コントロール指示を適用する際や新しいレーダーデータに基づいて位置を更新する際に使用します。
+
+- **`addAircraft`**:
+  - 新しい航空機をレーダーシステムに追加するメソッド。空域に新たに入った航空機をトラッキングする際に使用します。
+
+- **`removeAircraft`**:
+  - 指定されたコールサインの航空機をレーダーシステムから削除するメソッド。航空機が空域を離れた場合やトラッキングを終了する際に使用します。
 
 
 #### `application/aircraft/AircraftRadarServiceImpl.java`
@@ -81,11 +96,23 @@ Interface for managing aircraft radar services.
 
 # AircraftRadarServiceImpl.java
 
-Implementation of `AircraftRadarService`. Handles aircraft radar data processing.
+`AircraftRadarService` インターフェースを実装し、航空機のデータを操作する具体的なビジネスロジックを提供するクラス
 
 ## Contents
-- Implementation of methods to manage aircraft information.
-- Logic for updating and retrieving aircraft status based on radar data.
+- **`getAllAircraft`**:
+  - `AircraftRepository` からすべての航空機のリストを取得します。
+
+- **`getAircraftByCallsign`**:
+  - 指定されたコールサインの航空機を `AircraftRepository` から取得します。見つからない場合は `null` を返します。
+
+- **`updateAircraft`**:
+  - 指定されたコールサインの航空機が存在する場合、その航空機の状態を更新し、リポジトリに保存します。更新が成功した場合は `true` を返し、航空機が存在しない場合は `false` を返します。
+
+- **`addAircraft`**:
+  - 新しい航空機をリポジトリに追加します。コールサインがすでに存在する場合は追加せず、`false` を返します。新規追加に成功した場合は `true` を返します。
+
+- **`removeAircraft`**:
+  - 指定されたコールサインの航空機が存在する場合、その航空機をリポジトリから削除します。削除が成功した場合は `true` を返し、航空機が存在しない場合は `false` を返します。
 
 
 #### `config/AtcSimulatorApplicationConfig.java`
@@ -93,10 +120,26 @@ Implementation of `AircraftRadarService`. Handles aircraft radar data processing
 
 # AtcSimulatorApplicationConfig.java
 
-Configuration class for defining beans used in the application.
+Spring Boot アプリケーション全体の設定を行うクラスで、`@Configuration` アノテーションを使用して Spring コンテナに登録される設定クラス
 
 ## Contents
-- Bean definitions for `AircraftRadarService`, `CreateAircraftService`, and other service components.
+- **`@Configuration`**:
+  - このクラスが Spring の設定クラスであることを示します。
+
+- **`@Autowired`**:
+  - Spring が自動的に Bean を注入するために使用されます。ここでは、`AircraftRepository` と `AirSpace` がコンストラクタ・インジェクションされています。
+
+- **`AircraftRadarService`**:
+  - `AircraftRadarServiceImpl` を Bean として定義し、Spring コンテナに登録します。これにより、アプリケーションの任意の場所で `AircraftRadarService` を使用することができます。
+
+- **`CreateAircraftService`**:
+  - `CreateAircraftService` の Bean を定義します。このサービスは、新しい航空機を作成するための機能を提供します。
+
+- **`AirspaceManagement`**:
+  - 空域管理のための `AirspaceManagementImpl` を Bean として定義します。この Bean は空域の状態を管理するために使用されます。
+
+- **`ScenarioService`**:
+  - シナリオの管理を担当する `ScenarioServiceImpl` の Bean を定義します。このサービスは、シナリオに基づいて航空機や空域のシミュレーションを実行するために使用されます。
 
 
 #### `config/WebConfig.java`
@@ -527,11 +570,29 @@ Controller for handling basic API requests for testing purposes.
 
 # ControlService.java
 
-API interface for sending control commands to aircraft.
+API 層で航空機に対する管制指示を処理するためのエンドポイントを提供するクラス
 
 ## Contents
-- Method definitions for sending control instructions to aircraft.
-- Processing and applying control commands.
+
+1. **依存関係の注入**:
+   - `AircraftControlService` は、航空機に対する指示を適用するために使用されるサービスクラスです。Spring の `@Autowired` アノテーションを使用して依存関係として注入されています。
+
+2. **エンドポイントの設定**:
+   - `@RestController` と `@RequestMapping("/api/control")` により、このクラスは REST API のコントローラとして機能します。すべてのリクエストは `/api/control` のパスに関連付けられます。
+
+3. **`controlAircraft()` メソッド**:
+   - `@PostMapping("/{callsign}")` により、特定の航空機に対する管制指示を送信するエンドポイントが定義されています。
+   - `@PathVariable` アノテーションを使用して、URL パスから `callsign`（航空機のコールサイン）を取得します。
+   - `@RequestBody` アノテーションを使用して、HTTP リクエストのボディから `ControlAircraftDto` を受け取ります。これは、管制指示の詳細を含むデータ転送オブジェクトです。
+
+4. **管制指示の適用**:
+   - `aircraftControlService.controlAircraft(callsign, controlAircraftDto)` を呼び出して、指定された航空機に対する指示を適用します。
+   - 処理結果に応じて、HTTP レスポンスとして適切なステータスコードとメッセージを返します。
+
+### 期待する使用シナリオ
+
+- **航空機に対する指示**:
+  - `/api/control/{callsign}` エンドポイントを使用して、フロントエンドや他のシステムから航空機に対する管制指示を送信します。例えば、航空機の高度や進行方向を変更するような指示を行います。
 
 
 #### `interfaces/dto/CreateAircraftDto.java`
@@ -539,9 +600,14 @@ API interface for sending control commands to aircraft.
 
 # CreateAircraftDto.java
 
-Data Transfer Object (DTO) for creating aircraft.
+航空機の作成リクエストに使用されるデータ転送オブジェクト
+フロントエンドや外部システムからのリクエストデータを受け取るために使用
+
 
 ## Contents
-- Fields for aircraft creation details such as callsign, type, and initial position.
-- Used for transferring data between the frontend and backend.
+1. フィールド定義:
+	-	callsign, type, latitude, longitude, altitude, heading, gspeed, vspeed, origIata, origIcao, destIata, destIcao, eta など、航空機の情報を格納するためのフィールドが定義されています。
+	-	すべてのフィールドに @NotNull アノテーションが付いており、必須フィールドとしてバリデーションされます。
+2.	ゲッターとセッター:
+	-	各フィールドにはゲッター (get) とセッター (set) メソッドが実装されており、データの取得と設定を行います。
 

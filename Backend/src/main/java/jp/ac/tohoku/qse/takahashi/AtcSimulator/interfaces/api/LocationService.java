@@ -1,7 +1,7 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.api;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.AircraftRadarService;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftPosition;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
