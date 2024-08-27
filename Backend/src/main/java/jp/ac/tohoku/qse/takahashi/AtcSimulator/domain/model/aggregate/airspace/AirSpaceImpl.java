@@ -20,7 +20,7 @@ public class AirSpaceImpl implements AirSpace {
 
     public void NextStep() {
         for (Aircraft aircraft : aircrafts) {
-            aircraft.NextStep();
+            aircraft.calculateNextAircraftPosition();
         }
     }
 }

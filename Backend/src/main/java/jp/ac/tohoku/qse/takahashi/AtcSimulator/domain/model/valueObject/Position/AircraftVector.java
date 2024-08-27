@@ -5,7 +5,7 @@ public class AircraftVector {
     private int groundSpeed;
     private int verticalSpeed;
 
-    private AircraftVector(int heading, int groundSpeed, int verticalSpeed) {
+    public AircraftVector(int heading, int groundSpeed, int verticalSpeed) {
         this.heading = heading;
         this.groundSpeed = groundSpeed;
         this.verticalSpeed = verticalSpeed;
@@ -21,5 +21,17 @@ public class AircraftVector {
 
     public int getVerticalSpeed() {
         return this.verticalSpeed;
+    }
+
+    public void setHeading(final int newHeading) {
+        this.heading = newHeading;
+    }
+
+    public void setGroundSpeed(final int newGroundSpeed) {
+        this.groundSpeed = newGroundSpeed;
+    }
+
+    public void setVerticalSpeed(final int newVerticalSpeed) {
+        this.verticalSpeed = newVerticalSpeed;
     }
 }

@@ -1,5 +1,12 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position;
 
+/**
+ * Represents the position of an aircraft in 3D space.
+ *
+ * @param latitude the latitude of the aircraft (in degrees)
+ * @param longitude the longitude of the aircraft (in degrees)
+ * @param altitude the altitude of the aircraft (in feet)
+ */
 public class AircraftPosition {
     private double latitude;
     private double longitude;
@@ -21,4 +28,15 @@ public class AircraftPosition {
         return this.altitude;
     }
 
+    public void setLatitude(final double newLatitude) {
+        this.latitude = newLatitude;
+    }
+
+    public void setLongitude(final double newLongitude) {
+        this.longitude = newLongitude;
+    }
+
+    public void setAltitude(final double newAltitude) {
+        this.altitude = newAltitude;
+    }
 }

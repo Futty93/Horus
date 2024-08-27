@@ -14,13 +14,13 @@ public class AircraftRadarServiceImpl implements AircraftRadarService {
     }
 
     public String getAircraftLocation(Callsign callsign) {
-        return aircraftRepository.find(callsign).getLocation();
+        return aircraftRepository.find(callsign).getAircraftPosition().toString();
     }
 
     public String getAllAircraftLocation() {
         StringBuilder sb = new StringBuilder();
         for (Aircraft aircraft : aircraftRepository.findAll()) {
-            sb.append(aircraft.getLocation());
+            sb.append(aircraft.getAircraftPosition());
             sb.append("\n");
         }
         return sb.toString();
