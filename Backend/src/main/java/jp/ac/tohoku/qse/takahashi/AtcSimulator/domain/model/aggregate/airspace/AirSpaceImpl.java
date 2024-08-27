@@ -27,21 +27,9 @@ public class AirSpaceImpl implements AirSpace {
         this.aircrafts.remove(callsign);
     }
 
-    @Override
-    public Aircraft getAircraft(String callsign) {
-        return this.aircrafts.get(callsign);
-    }
-
-    @Override
-    public Collection<Aircraft> getAllAircrafts() {
-        return this.aircrafts.values();
-    }
-
-    @Override
-    public void updateAircraftPosition(String callsign, AircraftPosition newPosition) {
-        Aircraft aircraft = this.aircrafts.get(callsign);
-        if (aircraft != null) {
-            aircraft.setPosition(newPosition);
+    public void NextStep() {
+        for (Aircraft aircraft : aircrafts) {
+            aircraft.calculateNextAircraftPosition();
         }
     }
 

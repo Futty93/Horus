@@ -3,6 +3,12 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.service.scenario;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aggregate.airspace.AirspaceManagement;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.CommercialAircraft;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.CreateAircraftDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,14 +26,10 @@ public class ScenarioServiceImpl implements ScenarioService {
         this.scenarioStatus = "Not Initialized";
     }
 
-    @Override
-    public void initializeScenario() {
-        // シナリオの初期化処理を行う
-        scenarioStatus = "Initialized";
-        System.out.println("Scenario initialized.");
-        
-        // 必要に応じて、初期化時に空域や航空機の初期状態を設定
-        airspaceManagement.clearAirspace();
+    public void spawnAircraft(CreateAircraftDto aircraftDto) {
+        CommercialAircraft aircraft = aircraftDto.createCommercialAircraft();
+        airspaceManagement.addAircraft(aircraft);
+        aircraftRepository.add(aircraft);
     }
 
     @Override

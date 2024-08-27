@@ -1,7 +1,12 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position;
 
-import java.util.Objects;
-
+/**
+ * Represents the position of an aircraft in 3D space.
+ *
+ * @param latitude the latitude of the aircraft (in degrees)
+ * @param longitude the longitude of the aircraft (in degrees)
+ * @param altitude the altitude of the aircraft (in feet)
+ */
 public class AircraftPosition {
 
     private final double latitude;   // 緯度
@@ -34,47 +39,15 @@ public class AircraftPosition {
         return heading;
     }
 
-    public int getAltitude() {
-        return altitude;
+    public void setLatitude(final double newLatitude) {
+        this.latitude = newLatitude;
     }
 
-    public int getGroundSpeed() {
-        return groundSpeed;
+    public void setLongitude(final double newLongitude) {
+        this.longitude = newLongitude;
     }
 
-    public int getVerticalSpeed() {
-        return verticalSpeed;
-    }
-
-    // equalsとhashCodeをオーバーライド
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AircraftPosition that = (AircraftPosition) o;
-        return Double.compare(that.latitude, latitude) == 0 &&
-                Double.compare(that.longitude, longitude) == 0 &&
-                heading == that.heading &&
-                altitude == that.altitude &&
-                groundSpeed == that.groundSpeed &&
-                verticalSpeed == that.verticalSpeed;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(latitude, longitude, heading, altitude, groundSpeed, verticalSpeed);
-    }
-
-    // toStringメソッドをオーバーライド
-    @Override
-    public String toString() {
-        return "AircraftPosition{" +
-                "latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", heading=" + heading +
-                ", altitude=" + altitude +
-                ", groundSpeed=" + groundSpeed +
-                ", verticalSpeed=" + verticalSpeed +
-                '}';
+    public void setAltitude(final double newAltitude) {
+        this.altitude = newAltitude;
     }
 }

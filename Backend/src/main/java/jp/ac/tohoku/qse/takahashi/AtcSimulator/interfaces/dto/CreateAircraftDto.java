@@ -1,71 +1,60 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.CommercialAircraft;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Company;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.FlightNumber;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
 
 public class CreateAircraftDto {
+    @NotNull
+    private final String companyName;
 
     @NotNull
-    private String callsign;
+    private final String flightNumber;
 
     @NotNull
-    private String type;
+    private final double latitude;
 
     @NotNull
-    private double latitude;
+    private final double longitude;
 
     @NotNull
-    private double longitude;
+    private final int altitude;
 
     @NotNull
-    private int altitude;
+    private final int groundSpeed;
 
     @NotNull
-    private int heading;
+    private final int verticalSpeed;
 
     @NotNull
-    private int gspeed;
+    private final int heading;
 
     @NotNull
-    private int vspeed;
+    private final String type;
 
     @NotNull
-    private String origIata;
+    private final String originIata;
 
     @NotNull
-    private String origIcao;
+    private final String originIcao;
 
     @NotNull
-    private String destIata;
+    private final String destinationIata;
 
     @NotNull
-    private String destIcao;
+    private final String destinationIcao;
 
     @NotNull
-    private String eta;
+    private final String eta;
 
-    // Getters and setters
-
-    public String getCallsign() {
-        return callsign;
-    }
-
-    public void setCallsign(String callsign) {
-        this.callsign = callsign;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
+    public CreateAircraftDto(String companyName, String flightNumber, double latitude, double longitude, int altitude, int groundSpeed, int verticalSpeed, int heading, String type, String originIata, String originIcao, String destinationIata, String destinationIcao, String eta) {
+        this.companyName = companyName;
+        this.flightNumber = flightNumber;
         this.latitude = latitude;
     }
 
@@ -83,69 +72,30 @@ public class CreateAircraftDto {
 
     public void setAltitude(int altitude) {
         this.altitude = altitude;
-    }
-
-    public int getHeading() {
-        return heading;
-    }
-
-    public void setHeading(int heading) {
+        this.groundSpeed = groundSpeed;
+        this.verticalSpeed = verticalSpeed;
         this.heading = heading;
-    }
-
-    public int getGspeed() {
-        return gspeed;
-    }
-
-    public void setGspeed(int gspeed) {
-        this.gspeed = gspeed;
-    }
-
-    public int getVspeed() {
-        return vspeed;
-    }
-
-    public void setVspeed(int vspeed) {
-        this.vspeed = vspeed;
-    }
-
-    public String getOrigIata() {
-        return origIata;
-    }
-
-    public void setOrigIata(String origIata) {
-        this.origIata = origIata;
-    }
-
-    public String getOrigIcao() {
-        return origIcao;
-    }
-
-    public void setOrigIcao(String origIcao) {
-        this.origIcao = origIcao;
-    }
-
-    public String getDestIata() {
-        return destIata;
-    }
-
-    public void setDestIata(String destIata) {
-        this.destIata = destIata;
-    }
-
-    public String getDestIcao() {
-        return destIcao;
-    }
-
-    public void setDestIcao(String destIcao) {
-        this.destIcao = destIcao;
-    }
-
-    public String getEta() {
-        return eta;
-    }
-
-    public void setEta(String eta) {
+        this.type = type;
+        this.originIata = originIata;
+        this.originIcao = originIcao;
+        this.destinationIata = destinationIata;
+        this.destinationIcao = destinationIcao;
         this.eta = eta;
+    }
+
+    public String getCompanyName() {
+        return this.companyName;
+    }
+
+    public String getFlightNumber() {
+        return this.flightNumber;
+    }
+
+    public CommercialAircraft createCommercialAircraft() {
+        Callsign callsign = new Callsign(new Company(this.companyName), new FlightNumber(this.flightNumber));
+        AircraftPosition aircraftPosition = new AircraftPosition(this.latitude, this.longitude, this.altitude);
+        AircraftVector aircraftVector = new AircraftVector(this.heading, this.groundSpeed, this.verticalSpeed);
+        AircraftType aircraftType = new AircraftType(this.type);
+        return new CommercialAircraft(callsign, aircraftPosition, aircraftVector, aircraftType, this.originIata, this.originIcao, this.destinationIata, this.destinationIcao, this.eta);
     }
 }

@@ -22,24 +22,15 @@ public class AircraftRadarServiceImpl implements AircraftRadarService {
         this.aircraftRepository = aircraftRepository;
     }
 
-    @Override
-    public List<Aircraft> getAllAircraft() {
-        return aircraftRepository.findAll();
+    public String getAircraftLocation(Callsign callsign) {
+        return aircraftRepository.find(callsign).getAircraftPosition().toString();
     }
 
-    @Override
-    public Aircraft getAircraftByCallsign(String callsign) {
-        return aircraftRepository.findByCallsign(callsign).orElse(null);
-    }
-
-    @Override
-    public boolean updateAircraft(String callsign, Aircraft updatedAircraft) {
-        Optional<Aircraft> existingAircraftOpt = aircraftRepository.findByCallsign(callsign);
-        if (existingAircraftOpt.isPresent()) {
-            Aircraft existingAircraft = existingAircraftOpt.get();
-            existingAircraft.updateWith(updatedAircraft);
-            aircraftRepository.save(existingAircraft);
-            return true;
+    public String getAllAircraftLocation() {
+        StringBuilder sb = new StringBuilder();
+        for (Aircraft aircraft : aircraftRepository.findAll()) {
+            sb.append(aircraft.getAircraftPosition());
+            sb.append("\n");
         }
         return false;
     }
