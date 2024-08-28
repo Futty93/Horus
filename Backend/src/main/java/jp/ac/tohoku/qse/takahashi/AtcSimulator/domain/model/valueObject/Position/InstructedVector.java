@@ -28,5 +28,4 @@ public class InstructedVector {
         this.instructedAltitude = instructedVector.instructedAltitude;
         this.instructedGroundSpeed = instructedVector.instructedGroundSpeed;
     }
-
 }
