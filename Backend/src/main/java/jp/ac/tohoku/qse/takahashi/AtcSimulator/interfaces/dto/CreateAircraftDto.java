@@ -74,6 +74,6 @@ public class CreateAircraftDto {
         AircraftPosition aircraftPosition = new AircraftPosition(this.latitude, this.longitude, this.altitude);
         AircraftVector aircraftVector = new AircraftVector(this.heading, this.groundSpeed, this.verticalSpeed);
         AircraftType aircraftType = new AircraftType(this.type);
-        return new CommercialAircraft(callsign, aircraftPosition, aircraftVector, aircraftType, this.originIata, this.originIcao, this.destinationIata, this.destinationIcao, this.eta);
+        return new CommercialAircraft(callsign, aircraftType, aircraftPosition, aircraftVector, this.originIata, this.originIcao, this.destinationIata, this.destinationIcao, this.eta);
     }
 }

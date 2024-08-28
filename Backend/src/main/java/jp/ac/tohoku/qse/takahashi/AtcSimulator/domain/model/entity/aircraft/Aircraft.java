@@ -10,9 +10,6 @@ public interface Aircraft {
     // aircraftVector から 航空機の次の位置を計算する
     public void calculateNextAircraftPosition();
 
-    // instructedVector に新しい値を代入する
-    public void setInstructedVector(InstructedVector instructedVector);
-
     // instructedVector から 航空機の次のaircraftVectorを計算する
     public void calculateNextAircraftVector();
 
