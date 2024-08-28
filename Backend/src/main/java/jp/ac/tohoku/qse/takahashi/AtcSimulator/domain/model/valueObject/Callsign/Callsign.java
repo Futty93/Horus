@@ -24,4 +24,5 @@ public class Callsign {
     public boolean equals(Callsign callsign){
         return this.company.equals(callsign.getCompany()) && this.flightNumber.equals(callsign.getFlightNumber());
     }
+
 }

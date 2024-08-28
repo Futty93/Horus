@@ -30,4 +30,5 @@ public class LocationService {
         Callsign callsign = new Callsign(new Company(companyName),new FlightNumber(flightNumber));
         return aircraftRadarService.getAircraftLocation(callsign);
     }
+
 }

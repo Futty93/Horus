@@ -24,4 +24,5 @@ public class ScenarioServiceImpl implements ScenarioService {
         airspaceManagement.addAircraft(aircraft);
         aircraftRepository.add(aircraft);
     }
+
 }

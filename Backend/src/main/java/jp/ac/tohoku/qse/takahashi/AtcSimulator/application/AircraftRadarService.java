@@ -5,4 +5,5 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign
 public interface AircraftRadarService {
     String getAircraftLocation(Callsign callsign);
     String getAllAircraftLocation();
+
 }

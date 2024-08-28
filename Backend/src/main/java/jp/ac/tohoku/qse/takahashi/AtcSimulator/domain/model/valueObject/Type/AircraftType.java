@@ -18,4 +18,5 @@ public class AircraftType {
     public boolean equals(AircraftType aircraftType) {
         return this.type.equals(aircraftType.getType());
     }
+
 }
