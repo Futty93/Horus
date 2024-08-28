@@ -39,4 +39,13 @@ public class AircraftPosition {
     public void setAltitude(final double newAltitude) {
         this.altitude = newAltitude;
     }
+
+    @Override
+    public String toString() {
+        return "AircraftPosition{" +
+                "latitude=" + this.latitude +
+                ", longitude=" + this.longitude +
+                ", altitude=" + this.altitude +
+                '}';
+    }
 }

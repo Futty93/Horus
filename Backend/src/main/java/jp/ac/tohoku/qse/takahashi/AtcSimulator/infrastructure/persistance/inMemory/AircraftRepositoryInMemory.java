@@ -26,7 +26,7 @@ public class AircraftRepositoryInMemory implements AircraftRepository {
 
     public Aircraft find(Callsign callsign) {
         return aircrafts.stream()
-                .filter(aircraft -> aircraft.IsEqualCallsign(callsign))
+                .filter(aircraft -> aircraft.isEqualCallsign(callsign))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Aircraft not found"));
     }

@@ -15,9 +15,9 @@ public class CreateAircraftService {
         this.scenarioService = scenarioService;
     }
 
-    @PostMapping(path = "/create")
-    public String createAircraft(@RequestBody CreateAircraftDto createAircraftDto) {
+    @RequestMapping(path = "/create", method = RequestMethod.POST)
+    public String createAircraft(CreateAircraftDto createAircraftDto) {
         scenarioService.spawnAircraft(createAircraftDto);
-        return "Aircraft created:" + createAircraftDto.getCompanyName() + createAircraftDto.getFlightNumber();
+        return "Aircraft created:" + createAircraftDto.companyName + createAircraftDto.flightNumber;
     }
 }

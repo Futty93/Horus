@@ -11,46 +11,46 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.Air
 
 public class CreateAircraftDto {
     @NotNull
-    private final String companyName;
+    public final String companyName;
 
     @NotNull
-    private final String flightNumber;
+    public final String flightNumber;
 
     @NotNull
-    private final double latitude;
+    public final double latitude;
 
     @NotNull
-    private final double longitude;
+    public final double longitude;
 
     @NotNull
-    private final int altitude;
+    public final int altitude;
 
     @NotNull
-    private final int groundSpeed;
+    public final int groundSpeed;
 
     @NotNull
-    private final int verticalSpeed;
+    public final int verticalSpeed;
 
     @NotNull
-    private final int heading;
+    public final int heading;
 
     @NotNull
-    private final String type;
+    public final String type;
 
     @NotNull
-    private final String originIata;
+    public final String originIata;
 
     @NotNull
-    private final String originIcao;
+    public final String originIcao;
 
     @NotNull
-    private final String destinationIata;
+    public final String destinationIata;
 
     @NotNull
-    private final String destinationIcao;
+    public final String destinationIcao;
 
     @NotNull
-    private final String eta;
+    public final String eta;
 
     public CreateAircraftDto(String companyName, String flightNumber, double latitude, double longitude, int altitude, int groundSpeed, int verticalSpeed, int heading, String type, String originIata, String originIcao, String destinationIata, String destinationIcao, String eta) {
         this.companyName = companyName;
@@ -67,14 +67,6 @@ public class CreateAircraftDto {
         this.destinationIata = destinationIata;
         this.destinationIcao = destinationIcao;
         this.eta = eta;
-    }
-
-    public String getCompanyName() {
-        return this.companyName;
-    }
-
-    public String getFlightNumber() {
-        return this.flightNumber;
     }
 
     public CommercialAircraft createCommercialAircraft() {
