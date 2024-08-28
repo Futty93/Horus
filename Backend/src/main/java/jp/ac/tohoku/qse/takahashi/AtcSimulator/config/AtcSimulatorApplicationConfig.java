@@ -41,5 +41,4 @@ public class AtcSimulatorApplicationConfig
     public ScenarioService scenarioService() {
         return new ScenarioServiceImpl(airspaceManagement(), aircraftRepository);
     }
-
 }
