@@ -8,7 +8,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 // TODO: Airspaceを複数にする
 public class AirspaceManagementImpl implements AirspaceManagement {
-
     AircraftRepository aircraftRepository;
 
     public AirspaceManagementImpl(AircraftRepository aircraftRepository) {
