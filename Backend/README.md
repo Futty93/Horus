@@ -7,50 +7,52 @@
 .
 ├── AtcSimulatorApplication.java
 ├── application
-│   ├── AircraftRadarService.java
-│   ├── AircraftControlService.java
-│   └── aircraft
-│       └── AircraftRadarServiceImpl.java
-│       └── AircraftControlServiceImpl.java 
+│   ├── AircraftRadarService.java
+│   └── aircraft
+│       └── AircraftRadarServiceImpl.java
 ├── config
-│   ├── AtcSimulatorApplicationConfig.java
-│   └── WebConfig.java
+│   ├── AtcSimulatorApplicationConfig.java
+│   └── WebConfig.java
 ├── domain
-│   └── model
-│       ├── aggregate
-│       │   └── airspace
-│       │       ├── AirSpace.java
-│       │       ├── AirSpaceImpl.java
-│       │       ├── AirspaceManagement.java
-│       │       └── AirspaceManagementImpl.java
-│       ├── entity
-│       │   └── aircraft
-│       │       ├── Aircraft.java
-│       │       ├── AircraftRepository.java
-│       │       └── CommercialAircraft.java
-│       ├── service
-│       │   └── scenario
-│       │       ├── ScenarioService.java
-│       │       └── ScenarioServiceImpl.java
-│       └── valueObject
-│           ├── Callsign
-│           │   ├── Callsign.java
-│           │   ├── Company.java
-│           │   └── FlightNumber.java
-│           └── Position
-│               ├── AircraftPosition.java
-│               ├── AircraftVector.java
-│               └── InstructedVector.java
+│   └── model
+│       ├── aggregate
+│       │   └── airspace
+│       │       ├── AirSpace.java
+│       │       ├── AirSpaceImpl.java
+│       │       ├── AirspaceManagement.java
+│       │       └── AirspaceManagementImpl.java
+│       ├── entity
+│       │   └── aircraft
+│       │       ├── Aircraft.java
+│       │       ├── AircraftBase.java
+│       │       ├── AircraftRepository.java
+│       │       └── CommercialAircraft.java
+│       ├── service
+│       │   └── scenario
+│       │       ├── ScenarioService.java
+│       │       └── ScenarioServiceImpl.java
+│       └── valueObject
+│           ├── Callsign
+│           │   ├── Callsign.java
+│           │   ├── Company.java
+│           │   └── FlightNumber.java
+│           ├── Position
+│           │   ├── AircraftPosition.java
+│           │   ├── AircraftVector.java
+│           │   └── InstructedVector.java
+│           └── Type
+│               └── AircraftType.java
 ├── infrastructure
-│   └── persistance
-│       └── inMemory
-│           └── AircraftRepositoryInMemory.java
+│   └── persistance
+│       └── inMemory
+│           └── AircraftRepositoryInMemory.java
 └── interfaces
     ├── api
-    │   ├── CreateAircraftService.java
-    │   ├── HelloService.java
-    │   ├── LocationService.java
-    │   └── ControlService.java
+    │   ├── ControlAircraftService.java
+    │   ├── CreateAircraftService.java
+    │   ├── HelloService.java
+    │   └── LocationService.java
     └── dto
+        ├── ControlAircraftDto.java
         └── CreateAircraftDto.java
 ```
