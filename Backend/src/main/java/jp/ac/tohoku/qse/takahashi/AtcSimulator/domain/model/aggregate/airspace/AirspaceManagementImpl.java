@@ -16,6 +16,7 @@ public class AirspaceManagementImpl implements AirspaceManagement {
 
     @Override
     public void addAircraft(Aircraft aircraft) {
+        System.out.println("Aircraft added");
         aircraftRepository.add(aircraft);
     }
 
@@ -31,6 +32,7 @@ public class AirspaceManagementImpl implements AirspaceManagement {
 
     @Scheduled(fixedRate = 1000)
     public void NextStep() {
+        System.out.println("！！！！！！！！！！！！！ ");
         aircraftRepository.NextStep();
     }
 }
