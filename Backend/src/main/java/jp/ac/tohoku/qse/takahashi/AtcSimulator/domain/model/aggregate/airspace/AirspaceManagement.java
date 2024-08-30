@@ -1,6 +1,7 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aggregate.airspace;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 
 /**
  * 空域の操作を表すインターフェース
@@ -9,6 +10,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Airc
 public interface AirspaceManagement {
     public void addAircraft(Aircraft aircraft);
     public void removeAircraft(Aircraft aircraft);
+    public Aircraft findAircraftByCallsign(Callsign callsign);
 
     public void NextStep();
 
