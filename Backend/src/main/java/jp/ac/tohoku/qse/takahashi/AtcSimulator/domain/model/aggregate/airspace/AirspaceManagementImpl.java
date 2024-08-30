@@ -4,9 +4,13 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Airc
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.persistance.inMemory.AircraftRepositoryInMemory;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 // TODO: Airspaceを複数にする
+@Configuration
+@EnableScheduling
 public class AirspaceManagementImpl implements AirspaceManagement {
     AircraftRepository aircraftRepository;
 
@@ -32,7 +36,6 @@ public class AirspaceManagementImpl implements AirspaceManagement {
 
     @Scheduled(fixedRate = 1000)
     public void NextStep() {
-        System.out.println("！！！！！！！！！！！！！ ");
         aircraftRepository.NextStep();
     }
 }
