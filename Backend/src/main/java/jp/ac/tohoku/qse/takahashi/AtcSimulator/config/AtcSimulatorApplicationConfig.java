@@ -29,12 +29,12 @@ public class AtcSimulatorApplicationConfig
 
     @Bean
     public CreateAircraftService createAircraftService() {
-        return new CreateAircraftService(scenarioService());
+        return new CreateAircraftService(scenarioService(), aircraftRepository);
     }
 
     @Bean
     public AirspaceManagement airspaceManagement() {
-        return new AirspaceManagementImpl(airSpace);
+        return new AirspaceManagementImpl(aircraftRepository);
     }
 
     @Bean

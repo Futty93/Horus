@@ -14,7 +14,7 @@ public class AircraftRadarServiceImpl implements AircraftRadarService {
     }
 
     public String getAircraftLocation(Callsign callsign) {
-        return aircraftRepository.find(callsign).toString();
+        return aircraftRepository.findByCallsign(callsign).toString();
     }
 
     public String getAllAircraftLocation() {

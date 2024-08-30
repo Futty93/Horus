@@ -11,10 +11,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.Air
 
 public class CreateAircraftDto {
     @NotNull
-    public final String companyName;
-
-    @NotNull
-    public final String flightNumber;
+    public final String callsign;
 
     @NotNull
     public final double latitude;
@@ -52,9 +49,8 @@ public class CreateAircraftDto {
     @NotNull
     public final String eta;
 
-    public CreateAircraftDto(String companyName, String flightNumber, double latitude, double longitude, int altitude, int groundSpeed, int verticalSpeed, int heading, String type, String originIata, String originIcao, String destinationIata, String destinationIcao, String eta) {
-        this.companyName = companyName;
-        this.flightNumber = flightNumber;
+    public CreateAircraftDto(String callsign, double latitude, double longitude, int altitude, int groundSpeed, int verticalSpeed, int heading, String type, String originIata, String originIcao, String destinationIata, String destinationIcao, String eta) {
+        this.callsign = callsign;
         this.latitude = latitude;
         this.longitude = longitude;
         this.altitude = altitude;
@@ -70,7 +66,7 @@ public class CreateAircraftDto {
     }
 
     public CommercialAircraft createCommercialAircraft() {
-        Callsign callsign = new Callsign(new Company(this.companyName), new FlightNumber(this.flightNumber));
+        Callsign callsign = new Callsign(this.callsign);
         AircraftPosition aircraftPosition = new AircraftPosition(this.latitude, this.longitude, this.altitude);
         AircraftVector aircraftVector = new AircraftVector(this.heading, this.groundSpeed, this.verticalSpeed);
         AircraftType aircraftType = new AircraftType(this.type);

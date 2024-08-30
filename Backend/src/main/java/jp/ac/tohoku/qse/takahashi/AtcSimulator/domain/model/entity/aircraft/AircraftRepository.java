@@ -5,9 +5,13 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign
 import java.util.List;
 
 public interface AircraftRepository {
+    boolean isAircraftExist(Callsign callsign);
     void add(Aircraft aircraft);
+    void remove(Aircraft aircraft);
 
-    Aircraft find(Callsign callsign);
+    Aircraft findByCallsign(Callsign callsign);
     List<Aircraft> findAll();
+
+    void NextStep();
     
 }

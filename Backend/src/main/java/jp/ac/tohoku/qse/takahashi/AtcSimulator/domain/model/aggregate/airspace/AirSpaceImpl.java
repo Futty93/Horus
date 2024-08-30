@@ -23,5 +23,4 @@ public class AirSpaceImpl implements AirSpace {
             aircraft.calculateNextAircraftPosition();
         }
     }
-
 }

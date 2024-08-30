@@ -20,11 +20,21 @@ public class AircraftRepositoryInMemory implements AircraftRepository {
 //        aircrafts.add(new CommercialAircraft(3, 0, 0, 0, 0, 0, 0, "Company 3", "Flight 3"));
     }
 
+    /**
+     * Check if the aircraft with the given callsign exists in the repository
+     * @param callsign the callsign of the aircraft
+     * @return true if the aircraft exists, false otherwise
+     */
+    public boolean isAircraftExist(Callsign callsign){
+        return aircrafts.stream()
+                .anyMatch(aircraft -> aircraft.isEqualCallsign(callsign));
+    }
+
     public void add(Aircraft aircraft) {
         aircrafts.add(aircraft);
     }
 
-    public Aircraft find(Callsign callsign) {
+    public Aircraft findByCallsign(Callsign callsign) {
         return aircrafts.stream()
                 .filter(aircraft -> aircraft.isEqualCallsign(callsign))
                 .findFirst()
@@ -37,5 +47,11 @@ public class AircraftRepositoryInMemory implements AircraftRepository {
 
     public void remove(Aircraft airplane) {
         aircrafts.remove(airplane);
+    }
+
+    public void NextStep() {
+        for (Aircraft aircraft : aircrafts) {
+            aircraft.calculateNextAircraftPosition();
+        }
     }
 }
