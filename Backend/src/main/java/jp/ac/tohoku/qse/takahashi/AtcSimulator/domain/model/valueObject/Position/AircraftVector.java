@@ -1,37 +1,17 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position;
 
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.GroundSpeed;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Heading;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.VerticalSpeed;
+
 public class AircraftVector {
-    private int heading;
-    private int groundSpeed;
-    private int verticalSpeed;
+    final Heading heading;
+    final GroundSpeed groundSpeed;
+    final VerticalSpeed verticalSpeed;
 
     public AircraftVector(int heading, int groundSpeed, int verticalSpeed) {
-        this.heading = heading;
-        this.groundSpeed = groundSpeed;
-        this.verticalSpeed = verticalSpeed;
-    }
-
-    public int getHeading() {
-        return this.heading;
-    }
-
-    public int getGroundSpeed() {
-        return this.groundSpeed;
-    }
-
-    public int getVerticalSpeed() {
-        return this.verticalSpeed;
-    }
-
-    public void setHeading(int heading) {
-        this.heading = heading;
-    }
-
-    public void setGroundSpeed(int groundSpeed) {
-        this.groundSpeed = groundSpeed;
-    }
-
-    public void setVerticalSpeed(int verticalSpeed) {
-        this.verticalSpeed = verticalSpeed;
+        this.heading = new Heading(heading);
+        this.groundSpeed = new GroundSpeed(groundSpeed);
+        this.verticalSpeed = new VerticalSpeed(verticalSpeed);
     }
 }
