@@ -1,5 +1,7 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position;
 
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude;
+
 /**
  * Represents the position of an aircraft in 3D space.
  *
@@ -7,12 +9,12 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Positio
 public class AircraftPosition {
     private double latitude;
     private double longitude;
-    private double altitude;
+    private Altitude altitude;
 
     public AircraftPosition(double latitude, double longitude, double altitude) {
         this.latitude = latitude;
         this.longitude = longitude;
-        this.altitude = altitude;
+        this.altitude = new Altitude(altitude);
     }
 
     public double getLatitude() {
@@ -21,7 +23,7 @@ public class AircraftPosition {
     public double getLongitude() {
         return this.longitude;
     }
-    public double getAltitude() {
+    public Altitude getAltitude() {
         return this.altitude;
     }
 
@@ -31,10 +33,6 @@ public class AircraftPosition {
 
     public void setLongitude(final double newLongitude) {
         this.longitude = newLongitude;
-    }
-
-    public void setAltitude(final double newAltitude) {
-        this.altitude = newAltitude;
     }
 
     @Override
