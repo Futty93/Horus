@@ -87,7 +87,7 @@ public class CommercialAircraft extends AircraftBase implements Aircraft {
         return "CommercialAircraft{" +
                 "callsign=" + this.getCallsign() +
                 ", position={" +
-                "latitude=" + aircraftPosition.getLatitude() +
+                "latitude=" + aircraftPosition.latitude +
                 ", longitude=" + aircraftPosition.getLongitude() +
                 ", altitude=" + aircraftPosition.getAltitude() +
                 "}, vector={" +

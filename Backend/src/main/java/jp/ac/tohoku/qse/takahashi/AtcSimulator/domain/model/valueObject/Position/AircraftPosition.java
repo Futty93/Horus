@@ -11,7 +11,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Aircraft
 public class AircraftPosition {
     final Latitude latitude;
     final Longitude longitude;
-    final Altitude altitude;
+    public final Altitude altitude;
 
     public AircraftPosition(double latitude, double longitude, double altitude) {
         this.latitude = new Latitude(latitude);

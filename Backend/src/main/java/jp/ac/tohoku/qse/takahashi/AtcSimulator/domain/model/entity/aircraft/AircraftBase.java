@@ -7,27 +7,23 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
 
 public abstract class AircraftBase {
-    private final Callsign callsign;
-    private AircraftPosition aircraftPosition;
-    private AircraftVector aircraftVector;
-    private InstructedVector instructedVector;
-    private final AircraftType aircraftType;
+    final Callsign callsign;
+    final AircraftPosition aircraftPosition;
+    final AircraftVector aircraftVector;
+    final InstructedVector instructedVector;
+    final AircraftType aircraftType;
 
     public AircraftBase(Callsign callsign, AircraftType aircraftType, AircraftPosition aircraftPosition, AircraftVector aircraftVector) {
         this.callsign = callsign;
         this.aircraftType = aircraftType;
         this.aircraftPosition = aircraftPosition;
         this.aircraftVector = aircraftVector;
-        this.instructedVector = new InstructedVector(aircraftVector.getHeading(), (int) (aircraftPosition.getAltitude()), aircraftVector.getGroundSpeed());
+        this.instructedVector = new InstructedVector(aircraftVector.getHeading(), (int) aircraftPosition.altitude, aircraftVector.getGroundSpeed());
     }
 
     // Getter
     public Callsign getCallsign() {
         return this.callsign;
-    }
-
-    public AircraftPosition getAircraftPosition() {
-        return this.aircraftPosition;
     }
 
     public AircraftVector getAircraftVector() {
