@@ -1,5 +1,7 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft;
 
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Longitude;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
@@ -29,11 +31,23 @@ public class CommercialAircraft extends AircraftBase implements Aircraft {
      */
     public void calculateNextAircraftPosition() {
         AircraftPosition currentAircraftPosition = this.getAircraftPosition();
-        AircraftVector currentAircraftVector = this.getAircraftVector();
-        double latitude = currentAircraftPosition.getLatitude() + currentAircraftVector.getGroundSpeed() * Math.cos(Math.toRadians(currentAircraftVector.getHeading()));
-        double longitude = currentAircraftPosition.getLongitude() + currentAircraftVector.getGroundSpeed() * Math.sin(Math.toRadians(currentAircraftVector.getHeading()));
-        int altitude = (int) (currentAircraftPosition.getAltitude() + currentAircraftVector.getVerticalSpeed());
-        this.setAircraftPosition(new AircraftPosition(latitude, longitude, altitude));
+        AircraftVector aircraftVector = this.getAircraftVector();
+
+        // 現在の位置と速度から次の位置を計算
+        double currentLatitude = currentAircraftPosition.getLatitude();
+        double currentLongitude = currentAircraftPosition.getLongitude().getLongitude();
+        Altitude currentAltitude = currentAircraftPosition.getAltitude();
+        double currentHeading = aircraftVector.getHeading();
+        double currentGroundSpeed = aircraftVector.getGroundSpeed();
+        double currentVerticalSpeed = aircraftVector.getVerticalSpeed();
+
+        // 次の位置を計算
+        double nextLatitude = currentLatitude + (currentGroundSpeed / 60 / 60 / 60) * Math.cos(Math.toRadians(currentHeading));
+        double nextLongitude = currentLongitude + (currentGroundSpeed / 60 / 60 / 60) * Math.sin(Math.toRadians(currentHeading));
+        Altitude nextAltitude = new Altitude((double) currentAltitude + currentVerticalSpeed / 60 / 60);
+
+        // 新しいAircraftPositionを設定
+        this.setAircraftPosition(new AircraftPosition(nextLatitude, nextLongitude, nextAltitude));
     }
 
     /**
