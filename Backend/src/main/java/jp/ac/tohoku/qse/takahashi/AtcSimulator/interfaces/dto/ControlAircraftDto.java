@@ -2,6 +2,9 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftBase;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.GroundSpeed;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Heading;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.InstructedVector;
 
 public record ControlAircraftDto(@NotBlank int instructedHeading, @NotBlank int instructedAltitude,
@@ -13,7 +16,7 @@ public record ControlAircraftDto(@NotBlank int instructedHeading, @NotBlank int 
     }
 
     public void setInstruction(AircraftBase aircraftBase) {
-        InstructedVector instructedVector = new InstructedVector(this.instructedHeading, this.instructedAltitude, this.instructedGroundSpeed);
+        InstructedVector instructedVector = new InstructedVector(new Heading(this.instructedHeading), new Altitude(this.instructedAltitude), new GroundSpeed(this.instructedGroundSpeed));
         aircraftBase.setInstructedVector(instructedVector);
     }
 }

@@ -1,10 +1,13 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft;
 
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.*;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.InstructedVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
+
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.config.constants.GlobalConstants.*;
 
 public class CommercialAircraft extends AircraftBase implements Aircraft {
     private final String originIata;
@@ -24,16 +27,37 @@ public class CommercialAircraft extends AircraftBase implements Aircraft {
     }
 
     /**
-     * aircraftVector から 航空機の次の位置を計算する
-     * 現在の位置と速度から次の位置を計算し、設定する
+     * 航空機の現在のaircraftPositionとaircraftVectorを元に、次のaircraftPositionを計算する
      */
     public void calculateNextAircraftPosition() {
-        AircraftPosition currentAircraftPosition = this.getAircraftPosition();
-        AircraftVector currentAircraftVector = this.getAircraftVector();
-        double latitude = currentAircraftPosition.getLatitude() + currentAircraftVector.getGroundSpeed() * Math.cos(Math.toRadians(currentAircraftVector.getHeading()));
-        double longitude = currentAircraftPosition.getLongitude() + currentAircraftVector.getGroundSpeed() * Math.sin(Math.toRadians(currentAircraftVector.getHeading()));
-        int altitude = (int) (currentAircraftPosition.getAltitude() + currentAircraftVector.getVerticalSpeed());
-        this.setAircraftPosition(new AircraftPosition(latitude, longitude, altitude));
+        final AircraftPosition currentPos = this.aircraftPosition;
+        final AircraftVector vector = this.aircraftVector;
+
+        // Refresh rate in milliseconds
+        double refreshRateInSeconds = 1.0 / REFRESH_RATE;
+
+        // Ground speed in km/h
+        double groundSpeedKmPerHour = vector.groundSpeed.toDouble() * KNOTS_TO_KM_PER_HOUR;
+
+        // Distance traveled in the given time period (in km)
+        double distanceTraveled = groundSpeedKmPerHour * (refreshRateInSeconds / 3600.0); // in km
+
+        // Convert heading to radians for calculation
+        double headingRad = Math.toRadians(vector.heading.toDouble());
+
+        // Calculate new latitude
+        double deltaLat = distanceTraveled / EARTH_RADIUS; // in radians
+        Latitude newLat = new Latitude(currentPos.latitude.toDouble() + Math.toDegrees(deltaLat * Math.cos(headingRad)));
+
+        // Calculate new longitude considering Earth curvature
+        double deltaLon = distanceTraveled / (EARTH_RADIUS * Math.cos(Math.toRadians(currentPos.latitude.toDouble()))); // in radians
+        Longitude newLon = new Longitude(currentPos.latitude.toDouble() + Math.toDegrees(deltaLon * Math.sin(headingRad)));
+
+        // Calculate new altitude
+        Altitude newAlt = new Altitude(currentPos.altitude.toDouble() + (vector.verticalSpeed.toDouble() * refreshRateInSeconds / 60.0)); // in feet
+
+        // Return the new aircraft position
+        this.aircraftPosition = new AircraftPosition(newLat, newLon, newAlt);
     }
 
     /**
@@ -44,14 +68,13 @@ public class CommercialAircraft extends AircraftBase implements Aircraft {
         InstructedVector instructedVector = this.getInstructedVector();
 
         // 現在の高度と指示された高度を比較
-        int currentAltitude = (int) this.getAircraftPosition().getAltitude();
-        int instructedAltitude = instructedVector.getInstructedAltitude();
+        double altitudeDelta = this.aircraftPosition.altitude.compareAltitude(this.aircraftPosition.altitude, instructedVector.instructedAltitude);
         int verticalSpeed;
 
-        if (instructedAltitude > currentAltitude) {
+        if (altitudeDelta > 0) {
             // 指示された高度の方が高い場合
             verticalSpeed = 10;
-        } else if (instructedAltitude < currentAltitude) {
+        } else if (altitudeDelta < 0) {
             // 指示された高度の方が低い場合
             verticalSpeed = -10;
         } else {
@@ -60,26 +83,26 @@ public class CommercialAircraft extends AircraftBase implements Aircraft {
         }
 
         // 新しいAircraftVectorを設定
-        this.setAircraftVector(new AircraftVector(instructedVector.getInstructedHeading(), instructedVector.getInstructedGroundSpeed(), verticalSpeed));
+        this.setAircraftVector(new AircraftVector(instructedVector.instructedHeading, instructedVector.instructedGroundSpeed, new VerticalSpeed(verticalSpeed)));
     }
 
 
 
     @Override
     public String toString() {
-        AircraftPosition aircraftPosition = this.getAircraftPosition();
+        AircraftPosition aircraftPosition = this.aircraftPosition;
         AircraftVector aircraftVector = this.getAircraftVector();
 
         return "CommercialAircraft{" +
                 "callsign=" + this.getCallsign() +
                 ", position={" +
-                "latitude=" + aircraftPosition.getLatitude() +
-                ", longitude=" + aircraftPosition.getLongitude() +
-                ", altitude=" + aircraftPosition.getAltitude() +
+                "latitude=" + aircraftPosition.latitude +
+                ", longitude=" + aircraftPosition.longitude +
+                ", altitude=" + aircraftPosition.altitude +
                 "}, vector={" +
-                "heading=" + aircraftVector.getHeading() +
-                ", groundSpeed=" + aircraftVector.getGroundSpeed() +
-                ", verticalSpeed=" + aircraftVector.getVerticalSpeed() +
+                "heading=" + aircraftVector.heading +
+                ", groundSpeed=" + aircraftVector.groundSpeed +
+                ", verticalSpeed=" + aircraftVector.verticalSpeed +
                 "}, type=" + this.getAircraftType() +
                 ", originIata=" + this.originIata +
                 ", originIcao=" + this.originIcao +
