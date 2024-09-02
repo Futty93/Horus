@@ -20,4 +20,8 @@ public class VerticalSpeed {
     public VerticalSpeed changeVerticalSpeed(double verticalSpeedDelta) {
         return new VerticalSpeed(this.verticalSpeed + verticalSpeedDelta);
     }
+
+    public double toDouble() {
+        return this.verticalSpeed;
+    }
 }

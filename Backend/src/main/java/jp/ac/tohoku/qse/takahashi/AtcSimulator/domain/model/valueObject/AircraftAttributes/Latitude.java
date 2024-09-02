@@ -17,4 +17,8 @@ public class Latitude {
         // Normalize latitude to the range [-90, 90]
         return Math.max(-90, Math.min(90, latitude));
     }
+
+    public double toDouble() {
+        return this.latitude;
+    }
 }

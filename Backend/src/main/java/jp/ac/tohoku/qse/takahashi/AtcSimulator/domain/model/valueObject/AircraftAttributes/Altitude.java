@@ -27,4 +27,17 @@ public class Altitude {
     public Altitude changeAltitude(double altitudeDelta) {
         return new Altitude(this.altitude + altitudeDelta);
     }
+
+    /**
+     * 高度を比較する
+     *
+     * @return　比較後の高度
+     */
+    public double compareAltitude(final Altitude currentAltitude, final Altitude targetAltitude) {
+        return targetAltitude.altitude - currentAltitude.altitude;
+    }
+
+    public double toDouble() {
+        return this.altitude;
+    }
 }

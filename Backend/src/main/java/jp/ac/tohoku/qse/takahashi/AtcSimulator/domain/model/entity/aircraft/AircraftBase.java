@@ -8,9 +8,9 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.Air
 
 public abstract class AircraftBase {
     final Callsign callsign;
-    final AircraftPosition aircraftPosition;
-    final AircraftVector aircraftVector;
-    final InstructedVector instructedVector;
+    AircraftPosition aircraftPosition;
+    AircraftVector aircraftVector;
+    InstructedVector instructedVector;
     final AircraftType aircraftType;
 
     public AircraftBase(Callsign callsign, AircraftType aircraftType, AircraftPosition aircraftPosition, AircraftVector aircraftVector) {
@@ -18,7 +18,7 @@ public abstract class AircraftBase {
         this.aircraftType = aircraftType;
         this.aircraftPosition = aircraftPosition;
         this.aircraftVector = aircraftVector;
-        this.instructedVector = new InstructedVector(aircraftVector.getHeading(), (int) aircraftPosition.altitude, aircraftVector.getGroundSpeed());
+        this.instructedVector = new InstructedVector(aircraftVector.heading, aircraftPosition.altitude, aircraftVector.groundSpeed);
     }
 
     // Getter
@@ -48,7 +48,7 @@ public abstract class AircraftBase {
     }
 
     public void setInstructedVector(final InstructedVector newInstructedVector) {
-        this.instructedVector.setInstruction(newInstructedVector);
+        this.instructedVector = newInstructedVector;
     }
 
     // abstract methods

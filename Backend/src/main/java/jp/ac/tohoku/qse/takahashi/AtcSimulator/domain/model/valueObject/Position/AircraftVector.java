@@ -5,13 +5,13 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Aircraft
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.VerticalSpeed;
 
 public class AircraftVector {
-    final Heading heading;
-    final GroundSpeed groundSpeed;
-    final VerticalSpeed verticalSpeed;
+    public final Heading heading;
+    public final GroundSpeed groundSpeed;
+    public final VerticalSpeed verticalSpeed;
 
-    public AircraftVector(int heading, int groundSpeed, int verticalSpeed) {
-        this.heading = new Heading(heading);
-        this.groundSpeed = new GroundSpeed(groundSpeed);
-        this.verticalSpeed = new VerticalSpeed(verticalSpeed);
+    public AircraftVector(Heading heading, GroundSpeed groundSpeed, VerticalSpeed verticalSpeed) {
+        this.heading = heading;
+        this.groundSpeed = groundSpeed;
+        this.verticalSpeed = verticalSpeed;
     }
 }

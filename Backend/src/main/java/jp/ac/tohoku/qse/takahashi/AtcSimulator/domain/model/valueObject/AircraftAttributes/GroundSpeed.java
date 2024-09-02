@@ -23,4 +23,8 @@ public class GroundSpeed {
     public GroundSpeed changeGroundSpeed(double groundSpeedDelta) {
         return new GroundSpeed(this.groundSpeed + groundSpeedDelta);
     }
+
+    public double toDouble() {
+        return this.groundSpeed;
+    }
 }

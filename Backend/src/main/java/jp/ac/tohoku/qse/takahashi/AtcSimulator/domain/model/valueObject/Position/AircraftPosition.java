@@ -9,14 +9,14 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Aircraft
  *
  */
 public class AircraftPosition {
-    final Latitude latitude;
-    final Longitude longitude;
+    public final Latitude latitude;
+    public final Longitude longitude;
     public final Altitude altitude;
 
-    public AircraftPosition(double latitude, double longitude, double altitude) {
-        this.latitude = new Latitude(latitude);
-        this.longitude = new Longitude(longitude);
-        this.altitude = new Altitude(altitude);
+    public AircraftPosition(Latitude latitude, Longitude longitude, Altitude altitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.altitude = altitude;
     }
 
     @Override

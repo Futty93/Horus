@@ -20,4 +20,8 @@ public class Longitude {
         // Normalize longitude to the range [-180, 180)
         return ((longitude + 180) % 360 + 360) % 360 - 180;
     }
+
+    public double toDouble() {
+        return this.longitude;
+    }
 }

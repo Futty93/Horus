@@ -1,31 +1,17 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position;
 
-public class InstructedVector {
-    private int instructedHeading;
-    private int instructedAltitude;
-    private int instructedGroundSpeed;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.GroundSpeed;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Heading;
 
-    public InstructedVector(int instructedHeading, int instructedAltitude, int instructedGroundSpeed) {
+public class InstructedVector {
+    public final Heading instructedHeading;
+    public final Altitude instructedAltitude;
+    public final GroundSpeed instructedGroundSpeed;
+
+    public InstructedVector(Heading instructedHeading, Altitude instructedAltitude, GroundSpeed instructedGroundSpeed) {
         this.instructedHeading = instructedHeading;
         this.instructedAltitude = instructedAltitude;
         this.instructedGroundSpeed = instructedGroundSpeed;
-    }
-
-    public int getInstructedHeading() {
-        return this.instructedHeading;
-    }
-
-    public int getInstructedAltitude() {
-        return this.instructedAltitude;
-    }
-
-    public int getInstructedGroundSpeed() {
-        return this.instructedGroundSpeed;
-    }
-
-    public void setInstruction(InstructedVector instructedVector) {
-        this.instructedHeading = instructedVector.instructedHeading;
-        this.instructedAltitude = instructedVector.instructedAltitude;
-        this.instructedGroundSpeed = instructedVector.instructedGroundSpeed;
     }
 }

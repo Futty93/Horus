@@ -28,4 +28,8 @@ public class Heading {
     public Heading changeHeading(double headingDelta) {
         return new Heading(this.heading + headingDelta);
     }
+
+    public double toDouble() {
+        return this.heading;
+    }
 }
