@@ -74,6 +74,49 @@ export class CoordinateManager {
       const distance = R * c;
       return distance;
   }
+
+/**
+ * Calculates the canvas position of an aircraft 1 minute into the future based on its current speed and heading.
+ * @param speed - Current speed of the aircraft in knots.
+ * @param heading - Current heading of the aircraft in degrees.
+ * @param canvasWidth - Width of the canvas in pixels.
+ * @param canvasHeight - Height of the canvas in pixels.
+ * @param displayRange - The width of the displayed airspace in kilometers.
+ * @param currentPosition - Current position of the aircraft on the canvas in pixels.
+ * @returns The position of the aircraft on the canvas after 1 minute.
+ */
+public calculateFuturePositionOnCanvas(
+    speed: number,
+    heading: number,
+    canvasWidth: number,
+    canvasHeight: number,
+    displayRange: number,
+    currentPosition: { x: number; y: number }
+  ): { futureX: number; futureY: number } {
+    // Convert speed from knots to kilometers per minute
+    const speedKmPerMin = speed * 1.852 / 60;
+  
+    // Convert heading from degrees to radians
+    const headingRad = (heading - 90) * (Math.PI / 180);
+  
+    // Calculate the distance traveled in x and y directions
+    const deltaX = speedKmPerMin * Math.cos(headingRad);
+    const deltaY = - speedKmPerMin * Math.sin(headingRad);
+  
+    // Calculate the new position in kilometers
+    const futurePositionX = currentPosition.x + deltaX;
+    const futurePositionY = currentPosition.y + deltaY;
+  
+    // Convert the future position from kilometers to canvas pixels
+    const kmPerPixel = displayRange / canvasWidth;
+    const futureX = currentPosition.x + (futurePositionX - currentPosition.x) / kmPerPixel;
+    const futureY = currentPosition.y - (futurePositionY - currentPosition.y) / kmPerPixel;
+  
+    return {
+      futureX: Math.min(Math.max(futureX, 0), canvasWidth),
+      futureY: Math.min(Math.max(futureY, 0), canvasHeight)
+    };
+  }
 }
 
 export default CoordinateManager;

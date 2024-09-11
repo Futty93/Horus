@@ -63,6 +63,16 @@ const destAirport: string[] = [
 
 const updateRange = 50;
 
+
+interface CommercialAircraft {
+  callsign: string;
+  altitude: number;
+  location: { positionX: number; positionY: number };
+  heading: number;
+  speed: number;
+  destination: string;
+}
+
 /**
  * 航空機の情報の保持、更新に関するクラス
  * @param {string} callsign 初期値を渡さなかった場合ランダムなコールサインを生成
@@ -78,7 +88,7 @@ const updateRange = 50;
  */
 
 export class Airplane {
-  private callsign: string;
+  public callsign: string;
   private altitude: number;
   private commandedAltitude: number;
   private location: { positionX: number; positionY: number };
@@ -121,6 +131,16 @@ export class Airplane {
       y: 50,
     };
     this.draggingLabelIndex = -1;
+  }
+
+
+  // 新しい情報でAirplaneインスタンスを更新するメソッド
+  updateAircraftInfo(newAircraft: CommercialAircraft) {
+    this.altitude = newAircraft.altitude;
+    this.location = newAircraft.location;
+    this.heading = newAircraft.heading;
+    this.speed = newAircraft.speed;
+    this.destination = newAircraft.destination;
   }
 
   /**
