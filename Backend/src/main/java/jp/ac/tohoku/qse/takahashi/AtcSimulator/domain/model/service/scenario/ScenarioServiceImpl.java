@@ -15,17 +15,14 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.CreateAircraftDto;
 public class ScenarioServiceImpl implements ScenarioService {
 
     private final AirspaceManagement airspaceManagement;
-    private final AircraftRepository aircraftRepository;
 
-    public ScenarioServiceImpl(AirspaceManagement airspaceManagement, AircraftRepository aircraftRepository) {
+    public ScenarioServiceImpl(AirspaceManagement airspaceManagement) {
         this.airspaceManagement = airspaceManagement;
-        this.aircraftRepository = aircraftRepository;
     }
 
     public void spawnAircraft(CreateAircraftDto aircraftDto) {
         CommercialAircraft aircraft = aircraftDto.createCommercialAircraft();
         airspaceManagement.addAircraft(aircraft);
-        aircraftRepository.add(aircraft);
     }
 
     public void instructAircraft(Callsign callsign, ControlAircraftDto controlAircraftDto) {

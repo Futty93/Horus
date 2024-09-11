@@ -50,7 +50,7 @@ public class CommercialAircraft extends AircraftBase implements Aircraft {
         Latitude newLat = new Latitude(currentPos.latitude.toDouble() + Math.toDegrees(deltaLat * Math.cos(headingRad)));
 
         // Calculate new longitude considering Earth curvature
-        double deltaLon = distanceTraveled / (EARTH_RADIUS * Math.cos(Math.toRadians(currentPos.longitude.toDouble()))); // in radians
+        double deltaLon = - distanceTraveled / (EARTH_RADIUS * Math.cos(Math.toRadians(currentPos.longitude.toDouble()))); // in radians
         Longitude newLon = new Longitude(currentPos.longitude.toDouble() + Math.toDegrees(deltaLon * Math.sin(headingRad)));
 
         // Calculate new altitude

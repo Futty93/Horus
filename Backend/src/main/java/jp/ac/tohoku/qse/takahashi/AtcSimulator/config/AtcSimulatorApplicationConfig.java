@@ -39,6 +39,6 @@ public class AtcSimulatorApplicationConfig
 
     @Bean
     public ScenarioService scenarioService() {
-        return new ScenarioServiceImpl(airspaceManagement(), aircraftRepository);
+        return new ScenarioServiceImpl(airspaceManagement());
     }
 }
