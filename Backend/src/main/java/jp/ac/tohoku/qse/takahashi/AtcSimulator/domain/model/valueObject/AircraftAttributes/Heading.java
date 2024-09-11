@@ -32,4 +32,9 @@ public class Heading {
     public double toDouble() {
         return this.heading;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(this.heading);
+    }
 }

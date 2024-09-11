@@ -27,4 +27,9 @@ public class GroundSpeed {
     public double toDouble() {
         return this.groundSpeed;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(this.groundSpeed);
+    }
 }

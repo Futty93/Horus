@@ -37,4 +37,8 @@ public class Callsign {
     public boolean equals(Callsign callsign){
         return this.callsign.equals(callsign.getCallsign());
     }
+
+    public String toString(){
+        return this.callsign;
+    }
 }

@@ -24,4 +24,9 @@ public class Longitude {
     public double toDouble() {
         return this.longitude;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(this.longitude);
+    }
 }

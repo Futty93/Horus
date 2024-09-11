@@ -40,4 +40,9 @@ public class Altitude {
     public double toDouble() {
         return this.altitude;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(this.altitude);
+    }
 }

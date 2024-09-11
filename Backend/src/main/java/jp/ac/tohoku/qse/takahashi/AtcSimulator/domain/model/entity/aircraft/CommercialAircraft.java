@@ -94,15 +94,15 @@ public class CommercialAircraft extends AircraftBase implements Aircraft {
         AircraftVector aircraftVector = this.getAircraftVector();
 
         return "CommercialAircraft{" +
-                "callsign=" + this.getCallsign() +
+                "callsign=" + this.getCallsign().toString() +
                 ", position={" +
-                "latitude=" + aircraftPosition.latitude +
-                ", longitude=" + aircraftPosition.longitude +
-                ", altitude=" + aircraftPosition.altitude +
+                "latitude=" + aircraftPosition.latitude.toString() +
+                ", longitude=" + aircraftPosition.longitude.toString() +
+                ", altitude=" + aircraftPosition.altitude.toString() +
                 "}, vector={" +
-                "heading=" + aircraftVector.heading +
-                ", groundSpeed=" + aircraftVector.groundSpeed +
-                ", verticalSpeed=" + aircraftVector.verticalSpeed +
+                "heading=" + aircraftVector.heading.toString() +
+                ", groundSpeed=" + aircraftVector.groundSpeed.toString() +
+                ", verticalSpeed=" + aircraftVector.verticalSpeed.toString() +
                 "}, type=" + this.getAircraftType() +
                 ", originIata=" + this.originIata +
                 ", originIcao=" + this.originIcao +

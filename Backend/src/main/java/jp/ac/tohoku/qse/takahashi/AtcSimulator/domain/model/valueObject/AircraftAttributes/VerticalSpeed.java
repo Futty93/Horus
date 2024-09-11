@@ -24,4 +24,9 @@ public class VerticalSpeed {
     public double toDouble() {
         return this.verticalSpeed;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(this.verticalSpeed);
+    }
 }
