@@ -22,7 +22,7 @@ class RadarGame {
   private inputHeading: HTMLInputElement;
   private confirmButton: HTMLInputElement;
   private waypointManager: WaypointManager;
-  public coordinateManager: CoordinateManager;
+  public coordinateManager: CoordinateManager = new CoordinateManager(CANVAS_WIDTH, CANVAS_HEIGHT);
   // private sendButton: HTMLInputElement;
   private inGame: boolean; //シミュレーションゲーム中かどうかを判断する
   private bg: number; //ダブルバッファの背景と表示を切り替えるためのインデックスを管理

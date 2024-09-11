@@ -3,7 +3,7 @@ export class CoordinateManager {
   private canvasWidth: number;
   private canvasHeight: number;
 
-  constructor(canvasWidth: number = 1000, canvasHeight: number = 1000) {
+  constructor(canvasWidth: number, canvasHeight: number) {
       this.canvasWidth = canvasWidth;
       this.canvasHeight = canvasHeight;
   }
@@ -35,7 +35,7 @@ export class CoordinateManager {
     const bearing = Math.atan2(y, x);
 
     // Scale distance to canvas pixels
-    const pixelsPerKm = this.canvasWidth / range;
+    const pixelsPerKm = range / this.canvasWidth;
     const distancePx = distanceKm * pixelsPerKm;
 
     // Calculate canvas coordinates
