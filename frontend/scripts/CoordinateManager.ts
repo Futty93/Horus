@@ -43,9 +43,6 @@ export class CoordinateManager {
     const canvasX = (this.canvasWidth / 2) + distancePx * Math.sin(bearing);
     const canvasY = (this.canvasHeight / 2) - distancePx * Math.cos(bearing);
 
-    console.log(`centerLat: ${centerLat}, centerLon: ${centerLon}, range: ${range}, pointLat: ${pointLat}, pointLon: ${pointLon}`);
-    console.log(canvasX, canvasY, this.canvasWidth, this.canvasHeight);
-
     return { x: canvasX, y: canvasY };
 }
 

@@ -51,6 +51,7 @@ public class AircraftRepositoryInMemory implements AircraftRepository {
 
     public void NextStep() {
         for (Aircraft aircraft : aircrafts) {
+            aircraft.calculateNextAircraftVector();
             aircraft.calculateNextAircraftPosition();
         }
     }

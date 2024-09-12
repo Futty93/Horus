@@ -66,7 +66,7 @@ class RadarGame {
     this.canvas[1].addEventListener("mousemove", (e) => this.onMouseMove(e));
     this.canvas[0].addEventListener("mouseup", () => this.onMouseUp());
     this.canvas[1].addEventListener("mouseup", () => this.onMouseUp());
-    this.confirmButton.addEventListener("click", () => this.send_command());
+    this.confirmButton.addEventListener("click", () => this.controlAircraft());
 
     this.waypointManager = new WaypointManager();
     this.coordinateManager = new CoordinateManager(CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -79,9 +79,9 @@ class RadarGame {
     //   this.controlledAirplane.push(airplane);
     // }
   }
-  send_command(): any {
-    throw new Error("Method not implemented.");
-  }
+  // send_command(): any {
+  //   throw new Error("Method not implemented.");
+  // }
 
   /**
    * Creates a canvas element with the specified id.
@@ -458,6 +458,40 @@ private drawHeadingLine(index: number, airplane: Aircraft): void {
   //   }
   //   console.log(this.selectedAircraft);
   // }
+
+  private controlAircraft = async () => {
+    if (this.selectedAircraft){
+      const callsign = this.selectedAircraft.callsign;
+      // Get the input values from the form
+      const instructedAltitude = Number(this.inputAltitude.value);
+      const instructedGroundSpeed = Number(this.inputSpeed.value);
+      const instructedHeading = Number(this.inputHeading.value);
+    
+      // Create the DTO object
+      const controlAircraftDto = {
+        instructedAltitude,
+        instructedGroundSpeed,
+        instructedHeading,
+      };
+    
+      try {
+        const response = await fetch(`http://localhost:8080/api/aircraft/control/${callsign}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(controlAircraftDto),
+        });
+    
+        if (response.ok) {
+          console.log(`Aircraft ${callsign} controlled successfully.`);
+        } else {
+          console.error(`Failed to control aircraft ${callsign}. Status:`, response.status);
+        }
+      } catch (error) {
+        console.error("Error occurred while controlling aircraft:", error);
+      }}
+  };
 
   private update(): void {
     //画面全体を更新する
