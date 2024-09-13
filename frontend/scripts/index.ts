@@ -71,7 +71,7 @@ class RadarGame {
     this.waypointManager = new WaypointManager();
     this.coordinateManager = new CoordinateManager(CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    this.displayRange = 100; // Default display range in kilometers
+    this.displayRange = 200; // Default display range in kilometers
 
     // //とりあえず10機の航空機を生成する
     // for (let i = 1; i <= 10; i++) {
