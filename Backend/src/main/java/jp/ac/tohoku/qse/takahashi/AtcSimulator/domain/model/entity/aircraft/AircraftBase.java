@@ -26,6 +26,10 @@ public abstract class AircraftBase {
         return this.callsign;
     }
 
+    public AircraftPosition getAircraftPosition() {
+        return this.aircraftPosition;
+    }
+
     public AircraftVector getAircraftVector() {
         return this.aircraftVector;
     }
