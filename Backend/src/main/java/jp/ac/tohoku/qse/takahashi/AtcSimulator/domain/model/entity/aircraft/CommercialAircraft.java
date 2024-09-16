@@ -6,10 +6,20 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.InstructedVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
+import org.apache.tomcat.util.http.HeaderUtil;
 
 import static jp.ac.tohoku.qse.takahashi.AtcSimulator.config.constants.GlobalConstants.*;
 
 public class CommercialAircraft extends AircraftBase implements Aircraft {
+    // 最大加速度（kts/s）
+    private static final double MAX_ACCELERATION = 3.0;
+
+    // 最大旋回速度（度/秒）
+    private static final double MAX_TURN_RATE = 3.0;
+
+    // 最大上昇/降下速度（ft/min）
+    private static final double MAX_CLIMB_RATE = 1640.0;
+
     private final String originIata;
     private final String originIcao;
     private final String destinationIata;
@@ -60,30 +70,53 @@ public class CommercialAircraft extends AircraftBase implements Aircraft {
         this.aircraftPosition = new AircraftPosition(newLat, newLon, newAlt);
     }
 
+    private GroundSpeed calculateNextGroundSpeed(double currentGroundSpeed, double targetGroundSpeed) {
+        double nextGroundSpeed = currentGroundSpeed;
+        if (currentGroundSpeed < targetGroundSpeed) {
+            nextGroundSpeed += Math.min(MAX_ACCELERATION, targetGroundSpeed - currentGroundSpeed);
+        } else if (currentGroundSpeed > targetGroundSpeed) {
+            nextGroundSpeed -= Math.min(MAX_ACCELERATION, currentGroundSpeed - targetGroundSpeed);
+        }
+        return new GroundSpeed(nextGroundSpeed);
+    }
+
+    private Heading calculateNextHeading(final double currentHeading, final double targetHeading) {
+        double nextHeading = currentHeading;
+        if (currentHeading < targetHeading) {
+            nextHeading += Math.min(MAX_TURN_RATE, targetHeading - currentHeading);
+        } else if (currentHeading > targetHeading) {
+            nextHeading -= Math.min(MAX_TURN_RATE, currentHeading - targetHeading);
+        }
+        return new Heading(nextHeading);
+    }
+
+    private VerticalSpeed calculateNextVerticalSpeed(final double currentAltitude, final double targetAltitude) {
+        double nextVarticalSpeed = 0;
+        if (currentAltitude < targetAltitude) {
+            nextVarticalSpeed = Math.min(MAX_CLIMB_RATE / 60.0, targetAltitude - currentAltitude);
+        } else if (currentAltitude > targetAltitude) {
+            nextVarticalSpeed = Math.min(MAX_CLIMB_RATE / 60.0, currentAltitude - targetAltitude) * -1;
+        }
+        return new VerticalSpeed(nextVarticalSpeed);
+    }
+
     /**
      * instructedVector から 航空機の次のaircraftVectorを計算する
      * 指示された高度と現在の高度を比較し、垂直速度を設定する
      */
     public void calculateNextAircraftVector() {
         InstructedVector instructedVector = this.getInstructedVector();
+        //  次のHeadingを計算
+        Heading nextHeading = calculateNextHeading(this.getAircraftVector().heading.toDouble(), instructedVector.instructedHeading.toDouble());
 
-        // 現在の高度と指示された高度を比較
-        double altitudeDelta = this.aircraftPosition.altitude.compareAltitude(this.aircraftPosition.altitude, instructedVector.instructedAltitude);
-        int verticalSpeed;
+        //  次のGroundSpeedを計算
+        GroundSpeed nextGroundSpeed = calculateNextGroundSpeed(this.getAircraftVector().groundSpeed.toDouble(), instructedVector.instructedGroundSpeed.toDouble());
 
-        if (altitudeDelta > 0) {
-            // 指示された高度の方が高い場合
-            verticalSpeed = 10;
-        } else if (altitudeDelta < 0) {
-            // 指示された高度の方が低い場合
-            verticalSpeed = -10;
-        } else {
-            // 高度が同じ場合
-            verticalSpeed = 0;
-        }
+        //  次のAltitudeを計算
+        VerticalSpeed nextVerticalSpeed = calculateNextVerticalSpeed(this.getAircraftPosition().altitude.toDouble(), instructedVector.instructedAltitude.toDouble());
 
         // 新しいAircraftVectorを設定
-        this.setAircraftVector(new AircraftVector(instructedVector.instructedHeading, instructedVector.instructedGroundSpeed, new VerticalSpeed(verticalSpeed)));
+        this.setAircraftVector(new AircraftVector(nextHeading, nextGroundSpeed, nextVerticalSpeed));
     }
 
 
