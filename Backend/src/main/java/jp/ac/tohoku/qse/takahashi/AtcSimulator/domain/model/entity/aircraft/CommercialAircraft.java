@@ -163,6 +163,7 @@ public class CommercialAircraft extends AircraftBase implements Aircraft {
                 ", destinationIata=" + this.destinationIata +
                 ", destinationIcao=" + this.destinationIcao +
                 ", eta=" + this.eta +
+                ", highlight=" + this.highlight.toString() +
                 '}';
     }
 }
