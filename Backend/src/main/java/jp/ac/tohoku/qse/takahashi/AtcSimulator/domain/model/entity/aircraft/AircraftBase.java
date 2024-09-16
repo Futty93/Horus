@@ -13,7 +13,7 @@ public abstract class AircraftBase {
     AircraftVector aircraftVector;
     InstructedVector instructedVector;
     final AircraftType aircraftType;
-    HighlightRank highlight = new HighlightRank(0);
+    public HighlightRank highlight = new HighlightRank(0);
 
     public AircraftBase(Callsign callsign, AircraftType aircraftType, AircraftPosition aircraftPosition, AircraftVector aircraftVector) {
         this.callsign = callsign;
