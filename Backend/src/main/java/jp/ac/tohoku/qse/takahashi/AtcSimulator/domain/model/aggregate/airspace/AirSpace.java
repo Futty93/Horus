@@ -10,5 +10,4 @@ public interface AirSpace {
     public void addAircraft(Aircraft aircraft);
     public void removeAircraft(Aircraft aircraft);
 
-    void NextStep();
 }

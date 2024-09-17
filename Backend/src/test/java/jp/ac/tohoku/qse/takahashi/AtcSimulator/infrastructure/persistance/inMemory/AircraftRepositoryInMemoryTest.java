@@ -15,9 +15,6 @@ public class AircraftRepositoryInMemoryTest {
     @BeforeEach
     void setUp() {
         repository = new AircraftRepositoryInMemory();
-        repository.add(new CommercialAircraft( 0, 0, 0, 0, 0, 0, "Company 1", "Flight 1"));
-        repository.add(new CommercialAircraft( 0, 0, 0, 0, 0, 0, "Company 2", "Flight 2"));
-        repository.add(new CommercialAircraft( 0, 0, 0, 0, 0, 0, "Company 3", "Flight 3"));
     }
 
     @Test

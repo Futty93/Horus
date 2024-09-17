@@ -18,9 +18,4 @@ public class AirSpaceImpl implements AirSpace {
         aircrafts.remove(aircraft);
     }
 
-    public void NextStep() {
-        for (Aircraft aircraft : aircrafts) {
-            aircraft.calculateNextAircraftPosition();
-        }
-    }
 }

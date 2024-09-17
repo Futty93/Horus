@@ -11,7 +11,9 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ControlAircraftDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.CreateAircraftDto;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ScenarioServiceImpl implements ScenarioService {
 
     private final AirspaceManagement airspaceManagement;
