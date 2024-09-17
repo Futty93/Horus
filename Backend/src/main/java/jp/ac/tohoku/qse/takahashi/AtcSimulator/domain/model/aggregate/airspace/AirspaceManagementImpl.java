@@ -15,6 +15,7 @@ import static jp.ac.tohoku.qse.takahashi.AtcSimulator.config.constants.GlobalCon
 public class AirspaceManagementImpl implements AirspaceManagement {
     AircraftRepository aircraftRepository;
 
+    private int step = 0;
     public AirspaceManagementImpl(AircraftRepository aircraftRepository) {
         this.aircraftRepository = aircraftRepository;
     }
@@ -37,6 +38,7 @@ public class AirspaceManagementImpl implements AirspaceManagement {
 
     @Scheduled(fixedRate = 1000 / REFRESH_RATE)
     public void NextStep() {
+        System.out.println("Next step called  " + step++ + " times at AirspaceManagementImpl");
         aircraftRepository.NextStep();
     }
 }
