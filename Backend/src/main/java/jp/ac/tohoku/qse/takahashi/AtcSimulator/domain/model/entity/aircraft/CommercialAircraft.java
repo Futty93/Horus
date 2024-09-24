@@ -67,7 +67,8 @@ public class CommercialAircraft extends AircraftBase implements Aircraft {
         Altitude newAlt = new Altitude(currentPos.altitude.toDouble() + (vector.verticalSpeed.toDouble() * refreshRateInSeconds / 60.0)); // in feet
 
         // Return the new aircraft position
-        this.aircraftPosition = new AircraftPosition(newLat, newLon, newAlt);
+//        this.aircraftPosition = new AircraftPosition(newLat, newLon, newAlt);
+        this.setAircraftPosition(new AircraftPosition(newLat, newLon, newAlt));
     }
 
     private GroundSpeed calculateNextGroundSpeed(double currentGroundSpeed, double targetGroundSpeed) {
