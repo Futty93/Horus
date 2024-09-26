@@ -1,4 +1,4 @@
-package jp.ac.tohoku.qse.takahashi.AtcSimulator.config.constants;
+package jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals;
 
 public class GlobalConstants {
     public static final int REFRESH_RATE = 1;
