@@ -36,7 +36,7 @@ public class CreateAircraftService {
                             mediaType = "application/json",
                             schema = @Schema(implementation = CreateAircraftDto[].class),
                             examples = @ExampleObject(
-                                    value = "[ { \"callsign\": \"SKY514\", \"latitude\": 33.99, \"longitude\": 138.613, \"altitude\": 27050, \"groundSpeed\": 400, \"verticalSpeed\": 0, \"heading\": 50, \"type\": \"B738\", \"originIata\": \"OKA\", \"originIcao\": \"ROAH\", \"destinationIata\": \"HND\", \"destinationIcao\": \"RJTT\", \"eta\": \"2024-09-11T12:55:00Z\" }, { \"callsign\": \"ANA123\", \"latitude\": 34.56, \"longitude\": 139.764, \"altitude\": 30000, \"groundSpeed\": 450, \"verticalSpeed\": 0, \"heading\": 60, \"type\": \"B777\", \"originIata\": \"ITM\", \"originIcao\": \"RJOO\", \"destinationIata\": \"NRT\", \"destinationIcao\": \"RJAA\", \"eta\": \"2024-09-11T14:10:00Z\" } ]"
+                                    value = "[ { \"callsign\": \"SKY514\", \"latitude\": 34.99, \"longitude\": 139.613, \"altitude\": 27050, \"groundSpeed\": 400, \"verticalSpeed\": 0, \"heading\": 70, \"type\": \"B738\", \"originIata\": \"OKA\", \"originIcao\": \"ROAH\", \"destinationIata\": \"HND\", \"destinationIcao\": \"RJTT\", \"eta\": \"2024-09-11T12:55:00Z\" }, { \"callsign\": \"ANA123\", \"latitude\": 34.86, \"longitude\": 139.764, \"altitude\": 30000, \"groundSpeed\": 450, \"verticalSpeed\": 0, \"heading\": 60, \"type\": \"B777\", \"originIata\": \"ITM\", \"originIcao\": \"RJOO\", \"destinationIata\": \"NRT\", \"destinationIcao\": \"RJAA\", \"eta\": \"2024-09-11T14:10:00Z\" } ]"
                             )
                     )
             ),

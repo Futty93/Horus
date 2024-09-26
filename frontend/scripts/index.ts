@@ -612,26 +612,35 @@ const parseAircraftData = (data: string): Aircraft[] | null => {
   }
 };
 
-// Function to parse a single aircraft string into an Aircraft object
 const parseAircraftString = (aircraftString: string): Aircraft => {
-  // Implement the actual parsing logic based on your data format
-  // This is a placeholder; adjust it according to your format
-  // Example: Extract fields from the string and return a new Aircraft object
-  const matches = aircraftString.match(/callsign=(.*?), position=\{latitude=(.*?), longitude=(.*?), altitude=(.*?)\}, vector=\{heading=(.*?), groundSpeed=(.*?), verticalSpeed=(.*?)\}, type=(.*?), originIata=(.*?), originIcao=(.*?), destinationIata=(.*?), destinationIcao=(.*?), eta=(.*?)\}/);
+  const aircraftRegex = /callsign=(.*?), position=\{latitude=(.*?), longitude=(.*?), altitude=(.*?)\}, vector=\{heading=(.*?), groundSpeed=(.*?), verticalSpeed=(.*?)\}, type=(.*?), originIata=(.*?), originIcao=(.*?), destinationIata=(.*?), destinationIcao=(.*?), eta=(.*?)\}/;
+  
+  const matches = aircraftString.match(aircraftRegex);
   if (matches) {
-    const coordinateOnCanvas = radarGame.coordinateManager.calculateCanvasCoordinates(radarGame.centerCoordinates.latitude, radarGame.centerCoordinates.longitude, radarGame.displayRange, parseFloat(matches[2]), parseFloat(matches[3]));
+    const [_, callsign, lat, lon, altitude, heading, groundSpeed, verticalSpeed, type, originIata, originIcao, destinationIata, destinationIcao, eta] = matches;
+
+    // Convert latitude and longitude into canvas coordinates using radarGame utility
+    const coordinateOnCanvas = radarGame.coordinateManager.calculateCanvasCoordinates(
+      radarGame.centerCoordinates.latitude,
+      radarGame.centerCoordinates.longitude,
+      radarGame.displayRange,
+      parseFloat(lat),
+      parseFloat(lon)
+    );
+
     return new Aircraft(
-      matches[1], // callsign
-      { x: coordinateOnCanvas.x, y: coordinateOnCanvas.y, altitude: parseFloat(matches[4]) }, // position
-      { heading: parseFloat(matches[5]), groundSpeed: parseFloat(matches[6]), verticalSpeed: parseFloat(matches[7]) }, // vector
-      matches[8], // type
-      matches[9], // originIata
-      matches[10], // originIcao
-      matches[11], // destinationIata
-      matches[12], // destinationIcao
-      matches[10] // eta
+      callsign,
+      { x: coordinateOnCanvas.x, y: coordinateOnCanvas.y, altitude: parseFloat(altitude) }, // position
+      { heading: parseFloat(heading), groundSpeed: parseFloat(groundSpeed), verticalSpeed: parseFloat(verticalSpeed) }, // vector
+      type,
+      originIata,
+      originIcao,
+      destinationIata,
+      destinationIcao,
+      eta,
     );
   }
+  
   throw new Error("Failed to parse aircraft string: " + aircraftString);
 };
 
