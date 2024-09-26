@@ -2,6 +2,7 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.api;
 
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.AircraftRadarService;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalVariables;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Company;
@@ -25,7 +26,9 @@ public class LocationService {
 
     @RequestMapping(path = "/location/all", method = RequestMethod.GET)
     public String getAllAircraftLocation() {
-        return aircraftRadarService.getAllAircraftLocation();
+        String callsignExtructStatus = "Callsign Extraction Status: " + GlobalVariables.callsignExtructStatus.toString() + "\n";
+        String aircraftLocations = aircraftRadarService.getAllAircraftLocation();
+        return callsignExtructStatus + aircraftLocations;
     }
 
     @RequestMapping(path = "/location", method = RequestMethod.GET)
