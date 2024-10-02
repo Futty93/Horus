@@ -1,0 +1,3718 @@
+{
+  "routes": [
+    {
+      "name": "A1",
+      "description": "Route A1 from KUSHIMOTO to BULAN",
+      "points": [
+        {
+          "name": "KUSHIMOTO",
+          "latitude": 33.447742,
+          "longitude": 135.794494,
+          "type": "waypoint"
+        },
+        {
+          "name": "ALBAT",
+          "latitude": 33.364503,
+          "longitude": 135.441514,
+          "type": "waypoint"
+        },
+        {
+          "name": "HALON",
+          "latitude": 33.248769,
+          "longitude": 134.997222,
+          "type": "waypoint"
+        },
+        {
+          "name": "JAKAL",
+          "latitude": 33.062028,
+          "longitude": 134.234275,
+          "type": "waypoint"
+        },
+        {
+          "name": "GREEN",
+          "latitude": 32.898675,
+          "longitude": 133.5665,
+          "type": "waypoint"
+        },
+        {
+          "name": "SHIMIZU",
+          "latitude": 32.755969,
+          "longitude": 132.996647,
+          "type": "waypoint"
+        },
+        {
+          "name": "FENIX",
+          "latitude": 32.141783,
+          "longitude": 131.591481,
+          "type": "waypoint"
+        },
+        {
+          "name": "JINGU",
+          "latitude": 31.902725,
+          "longitude": 131.048667,
+          "type": "waypoint"
+        },
+        {
+          "name": "KAGOSHIMA",
+          "latitude": 31.697222,
+          "longitude": 130.582942,
+          "type": "waypoint"
+        },
+        {
+          "name": "KAZAN",
+          "latitude": 31.385036,
+          "longitude": 130.111267,
+          "type": "waypoint"
+        },
+        {
+          "name": "KOSHI",
+          "latitude": 31.288503,
+          "longitude": 129.964714,
+          "type": "waypoint"
+        },
+        {
+          "name": "JEDAI",
+          "latitude": 30.774644,
+          "longitude": 129.201156,
+          "type": "waypoint"
+        },
+        {
+          "name": "RUSAR",
+          "latitude": 29.865028,
+          "longitude": 127.837142,
+          "type": "waypoint"
+        },
+        {
+          "name": "AKVAS",
+          "latitude": 29.586997,
+          "longitude": 127.464681,
+          "type": "waypoint"
+        },
+        {
+          "name": "URUMA",
+          "latitude": 28.970067,
+          "longitude": 126.5793,
+          "type": "waypoint"
+        },
+        {
+          "name": "SAPET",
+          "latitude": 28.637081,
+          "longitude": 126.131483,
+          "type": "waypoint"
+        },
+        {
+          "name": "IGMON",
+          "latitude": 27.622128,
+          "longitude": 124.720519,
+          "type": "waypoint"
+        },
+        {
+          "name": "BULAN",
+          "latitude": 27.091667,
+          "longitude": 124.0,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "A204",
+      "description": "Route A204 from AKSUN to YOROI",
+      "points": [
+        {
+          "name": "AKSUN",
+          "latitude": 45.752075,
+          "longitude": 140.904458,
+          "type": "waypoint"
+        },
+        {
+          "name": "ORISU",
+          "latitude": 45.465983,
+          "longitude": 141.064022,
+          "type": "waypoint"
+        },
+        {
+          "name": "RISHIRI",
+          "latitude": 45.245661,
+          "longitude": 141.186767,
+          "type": "waypoint"
+        },
+        {
+          "name": "LEDAX",
+          "latitude": 45.095208,
+          "longitude": 141.568356,
+          "type": "waypoint"
+        },
+        {
+          "name": "YOROI",
+          "latitude": 45.008639,
+          "longitude": 141.785578,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "A337",
+      "description": "Route A337 from DAGDA to TEGOD",
+      "points": [
+        {
+          "name": "DAGDA",
+          "latitude": 33.81615,
+          "longitude": 142.347694,
+          "type": "waypoint"
+        },
+        {
+          "name": "NOGAK",
+          "latitude": 30.003933,
+          "longitude": 143.165033,
+          "type": "waypoint"
+        },
+        {
+          "name": "SAGOP",
+          "latitude": 25.004444,
+          "longitude": 144.340094,
+          "type": "waypoint"
+        },
+        {
+          "name": "TEGOD",
+          "latitude": 21.0,
+          "longitude": 145.196667,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "A339",
+      "description": "Route A339 from YOSHI to KEITH",
+      "points": [
+        {
+          "name": "YOSHI",
+          "latitude": 33.170719,
+          "longitude": 138.957483,
+          "type": "waypoint"
+        },
+        {
+          "name": "MAPDO",
+          "latitude": 32.61355,
+          "longitude": 138.645306,
+          "type": "waypoint"
+        },
+        {
+          "name": "BOLED",
+          "latitude": 30.963036,
+          "longitude": 137.746722,
+          "type": "waypoint"
+        },
+        {
+          "name": "TAXON",
+          "latitude": 30.003797,
+          "longitude": 137.238836,
+          "type": "waypoint"
+        },
+        {
+          "name": "MAKDA",
+          "latitude": 27.270717,
+          "longitude": 135.850686,
+          "type": "waypoint"
+        },
+        {
+          "name": "SABGU",
+          "latitude": 25.497547,
+          "longitude": 134.989128,
+          "type": "waypoint"
+        },
+        {
+          "name": "KEITH",
+          "latitude": 21.0,
+          "longitude": 134.946667,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "A582",
+      "description": "Route A582 from APELA to BISIG",
+      "points": [
+        {
+          "name": "APELA",
+          "latitude": 34.723108,
+          "longitude": 129.233289,
+          "type": "waypoint"
+        },
+        {
+          "name": "ZAKRO",
+          "latitude": 33.975094,
+          "longitude": 129.651278,
+          "type": "waypoint"
+        },
+        {
+          "name": "IKI",
+          "latitude": 33.747511,
+          "longitude": 129.776853,
+          "type": "waypoint"
+        },
+        {
+          "name": "OLSUB",
+          "latitude": 33.224125,
+          "longitude": 129.986242,
+          "type": "waypoint"
+        },
+        {
+          "name": "KAZSA",
+          "latitude": 32.586161,
+          "longitude": 130.236325,
+          "type": "waypoint"
+        },
+        {
+          "name": "TEMIP",
+          "latitude": 32.118572,
+          "longitude": 130.4203,
+          "type": "waypoint"
+        },
+        {
+          "name": "KAGOSHIMA",
+          "latitude": 31.697222,
+          "longitude": 130.582942,
+          "type": "waypoint"
+        },
+        {
+          "name": "ISKID",
+          "latitude": 31.596497,
+          "longitude": 130.537189,
+          "type": "waypoint"
+        },
+        {
+          "name": "MAKRA",
+          "latitude": 31.272686,
+          "longitude": 130.394975,
+          "type": "waypoint"
+        },
+        {
+          "name": "SAZMA",
+          "latitude": 31.075211,
+          "longitude": 130.302175,
+          "type": "waypoint"
+        },
+        {
+          "name": "ENPAD",
+          "latitude": 30.577003,
+          "longitude": 130.070594,
+          "type": "waypoint"
+        },
+        {
+          "name": "OLSER",
+          "latitude": 30.343472,
+          "longitude": 129.965472,
+          "type": "waypoint"
+        },
+        {
+          "name": "BOMAP",
+          "latitude": 30.003656,
+          "longitude": 129.824464,
+          "type": "waypoint"
+        },
+        {
+          "name": "LEMEG",
+          "latitude": 29.338392,
+          "longitude": 129.519278,
+          "type": "waypoint"
+        },
+        {
+          "name": "ANOXA",
+          "latitude": 28.988758,
+          "longitude": 129.377025,
+          "type": "waypoint"
+        },
+        {
+          "name": "MEKAX",
+          "latitude": 28.448533,
+          "longitude": 129.140667,
+          "type": "waypoint"
+        },
+        {
+          "name": "HACHA",
+          "latitude": 28.156619,
+          "longitude": 129.014294,
+          "type": "waypoint"
+        },
+        {
+          "name": "BINID",
+          "latitude": 27.9021,
+          "longitude": 128.898044,
+          "type": "waypoint"
+        },
+        {
+          "name": "ERABU",
+          "latitude": 27.432883,
+          "longitude": 128.698964,
+          "type": "waypoint"
+        },
+        {
+          "name": "LEXUS",
+          "latitude": 27.002808,
+          "longitude": 128.324553,
+          "type": "waypoint"
+        },
+        {
+          "name": "OKUMA",
+          "latitude": 26.671383,
+          "longitude": 128.038647,
+          "type": "waypoint"
+        },
+        {
+          "name": "NAHA",
+          "latitude": 26.208531,
+          "longitude": 127.642867,
+          "type": "waypoint"
+        },
+        {
+          "name": "MAMIK",
+          "latitude": 25.436167,
+          "longitude": 127.289556,
+          "type": "waypoint"
+        },
+        {
+          "name": "ESPEK",
+          "latitude": 24.972414,
+          "longitude": 127.079617,
+          "type": "waypoint"
+        },
+        {
+          "name": "SAKON",
+          "latitude": 24.120897,
+          "longitude": 126.698172,
+          "type": "waypoint"
+        },
+        {
+          "name": "NIMOX",
+          "latitude": 22.911214,
+          "longitude": 126.14045,
+          "type": "waypoint"
+        },
+        {
+          "name": "BISIG",
+          "latitude": 21.0,
+          "longitude": 125.266667,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "A586",
+      "description": "Route A586 from RUGMA to ERABU",
+      "points": [
+        {
+          "name": "RUGMA",
+          "latitude": 32.503328,
+          "longitude": 126.964664,
+          "type": "waypoint"
+        },
+        {
+          "name": "POTET",
+          "latitude": 32.280022,
+          "longitude": 127.039664,
+          "type": "waypoint"
+        },
+        {
+          "name": "BIGIT",
+          "latitude": 32.03915,
+          "longitude": 127.120603,
+          "type": "waypoint"
+        },
+        {
+          "name": "ESBIS",
+          "latitude": 31.253475,
+          "longitude": 127.381322,
+          "type": "waypoint"
+        },
+        {
+          "name": "LESKA",
+          "latitude": 30.265875,
+          "longitude": 127.706931,
+          "type": "waypoint"
+        },
+        {
+          "name": "RUSAR",
+          "latitude": 29.865028,
+          "longitude": 127.837142,
+          "type": "waypoint"
+        },
+        {
+          "name": "MELEN",
+          "latitude": 29.526139,
+          "longitude": 127.965914,
+          "type": "waypoint"
+        },
+        {
+          "name": "GUPTI",
+          "latitude": 29.023458,
+          "longitude": 128.155186,
+          "type": "waypoint"
+        },
+        {
+          "name": "POLAM",
+          "latitude": 28.198308,
+          "longitude": 128.439464,
+          "type": "waypoint"
+        },
+        {
+          "name": "LASOD",
+          "latitude": 27.7616,
+          "longitude": 128.588,
+          "type": "waypoint"
+        },
+        {
+          "name": "ERABU",
+          "latitude": 27.432883,
+          "longitude": 128.698964,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "A590",
+      "description": "Route A590 from PASRO to GURAG",
+      "points": [
+        {
+          "name": "PASRO",
+          "latitude": 48.278997,
+          "longitude": 160.681314,
+          "type": "waypoint"
+        },
+        {
+          "name": "PUGAL",
+          "latitude": 44.857711,
+          "longitude": 154.416678,
+          "type": "waypoint"
+        },
+        {
+          "name": "POXED",
+          "latitude": 41.084589,
+          "longitude": 148.942392,
+          "type": "waypoint"
+        },
+        {
+          "name": "PUTER",
+          "latitude": 38.332381,
+          "longitude": 145.518681,
+          "type": "waypoint"
+        },
+        {
+          "name": "DOVIX",
+          "latitude": 37.035244,
+          "longitude": 144.257633,
+          "type": "waypoint"
+        },
+        {
+          "name": "POROT",
+          "latitude": 35.929733,
+          "longitude": 143.228181,
+          "type": "waypoint"
+        },
+        {
+          "name": "KAGIS",
+          "latitude": 35.820247,
+          "longitude": 142.563472,
+          "type": "waypoint"
+        },
+        {
+          "name": "ONASU",
+          "latitude": 34.881517,
+          "longitude": 140.920608,
+          "type": "waypoint"
+        },
+        {
+          "name": "OYAMA",
+          "latitude": 34.071042,
+          "longitude": 139.561289,
+          "type": "waypoint"
+        },
+        {
+          "name": "YOSHI",
+          "latitude": 33.170719,
+          "longitude": 138.957483,
+          "type": "waypoint"
+        },
+        {
+          "name": "AKUBI",
+          "latitude": 32.950475,
+          "longitude": 138.657869,
+          "type": "waypoint"
+        },
+        {
+          "name": "BUBDO",
+          "latitude": 31.431964,
+          "longitude": 136.653842,
+          "type": "waypoint"
+        },
+        {
+          "name": "OLDUP",
+          "latitude": 30.125411,
+          "longitude": 135.342322,
+          "type": "waypoint"
+        },
+        {
+          "name": "DOVAG",
+          "latitude": 28.583878,
+          "longitude": 133.814156,
+          "type": "waypoint"
+        },
+        {
+          "name": "BIXAK",
+          "latitude": 27.880606,
+          "longitude": 133.137561,
+          "type": "waypoint"
+        },
+        {
+          "name": "MINAMIDAITO",
+          "latitude": 25.854483,
+          "longitude": 131.263789,
+          "type": "VOR/DME"
+        },
+        {
+          "name": "AVLAS",
+          "latitude": 24.355642,
+          "longitude": 130.120936,
+          "type": "waypoint"
+        },
+        {
+          "name": "TUNTO",
+          "latitude": 23.004372,
+          "longitude": 129.081322,
+          "type": "waypoint"
+        },
+        {
+          "name": "GURAG",
+          "latitude": 21.0,
+          "longitude": 127.416667,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "A593",
+      "description": "Route A593 from FUKUE to ONIKU",
+      "points": [
+        {
+          "name": "FUKUE",
+          "latitude": 32.668606,
+          "longitude": 128.826736,
+          "type": "waypoint"
+        },
+        {
+          "name": "GOMAR",
+          "latitude": 32.462417,
+          "longitude": 127.857994,
+          "type": "waypoint"
+        },
+        {
+          "name": "AZUKI",
+          "latitude": 32.401917,
+          "longitude": 127.581,
+          "type": "waypoint"
+        },
+        {
+          "name": "POTET",
+          "latitude": 32.280022,
+          "longitude": 127.039664,
+          "type": "waypoint"
+        },
+        {
+          "name": "ONIKU",
+          "latitude": 32.195025,
+          "longitude": 126.6547,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "A595",
+      "description": "Route A595 from FUKUOKA to SAMDO",
+      "points": [
+        {
+          "name": "FUKUOKA",
+          "latitude": 33.676208,
+          "longitude": 130.389628,
+          "type": "waypoint"
+        },
+        {
+          "name": "IKI",
+          "latitude": 33.747511,
+          "longitude": 129.776853,
+          "type": "waypoint"
+        },
+        {
+          "name": "GOURA",
+          "latitude": 33.694067,
+          "longitude": 129.281242,
+          "type": "waypoint"
+        },
+        {
+          "name": "SAMDO",
+          "latitude": 33.584058,
+          "longitude": 128.315906,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "A597",
+      "description": "Route A597 from KUSHIMOTO to MONPI",
+      "points": [
+        {
+          "name": "KUSHIMOTO",
+          "latitude": 33.447742,
+          "longitude": 135.794494,
+          "type": "waypoint"
+        },
+        {
+          "name": "OTOWA",
+          "latitude": 33.248528,
+          "longitude": 135.881319,
+          "type": "waypoint"
+        },
+        {
+          "name": "MAYON",
+          "latitude": 32.707428,
+          "longitude": 136.115039,
+          "type": "waypoint"
+        },
+        {
+          "name": "TAPOP",
+          "latitude": 32.338139,
+          "longitude": 136.272747,
+          "type": "waypoint"
+        },
+        {
+          "name": "BUBDO",
+          "latitude": 31.431964,
+          "longitude": 136.653842,
+          "type": "waypoint"
+        },
+        {
+          "name": "TAXON",
+          "latitude": 30.003797,
+          "longitude": 137.238836,
+          "type": "waypoint"
+        },
+        {
+          "name": "ASEDA",
+          "latitude": 25.004339,
+          "longitude": 139.158814,
+          "type": "waypoint"
+        },
+        {
+          "name": "MONPI",
+          "latitude": 21.0,
+          "longitude": 140.6,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "B223",
+      "description": "Route B223 from LUMIN to WAKKANAI",
+      "points": [
+        {
+          "name": "LUMIN",
+          "latitude": 45.75,
+          "longitude": 141.838333,
+          "type": "waypoint"
+        },
+        {
+          "name": "WAKKANAI",
+          "latitude": 45.407358,
+          "longitude": 141.805647,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "B332",
+      "description": "Route B332 from IGRAS to IZUMO",
+      "points": [
+        {
+          "name": "IGRAS",
+          "latitude": 37.312597,
+          "longitude": 132.736217,
+          "type": "waypoint"
+        },
+        {
+          "name": "IZUMO",
+          "latitude": 35.417239,
+          "longitude": 132.892372,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "B337",
+      "description": "Route B337 from ANIMO to ASAHIKAWA",
+      "points": [
+        {
+          "name": "ANIMO",
+          "latitude": 45.198869,
+          "longitude": 143.67925,
+          "type": "waypoint"
+        },
+        {
+          "name": "ASAHIKAWA",
+          "latitude": 43.667264,
+          "longitude": 142.456847,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "B451",
+      "description": "Route B451 from IGROD to KADBO",
+      "points": [
+        {
+          "name": "IGROD",
+          "latitude": 41.65,
+          "longitude": 136.783333,
+          "type": "waypoint"
+        },
+        {
+          "name": "HOKKE",
+          "latitude": 40.002672,
+          "longitude": 137.441783,
+          "type": "waypoint"
+        },
+        {
+          "name": "KADBO",
+          "latitude": 39.236106,
+          "longitude": 137.746792,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "B452",
+      "description": "Route B452 from TONIK to ATIGO",
+      "points": [
+        {
+          "name": "TONIK",
+          "latitude": 32.003806,
+          "longitude": 145.996414,
+          "type": "waypoint"
+        },
+        {
+          "name": "UPDOB",
+          "latitude": 30.004031,
+          "longitude": 146.851428,
+          "type": "waypoint"
+        },
+        {
+          "name": "NITOT",
+          "latitude": 25.004547,
+          "longitude": 148.84145,
+          "type": "waypoint"
+        },
+        {
+          "name": "ATIGO",
+          "latitude": 21.0,
+          "longitude": 150.316667,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "B462",
+      "description": "Route B462 from MIYAKOJIMA to MEVIN",
+      "points": [
+        {
+          "name": "MIYAKOJIMA",
+          "latitude": 24.777392,
+          "longitude": 125.293408,
+          "type": "waypoint"
+        },
+        {
+          "name": "KAZIK",
+          "latitude": 23.351622,
+          "longitude": 124.221603,
+          "type": "waypoint"
+        },
+        {
+          "name": "SADEK",
+          "latitude": 23.004314,
+          "longitude": 123.965086,
+          "type": "waypoint"
+        },
+        {
+          "name": "MAGMA",
+          "latitude": 22.797553,
+          "longitude": 123.816819,
+          "type": "waypoint"
+        },
+        {
+          "name": "MEVIN",
+          "latitude": 21.0,
+          "longitude": 122.55,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "B576",
+      "description": "Route B576 from ATOTI to SALMI",
+      "points": [
+        {
+          "name": "ATOTI",
+          "latitude": 30.003583,
+          "longitude": 125.198208,
+          "type": "waypoint"
+        },
+        {
+          "name": "BOLUT",
+          "latitude": 28.772778,
+          "longitude": 124.703333,
+          "type": "waypoint"
+        },
+        {
+          "name": "SALMI",
+          "latitude": 28.315,
+          "longitude": 124.0,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "B586",
+      "description": "Route B586 from OSHIMA to OMLET",
+      "points": [
+        {
+          "name": "OSHIMA",
+          "latitude": 34.712253,
+          "longitude": 139.414017,
+          "type": "waypoint"
+        },
+        {
+          "name": "NURLI",
+          "latitude": 34.197539,
+          "longitude": 139.496639,
+          "type": "waypoint"
+        },
+        {
+          "name": "SABRI",
+          "latitude": 32.770222,
+          "longitude": 139.720531,
+          "type": "waypoint"
+        },
+        {
+          "name": "CADDY",
+          "latitude": 31.00005,
+          "longitude": 139.987069,
+          "type": "waypoint"
+        },
+        {
+          "name": "UKATA",
+          "latitude": 30.000858,
+          "longitude": 140.346178,
+          "type": "waypoint"
+        },
+        {
+          "name": "TOMOL",
+          "latitude": 28.316267,
+          "longitude": 141.330286,
+          "type": "waypoint"
+        },
+        {
+          "name": "VASKO",
+          "latitude": 25.004394,
+          "longitude": 142.036931,
+          "type": "waypoint"
+        },
+        {
+          "name": "OMLET",
+          "latitude": 21.0,
+          "longitude": 142.99,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "B597",
+      "description": "Route B597 from SHIMIZU to ERABU",
+      "points": [
+        {
+          "name": "SHIMIZU",
+          "latitude": 32.755969,
+          "longitude": 132.996647,
+          "type": "waypoint"
+        },
+        {
+          "name": "MADOG",
+          "latitude": 32.125192,
+          "longitude": 132.396239,
+          "type": "waypoint"
+        },
+        {
+          "name": "HIROS",
+          "latitude": 31.925056,
+          "longitude": 132.208475,
+          "type": "waypoint"
+        },
+        {
+          "name": "JACKY",
+          "latitude": 31.554661,
+          "longitude": 131.863114,
+          "type": "waypoint"
+        },
+        {
+          "name": "QUEEN",
+          "latitude": 31.226283,
+          "longitude": 131.560158,
+          "type": "waypoint"
+        },
+        {
+          "name": "JOKER",
+          "latitude": 31.116286,
+          "longitude": 131.459219,
+          "type": "waypoint"
+        },
+        {
+          "name": "TEPPO",
+          "latitude": 30.760117,
+          "longitude": 131.134306,
+          "type": "waypoint"
+        },
+        {
+          "name": "NAKATANE",
+          "latitude": 30.602156,
+          "longitude": 130.991533,
+          "type": "waypoint"
+        },
+        {
+          "name": "ANREM",
+          "latitude": 30.342378,
+          "longitude": 130.834614,
+          "type": "waypoint"
+        },
+        {
+          "name": "SEPIA",
+          "latitude": 30.008981,
+          "longitude": 130.634678,
+          "type": "waypoint"
+        },
+        {
+          "name": "RURIK",
+          "latitude": 29.299675,
+          "longitude": 130.214556,
+          "type": "waypoint"
+        },
+        {
+          "name": "TUMGI",
+          "latitude": 28.732514,
+          "longitude": 129.883539,
+          "type": "waypoint"
+        },
+        {
+          "name": "KASARI",
+          "latitude": 28.434717,
+          "longitude": 129.711408,
+          "type": "waypoint"
+        },
+        {
+          "name": "YUWAN",
+          "latitude": 28.186067,
+          "longitude": 129.459256,
+          "type": "waypoint"
+        },
+        {
+          "name": "PINNE",
+          "latitude": 27.821933,
+          "longitude": 129.090683,
+          "type": "waypoint"
+        },
+        {
+          "name": "ERABU",
+          "latitude": 27.432883,
+          "longitude": 128.698964,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "B932",
+      "description": "Route B932 from ODERI to MEMANBETSU",
+      "points": [
+        {
+          "name": "ODERI",
+          "latitude": 44.65,
+          "longitude": 145.255556,
+          "type": "waypoint"
+        },
+        {
+          "name": "UBRAS",
+          "latitude": 44.268692,
+          "longitude": 144.707331,
+          "type": "waypoint"
+        },
+        {
+          "name": "MEMANBETSU",
+          "latitude": 43.884908,
+          "longitude": 144.166183,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "G223",
+      "description": "Route G223 from ADKAK to RISBA",
+      "points": [
+        {
+          "name": "ADKAK",
+          "latitude": 33.9035,
+          "longitude": 142.163306,
+          "type": "waypoint"
+        },
+        {
+          "name": "DAGDA",
+          "latitude": 33.81615,
+          "longitude": 142.347694,
+          "type": "waypoint"
+        },
+        {
+          "name": "BEGAD",
+          "latitude": 33.386919,
+          "longitude": 143.246572,
+          "type": "waypoint"
+        },
+        {
+          "name": "TONIK",
+          "latitude": 32.003806,
+          "longitude": 145.996414,
+          "type": "waypoint"
+        },
+        {
+          "name": "KAKNI",
+          "latitude": 30.004053,
+          "longitude": 147.629706,
+          "type": "waypoint"
+        },
+        {
+          "name": "SEGRO",
+          "latitude": 25.004608,
+          "longitude": 151.386283,
+          "type": "waypoint"
+        },
+        {
+          "name": "BEEBO",
+          "latitude": 22.407778,
+          "longitude": 153.190556,
+          "type": "waypoint"
+        },
+        {
+          "name": "RISBA",
+          "latitude": 21.0,
+          "longitude": 154.136667,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "G339",
+      "description": "Route G339 from INVOK to PAKDO",
+      "points": [
+        {
+          "name": "INVOK",
+          "latitude": 34.788658,
+          "longitude": 129.323003,
+          "type": "waypoint"
+        },
+        {
+          "name": "BEETL",
+          "latitude": 34.262464,
+          "longitude": 129.829247,
+          "type": "waypoint"
+        },
+        {
+          "name": "FUKUOKA",
+          "latitude": 33.676208,
+          "longitude": 130.389628,
+          "type": "waypoint"
+        },
+        {
+          "name": "OGORI",
+          "latitude": 33.277767,
+          "longitude": 130.429067,
+          "type": "waypoint"
+        },
+        {
+          "name": "MIZMA",
+          "latitude": 33.242769,
+          "longitude": 130.432367,
+          "type": "waypoint"
+        },
+        {
+          "name": "OSTEP",
+          "latitude": 33.142169,
+          "longitude": 130.442239,
+          "type": "waypoint"
+        },
+        {
+          "name": "OMUTA",
+          "latitude": 33.058944,
+          "longitude": 130.450392,
+          "type": "waypoint"
+        },
+        {
+          "name": "TAIME",
+          "latitude": 32.863086,
+          "longitude": 130.471017,
+          "type": "waypoint"
+        },
+        {
+          "name": "FUGEN",
+          "latitude": 32.655411,
+          "longitude": 130.490411,
+          "type": "waypoint"
+        },
+        {
+          "name": "HINAG",
+          "latitude": 32.395075,
+          "longitude": 130.514919,
+          "type": "waypoint"
+        },
+        {
+          "name": "SASIK",
+          "latitude": 32.299806,
+          "longitude": 130.521036,
+          "type": "waypoint"
+        },
+        {
+          "name": "SAPIS",
+          "latitude": 32.1676,
+          "longitude": 130.537606,
+          "type": "waypoint"
+        },
+        {
+          "name": "KAGOSHIMA",
+          "latitude": 31.697222,
+          "longitude": 130.582942,
+          "type": "waypoint"
+        },
+        {
+          "name": "KINKO",
+          "latitude": 31.332836,
+          "longitude": 130.720008,
+          "type": "waypoint"
+        },
+        {
+          "name": "TOZAK",
+          "latitude": 31.109175,
+          "longitude": 130.803589,
+          "type": "waypoint"
+        },
+        {
+          "name": "ISMAD",
+          "latitude": 30.915842,
+          "longitude": 130.875461,
+          "type": "waypoint"
+        },
+        {
+          "name": "KAGYA",
+          "latitude": 30.793103,
+          "longitude": 130.920944,
+          "type": "waypoint"
+        },
+        {
+          "name": "NAKATANE",
+          "latitude": 30.602156,
+          "longitude": 130.991533,
+          "type": "waypoint"
+        },
+        {
+          "name": "LUKRA",
+          "latitude": 30.465433,
+          "longitude": 131.094875,
+          "type": "waypoint"
+        },
+        {
+          "name": "KALGU",
+          "latitude": 30.206664,
+          "longitude": 131.289553,
+          "type": "waypoint"
+        },
+        {
+          "name": "AGIKA",
+          "latitude": 30.003683,
+          "longitude": 131.441075,
+          "type": "waypoint"
+        },
+        {
+          "name": "MIMOD",
+          "latitude": 29.589592,
+          "longitude": 131.748294,
+          "type": "waypoint"
+        },
+        {
+          "name": "OLSAK",
+          "latitude": 29.377772,
+          "longitude": 131.923842,
+          "type": "waypoint"
+        },
+        {
+          "name": "HIDEK",
+          "latitude": 28.364158,
+          "longitude": 132.750639,
+          "type": "waypoint"
+        },
+        {
+          "name": "BIXAK",
+          "latitude": 27.880606,
+          "longitude": 133.137561,
+          "type": "waypoint"
+        },
+        {
+          "name": "CANAI",
+          "latitude": 26.733669,
+          "longitude": 134.040925,
+          "type": "waypoint"
+        },
+        {
+          "name": "SABGU",
+          "latitude": 25.497547,
+          "longitude": 134.989128,
+          "type": "waypoint"
+        },
+        {
+          "name": "PAKDO",
+          "latitude": 21.0,
+          "longitude": 137.821667,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "G581",
+      "description": "Route G581 from MIYAKOJIMA to IGURU",
+      "points": [
+        {
+          "name": "MIYAKOJIMA",
+          "latitude": 24.777392,
+          "longitude": 125.293408,
+          "type": "waypoint"
+        },
+        {
+          "name": "IGURU",
+          "latitude": 23.95,
+          "longitude": 124.0,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "G583",
+      "description": "Route G583 from BISIV to MONBETSU",
+      "points": [
+        {
+          "name": "BISIV",
+          "latitude": 44.992033,
+          "longitude": 144.282872,
+          "type": "waypoint"
+        },
+        {
+          "name": "MONBETSU",
+          "latitude": 44.305267,
+          "longitude": 143.395092,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "G585",
+      "description": "Route G585 from IZUMO to SAPRA",
+      "points": [
+        {
+          "name": "IZUMO",
+          "latitude": 35.417239,
+          "longitude": 132.892372,
+          "type": "waypoint"
+        },
+        {
+          "name": "SAPRA",
+          "latitude": 35.823842,
+          "longitude": 130.723675,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "G597",
+      "description": "Route G597 from TRIKE to LANAT",
+      "points": [
+        {
+          "name": "TRIKE",
+          "latitude": 34.797564,
+          "longitude": 137.284847,
+          "type": "waypoint"
+        },
+        {
+          "name": "NAGOYA",
+          "latitude": 35.265267,
+          "longitude": 136.914925,
+          "type": "waypoint"
+        },
+        {
+          "name": "OGAKI",
+          "latitude": 35.302022,
+          "longitude": 136.626817,
+          "type": "waypoint"
+        },
+        {
+          "name": "MIYAZU",
+          "latitude": 35.480692,
+          "longitude": 135.137022,
+          "type": "waypoint"
+        },
+        {
+          "name": "KANNA",
+          "latitude": 35.503131,
+          "longitude": 134.689431,
+          "type": "waypoint"
+        },
+        {
+          "name": "TOTTORI",
+          "latitude": 35.5273,
+          "longitude": 134.164886,
+          "type": "waypoint"
+        },
+        {
+          "name": "DAIEI",
+          "latitude": 35.510636,
+          "longitude": 133.702889,
+          "type": "waypoint"
+        },
+        {
+          "name": "YONAGO",
+          "latitude": 35.501378,
+          "longitude": 133.257206,
+          "type": "waypoint"
+        },
+        {
+          "name": "IZUMO",
+          "latitude": 35.417239,
+          "longitude": 132.892372,
+          "type": "waypoint"
+        },
+        {
+          "name": "DANJU",
+          "latitude": 35.626083,
+          "longitude": 132.578014,
+          "type": "waypoint"
+        },
+        {
+          "name": "LANAT",
+          "latitude": 36.373236,
+          "longitude": 131.428317,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "R211",
+      "description": "Route R211 from AVGOK to SWAMP",
+      "points": [
+        {
+          "name": "AVGOK",
+          "latitude": 43.602258,
+          "longitude": 138.246519,
+          "type": "waypoint"
+        },
+        {
+          "name": "NISIN",
+          "latitude": 40.002683,
+          "longitude": 137.831747,
+          "type": "waypoint"
+        },
+        {
+          "name": "KADBO",
+          "latitude": 39.236106,
+          "longitude": 137.746792,
+          "type": "waypoint"
+        },
+        {
+          "name": "TAVIS",
+          "latitude": 38.954206,
+          "longitude": 138.054319,
+          "type": "waypoint"
+        },
+        {
+          "name": "CAYAH",
+          "latitude": 38.675017,
+          "longitude": 138.355639,
+          "type": "waypoint"
+        },
+        {
+          "name": "BASIN",
+          "latitude": 38.121,
+          "longitude": 138.942033,
+          "type": "waypoint"
+        },
+        {
+          "name": "NIIGATA",
+          "latitude": 37.958294,
+          "longitude": 139.114886,
+          "type": "waypoint"
+        },
+        {
+          "name": "IWAKI",
+          "latitude": 37.148864,
+          "longitude": 140.975686,
+          "type": "waypoint"
+        },
+        {
+          "name": "GLAXY",
+          "latitude": 36.516583,
+          "longitude": 140.649308,
+          "type": "waypoint"
+        },
+        {
+          "name": "SWAMP",
+          "latitude": 36.320678,
+          "longitude": 140.538061,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "R217",
+      "description": "Route R217 from NODAN to NIIGATA",
+      "points": [
+        {
+          "name": "NODAN",
+          "latitude": 40.419525,
+          "longitude": 144.996092,
+          "type": "waypoint"
+        },
+        {
+          "name": "ASTER",
+          "latitude": 39.231247,
+          "longitude": 142.533033,
+          "type": "waypoint"
+        },
+        {
+          "name": "SENDAI",
+          "latitude": 38.138572,
+          "longitude": 140.921483,
+          "type": "waypoint"
+        },
+        {
+          "name": "FINCH",
+          "latitude": 38.109167,
+          "longitude": 140.606114,
+          "type": "waypoint"
+        },
+        {
+          "name": "YONEX",
+          "latitude": 38.076192,
+          "longitude": 140.296056,
+          "type": "waypoint"
+        },
+        {
+          "name": "ELDAK",
+          "latitude": 38.026075,
+          "longitude": 139.761208,
+          "type": "waypoint"
+        },
+        {
+          "name": "NIIGATA",
+          "latitude": 37.958294,
+          "longitude": 139.114886,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "R220",
+      "description": "Route R220 from NIPPI to IWAKI",
+      "points": [
+        {
+          "name": "NIPPI",
+          "latitude": 49.71,
+          "longitude": 159.346667,
+          "type": "waypoint"
+        },
+        {
+          "name": "NOGAL",
+          "latitude": 46.216667,
+          "longitude": 153.003336,
+          "type": "waypoint"
+        },
+        {
+          "name": "NUBDA",
+          "latitude": 42.39105,
+          "longitude": 147.475761,
+          "type": "waypoint"
+        },
+        {
+          "name": "NANNO",
+          "latitude": 41.916083,
+          "longitude": 146.859178,
+          "type": "waypoint"
+        },
+        {
+          "name": "NODAN",
+          "latitude": 40.419525,
+          "longitude": 144.996092,
+          "type": "waypoint"
+        },
+        {
+          "name": "NANAC",
+          "latitude": 38.906308,
+          "longitude": 143.227992,
+          "type": "waypoint"
+        },
+        {
+          "name": "NIKON",
+          "latitude": 38.320517,
+          "longitude": 142.470031,
+          "type": "waypoint"
+        },
+        {
+          "name": "BEKEN",
+          "latitude": 38.005869,
+          "longitude": 142.061656,
+          "type": "waypoint"
+        },
+        {
+          "name": "IWAKI",
+          "latitude": 37.148864,
+          "longitude": 140.975686,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "R580",
+      "description": "Route R580 from OMOTO to OATIS",
+      "points": [
+        {
+          "name": "OMOTO",
+          "latitude": 48.995,
+          "longitude": 160.011667,
+          "type": "waypoint"
+        },
+        {
+          "name": "OPULO",
+          "latitude": 45.530936,
+          "longitude": 153.720006,
+          "type": "waypoint"
+        },
+        {
+          "name": "ONEMU",
+          "latitude": 41.739486,
+          "longitude": 148.217408,
+          "type": "waypoint"
+        },
+        {
+          "name": "MAKMU",
+          "latitude": 38.687603,
+          "longitude": 144.511706,
+          "type": "waypoint"
+        },
+        {
+          "name": "OATIS",
+          "latitude": 37.816442,
+          "longitude": 143.539686,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "R584",
+      "description": "Route R584 from AVLAS to KEITH",
+      "points": [
+        {
+          "name": "AVLAS",
+          "latitude": 24.355642,
+          "longitude": 130.120936,
+          "type": "waypoint"
+        },
+        {
+          "name": "SALVA",
+          "latitude": 22.378997,
+          "longitude": 130.994406,
+          "type": "waypoint"
+        },
+        {
+          "name": "KEITH",
+          "latitude": 21.0,
+          "longitude": 134.946667,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "R591",
+      "description": "Route R591 from ADNAP to ADGOR",
+      "points": [
+        {
+          "name": "ADNAP",
+          "latitude": 37.197467,
+          "longitude": 145.666311,
+          "type": "waypoint"
+        },
+        {
+          "name": "ADGOR",
+          "latitude": 40.424689,
+          "longitude": 149.650711,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "R595",
+      "description": "Route R595 from SEDKU to KEITH",
+      "points": [
+        {
+          "name": "SEDKU",
+          "latitude": 24.933333,
+          "longitude": 124.0,
+          "type": "waypoint"
+        },
+        {
+          "name": "LILRA",
+          "latitude": 24.829589,
+          "longitude": 124.870969,
+          "type": "waypoint"
+        },
+        {
+          "name": "MIYAKOJIMA",
+          "latitude": 24.777392,
+          "longitude": 125.293408,
+          "type": "waypoint"
+        },
+        {
+          "name": "SAKON",
+          "latitude": 24.120897,
+          "longitude": 126.698172,
+          "type": "waypoint"
+        },
+        {
+          "name": "TUNTO",
+          "latitude": 23.004372,
+          "longitude": 129.081322,
+          "type": "waypoint"
+        },
+        {
+          "name": "SALVA",
+          "latitude": 22.378997,
+          "longitude": 130.994406,
+          "type": "waypoint"
+        },
+        {
+          "name": "KEITH",
+          "latitude": 21.0,
+          "longitude": 134.946667,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V1",
+      "description": "Route V1 from WAKKANAI to CHITOSE",
+      "points": [
+        {
+          "name": "WAKKANAI",
+          "latitude": 45.407358,
+          "longitude": 141.805647,
+          "type": "waypoint"
+        },
+        {
+          "name": "DASSY",
+          "latitude": 45.284422,
+          "longitude": 141.799425,
+          "type": "waypoint"
+        },
+        {
+          "name": "KABTO",
+          "latitude": 45.207425,
+          "longitude": 141.796433,
+          "type": "waypoint"
+        },
+        {
+          "name": "YOROI",
+          "latitude": 45.008639,
+          "longitude": 141.785578,
+          "type": "waypoint"
+        },
+        {
+          "name": "RUMOI",
+          "latitude": 43.699336,
+          "longitude": 141.729031,
+          "type": "waypoint"
+        },
+        {
+          "name": "SUIKA",
+          "latitude": 43.376494,
+          "longitude": 141.717767,
+          "type": "waypoint"
+        },
+        {
+          "name": "BEEBA",
+          "latitude": 43.351853,
+          "longitude": 141.716608,
+          "type": "waypoint"
+        },
+        {
+          "name": "KURIS",
+          "latitude": 43.155228,
+          "longitude": 141.706006,
+          "type": "waypoint"
+        },
+        {
+          "name": "CHITOSE",
+          "latitude": 42.699903,
+          "longitude": 141.686167,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V2",
+      "description": "Route V2 from NAKASHIBETSU to HAKODATE",
+      "points": [
+        {
+          "name": "NAKASHIBETSU",
+          "latitude": 43.577361,
+          "longitude": 144.950503,
+          "type": "VOR/DME"
+        },
+        {
+          "name": "MASHU",
+          "latitude": 43.470883,
+          "longitude": 144.537358,
+          "type": "waypoint"
+        },
+        {
+          "name": "KUSHIRO",
+          "latitude": 43.03605,
+          "longitude": 144.200756,
+          "type": "waypoint"
+        },
+        {
+          "name": "RUGMO",
+          "latitude": 43.076011,
+          "longitude": 143.496969,
+          "type": "waypoint"
+        },
+        {
+          "name": "IBOSA",
+          "latitude": 43.085158,
+          "longitude": 143.324103,
+          "type": "waypoint"
+        },
+        {
+          "name": "NODUK",
+          "latitude": 43.101536,
+          "longitude": 143.001233,
+          "type": "waypoint"
+        },
+        {
+          "name": "ONUMI",
+          "latitude": 43.113483,
+          "longitude": 142.753414,
+          "type": "waypoint"
+        },
+        {
+          "name": "TOMAM",
+          "latitude": 43.139028,
+          "longitude": 142.034472,
+          "type": "waypoint"
+        },
+        {
+          "name": "KURIS",
+          "latitude": 43.155228,
+          "longitude": 141.706006,
+          "type": "waypoint"
+        },
+        {
+          "name": "SAPPORO",
+          "latitude": 43.174642,
+          "longitude": 141.302383,
+          "type": "waypoint"
+        },
+        {
+          "name": "MOIWA",
+          "latitude": 42.931994,
+          "longitude": 141.220167,
+          "type": "waypoint"
+        },
+        {
+          "name": "TEKKO",
+          "latitude": 42.501967,
+          "longitude": 141.075278,
+          "type": "waypoint"
+        },
+        {
+          "name": "UPLOK",
+          "latitude": 42.021983,
+          "longitude": 140.914364,
+          "type": "waypoint"
+        },
+        {
+          "name": "HAKODATE",
+          "latitude": 41.774031,
+          "longitude": 140.832217,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V3",
+      "description": "Route V3 from WAKKANAI to KUSHIRO",
+      "points": [
+        {
+          "name": "WAKKANAI",
+          "latitude": 45.407358,
+          "longitude": 141.805647,
+          "type": "waypoint"
+        },
+        {
+          "name": "SAKIN",
+          "latitude": 45.073836,
+          "longitude": 142.328186,
+          "type": "waypoint"
+        },
+        {
+          "name": "MEMANBETSU",
+          "latitude": 43.884908,
+          "longitude": 144.166183,
+          "type": "waypoint"
+        },
+        {
+          "name": "KUSHIRO",
+          "latitude": 43.03605,
+          "longitude": 144.200756,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V4",
+      "description": "Route V4 from MEMANBETSU to OBIHIRO",
+      "points": [
+        {
+          "name": "MEMANBETSU",
+          "latitude": 43.884908,
+          "longitude": 144.166183,
+          "type": "waypoint"
+        },
+        {
+          "name": "GINGA",
+          "latitude": 43.627425,
+          "longitude": 143.953036,
+          "type": "waypoint"
+        },
+        {
+          "name": "RUGMO",
+          "latitude": 43.076011,
+          "longitude": 143.496969,
+          "type": "waypoint"
+        },
+        {
+          "name": "OSROB",
+          "latitude": 42.926997,
+          "longitude": 143.376047,
+          "type": "waypoint"
+        },
+        {
+          "name": "OBIHIRO",
+          "latitude": 42.733964,
+          "longitude": 143.220453,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V5",
+      "description": "Route V5 from KUSHIRO to CHITOSE",
+      "points": [
+        {
+          "name": "KUSHIRO",
+          "latitude": 43.03605,
+          "longitude": 144.200756,
+          "type": "waypoint"
+        },
+        {
+          "name": "RUNPA",
+          "latitude": 42.977278,
+          "longitude": 143.750494,
+          "type": "waypoint"
+        },
+        {
+          "name": "OSROB",
+          "latitude": 42.926997,
+          "longitude": 143.376047,
+          "type": "waypoint"
+        },
+        {
+          "name": "BISEI",
+          "latitude": 42.865183,
+          "longitude": 142.928786,
+          "type": "waypoint"
+        },
+        {
+          "name": "BOKSO",
+          "latitude": 42.805206,
+          "longitude": 142.465181,
+          "type": "waypoint"
+        },
+        {
+          "name": "CHITOSE",
+          "latitude": 42.699903,
+          "longitude": 141.686167,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V6",
+      "description": "Route V6 from KABRU to CHITOSE",
+      "points": [
+        {
+          "name": "KABRU",
+          "latitude": 42.753128,
+          "longitude": 144.129036,
+          "type": "waypoint"
+        },
+        {
+          "name": "OBIHIRO",
+          "latitude": 42.733964,
+          "longitude": 143.220453,
+          "type": "waypoint"
+        },
+        {
+          "name": "RAKNO",
+          "latitude": 42.720036,
+          "longitude": 142.477161,
+          "type": "waypoint"
+        },
+        {
+          "name": "CHITOSE",
+          "latitude": 42.699903,
+          "longitude": 141.686167,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V7",
+      "description": "Route V7 from MEMANBETSU to CHITOSE",
+      "points": [
+        {
+          "name": "MEMANBETSU",
+          "latitude": 43.884908,
+          "longitude": 144.166183,
+          "type": "waypoint"
+        },
+        {
+          "name": "TSUKA",
+          "latitude": 43.832811,
+          "longitude": 143.756444,
+          "type": "waypoint"
+        },
+        {
+          "name": "ASAHIKAWA",
+          "latitude": 43.667264,
+          "longitude": 142.456847,
+          "type": "waypoint"
+        },
+        {
+          "name": "ASIBE",
+          "latitude": 43.451106,
+          "longitude": 142.283592,
+          "type": "waypoint"
+        },
+        {
+          "name": "TOMAM",
+          "latitude": 43.139028,
+          "longitude": 142.034472,
+          "type": "waypoint"
+        },
+        {
+          "name": "CHITOSE",
+          "latitude": 42.699903,
+          "longitude": 141.686167,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V8",
+      "description": "Route V8 from MONBETSU to SAPPORO",
+      "points": [
+        {
+          "name": "MONBETSU",
+          "latitude": 44.305267,
+          "longitude": 143.395092,
+          "type": "waypoint"
+        },
+        {
+          "name": "SAROM",
+          "latitude": 44.087781,
+          "longitude": 143.074122,
+          "type": "waypoint"
+        },
+        {
+          "name": "LUBEK",
+          "latitude": 44.019103,
+          "longitude": 142.973006,
+          "type": "waypoint"
+        },
+        {
+          "name": "ASAHIKAWA",
+          "latitude": 43.667264,
+          "longitude": 142.456847,
+          "type": "waypoint"
+        },
+        {
+          "name": "BEEBA",
+          "latitude": 43.351853,
+          "longitude": 141.716608,
+          "type": "waypoint"
+        },
+        {
+          "name": "SAPPORO",
+          "latitude": 43.174642,
+          "longitude": 141.302383,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V9",
+      "description": "Route V9 from OKUSHIRI to HAKODATE",
+      "points": [
+        {
+          "name": "OKUSHIRI",
+          "latitude": 42.070303,
+          "longitude": 139.443403,
+          "type": "VOR/DME"
+        },
+        {
+          "name": "IKORU",
+          "latitude": 42.0203,
+          "longitude": 139.679839,
+          "type": "waypoint"
+        },
+        {
+          "name": "MAIKA",
+          "latitude": 41.955467,
+          "longitude": 139.982478,
+          "type": "waypoint"
+        },
+        {
+          "name": "ESASI",
+          "latitude": 41.913411,
+          "longitude": 140.190125,
+          "type": "waypoint"
+        },
+        {
+          "name": "PATRA",
+          "latitude": 41.844739,
+          "longitude": 140.513014,
+          "type": "waypoint"
+        },
+        {
+          "name": "HAKODATE",
+          "latitude": 41.774031,
+          "longitude": 140.832217,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V10",
+      "description": "Route V10 from NIIGATA to MISAWA",
+      "points": [
+        {
+          "name": "NIIGATA",
+          "latitude": 37.958294,
+          "longitude": 139.114886,
+          "type": "waypoint"
+        },
+        {
+          "name": "WAPPA",
+          "latitude": 39.701131,
+          "longitude": 140.55155,
+          "type": "waypoint"
+        },
+        {
+          "name": "SAMBO",
+          "latitude": 40.187756,
+          "longitude": 140.950381,
+          "type": "waypoint"
+        },
+        {
+          "name": "MISAWA",
+          "latitude": 40.703822,
+          "longitude": 141.381108,
+          "type": "VOR"
+        }
+      ]
+    },
+    {
+      "name": "V13",
+      "description": "Route V13 from CHITOSE to YAMAGATA",
+      "points": [
+        {
+          "name": "CHITOSE",
+          "latitude": 42.699903,
+          "longitude": 141.686167,
+          "type": "waypoint"
+        },
+        {
+          "name": "SIRAO",
+          "latitude": 41.966106,
+          "longitude": 141.315661,
+          "type": "waypoint"
+        },
+        {
+          "name": "KAMDO",
+          "latitude": 41.863411,
+          "longitude": 141.259892,
+          "type": "waypoint"
+        },
+        {
+          "name": "TIKYU",
+          "latitude": 41.684039,
+          "longitude": 141.172636,
+          "type": "waypoint"
+        },
+        {
+          "name": "OHMAR",
+          "latitude": 41.309442,
+          "longitude": 140.987672,
+          "type": "waypoint"
+        },
+        {
+          "name": "AOMORI",
+          "latitude": 40.738792,
+          "longitude": 140.705333,
+          "type": "waypoint"
+        },
+        {
+          "name": "YACHI",
+          "latitude": 40.4904,
+          "longitude": 140.668047,
+          "type": "waypoint"
+        },
+        {
+          "name": "HINAI",
+          "latitude": 40.291686,
+          "longitude": 140.638317,
+          "type": "waypoint"
+        },
+        {
+          "name": "WAPPA",
+          "latitude": 39.701131,
+          "longitude": 140.55155,
+          "type": "waypoint"
+        },
+        {
+          "name": "MONAI",
+          "latitude": 39.133547,
+          "longitude": 140.465603,
+          "type": "waypoint"
+        },
+        {
+          "name": "YAMAGATA",
+          "latitude": 38.388622,
+          "longitude": 140.357953,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V15",
+      "description": "Route V15 from NIIGATA to SEKIYADO",
+      "points": [
+        {
+          "name": "NIIGATA",
+          "latitude": 37.958294,
+          "longitude": 139.114886,
+          "type": "waypoint"
+        },
+        {
+          "name": "KALON",
+          "latitude": 36.489942,
+          "longitude": 139.6629,
+          "type": "waypoint"
+        },
+        {
+          "name": "AKAGI",
+          "latitude": 36.391203,
+          "longitude": 139.698967,
+          "type": "waypoint"
+        },
+        {
+          "name": "SEKIYADO",
+          "latitude": 36.010925,
+          "longitude": 139.839172,
+          "type": "VOR"
+        }
+      ]
+    },
+    {
+      "name": "V17",
+      "description": "Route V17 from OSHIMA to CHUBU",
+      "points": [
+        {
+          "name": "OSHIMA",
+          "latitude": 34.712253,
+          "longitude": 139.414017,
+          "type": "waypoint"
+        },
+        {
+          "name": "ITTOH",
+          "latitude": 34.741547,
+          "longitude": 139.011139,
+          "type": "waypoint"
+        },
+        {
+          "name": "SHIZUOKA",
+          "latitude": 34.796842,
+          "longitude": 138.193197,
+          "type": "waypoint"
+        },
+        {
+          "name": "MIKKA",
+          "latitude": 34.774731,
+          "longitude": 137.466194,
+          "type": "waypoint"
+        },
+        {
+          "name": "TRIKE",
+          "latitude": 34.797564,
+          "longitude": 137.284847,
+          "type": "waypoint"
+        },
+        {
+          "name": "CHUBU",
+          "latitude": 34.858006,
+          "longitude": 136.803169,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V18",
+      "description": "Route V18 from OSHIMA to HACHIJOJIMA",
+      "points": [
+        {
+          "name": "OSHIMA",
+          "latitude": 34.712253,
+          "longitude": 139.414017,
+          "type": "waypoint"
+        },
+        {
+          "name": "NIVIL",
+          "latitude": 34.197414,
+          "longitude": 139.532461,
+          "type": "waypoint"
+        },
+        {
+          "name": "OYAMA",
+          "latitude": 34.071042,
+          "longitude": 139.561289,
+          "type": "waypoint"
+        },
+        {
+          "name": "GYOGN",
+          "latitude": 33.530256,
+          "longitude": 139.812383,
+          "type": "waypoint"
+        },
+        {
+          "name": "SANGO",
+          "latitude": 33.380678,
+          "longitude": 139.803894,
+          "type": "waypoint"
+        },
+        {
+          "name": "HACHIJOJIMA",
+          "latitude": 33.11435,
+          "longitude": 139.788483,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V22",
+      "description": "Route V22 from CHITOSE to FUKUSHIMA",
+      "points": [
+        {
+          "name": "CHITOSE",
+          "latitude": 42.699903,
+          "longitude": 141.686167,
+          "type": "waypoint"
+        },
+        {
+          "name": "TOBBY",
+          "latitude": 41.918692,
+          "longitude": 141.759964,
+          "type": "waypoint"
+        },
+        {
+          "name": "OBCHI",
+          "latitude": 40.874089,
+          "longitude": 141.857728,
+          "type": "waypoint"
+        },
+        {
+          "name": "CAVES",
+          "latitude": 40.264131,
+          "longitude": 141.915186,
+          "type": "waypoint"
+        },
+        {
+          "name": "MIYAKO",
+          "latitude": 39.865639,
+          "longitude": 141.951067,
+          "type": "waypoint"
+        },
+        {
+          "name": "SENDAI",
+          "latitude": 38.138572,
+          "longitude": 140.921483,
+          "type": "waypoint"
+        },
+        {
+          "name": "HERON",
+          "latitude": 37.532194,
+          "longitude": 140.598775,
+          "type": "waypoint"
+        },
+        {
+          "name": "FUKUSHIMA",
+          "latitude": 37.224306,
+          "longitude": 140.437086,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V28",
+      "description": "Route V28 from NAGOYA to FUKUE",
+      "points": [
+        {
+          "name": "NAGOYA",
+          "latitude": 35.265267,
+          "longitude": 136.914925,
+          "type": "waypoint"
+        },
+        {
+          "name": "RITTO",
+          "latitude": 35.167111,
+          "longitude": 136.483478,
+          "type": "waypoint"
+        },
+        {
+          "name": "BIWWA",
+          "latitude": 35.115997,
+          "longitude": 136.256003,
+          "type": "waypoint"
+        },
+        {
+          "name": "ADGUN",
+          "latitude": 35.062425,
+          "longitude": 136.021397,
+          "type": "waypoint"
+        },
+        {
+          "name": "MIDER",
+          "latitude": 35.017047,
+          "longitude": 135.826003,
+          "type": "waypoint"
+        },
+        {
+          "name": "ITAMI",
+          "latitude": 34.805483,
+          "longitude": 135.403661,
+          "type": "VOR/DME"
+        },
+        {
+          "name": "ARIMA",
+          "latitude": 34.7563,
+          "longitude": 135.105947,
+          "type": "waypoint"
+        },
+        {
+          "name": "BUMER",
+          "latitude": 34.756311,
+          "longitude": 134.996475,
+          "type": "waypoint"
+        },
+        {
+          "name": "AYAYA",
+          "latitude": 34.755297,
+          "longitude": 134.538244,
+          "type": "waypoint"
+        },
+        {
+          "name": "OLIVE",
+          "latitude": 34.754903,
+          "longitude": 134.450067,
+          "type": "waypoint"
+        },
+        {
+          "name": "KIBI",
+          "latitude": 34.750383,
+          "longitude": 133.835056,
+          "type": "waypoint"
+        },
+        {
+          "name": "WASYU",
+          "latitude": 34.471528,
+          "longitude": 133.38365,
+          "type": "waypoint"
+        },
+        {
+          "name": "HONGO",
+          "latitude": 34.433775,
+          "longitude": 132.923969,
+          "type": "VOR/DME"
+        },
+        {
+          "name": "MASKU",
+          "latitude": 34.135694,
+          "longitude": 132.269428,
+          "type": "waypoint"
+        },
+        {
+          "name": "MARCO",
+          "latitude": 34.079456,
+          "longitude": 132.147269,
+          "type": "waypoint"
+        },
+        {
+          "name": "KATTA",
+          "latitude": 34.003622,
+          "longitude": 131.6869,
+          "type": "waypoint"
+        },
+        {
+          "name": "UBE",
+          "latitude": 33.935628,
+          "longitude": 131.283531,
+          "type": "waypoint"
+        },
+        {
+          "name": "SUOH",
+          "latitude": 33.856617,
+          "longitude": 131.0294,
+          "type": "waypoint"
+        },
+        {
+          "name": "ONGHA",
+          "latitude": 33.788706,
+          "longitude": 130.786911,
+          "type": "waypoint"
+        },
+        {
+          "name": "FUKUOKA",
+          "latitude": 33.676208,
+          "longitude": 130.389628,
+          "type": "waypoint"
+        },
+        {
+          "name": "FUKUE",
+          "latitude": 32.668606,
+          "longitude": 128.826736,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V29",
+      "description": "Route V29 from OKI to HONGO",
+      "points": [
+        {
+          "name": "OKI",
+          "latitude": 36.176742,
+          "longitude": 133.322822,
+          "type": "waypoint"
+        },
+        {
+          "name": "DOZEN",
+          "latitude": 36.034939,
+          "longitude": 133.241789,
+          "type": "waypoint"
+        },
+        {
+          "name": "IZUMO",
+          "latitude": 35.417239,
+          "longitude": 132.892372,
+          "type": "waypoint"
+        },
+        {
+          "name": "KYOKA",
+          "latitude": 35.179547,
+          "longitude": 132.864917,
+          "type": "waypoint"
+        },
+        {
+          "name": "MIYOS",
+          "latitude": 34.893608,
+          "longitude": 132.832053,
+          "type": "waypoint"
+        },
+        {
+          "name": "HONGO",
+          "latitude": 34.433775,
+          "longitude": 132.923969,
+          "type": "VOR/DME"
+        }
+      ]
+    },
+    {
+      "name": "V30",
+      "description": "Route V30 from CHITOSE to KOMATSU",
+      "points": [
+        {
+          "name": "CHITOSE",
+          "latitude": 42.699903,
+          "longitude": 141.686167,
+          "type": "waypoint"
+        },
+        {
+          "name": "ESANN",
+          "latitude": 42.056019,
+          "longitude": 141.090986,
+          "type": "waypoint"
+        },
+        {
+          "name": "HAKODATE",
+          "latitude": 41.774031,
+          "longitude": 140.832217,
+          "type": "waypoint"
+        },
+        {
+          "name": "TSURU",
+          "latitude": 40.929356,
+          "longitude": 140.443561,
+          "type": "waypoint"
+        },
+        {
+          "name": "OBAKO",
+          "latitude": 40.072872,
+          "longitude": 140.054475,
+          "type": "waypoint"
+        },
+        {
+          "name": "ATUMI",
+          "latitude": 38.637067,
+          "longitude": 139.405975,
+          "type": "waypoint"
+        },
+        {
+          "name": "BUDOH",
+          "latitude": 38.399583,
+          "longitude": 139.308633,
+          "type": "waypoint"
+        },
+        {
+          "name": "INAHO",
+          "latitude": 38.163086,
+          "longitude": 139.204736,
+          "type": "waypoint"
+        },
+        {
+          "name": "NIIGATA",
+          "latitude": 37.958294,
+          "longitude": 139.114886,
+          "type": "waypoint"
+        },
+        {
+          "name": "TERAD",
+          "latitude": 37.603672,
+          "longitude": 138.480331,
+          "type": "waypoint"
+        },
+        {
+          "name": "HAKBA",
+          "latitude": 37.259953,
+          "longitude": 137.884642,
+          "type": "waypoint"
+        },
+        {
+          "name": "GORYU",
+          "latitude": 37.198486,
+          "longitude": 137.769542,
+          "type": "waypoint"
+        },
+        {
+          "name": "IKUJI",
+          "latitude": 37.038194,
+          "longitude": 137.492369,
+          "type": "waypoint"
+        },
+        {
+          "name": "URUSI",
+          "latitude": 36.819208,
+          "longitude": 137.131533,
+          "type": "waypoint"
+        },
+        {
+          "name": "IMIZU",
+          "latitude": 36.739553,
+          "longitude": 136.990431,
+          "type": "waypoint"
+        },
+        {
+          "name": "OYABE",
+          "latitude": 36.605097,
+          "longitude": 136.753606,
+          "type": "waypoint"
+        },
+        {
+          "name": "KOMATSU",
+          "latitude": 36.396469,
+          "longitude": 136.404253,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V31",
+      "description": "Route V31 from HAKODATE to NAGOYA",
+      "points": [
+        {
+          "name": "HAKODATE",
+          "latitude": 41.774031,
+          "longitude": 140.832217,
+          "type": "waypoint"
+        },
+        {
+          "name": "TAXIR",
+          "latitude": 41.442342,
+          "longitude": 140.791122,
+          "type": "waypoint"
+        },
+        {
+          "name": "HIBAR",
+          "latitude": 41.110639,
+          "longitude": 140.750444,
+          "type": "waypoint"
+        },
+        {
+          "name": "BYOBU",
+          "latitude": 41.00265,
+          "longitude": 140.737292,
+          "type": "waypoint"
+        },
+        {
+          "name": "AOMORI",
+          "latitude": 40.738792,
+          "longitude": 140.705333,
+          "type": "waypoint"
+        },
+        {
+          "name": "MAGGY",
+          "latitude": 39.915725,
+          "longitude": 140.324111,
+          "type": "waypoint"
+        },
+        {
+          "name": "YUWA",
+          "latitude": 39.617128,
+          "longitude": 140.186936,
+          "type": "waypoint"
+        },
+        {
+          "name": "YAYOI",
+          "latitude": 39.319467,
+          "longitude": 139.992711,
+          "type": "waypoint"
+        },
+        {
+          "name": "SEBGA",
+          "latitude": 39.069142,
+          "longitude": 139.826664,
+          "type": "waypoint"
+        },
+        {
+          "name": "KENSI",
+          "latitude": 38.698806,
+          "longitude": 139.586683,
+          "type": "waypoint"
+        },
+        {
+          "name": "AWASI",
+          "latitude": 38.4055,
+          "longitude": 139.398417,
+          "type": "waypoint"
+        },
+        {
+          "name": "NIIGATA",
+          "latitude": 37.958294,
+          "longitude": 139.114886,
+          "type": "waypoint"
+        },
+        {
+          "name": "MAGNA",
+          "latitude": 37.400028,
+          "longitude": 138.654661,
+          "type": "waypoint"
+        },
+        {
+          "name": "NAEBA",
+          "latitude": 37.254139,
+          "longitude": 138.535717,
+          "type": "waypoint"
+        },
+        {
+          "name": "AZUMI",
+          "latitude": 36.480597,
+          "longitude": 137.909133,
+          "type": "waypoint"
+        },
+        {
+          "name": "OWARI",
+          "latitude": 35.351722,
+          "longitude": 136.982739,
+          "type": "waypoint"
+        },
+        {
+          "name": "NAGOYA",
+          "latitude": 35.265267,
+          "longitude": 136.914925,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V32",
+      "description": "Route V32 from YUWA to YAMAGATA",
+      "points": [
+        {
+          "name": "YUWA",
+          "latitude": 39.617128,
+          "longitude": 140.186936,
+          "type": "waypoint"
+        },
+        {
+          "name": "CHOKA",
+          "latitude": 39.285975,
+          "longitude": 140.233628,
+          "type": "waypoint"
+        },
+        {
+          "name": "MIKUM",
+          "latitude": 39.001189,
+          "longitude": 140.273469,
+          "type": "waypoint"
+        },
+        {
+          "name": "MAMRO",
+          "latitude": 38.833497,
+          "longitude": 140.296711,
+          "type": "waypoint"
+        },
+        {
+          "name": "YAMAGATA",
+          "latitude": 38.388622,
+          "longitude": 140.357953,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V33",
+      "description": "Route V33 from MISAWA to SENDAI",
+      "points": [
+        {
+          "name": "MISAWA",
+          "latitude": 40.703822,
+          "longitude": 141.381108,
+          "type": "VOR"
+        },
+        {
+          "name": "HANAMAKI",
+          "latitude": 39.433358,
+          "longitude": 141.1335,
+          "type": "waypoint"
+        },
+        {
+          "name": "SENDAI",
+          "latitude": 38.138572,
+          "longitude": 140.921483,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V34",
+      "description": "Route V34 from MIYAKO to NIIGATA",
+      "points": [
+        {
+          "name": "MIYAKO",
+          "latitude": 39.865639,
+          "longitude": 141.951067,
+          "type": "waypoint"
+        },
+        {
+          "name": "MORIO",
+          "latitude": 39.612556,
+          "longitude": 141.471733,
+          "type": "waypoint"
+        },
+        {
+          "name": "HANAMAKI",
+          "latitude": 39.433358,
+          "longitude": 141.1335,
+          "type": "waypoint"
+        },
+        {
+          "name": "HANKA",
+          "latitude": 39.018322,
+          "longitude": 140.561325,
+          "type": "waypoint"
+        },
+        {
+          "name": "MAMRO",
+          "latitude": 38.833497,
+          "longitude": 140.296711,
+          "type": "waypoint"
+        },
+        {
+          "name": "NIIGATA",
+          "latitude": 37.958294,
+          "longitude": 139.114886,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V35",
+      "description": "Route V35 from KUSHIRO to MIYAKO",
+      "points": [
+        {
+          "name": "KUSHIRO",
+          "latitude": 43.03605,
+          "longitude": 144.200756,
+          "type": "waypoint"
+        },
+        {
+          "name": "CRANE",
+          "latitude": 42.821344,
+          "longitude": 144.146275,
+          "type": "waypoint"
+        },
+        {
+          "name": "KABRU",
+          "latitude": 42.753128,
+          "longitude": 144.129036,
+          "type": "waypoint"
+        },
+        {
+          "name": "SAPEM",
+          "latitude": 42.553764,
+          "longitude": 144.078858,
+          "type": "waypoint"
+        },
+        {
+          "name": "AREPO",
+          "latitude": 41.493639,
+          "longitude": 143.816772,
+          "type": "waypoint"
+        },
+        {
+          "name": "OLNAS",
+          "latitude": 40.752611,
+          "longitude": 143.638069,
+          "type": "waypoint"
+        },
+        {
+          "name": "PALVA",
+          "latitude": 40.535614,
+          "longitude": 143.217092,
+          "type": "waypoint"
+        },
+        {
+          "name": "MIYAKO",
+          "latitude": 39.865639,
+          "longitude": 141.951067,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V36",
+      "description": "Route V36 from HANAMAKI to YAMAGATA",
+      "points": [
+        {
+          "name": "HANAMAKI",
+          "latitude": 39.433358,
+          "longitude": 141.1335,
+          "type": "waypoint"
+        },
+        {
+          "name": "RUNID",
+          "latitude": 39.002708,
+          "longitude": 140.810583,
+          "type": "waypoint"
+        },
+        {
+          "name": "LAVOT",
+          "latitude": 38.859633,
+          "longitude": 140.704317,
+          "type": "waypoint"
+        },
+        {
+          "name": "YAMAGATA",
+          "latitude": 38.388622,
+          "longitude": 140.357953,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V37",
+      "description": "Route V37 from KUSHIMOTO to KOCHI",
+      "points": [
+        {
+          "name": "KUSHIMOTO",
+          "latitude": 33.447742,
+          "longitude": 135.794494,
+          "type": "waypoint"
+        },
+        {
+          "name": "KISEI",
+          "latitude": 33.467822,
+          "longitude": 135.328892,
+          "type": "waypoint"
+        },
+        {
+          "name": "PADOC",
+          "latitude": 33.482883,
+          "longitude": 134.997222,
+          "type": "waypoint"
+        },
+        {
+          "name": "TOSAR",
+          "latitude": 33.500581,
+          "longitude": 134.598678,
+          "type": "waypoint"
+        },
+        {
+          "name": "RYOMA",
+          "latitude": 33.510297,
+          "longitude": 134.376197,
+          "type": "waypoint"
+        },
+        {
+          "name": "KOCHI",
+          "latitude": 33.541783,
+          "longitude": 133.680158,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V38",
+      "description": "Route V38 from KOMATSU to KAGAWA",
+      "points": [
+        {
+          "name": "KOMATSU",
+          "latitude": 36.396469,
+          "longitude": 136.404253,
+          "type": "waypoint"
+        },
+        {
+          "name": "MIYAZU",
+          "latitude": 35.480692,
+          "longitude": 135.137022,
+          "type": "waypoint"
+        },
+        {
+          "name": "OLIVE",
+          "latitude": 34.754903,
+          "longitude": 134.450067,
+          "type": "waypoint"
+        },
+        {
+          "name": "KAGAWA",
+          "latitude": 34.212497,
+          "longitude": 134.022592,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V40",
+      "description": "Route V40 from KAGAWA to FUKUE",
+      "points": [
+        {
+          "name": "KAGAWA",
+          "latitude": 34.212497,
+          "longitude": 134.022592,
+          "type": "waypoint"
+        },
+        {
+          "name": "KOMPI",
+          "latitude": 34.167244,
+          "longitude": 133.875853,
+          "type": "waypoint"
+        },
+        {
+          "name": "SAKAI",
+          "latitude": 34.040142,
+          "longitude": 133.457944,
+          "type": "waypoint"
+        },
+        {
+          "name": "MALTA",
+          "latitude": 33.973936,
+          "longitude": 133.214314,
+          "type": "waypoint"
+        },
+        {
+          "name": "MATSUYAMA",
+          "latitude": 33.830103,
+          "longitude": 132.692222,
+          "type": "waypoint"
+        },
+        {
+          "name": "HEIGU",
+          "latitude": 33.612989,
+          "longitude": 132.074431,
+          "type": "waypoint"
+        },
+        {
+          "name": "MUSASHI",
+          "latitude": 33.489714,
+          "longitude": 131.728756,
+          "type": "waypoint"
+        },
+        {
+          "name": "WOODY",
+          "latitude": 33.126828,
+          "longitude": 131.492253,
+          "type": "waypoint"
+        },
+        {
+          "name": "IGLAT",
+          "latitude": 33.069342,
+          "longitude": 131.364697,
+          "type": "waypoint"
+        },
+        {
+          "name": "ASONO",
+          "latitude": 33.016142,
+          "longitude": 131.247061,
+          "type": "waypoint"
+        },
+        {
+          "name": "KAZMA",
+          "latitude": 32.97715,
+          "longitude": 131.159458,
+          "type": "waypoint"
+        },
+        {
+          "name": "TUJUN",
+          "latitude": 32.866183,
+          "longitude": 130.911519,
+          "type": "waypoint"
+        },
+        {
+          "name": "KUMAMOTO",
+          "latitude": 32.834803,
+          "longitude": 130.841514,
+          "type": "waypoint"
+        },
+        {
+          "name": "ESNAL",
+          "latitude": 32.853492,
+          "longitude": 130.605136,
+          "type": "waypoint"
+        },
+        {
+          "name": "TAIME",
+          "latitude": 32.863086,
+          "longitude": 130.471017,
+          "type": "waypoint"
+        },
+        {
+          "name": "IRPIN",
+          "latitude": 32.871797,
+          "longitude": 130.367853,
+          "type": "waypoint"
+        },
+        {
+          "name": "MILEP",
+          "latitude": 32.880692,
+          "longitude": 130.250339,
+          "type": "waypoint"
+        },
+        {
+          "name": "NAGASAKI",
+          "latitude": 32.905247,
+          "longitude": 129.917981,
+          "type": "waypoint"
+        },
+        {
+          "name": "OSETO",
+          "latitude": 32.843611,
+          "longitude": 129.629692,
+          "type": "waypoint"
+        },
+        {
+          "name": "AGRIT",
+          "latitude": 32.775489,
+          "longitude": 129.313467,
+          "type": "waypoint"
+        },
+        {
+          "name": "CARCO",
+          "latitude": 32.717147,
+          "longitude": 129.046572,
+          "type": "waypoint"
+        },
+        {
+          "name": "FUKUE",
+          "latitude": 32.668606,
+          "longitude": 128.826736,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V52",
+      "description": "Route V52 from KOMATSU to KUSHIMOTO",
+      "points": [
+        {
+          "name": "KOMATSU",
+          "latitude": 36.396469,
+          "longitude": 136.404253,
+          "type": "waypoint"
+        },
+        {
+          "name": "OHNNO",
+          "latitude": 35.891192,
+          "longitude": 136.634278,
+          "type": "waypoint"
+        },
+        {
+          "name": "HACHI",
+          "latitude": 35.784503,
+          "longitude": 136.682494,
+          "type": "waypoint"
+        },
+        {
+          "name": "MINOU",
+          "latitude": 35.656531,
+          "longitude": 136.740042,
+          "type": "waypoint"
+        },
+        {
+          "name": "NAGOYA",
+          "latitude": 35.265267,
+          "longitude": 136.914925,
+          "type": "waypoint"
+        },
+        {
+          "name": "CHUBU",
+          "latitude": 34.858006,
+          "longitude": 136.803169,
+          "type": "waypoint"
+        },
+        {
+          "name": "SHIMA",
+          "latitude": 34.304389,
+          "longitude": 136.588678,
+          "type": "waypoint"
+        },
+        {
+          "name": "AYANO",
+          "latitude": 34.096119,
+          "longitude": 136.393636,
+          "type": "waypoint"
+        },
+        {
+          "name": "KUSHIMOTO",
+          "latitude": 33.447742,
+          "longitude": 135.794494,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V53",
+      "description": "Route V53 from KAGAWA to SHIMIZU",
+      "points": [
+        {
+          "name": "KAGAWA",
+          "latitude": 34.212497,
+          "longitude": 134.022592,
+          "type": "waypoint"
+        },
+        {
+          "name": "OBOKE",
+          "latitude": 34.014975,
+          "longitude": 133.921517,
+          "type": "waypoint"
+        },
+        {
+          "name": "POPPY",
+          "latitude": 33.818075,
+          "longitude": 133.820925,
+          "type": "waypoint"
+        },
+        {
+          "name": "KOCHI",
+          "latitude": 33.541783,
+          "longitude": 133.680158,
+          "type": "waypoint"
+        },
+        {
+          "name": "SUSAK",
+          "latitude": 33.339503,
+          "longitude": 133.503792,
+          "type": "waypoint"
+        },
+        {
+          "name": "OKITU",
+          "latitude": 33.096514,
+          "longitude": 133.292069,
+          "type": "waypoint"
+        },
+        {
+          "name": "SHIMIZU",
+          "latitude": 32.755969,
+          "longitude": 132.996647,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V54",
+      "description": "Route V54 from WOODY to KAGOSHIMA",
+      "points": [
+        {
+          "name": "WOODY",
+          "latitude": 33.126828,
+          "longitude": 131.492253,
+          "type": "waypoint"
+        },
+        {
+          "name": "BARBA",
+          "latitude": 32.881408,
+          "longitude": 131.333653,
+          "type": "waypoint"
+        },
+        {
+          "name": "ORAMO",
+          "latitude": 32.588692,
+          "longitude": 131.145875,
+          "type": "waypoint"
+        },
+        {
+          "name": "KROMA",
+          "latitude": 32.470289,
+          "longitude": 131.070342,
+          "type": "waypoint"
+        },
+        {
+          "name": "HIGOH",
+          "latitude": 32.195936,
+          "longitude": 130.896236,
+          "type": "waypoint"
+        },
+        {
+          "name": "KAGOSHIMA",
+          "latitude": 31.697222,
+          "longitude": 130.582942,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V55",
+      "description": "Route V55 from MIYAZU to KUSHIMOTO",
+      "points": [
+        {
+          "name": "MIYAZU",
+          "latitude": 35.480692,
+          "longitude": 135.137022,
+          "type": "waypoint"
+        },
+        {
+          "name": "ROKKO",
+          "latitude": 35.116822,
+          "longitude": 135.300256,
+          "type": "waypoint"
+        },
+        {
+          "name": "SANDA",
+          "latitude": 34.930611,
+          "longitude": 135.3622,
+          "type": "waypoint"
+        },
+        {
+          "name": "ITAMI",
+          "latitude": 34.805483,
+          "longitude": 135.403661,
+          "type": "VOR/DME"
+        },
+        {
+          "name": "IZUMI",
+          "latitude": 34.441261,
+          "longitude": 135.425356,
+          "type": "waypoint"
+        },
+        {
+          "name": "IYOKA",
+          "latitude": 34.371783,
+          "longitude": 135.429472,
+          "type": "waypoint"
+        },
+        {
+          "name": "OSAMU",
+          "latitude": 34.304886,
+          "longitude": 135.433433,
+          "type": "waypoint"
+        },
+        {
+          "name": "NORAN",
+          "latitude": 33.966914,
+          "longitude": 135.45335,
+          "type": "waypoint"
+        },
+        {
+          "name": "KUSHIMOTO",
+          "latitude": 33.447742,
+          "longitude": 135.794494,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V56",
+      "description": "Route V56 from MARCO to KOCHI",
+      "points": [
+        {
+          "name": "MARCO",
+          "latitude": 34.079456,
+          "longitude": 132.147269,
+          "type": "waypoint"
+        },
+        {
+          "name": "MATSUYAMA",
+          "latitude": 33.830103,
+          "longitude": 132.692222,
+          "type": "waypoint"
+        },
+        {
+          "name": "ROCKY",
+          "latitude": 33.714069,
+          "longitude": 133.093931,
+          "type": "waypoint"
+        },
+        {
+          "name": "OMOGO",
+          "latitude": 33.680472,
+          "longitude": 133.2092,
+          "type": "waypoint"
+        },
+        {
+          "name": "KOCHI",
+          "latitude": 33.541783,
+          "longitude": 133.680158,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V57",
+      "description": "Route V57 from HAKBA to TENRU",
+      "points": [
+        {
+          "name": "HAKBA",
+          "latitude": 37.259953,
+          "longitude": 137.884642,
+          "type": "waypoint"
+        },
+        {
+          "name": "HAPPO",
+          "latitude": 37.101361,
+          "longitude": 137.889092,
+          "type": "waypoint"
+        },
+        {
+          "name": "AZUMI",
+          "latitude": 36.480597,
+          "longitude": 137.909133,
+          "type": "waypoint"
+        },
+        {
+          "name": "MATSUMOTO",
+          "latitude": 36.155975,
+          "longitude": 137.919817,
+          "type": "waypoint"
+        },
+        {
+          "name": "TENRU",
+          "latitude": 35.669592,
+          "longitude": 138.006936,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V71",
+      "description": "Route V71 from TAPOP to ERABU",
+      "points": [
+        {
+          "name": "TAPOP",
+          "latitude": 32.338139,
+          "longitude": 136.272747,
+          "type": "waypoint"
+        },
+        {
+          "name": "DEMPA",
+          "latitude": 31.724878,
+          "longitude": 135.331214,
+          "type": "waypoint"
+        },
+        {
+          "name": "GURAR",
+          "latitude": 30.986314,
+          "longitude": 134.227336,
+          "type": "waypoint"
+        },
+        {
+          "name": "SABAN",
+          "latitude": 29.580197,
+          "longitude": 132.206764,
+          "type": "waypoint"
+        },
+        {
+          "name": "OLSAK",
+          "latitude": 29.377772,
+          "longitude": 131.923842,
+          "type": "waypoint"
+        },
+        {
+          "name": "POMAS",
+          "latitude": 28.5041,
+          "longitude": 130.144192,
+          "type": "waypoint"
+        },
+        {
+          "name": "DONAN",
+          "latitude": 27.965431,
+          "longitude": 129.411247,
+          "type": "waypoint"
+        },
+        {
+          "name": "ERABU",
+          "latitude": 27.432883,
+          "longitude": 128.698964,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V73",
+      "description": "Route V73 from ERABU to DOVAG",
+      "points": [
+        {
+          "name": "ERABU",
+          "latitude": 27.432883,
+          "longitude": 128.698964,
+          "type": "waypoint"
+        },
+        {
+          "name": "TAMAK",
+          "latitude": 27.531408,
+          "longitude": 129.098189,
+          "type": "waypoint"
+        },
+        {
+          "name": "DELTA",
+          "latitude": 27.870561,
+          "longitude": 130.51445,
+          "type": "waypoint"
+        },
+        {
+          "name": "HIDEK",
+          "latitude": 28.364158,
+          "longitude": 132.750639,
+          "type": "waypoint"
+        },
+        {
+          "name": "DOVAG",
+          "latitude": 28.583878,
+          "longitude": 133.814156,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V75",
+      "description": "Route V75 from NAHA to CANAI",
+      "points": [
+        {
+          "name": "NAHA",
+          "latitude": 26.208531,
+          "longitude": 127.642867,
+          "type": "waypoint"
+        },
+        {
+          "name": "ESKOB",
+          "latitude": 26.169308,
+          "longitude": 127.957678,
+          "type": "waypoint"
+        },
+        {
+          "name": "NANJO",
+          "latitude": 26.127631,
+          "longitude": 128.286058,
+          "type": "waypoint"
+        },
+        {
+          "name": "BUICK",
+          "latitude": 26.068269,
+          "longitude": 128.743494,
+          "type": "waypoint"
+        },
+        {
+          "name": "TOPAT",
+          "latitude": 25.972689,
+          "longitude": 129.456797,
+          "type": "waypoint"
+        },
+        {
+          "name": "HALMA",
+          "latitude": 25.893044,
+          "longitude": 130.711125,
+          "type": "waypoint"
+        },
+        {
+          "name": "CORCO",
+          "latitude": 25.874025,
+          "longitude": 130.987522,
+          "type": "waypoint"
+        },
+        {
+          "name": "WHALE",
+          "latitude": 25.867569,
+          "longitude": 131.079625,
+          "type": "waypoint"
+        },
+        {
+          "name": "MINAMIDAITO",
+          "latitude": 25.854483,
+          "longitude": 131.263789,
+          "type": "VOR/DME"
+        },
+        {
+          "name": "NIRAI",
+          "latitude": 26.497608,
+          "longitude": 133.274181,
+          "type": "waypoint"
+        },
+        {
+          "name": "CANAI",
+          "latitude": 26.733669,
+          "longitude": 134.040925,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V90",
+      "description": "Route V90 from MIYAKOJIMA to ISHIGAKIJIMA",
+      "points": [
+        {
+          "name": "MIYAKOJIMA",
+          "latitude": 24.777392,
+          "longitude": 125.293408,
+          "type": "waypoint"
+        },
+        {
+          "name": "SHUJI",
+          "latitude": 24.708978,
+          "longitude": 125.098556,
+          "type": "waypoint"
+        },
+        {
+          "name": "UMAKI",
+          "latitude": 24.622694,
+          "longitude": 124.854169,
+          "type": "waypoint"
+        },
+        {
+          "name": "KAMPU",
+          "latitude": 24.606053,
+          "longitude": 124.807206,
+          "type": "waypoint"
+        },
+        {
+          "name": "GUSUK",
+          "latitude": 24.46505,
+          "longitude": 124.424189,
+          "type": "waypoint"
+        },
+        {
+          "name": "ISHIGAKIJIMA",
+          "latitude": 24.396011,
+          "longitude": 124.237953,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "V91",
+      "description": "Route V91 from NAHA to MIYAKOJIMA",
+      "points": [
+        {
+          "name": "NAHA",
+          "latitude": 26.208531,
+          "longitude": 127.642867,
+          "type": "waypoint"
+        },
+        {
+          "name": "OLVAL",
+          "latitude": 26.069722,
+          "longitude": 127.411472,
+          "type": "waypoint"
+        },
+        {
+          "name": "DODGE",
+          "latitude": 25.743883,
+          "longitude": 126.874169,
+          "type": "waypoint"
+        },
+        {
+          "name": "RYOSA",
+          "latitude": 25.519881,
+          "longitude": 126.5058,
+          "type": "waypoint"
+        },
+        {
+          "name": "PAYAO",
+          "latitude": 25.279156,
+          "longitude": 126.109133,
+          "type": "waypoint"
+        },
+        {
+          "name": "HIRAR",
+          "latitude": 25.064381,
+          "longitude": 125.758175,
+          "type": "waypoint"
+        },
+        {
+          "name": "MIYAKOJIMA",
+          "latitude": 24.777392,
+          "longitude": 125.293408,
+          "type": "waypoint"
+        }
+      ]
+    }
+  ]
+}
