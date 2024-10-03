@@ -1,8 +1,4 @@
-export interface Waypoint {
-  name: string;
-  latitude: number;
-  longitude: number;
-}
+import { Waypoint } from './RouteInterfaces/Waypoint';
 
 export class WaypointManager {
   private waypoints: Waypoint[] = [];

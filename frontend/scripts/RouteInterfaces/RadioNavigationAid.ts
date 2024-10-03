@@ -1,4 +1,4 @@
-interface RadioNavigationAid {
+export interface RadioNavigationAid {
   name: string;
   id: string;
   type: string;

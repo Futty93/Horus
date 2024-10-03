@@ -4,9 +4,10 @@ const CANVAS_HEIGHT: number = 1000;
 const REFRESH_RATE: number = 60; //画面の更新頻度(fps)
 
 import { Aircraft } from "./aircraftClass.ts";
-import { Waypoint } from "./waypointManager.ts";
+import { Waypoint } from "./RouteInterfaces/Waypoint.ts";
 import { WaypointManager } from "./waypointManager.ts";
 import { CoordinateManager } from "./CoordinateManager.ts";
+import loadAtsRoutes from "./atsRoutesLoader.ts";
 
 /**
  * Represents the RadarGame class that encapsulates the game.
@@ -22,7 +23,10 @@ class RadarGame {
   private inputHeading: HTMLInputElement;
   private confirmButton: HTMLInputElement;
   private waypointManager: WaypointManager;
-  public coordinateManager: CoordinateManager = new CoordinateManager(CANVAS_WIDTH, CANVAS_HEIGHT);
+  public coordinateManager: CoordinateManager = new CoordinateManager(
+    CANVAS_WIDTH,
+    CANVAS_HEIGHT,
+  );
   // private sendButton: HTMLInputElement;
   private inGame: boolean; //シミュレーションゲーム中かどうかを判断する
   private bg: number; //ダブルバッファの背景と表示を切り替えるためのインデックスを管理
@@ -262,32 +266,33 @@ class RadarGame {
     this.ctx[index].fill();
   }
 
-/**
- * Draws the heading line representing the airplane's movement direction.
- * @param index - The index of the airplane in the list.
- * @param airplane - The instance of the Aircraft class.
- */
-private drawHeadingLine(index: number, airplane: Aircraft): void {
-  const { x: startX, y: startY } = airplane.position;
-  const { groundSpeed, heading } = airplane.vector;
+  /**
+   * Draws the heading line representing the airplane's movement direction.
+   * @param index - The index of the airplane in the list.
+   * @param airplane - The instance of the Aircraft class.
+   */
+  private drawHeadingLine(index: number, airplane: Aircraft): void {
+    const { x: startX, y: startY } = airplane.position;
+    const { groundSpeed, heading } = airplane.vector;
 
-  // Calculate the future position of the airplane on the canvas
-  const futurePosition = this.coordinateManager.calculateFuturePositionOnCanvas(
-    groundSpeed,
-    heading,
-    CANVAS_WIDTH,
-    CANVAS_HEIGHT,
-    this.displayRange,
-    airplane.position
-  );
+    // Calculate the future position of the airplane on the canvas
+    const futurePosition = this.coordinateManager
+      .calculateFuturePositionOnCanvas(
+        groundSpeed,
+        heading,
+        CANVAS_WIDTH,
+        CANVAS_HEIGHT,
+        this.displayRange,
+        airplane.position,
+      );
 
-  // Draw the heading line
-  this.ctx[index].beginPath();
-  this.ctx[index].moveTo(startX, startY);
-  this.ctx[index].lineTo(futurePosition.futureX, futurePosition.futureY);
-  this.ctx[index].strokeStyle = "white";
-  this.ctx[index].stroke();
-}
+    // Draw the heading line
+    this.ctx[index].beginPath();
+    this.ctx[index].moveTo(startX, startY);
+    this.ctx[index].lineTo(futurePosition.futureX, futurePosition.futureY);
+    this.ctx[index].strokeStyle = "white";
+    this.ctx[index].stroke();
+  }
 
   /**
    * Draws the line connecting airplane to its label position.
@@ -371,9 +376,9 @@ private drawHeadingLine(index: number, airplane: Aircraft): void {
   private drawLabel(index: number, airplane: Aircraft): void {
     const airplanePosition = airplane.position;
     const labelX: number = airplanePosition.x +
-    airplane.label.x;
+      airplane.label.x;
     const labelY: number = airplanePosition.y -
-    airplane.label.y;
+      airplane.label.y;
 
     // Draw labels with airplane information
     this.ctx[index].fillStyle = "white";
@@ -381,8 +386,16 @@ private drawHeadingLine(index: number, airplane: Aircraft): void {
     this.ctx[index].textAlign = "left";
 
     this.ctx[index].fillText(airplane.callsign, labelX, labelY);
-    this.ctx[index].fillText(airplanePosition.altitude.toString(), labelX, labelY + 15);
-    this.ctx[index].fillText(airplane.vector.groundSpeed.toString(), labelX, labelY + 30);
+    this.ctx[index].fillText(
+      airplanePosition.altitude.toString(),
+      labelX,
+      labelY + 15,
+    );
+    this.ctx[index].fillText(
+      airplane.vector.groundSpeed.toString(),
+      labelX,
+      labelY + 30,
+    );
     this.ctx[index].fillText(
       airplane.destinationIata,
       labelX + 40,
@@ -460,37 +473,44 @@ private drawHeadingLine(index: number, airplane: Aircraft): void {
   // }
 
   private controlAircraft = async () => {
-    if (this.selectedAircraft){
+    if (this.selectedAircraft) {
       const callsign = this.selectedAircraft.callsign;
       // Get the input values from the form
       const instructedAltitude = Number(this.inputAltitude.value);
       const instructedGroundSpeed = Number(this.inputSpeed.value);
       const instructedHeading = Number(this.inputHeading.value);
-    
+
       // Create the DTO object
       const controlAircraftDto = {
         instructedAltitude,
         instructedGroundSpeed,
         instructedHeading,
       };
-    
+
       try {
-        const response = await fetch(`http://localhost:8080/api/aircraft/control/${callsign}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+        const response = await fetch(
+          `http://localhost:8080/api/aircraft/control/${callsign}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(controlAircraftDto),
           },
-          body: JSON.stringify(controlAircraftDto),
-        });
-    
+        );
+
         if (response.ok) {
           console.log(`Aircraft ${callsign} controlled successfully.`);
         } else {
-          console.error(`Failed to control aircraft ${callsign}. Status:`, response.status);
+          console.error(
+            `Failed to control aircraft ${callsign}. Status:`,
+            response.status,
+          );
         }
       } catch (error) {
         console.error("Error occurred while controlling aircraft:", error);
-      }}
+      }
+    }
   };
 
   private update(): void {
@@ -563,17 +583,26 @@ const radarGame = new RadarGame();
 // when the page is loaded, make the first canvas
 radarGame.makeFirstCanvas();
 
+loadAtsRoutes().then((data) => {
+  console.log(data);
+}).catch((error) => {
+  console.error(error);
+});
+
 // Timer variable to hold interval reference
 let locationUpdateInterval: number | null = null;
 
 const fetchAircraftLocation = async () => {
   try {
-    const response = await fetch("http://localhost:8080/aircraft/location/all", {
-      method: "GET",
-      headers: {
-        "accept": "*/*", // Assuming the server sends a custom format
+    const response = await fetch(
+      "http://localhost:8080/aircraft/location/all",
+      {
+        method: "GET",
+        headers: {
+          "accept": "*/*", // Assuming the server sends a custom format
+        },
       },
-    });
+    );
 
     if (response.ok) {
       const textData = await response.text(); // Fetches text data
@@ -600,8 +629,10 @@ const parseAircraftData = (data: string): Aircraft[] | null => {
   // This is a placeholder example; you'll need to adjust it according to the actual format
   try {
     // Example parsing logic (assuming data is in some custom text format)
-    const aircraftStrings = data.split('\n').filter(line => line.startsWith('CommercialAircraft'));
-    return aircraftStrings.map(aircraftString => {
+    const aircraftStrings = data.split("\n").filter((line) =>
+      line.startsWith("CommercialAircraft")
+    );
+    return aircraftStrings.map((aircraftString) => {
       // Parse each aircraftString into an Aircraft object
       // Example: Implement a function to parse the string into a valid Aircraft object
       return parseAircraftString(aircraftString);
@@ -613,25 +644,50 @@ const parseAircraftData = (data: string): Aircraft[] | null => {
 };
 
 const parseAircraftString = (aircraftString: string): Aircraft => {
-  const aircraftRegex = /callsign=(.*?), position=\{latitude=(.*?), longitude=(.*?), altitude=(.*?)\}, vector=\{heading=(.*?), groundSpeed=(.*?), verticalSpeed=(.*?)\}, type=(.*?), originIata=(.*?), originIcao=(.*?), destinationIata=(.*?), destinationIcao=(.*?), eta=(.*?)\}/;
-  
+  const aircraftRegex =
+    /callsign=(.*?), position=\{latitude=(.*?), longitude=(.*?), altitude=(.*?)\}, vector=\{heading=(.*?), groundSpeed=(.*?), verticalSpeed=(.*?)\}, type=(.*?), originIata=(.*?), originIcao=(.*?), destinationIata=(.*?), destinationIcao=(.*?), eta=(.*?)\}/;
+
   const matches = aircraftString.match(aircraftRegex);
   if (matches) {
-    const [_, callsign, lat, lon, altitude, heading, groundSpeed, verticalSpeed, type, originIata, originIcao, destinationIata, destinationIcao, eta] = matches;
+    const [
+      _,
+      callsign,
+      lat,
+      lon,
+      altitude,
+      heading,
+      groundSpeed,
+      verticalSpeed,
+      type,
+      originIata,
+      originIcao,
+      destinationIata,
+      destinationIcao,
+      eta,
+    ] = matches;
 
     // Convert latitude and longitude into canvas coordinates using radarGame utility
-    const coordinateOnCanvas = radarGame.coordinateManager.calculateCanvasCoordinates(
-      radarGame.centerCoordinates.latitude,
-      radarGame.centerCoordinates.longitude,
-      radarGame.displayRange,
-      parseFloat(lat),
-      parseFloat(lon)
-    );
+    const coordinateOnCanvas = radarGame.coordinateManager
+      .calculateCanvasCoordinates(
+        radarGame.centerCoordinates.latitude,
+        radarGame.centerCoordinates.longitude,
+        radarGame.displayRange,
+        parseFloat(lat),
+        parseFloat(lon),
+      );
 
     return new Aircraft(
       callsign,
-      { x: coordinateOnCanvas.x, y: coordinateOnCanvas.y, altitude: parseFloat(altitude) }, // position
-      { heading: parseFloat(heading), groundSpeed: parseFloat(groundSpeed), verticalSpeed: parseFloat(verticalSpeed) }, // vector
+      {
+        x: coordinateOnCanvas.x,
+        y: coordinateOnCanvas.y,
+        altitude: parseFloat(altitude),
+      }, // position
+      {
+        heading: parseFloat(heading),
+        groundSpeed: parseFloat(groundSpeed),
+        verticalSpeed: parseFloat(verticalSpeed),
+      }, // vector
       type,
       originIata,
       originIcao,
@@ -640,7 +696,7 @@ const parseAircraftString = (aircraftString: string): Aircraft => {
       eta,
     );
   }
-  
+
   throw new Error("Failed to parse aircraft string: " + aircraftString);
 };
 
