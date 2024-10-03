@@ -1,78 +1,174 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.util.AtsRouteData;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.util.Fix;
+import jakarta.annotation.PostConstruct;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.util.RadioNavigationAid;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.util.Route;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.util.RoutePoint;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.util.Waypoint;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+@Component
 public class AtsRouteRepository {
+    private static AtsRouteRepository instance;
+
+    private List<Waypoint> waypoints;
+    private List<RadioNavigationAid> radioNavigationAids;
+    private List<Route> atsLowerRoutes;
+    private List<Route> rnavRoutes;
+
+    private AtsRouteRepository() throws IOException {
+        this.waypoints = loadWaypoints();
+        this.radioNavigationAids = loadRadioNavigationAids();
+        this.atsLowerRoutes = loadAtsLowerRoutes();
+        this.rnavRoutes = loadRnavRoutes();
+    }
+
+    public static synchronized AtsRouteRepository getInstance() throws IOException {
+        if (instance == null) {
+            instance = new AtsRouteRepository();
+        }
+        return instance;
+    }
+
     public static void main(String[] args) throws IOException {
-        // JSONファイルパス
-        String radioNavPath = "./radio_navigation_aids.json";
-        String waypointPath = "./waypoint.json";
-        String atsRoutesPath = "./ats_lower_routes.json";
+        AtsRouteRepository.getInstance();
+    }
 
-        // JSONファイルを読み込む
+    // Methods to get data
+    public List<Waypoint> getWaypoints() {
+        return waypoints;
+    }
+
+    public List<RadioNavigationAid> getRadioNavigationAids() {
+        return radioNavigationAids;
+    }
+
+    public List<Route> getAtsLowerRoutes() {
+        return atsLowerRoutes;
+    }
+
+    public List<Route> getRnavRoutes() {
+        return rnavRoutes;
+    }
+
+    // Private methods to load data from JSON files
+    private List<Waypoint> loadWaypoints() throws IOException {
+        String AtsLowerRoutesPath = "src/main/java/jp/ac/tohoku/qse/takahashi/AtcSimulator/domain/model/entity/fix/JsonFiles/waypoints.json";
         ObjectMapper mapper = new ObjectMapper();
+        JsonNode waypointNode = mapper.readTree(new File(AtsLowerRoutesPath));
 
-        // 無線航法装置データを読み込む
-        List<Map<String, Object>> radioNavs = mapper.readValue(new File(radioNavPath), new TypeReference<>(){});
-        List<Fix> radioNavPoints = new ArrayList<>();
-        for (Map<String, Object> radioNav : radioNavs) {
-            Fix fix = new Fix();
-            fix.name = (String) radioNav.get("name");
-            fix.type = "RADIO_NAVIGATION_AID";
-            fix.latitude = (double) radioNav.get("latitude");
-            fix.longitude = (double) radioNav.get("longitude");
-            radioNavPoints.add(fix);
+        List<Waypoint> waypoints = new ArrayList<>();
+
+        for (JsonNode pointNode : waypointNode) {
+            String pointName = pointNode.get("name").asText();
+            double latitude = pointNode.get("latitude").asDouble();
+            double longitude = pointNode.get("longitude").asDouble();
+
+            Waypoint waypoint = new Waypoint(pointName, latitude, longitude);
+            waypoints.add(waypoint);
         }
 
-        // ウェイポイントデータを読み込む
-        List<Fix> waypoints = mapper.readValue(new File(waypointPath), new TypeReference<>(){});
-        for (Fix waypoint : waypoints) {
-            waypoint.type = "WAYPOINT";
+        return waypoints;
+    }
+
+    private List<RadioNavigationAid> loadRadioNavigationAids() throws IOException {
+        String AtsLowerRoutesPath = "src/main/java/jp/ac/tohoku/qse/takahashi/AtcSimulator/domain/model/entity/fix/JsonFiles/radio_navigation_aids.json";
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode aidNode = mapper.readTree(new File(AtsLowerRoutesPath));
+
+        List<RadioNavigationAid> radioNavigationAids = new ArrayList<>();
+
+        for (JsonNode pointNode : aidNode) {
+            String name = pointNode.get("name").asText();
+            String id = pointNode.get("id").asText();
+            String type = pointNode.get("type").asText();
+            String frequency = pointNode.get("frequency").asText();
+            double latitude = pointNode.get("latitude").asDouble();
+            double longitude = pointNode.get("longitude").asDouble();
+
+            RadioNavigationAid radioNavigationAid = new RadioNavigationAid(name, id, type, frequency, latitude, longitude);
+            radioNavigationAids.add(radioNavigationAid);
         }
 
-        // ATSルートデータを読み込む
-        List<Route> atsRoutes = mapper.readValue(new File(atsRoutesPath), new TypeReference<>(){});
+        return radioNavigationAids;
+    }
 
-        // ポイント名から座標を引くためのマップを作成
-        Map<String, Fix> pointMap = new HashMap<>();
-        for (Fix point : radioNavPoints) {
-            pointMap.put(point.name, point);
-        }
-        for (Fix waypoint : waypoints) {
-            pointMap.put(waypoint.name, waypoint);
-        }
+    private List<Route> loadAtsLowerRoutes() throws IOException {
+        String AtsLowerRoutesPath = "src/main/java/jp/ac/tohoku/qse/takahashi/AtcSimulator/domain/model/entity/fix/JsonFiles/ats_lower_routes.json";
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode routesNode = mapper.readTree(new File(AtsLowerRoutesPath)).get("routes");
 
-        // ルートごとの接続情報を作成
-        List<List<String>> connections = new ArrayList<>();
-        for (Route route : atsRoutes) {
-            List<String> connection = new ArrayList<>();
-            for (String pointName : route.fixes) {
-                if (pointMap.containsKey(pointName)) {
-                    connection.add(pointName);
-                }
+        List<Route> atsLowerRoutes = new ArrayList<>();
+
+        // Iterate over each route in the routes array
+        for (JsonNode routeNode : routesNode) {
+            // Extract route name and description
+            String routeName = routeNode.get("name").asText();
+            String routeDescription = routeNode.get("description").asText();
+
+            // Extract the list of points (waypoints) for this route
+            List<RoutePoint> routePoints = new ArrayList<>();
+            JsonNode pointsNode = routeNode.get("points");
+
+            for (JsonNode pointNode : pointsNode) {
+                String pointName = pointNode.get("name").asText();
+                double latitude = pointNode.get("latitude").asDouble();
+                double longitude = pointNode.get("longitude").asDouble();
+                String type = pointNode.get("type").asText();  // e.g., "waypoint"
+
+                // Create a Waypoint object (or FixBase if needed)
+                RoutePoint routePoint = new RoutePoint(pointName, latitude, longitude, type);
+                routePoints.add(routePoint);
             }
-            connections.add(connection);
+
+            // Create a Route object and add it to the list
+            Route route = new Route(routeName, routeDescription, routePoints);
+            atsLowerRoutes.add(route);
         }
 
-        // 結合データを作成
-        AtsRouteData atsRouteData = new AtsRouteData();
-        atsRouteData.fixes = new ArrayList<>(pointMap.values());
-        atsRouteData.connections = connections;
+        return atsLowerRoutes;
+    }
 
-        // 結果を表示するかファイルに保存
-        mapper.writerWithDefaultPrettyPrinter().writeValue(new File("src/main/resources/combined_data.json"), atsRouteData);
+    private List<Route> loadRnavRoutes() throws IOException {
+        String AtsLowerRoutesPath = "src/main/java/jp/ac/tohoku/qse/takahashi/AtcSimulator/domain/model/entity/fix/JsonFiles/rnav_routes.json";
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode routesNode = mapper.readTree(new File(AtsLowerRoutesPath)).get("routes");
 
-        System.out.println("Data combined and written to combined_data.json");
+        List<Route> rnavRoutes = new ArrayList<>();
+
+        // Iterate over each route in the routes array
+        for (JsonNode routeNode : routesNode) {
+            // Extract route name and description
+            String routeName = routeNode.get("name").asText();
+            String routeDescription = routeNode.get("description").asText();
+
+            // Extract the list of points (waypoints) for this route
+            List<RoutePoint> routePoints = new ArrayList<>();
+            JsonNode pointsNode = routeNode.get("points");
+
+            for (JsonNode pointNode : pointsNode) {
+                String pointName = pointNode.get("name").asText();
+                double latitude = pointNode.get("latitude").asDouble();
+                double longitude = pointNode.get("longitude").asDouble();
+                String type = pointNode.get("type").asText();  // e.g., "waypoint"
+
+                // Create a Waypoint object (or FixBase if needed)
+                RoutePoint routePoint = new RoutePoint(pointName, latitude, longitude, type);
+                routePoints.add(routePoint);
+            }
+
+            // Create a Route object and add it to the list
+            Route route = new Route(routeName, routeDescription, routePoints);
+            rnavRoutes.add(route);
+        }
+
+        return rnavRoutes;
     }
 }

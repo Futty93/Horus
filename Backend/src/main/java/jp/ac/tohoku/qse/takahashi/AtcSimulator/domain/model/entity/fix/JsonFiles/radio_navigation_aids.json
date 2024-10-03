@@ -7,7 +7,7 @@
         "hours_of_operation": "H24",
         "latitude": 28.443472,
         "longitude": 129.5834,
-        "elevation": "304.3m(998ft)",
+        "elevation": "998ft",
         "remarks": "TACAN AZM unusable:360°-010° beyond 30nm BLW 4000ft.010°-040° beyond 25nm BLW 4000ft.040°-060° beyond 30nm BLW 4000ft.250°-270° beyond 25nm BLW 5000ft.270°-290° beyond 25nm BLW 4000ft.340°-360° beyond 30nm BLW 4000ft."
     },
     {
@@ -18,7 +18,7 @@
         "hours_of_operation": "H24",
         "latitude": 36.020994,
         "longitude": 140.205756,
-        "elevation": "41.4m (136ft)",
+        "elevation": "136ft",
         "remarks": "Unusable:340°-350° beyond 25nm BLW 5000ft."
     },
     {
@@ -40,7 +40,7 @@
         "hours_of_operation": "H24",
         "latitude": 40.738944,
         "longitude": 140.704936,
-        "elevation": "230.2m (756ft)",
+        "elevation": "756ft",
         "remarks": "DME Unusable:100°-110° beyond 35nm BLW 8000ft.110°-120° beyond 30nm BLW 8000ft.120°-130° beyond 15nm BLW 8000ft.130°-150° beyond 20nm BLW 8000ft.150°-190° beyond 20nm BLW 7000ft.190°-200° beyond 20nm BLW 6000ft.200°-220° beyond 35nm BLW 6000ft."
     },
     {
@@ -51,7 +51,7 @@
         "hours_of_operation": "H24",
         "latitude": 43.667264,
         "longitude": 142.456847,
-        "elevation": "234.4m(769ft)",
+        "elevation": "769ft",
         "remarks": "VOR/DME Unusable:080°-090° beyond 35nm BLW 9000ft.VOR Unusable:090°-110° beyond 35nm BLW 10000ft.110°-130° beyond 30nm BLW 10000ft.130°-170° beyond 35nm BLW 10000ft.DME Unusable:090°-110° beyond 25nm BLW 10000ft.110°-170° beyond 30nm BLW 10000ft.220°-230° beyond 30nm BLW 6000ft.230°-240° beyond 35nm BLW 6000ft.240°-260° beyond 20nm BLW 6000ft.260°-290° beyond 35nm BLW 7000ft."
     },
     {
@@ -73,7 +73,7 @@
         "hours_of_operation": "H24",
         "latitude": 35.445556,
         "longitude": 139.453889,
-        "elevation": "64.3m(211ft)",
+        "elevation": "211ft",
         "remarks": "Unusable:010°-020° beyond 15nm BLW 3000ft.020°-030° beyond 25nm BLW 3000ft.030°-040° beyond 20nm BLW 3000ft.040°-050° beyond 18nm BLW 3000ft.050°-060° beyond 17nm BLW 3000ft.060°-090° beyond 14nm BLW 3000ft.090°-100° beyond 29nm BLW 3000ft.100°-110° beyond 24nm BLW 4000ft.110°-120° beyond 26nm BLW 4000ft.120°-130° beyond 33nm BLW 4000ft."
     },
     {
@@ -84,7 +84,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.270378,
         "longitude": 134.713014,
-        "elevation": "269.5m(884ft)",
+        "elevation": "884ft",
         "remarks": ""
     },
     {
@@ -95,7 +95,7 @@
         "hours_of_operation": "H24",
         "latitude": 27.088289,
         "longitude": 142.218828,
-        "elevation": "293.7m(963.6ft)",
+        "elevation": "963.6ft",
         "remarks": "Unusable:170°-180° beyond 35nm BLW 4000ft.240°-280° beyond 5nm BLW 3000ft.280°-290° beyond 10nm BLW 3000ft."
     },
     {
@@ -106,7 +106,7 @@
         "hours_of_operation": "H24",
         "latitude": 26.160667,
         "longitude": 127.801089,
-        "elevation": "4m165.(543ft)",
+        "elevation": "543ft",
         "remarks": ""
     },
     {
@@ -117,7 +117,7 @@
         "hours_of_operation": "H24",
         "latitude": 42.699903,
         "longitude": 141.686167,
-        "elevation": "26.4m(87ft)",
+        "elevation": "87ft",
         "remarks": "DME unusable:210°-220° beyond 35nm BLW 3000ft.220°-240° beyond 30nm BLW 3000ft.240°-250° beyond 30nm BLW 7000ft.260°-270° beyond 35nm BLW 7000ft.270°-300° beyond 35nm BLW 9000ft.300°-310° beyond 35nm BLW 7000ft."
     },
     {
@@ -128,7 +128,7 @@
         "hours_of_operation": "H24",
         "latitude": 42.764444,
         "longitude": 141.673611,
-        "elevation": "38.9m(128ft)",
+        "elevation": "128ft",
         "remarks": "Unusable:160°-180° beyond 20nm BLW 2000ft.180°-190° beyond 25nm BLW 2000ft.190°-200° beyond 20nm BLW 2000ft.200°-220° beyond 25nm BLW 2000ft.250°-260° beyond 25nm BLW 7000ft.260°-270° beyond 35nm BLW 9000ft.280°-300° beyond 35nm BLW 9000ft."
     },
     {
@@ -139,7 +139,7 @@
         "hours_of_operation": "H24",
         "latitude": 35.726683,
         "longitude": 140.799911,
-        "elevation": "71.9m(236ft)",
+        "elevation": "236ft",
         "remarks": ""
     },
     {
@@ -150,7 +150,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.858006,
         "longitude": 136.803169,
-        "elevation": "12.0m(40ft)",
+        "elevation": "40ft",
         "remarks": "VOR unusable:260°-270° beyond 35nm BLW 5000ft.DME unusable:240°-250° beyond 35nm BLW 7000ft.280°-290° beyond 20nm BLW 5000ft."
     },
     {
@@ -161,7 +161,7 @@
         "hours_of_operation": "H24",
         "latitude": 36.744853,
         "longitude": 140.349561,
-        "elevation": "451.0m(1480ft)",
+        "elevation": "1480ft",
         "remarks": "TACAN DME unusable:050°-060° beyond 25nm BLW 6000ft.060°-070° beyond 25nm BLW 5000ft.110°-120° beyond 30nm BLW 5000ft.TACAN AZM unusable:360°-010° beyond 30nm BLW 6000ft.050°-060° beyond 25nm BLW 6000ft.060°-130° beyond 25nm BLW 5000ft."
     },
     {
@@ -183,7 +183,7 @@
         "hours_of_operation": "H24",
         "latitude": 27.433375,
         "longitude": 128.698914,
-        "elevation": "66.5m(218ft)",
+        "elevation": "218ft",
         "remarks": "TACAN AZM unusable:360°-020° beyond 30nm BLW 3000ft.050°-085° beyond 30nm BLW 3000ft.200°-210° beyond 30nm BLW 3000ft.210°-220° beyond 25nm BLW 3000ft.220°-250° beyond 30nm BLW 3000ft.295°-305° beyond 30nm BLW 3000ft.340°-350° beyond 35nm BLW 3000ft."
     },
     {
@@ -194,7 +194,7 @@
         "hours_of_operation": "H24",
         "latitude": 32.668606,
         "longitude": 128.826736,
-        "elevation": "88.7m(291ft)",
+        "elevation": "291ft",
         "remarks": "Unusable:100°-140° beyond 15nm BLW 4000ft.260°-300° beyond 20nm BLW 4000ft."
     },
     {
@@ -216,7 +216,7 @@
         "hours_of_operation": "H24",
         "latitude": 33.675978,
         "longitude": 130.389161,
-        "elevation": "19.7m(65ft)",
+        "elevation": "65ft",
         "remarks": "TACAN DME unusable:070°-090° beyond 30nm BLW 5000ft.090°-120° beyond 30nm BLW 6000ft.120°-130° beyond 25nm BLW 6000ft.130°-140° beyond 30nm BLW 6000ft.190°-240° beyond 35nm BLW 6000ft.TACAN AZM unusable:070°-090° beyond 20nm BLW 5000ft.090°-140° beyond 25nm BLW 6000ft.170°-190° beyond 30nm BLW 6000ft.190°-230° beyond 25nm BLW 6000ft.230°-240° beyond 35nm BLW 6000ft.260°-270° beyond 30nm BLW 3000ft.270°-280° beyond 25nm BLW 3000ft.280°-290° beyond 35nm BLW 3000ft."
     },
     {
@@ -227,7 +227,7 @@
         "hours_of_operation": "H24",
         "latitude": 37.224306,
         "longitude": 140.437086,
-        "elevation": "400.3m(1313\nft)",
+        "elevation": "1313\nft",
         "remarks": "VOR unusable:040°-050° beyond 20nm BLW 6000ft.050°-070° beyond 15nm BLW 6000ft.070°-080° beyond 10nm BLW 6000ft.080°-090° beyond 20nm BLW 6000ft.090°-100° beyond 20nm BLW 5000ft.100°-130° beyond 30nm BLW 5000ft.130°-150° beyond 35nm BLW 5000ft.DME unusable:040°-050° beyond 20nm BLW 6000ft.050°-060° beyond 15nm BLW 6000ft.060°-080° beyond 10nm BLW 6000ft.080°-090° beyond 15nm BLW 6000ft.090°-110° beyond 20nm BLW 5000ft.110°-130° beyond 30nm BLW 5000ft.130°-140° beyond 35nm BLW 5000ft."
     },
     {
@@ -260,7 +260,7 @@
         "hours_of_operation": "H24",
         "latitude": 33.910183,
         "longitude": 135.10615,
-        "elevation": "309.7m(1016ft)",
+        "elevation": "1016ft",
         "remarks": ""
     },
     {
@@ -271,7 +271,7 @@
         "hours_of_operation": "H24",
         "latitude": 33.11435,
         "longitude": 139.788483,
-        "elevation": "103.4m(339ft)",
+        "elevation": "339ft",
         "remarks": "Unusable:090°-100° beyond 20NM below 5000ft.100°-200° beyond 5NM below 5000ft.280°-300° beyond 20NM below 5000ft.300°-360° beyond 3NM below 5000ft."
     },
     {
@@ -282,7 +282,7 @@
         "hours_of_operation": "H24",
         "latitude": 40.555833,
         "longitude": 141.47,
-        "elevation": "45.1m(147.9ft)",
+        "elevation": "147.9ft",
         "remarks": "TACAN unusable:R040-050 beyond 35NM BLW 2000ft.R060-070 beyond 36NM BLW 2000ft.R140-150 beyond 35NM BLW 5000ft.R150-170 beyond 32NM BLW 7000ft.R320-330 beyond 35NM BLW 5000ft.R330-340 beyond 25NM BLW 5000ft.R340-350 beyond 30NM BLW 4000ft.R350-360 beyond 35NM BLW 4000ft."
     },
     {
@@ -293,7 +293,7 @@
         "hours_of_operation": "H24",
         "latitude": 41.774031,
         "longitude": 140.832217,
-        "elevation": "91.4m(300ft)",
+        "elevation": "300ft",
         "remarks": "VOR unusable:020°-030° beyond 30nm BLW 6000ft.030°-040° beyond 35nm BLW 5000ft.070°-090° beyond 25nm BLW 5000ft.090°-100° beyond 35nm BLW 5000ft.100°-110° beyond 20nm BLW 4000ft.200°-240° beyond 35nm BLW 5000ft.340°-350° beyond 35nm BLW 6000ft.350°-010° beyond 15nm BLW 6000ft.DME unusable:000°-020° beyond 25nm BLW 6000ft.100°-110° beyond 35nm BLW 4000ft.340°-360° beyond 30nm BLW 6000ft."
     },
     {
@@ -304,7 +304,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.747353,
         "longitude": 137.710058,
-        "elevation": "66.3m(218ft)",
+        "elevation": "218ft",
         "remarks": "Unusable:R150-170 beyond 18nm BLW 2000ft.R270-280 beyond 35nm BLW 3000ft.R280-290 beyond 32nm BLW 4000ft.R290-310 beyond 35nm BLW 5000ft.R310-320 beyond 30nm BLW 6000ft.R320-330 beyond 27nm BLW 6000ft.R330-340 beyond 37nm BLW 7000ft."
     },
     {
@@ -315,7 +315,7 @@
         "hours_of_operation": "H24",
         "latitude": 39.433358,
         "longitude": 141.1335,
-        "elevation": "103.4m(339ft)",
+        "elevation": "339ft",
         "remarks": "VOR unusable:060°-080° beyond 30nm BLW 9000ft.280°-290° beyond 30nm BLW 9000ft.350°-360° beyond 30nm BLW 9000ft.DME unusable:050°-090°beyond 30nm BLW 9000ft.280°-360°beyond 30nm BLW 9000ft."
     },
     {
@@ -326,7 +326,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.038425,
         "longitude": 131.545742,
-        "elevation": "17.6m(57.7ft)",
+        "elevation": "57.7ft",
         "remarks": "Unusable:R360-010 beyond 15nm BLW 5000ft.R010-020 beyond 13nm BLW 5000ft.R020-030 beyond 22nm BLW 6000ft.R030-040 beyond 35nm BLW 7000ft.R040-070 beyond 18nm BLW 7000ft.R070-080 beyond 15nm BLW 6000ft.R080-090 beyond 20nm BLW 5000ft.R090-100 beyond 35nm BLW 5000ft.R100-110 beyond 22nm BLW 5000ft.R120-130 beyond 28nm BLW 5000ft.R130-140 beyond 12nm BLW 4000ft.R140-150 beyond 10nm BLW 4000ft.R150-160 beyond 23nm BLW 4000ft.R160-170 beyond 34nm BLW 5000ft.R170-180 beyond 38nm BLW 5000ft.R200-210 beyond 30nm BLW 7000ft.R210-220 beyond 16nm BLW 7000ft.R220-230 beyond 14nm BLW 6000ft.R230-250 beyond 31nm BLW 6000ft.R250-270 beyond 19nm BLW 5000ft.R270-280 beyond 28nm BLW 5000ft.R280-290 beyond 23nm BLW 5000ft.R290-300 beyond 32nm BLW 5000ft.R300-310 beyond 22nm BLW 5000ft.R310-330 beyond 12nm BLW 5000ft.R330-350 beyond 17nm BLW 5000ft.R350-360 beyond 15nm BLW 5000ft."
     },
     {
@@ -337,7 +337,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.433775,
         "longitude": 132.923969,
-        "elevation": "342.5m(1124ft)",
+        "elevation": "1124ft",
         "remarks": "VOR unusable:270°-320° beyond 30nm BLW 7000ft.320°-360° beyond 30nm BLW 6000ft.DME unusable:050°-060°beyond 30nm BLW 5000ft.270°-320°beyond 30nm BLW 7000ft.320°-360°beyond 25nm BLW 6000ft."
     },
     {
@@ -370,7 +370,7 @@
         "hours_of_operation": "H24",
         "latitude": 33.747511,
         "longitude": 129.776853,
-        "elevation": "65.9m(216ft)",
+        "elevation": "216ft",
         "remarks": ""
     },
     {
@@ -381,7 +381,7 @@
         "hours_of_operation": "H24",
         "latitude": 24.396011,
         "longitude": 124.237953,
-        "elevation": "63.5m(208.3ft)",
+        "elevation": "",
         "remarks": "VOR unusable:000°-020° beyond 20nm BLW 4000ft.290°-325° beyond 15nm BLW 4000ft.325°-360° beyond 20nm BLW 4000ft.DME unusable:000°-020° beyond 20nm BLW 4000ft.290°-335° beyond 20nm BLW 4000ft.335°-345° beyond 15nm BLW 4000ft.345°-360° beyond 20nm BLW 4000ft."
     },
     {
@@ -392,7 +392,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.805483,
         "longitude": 135.403661,
-        "elevation": "53.7m(176.2ft)",
+        "elevation": "176.2ft",
         "remarks": "Unusable:000°-010° beyond 20nm BLW 5000ft.010°-020° beyond 30nm BLW 5000ft.020°-030° beyond 20nm BLW 5000ft.030°-060° beyond 20nm BLW 6000ft.060°-070° beyond 20nm BLW 5000ft.240°-260° beyond 20nm BLW 6000ft.260°-270° beyond 15nm BLW 6000ft.270°-290° beyond 20nm BLW 6000ft.290°-310° beyond 30nm BLW 6000ft.310°-340° beyond 20nm BLW 6000ft.340°-360° beyond 20nm BLW 5000ft."
     },
     {
@@ -403,7 +403,7 @@
         "hours_of_operation": "H24",
         "latitude": 37.148864,
         "longitude": 140.975686,
-        "elevation": "162.9m(534ft)",
+        "elevation": "534ft",
         "remarks": "VOR Unusable:280°-310° beyond 25nm BLW 6000ft.310°-340° beyond 30nm BLW 8000ft.340°-360° beyond 35nm BLW 6000ft.DME Unusable:230°-250° beyond 35nm BLW 5000ft.250°-280° beyond 35nm BLW 6000ft.280°-300° beyond 20nm BLW 6000ft.300°-310° beyond 25nm BLW 6000ft.310°-330° beyond 25nm BLW 8000ft.330°-340° beyond 30nm BLW 8000ft.340°-350° beyond 30nm BLW 6000ft.350°-360° beyond 35nm BLW 6000ft."
     },
     {
@@ -425,7 +425,7 @@
         "hours_of_operation": "H24",
         "latitude": 24.784544,
         "longitude": 141.315847,
-        "elevation": "124.6m(409ft)",
+        "elevation": "409ft",
         "remarks": "TACAN Unusable:R030-050 beyond 34nm BLW 2000ft.R100-110 beyond 26nm BLW 2000ft.R110-120 beyond 22nm BLW 2000ft.R120-130 beyond 30nm BLW 2000ft.R130-140 beyond 36nm BLW 2000ft."
     },
     {
@@ -436,7 +436,7 @@
         "hours_of_operation": "H24",
         "latitude": 35.417239,
         "longitude": 132.892372,
-        "elevation": "13.1m(43ft)",
+        "elevation": "43ft",
         "remarks": ""
     },
     {
@@ -480,7 +480,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.212314,
         "longitude": 134.022297,
-        "elevation": "212.2m(696ft)",
+        "elevation": "696ft",
         "remarks": "DME unusable:090°-110° beyond 30nm BLW 5000ft.110°-140° beyond 20nm BLW 6000ft.140°-240° beyond 20nm BLW 9000ft."
     },
     {
@@ -502,7 +502,7 @@
         "hours_of_operation": "H24",
         "latitude": 31.697167,
         "longitude": 130.583406,
-        "elevation": "581m(1906ft)",
+        "elevation": "1906ft",
         "remarks": "TACAN DME Unusable:150°-160° beyond 35nm BLW 7000ft. TACAN AZM Unusable:050°-060° beyond 30nm BLW 8000ft.060°-070° beyond 35nm BLW 8000ft.150°-160° beyond 20nm BLW 7000ft."
     },
     {
@@ -513,7 +513,7 @@
         "hours_of_operation": "H24",
         "latitude": 31.362778,
         "longitude": 130.830278,
-        "elevation": "76.8m(252ft)",
+        "elevation": "252ft",
         "remarks": "TACAN unusable:R360-010 beyond 11NM BLW 7000FT.R010-020 beyond 12NM BLW 8000FT.R080-090 beyond 35NM BLW 4000FT.R090-100 beyond 18NM BLW 5000FT.R100-110 beyond 16NM BLW 5000FT.R110-170 beyond 16NM BLW 6000FT.R170-200 beyond 14NM BLW 6000FT.R200-220 beyond 10NM BLW 5000FT.R220-230 beyond 12NM BLW 6000FT.R230-250 beyond 20NM BLW 6000FT.R250-280 beyond 25NM BLW 4000FT.R280-310 beyond 25NM BLW 5000FT.R310-320 beyond 14NM BLW 6000FT.R320-360 beyond 11NM BLW 7000FT."
     },
     {
@@ -524,7 +524,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.425739,
         "longitude": 135.207731,
-        "elevation": "11.55m(37.9ft)",
+        "elevation": "37.9ft",
         "remarks": "VOR Unusable:180°-190° beyond 35nm BLW 4000ft.DME Unusable:350°-030° beyond 30nm BLW 6000ft.160°-170° beyond 35nm BLW 7000ft.170°-180° beyond 30nm BLW 7000ft.180°-190° beyond 20nm BLW 4000ft.190°-200° beyond 30nm BLW 4000ft.210°-220° beyond 30nm BLW 4000ft.290°-310° beyond 30nm BLW 4000ft.330°-350° beyond 35nm BLW 6000ft."
     },
     {
@@ -535,7 +535,7 @@
         "hours_of_operation": "H24",
         "latitude": 28.434717,
         "longitude": 129.711408,
-        "elevation": "13.1m(43ft)",
+        "elevation": "43ft",
         "remarks": "VOR Unusable:260°-280° beyond 20nm BLW 3000ft.DME Unusable:360°-010° beyond 20nm BLW 3000ft.260°-280° beyond 15nm BLW 3000ft.280°-300° beyond 20nm BLW 3000ft.320°-360° beyond 20nm BLW 3000ft."
     },
     {
@@ -546,7 +546,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.750383,
         "longitude": 133.835056,
-        "elevation": "268.2m(880ft)",
+        "elevation": "880ft",
         "remarks": ""
     },
     {
@@ -557,7 +557,7 @@
         "hours_of_operation": "H24",
         "latitude": 33.541783,
         "longitude": 133.680158,
-        "elevation": "16.3m(54ft)",
+        "elevation": "54ft",
         "remarks": "Unusable:010°-040° beyond 30nm BLW 8000ft.040°-060° beyond 30nm BLW 9000ft.340°-010° beyond 30nm BLW 9000ft."
     },
     {
@@ -590,7 +590,7 @@
         "hours_of_operation": "2300-0800EXC \nFRI 0801- \nSUN 2259 \nand HOL.Other\ntime \n1HR PN.",
         "latitude": 34.004167,
         "longitude": 134.625556,
-        "elevation": "17.3m(57ft)",
+        "elevation": "57ft",
         "remarks": "Unusable:R030-050 beyond 32nm BLW 4000ft.R070-080 beyond 36nm BLW 7000ft.R160-170 beyond 38nm BLW 4000ft.R170-180 beyond 30nm BLW 4000ft.R180-190 beyond 32nm BLW 4000ft.R190-200 beyond 26nm BLW 4000ft.R200-220 beyond 26nm BLW 6000ft.R220-230 beyond 32nm BLW 7000ft.R230-240 beyond 32nm BLW 8000ft.R240-260 beyond 24nm BLW 9000ft.R260-270 beyond 30nm BLW 9000ft.R300-310 beyond 24nm BLW 6000ft.R310-320 beyond 22nm BLW 5000ft.R320-330 beyond 38nm BLW 5000ft.R330-340 beyond 36nm BLW 5000ft.R340-350 beyond 38nm BLW 5000ft."
     },
     {
@@ -601,7 +601,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.704594,
         "longitude": 136.957425,
-        "elevation": "99.4m(327ft)",
+        "elevation": "327ft",
         "remarks": "TACAN AZM unusable:040°-060° beyond 35nm BLW 6000ft.080°-100° beyond 25nm BLW 4000ft.100°-130° beyond 35nm BLW 4000ft.160°-190° beyond 35nm BLW 3000ft.340°-350° beyond 25nm BLW 4000ft.350°-010° beyond 15nm BLW 4000ft."
     },
     {
@@ -612,7 +612,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.0799,
         "longitude": 132.147308,
-        "elevation": "653.8m(2145ft)",
+        "elevation": "2145ft",
         "remarks": ""
     },
     {
@@ -623,7 +623,7 @@
         "hours_of_operation": "H24",
         "latitude": 32.834803,
         "longitude": 130.841514,
-        "elevation": "198.3m(651ft)",
+        "elevation": "651ft",
         "remarks": "VOR unusable:030°-090° beyond 25nm BLW 8000ft.090°-120° beyond 15nm BLW 8000ft.120°-150° beyond 25nm BLW 8000ft.150°-180° beyond 35nm BLW 8000ft.DME unusable:050°-100° beyond 35nm BLW 8000ft.100°-120° beyond 25nm BLW 8000ft.120°-130° beyond 30nm BLW 8000ft.130°-170° beyond 35nm BLW 8000ft."
     },
     {
@@ -645,7 +645,7 @@
         "hours_of_operation": "H24",
         "latitude": 26.371669,
         "longitude": 126.721636,
-        "elevation": "17.3m (57ft)",
+        "elevation": "57ft",
         "remarks": "TACAN DME unusable:080°-100° beyond 15nm BLW 4000ft.100°-150° beyond 20nm BLW 3000ft.150°-160° beyond 25nm BLW 3000ft.160°-170° beyond 30nm BLW 3000ft.      TACAN AZM unusable:040°-060° beyond 35nm BLW 3000ft.070°-080° beyond 30nm BLW 4000ft.080°-100° beyond 10nm BLW 4000ft.100°-110° beyond   5nm BLW 3000ft.110°-120° beyond 10nm BLW 3000ft.120°-150° beyond 15nm BLW 3000ft.150°-190° beyond 20nm BLW 3000ft.190°-200° beyond 25nm BLW 3000ft.200°-210° beyond 30nm BLW 3000ft.210°-220° beyond 35nm BLW 3000ft."
     },
     {
@@ -667,7 +667,7 @@
         "hours_of_operation": "H24",
         "latitude": 33.448014,
         "longitude": 135.794,
-        "elevation": "45.7m(150ft)",
+        "elevation": "150ft",
         "remarks": "TACAN DME unusable:040°-070° beyond 25nm BLW 3000ft.TACAN AZM unusable:040°-070° beyond 20nm BLW 3000ft.270°-290° beyond 35nm BLW 3000ft.320°-360° beyond 30nm BLW 7000ft."
     },
     {
@@ -678,7 +678,7 @@
         "hours_of_operation": "H24",
         "latitude": 43.03605,
         "longitude": 144.200756,
-        "elevation": "104.0m(342ft)",
+        "elevation": "342ft",
         "remarks": "DME unusable:300°-310° beyond 35nm BLW 5000ft.340°-350° beyond 35nm BLW 7000ft."
     },
     {
@@ -689,7 +689,7 @@
         "hours_of_operation": "2300-0800EXC \nFRI 0801-SUN 2259 \nand HOL.Other\ntime \n1HR PN.",
         "latitude": 35.548056,
         "longitude": 135.425556,
-        "elevation": "614m(2014ft)",
+        "elevation": "2014ft",
         "remarks": ""
     },
     {
@@ -700,7 +700,7 @@
         "hours_of_operation": "H24",
         "latitude": 36.155975,
         "longitude": 137.919817,
-        "elevation": "688.8m(2260ft)",
+        "elevation": "2260ft",
         "remarks": "Unusable: 050°-060° beyond 30nm BLW 11000ft.060°-070° beyond 25nm BLW 11000ft.070°-075° beyond 20nm BLW 11000ft.075°-085° beyond 25nm BLW 11000ft.085°-095° beyond 15nm BLW 11000ft.095°-110° beyond 20nm BLW 11000ft.110°-120° beyond 25nm BLW 13000ft.120°-130° beyond 30nm BLW 13000ft.195°-220° beyond 30nm BLW 13000ft.220°-235° beyond 25nm BLW 13000ft.235°-275° beyond 20nm BLW 13000ft.275°-305° beyond 25nm BLW 13000ft.305°-335° beyond 20nm BLW 13000ft.335°-345° beyond 30nm BLW 12000ft."
     },
     {
@@ -711,7 +711,7 @@
         "hours_of_operation": "H24",
         "latitude": 33.830103,
         "longitude": 132.692222,
-        "elevation": "13.9m(46ft)",
+        "elevation": "46ft",
         "remarks": "VOR Unusable in the following area070°-090° beyond 30NM BLW 9000FT.100°-150° beyond 30NM BLW 9000FT.DME Unusable in the following area050°-070° beyond 30NM BLW 9000FT.070°-080° beyond 25NM BLW 9000FT.080°-200° beyond 30NM BLW 9000FT.200°-220° beyond 30NM BLW 6000FT.340°-350° beyond 30NM BLW 6000FT."
     },
     {
@@ -722,7 +722,7 @@
         "hours_of_operation": "H24",
         "latitude": 43.884908,
         "longitude": 144.166183,
-        "elevation": "40.2m(132ft)",
+        "elevation": "132ft",
         "remarks": ""
     },
     {
@@ -733,7 +733,7 @@
         "hours_of_operation": "H24",
         "latitude": 35.531047,
         "longitude": 133.094089,
-        "elevation": "516.8m(1696ft)",
+        "elevation": "1696ft",
         "remarks": "TACAN azimuth Unusable  in the following areas:010° between 10NM and 20NM  below 12000ft.167° between 10NM and 20NM  below 12000ft."
     },
     {
@@ -744,7 +744,7 @@
         "hours_of_operation": "H24",
         "latitude": 25.854483,
         "longitude": 131.263789,
-        "elevation": "59m(194ft)",
+        "elevation": "194ft",
         "remarks": ""
     },
     {
@@ -755,7 +755,7 @@
         "hours_of_operation": "H24",
         "latitude": 24.289444,
         "longitude": 153.9775,
-        "elevation": "12.1m(40ft)",
+        "elevation": "40ft",
         "remarks": "TACAN unusable:R160-210 beyond 22NM BLW 2000FT."
     },
     {
@@ -788,7 +788,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.771667,
         "longitude": 131.138056,
-        "elevation": "198.88m(652ft)",
+        "elevation": "652ft",
         "remarks": "Unusable:R260-270 beyond 20nm BLW 3000ft.R320-340 beyond 20nm BLW 3000ft."
     },
     {
@@ -799,7 +799,7 @@
         "hours_of_operation": "H24",
         "latitude": 39.865639,
         "longitude": 141.951067,
-        "elevation": "192.4m(632ft)",
+        "elevation": "632ft",
         "remarks": "VOR unusable:210°-220° beyond 35nm BLW 7000ft.220°-260° beyond 35nm BLW 9000ft.260°-270° beyond 25nm BLW 9000ft.270°-290° beyond 30nm BLW 9000ft.290°-310° beyond 25nm BLW 7000ft.310°-320° beyond 30nm BLW 7000ft.320°-330° beyond 35nm BLW 5000ft.DME Unusable:080°-110° beyond 20nm BLW 3000ft.190°-220° beyond 35nm BLW 7000ft.220°-250° beyond 30nm BLW 9000ft.250°-260° beyond 25nm BLW 9000ft.260°-280° beyond 15nm BLW 9000ft.280°-290° beyond 30nm BLW 9000ft.290°-310° beyond 20nm BLW 7000ft.310°-320° beyond 25nm BLW 7000ft.320°-330° beyond 25nm BLW 5000ft.330°-340° beyond 35nm BLW 5000ft."
     },
     {
@@ -821,7 +821,7 @@
         "hours_of_operation": "H24",
         "latitude": 24.777011,
         "longitude": 125.293147,
-        "elevation": "46.2m(152ft)",
+        "elevation": "152ft",
         "remarks": "TACAN AZM unusable:050°-060° beyond 20nm BLW 3000ft.060°-090° beyond 30nm BLW 3000ft.090°-110° beyond 25nm BLW 3000ft.110°-130° beyond 30nm BLW 3000ft.130°-160° beyond 35nm BLW 3000ft."
     },
     {
@@ -832,7 +832,7 @@
         "hours_of_operation": "H24",
         "latitude": 31.878728,
         "longitude": 131.437467,
-        "elevation": "16.3m(54ft)",
+        "elevation": "54ft",
         "remarks": "VOR Unusable:200°-210° beyond 30nm BLW 7000ft.210°-230° beyond 35nm BLW 7000ft.230°-250° beyond 25nm BLW 7000ft.DME Unusable:016° between 3nm and 9nm at 6000ft.033° between 7nm and 10nm at 9000ft.339° between 2nm and 11nm at 10000ft."
     },
     {
@@ -843,7 +843,7 @@
         "hours_of_operation": "H24",
         "latitude": 35.480692,
         "longitude": 135.137022,
-        "elevation": "739.9m(2428ft)",
+        "elevation": "2428ft",
         "remarks": ""
     },
     {
@@ -854,7 +854,7 @@
         "hours_of_operation": "H24",
         "latitude": 44.305267,
         "longitude": 143.395092,
-        "elevation": "48.4m(159ft)",
+        "elevation": "159ft",
         "remarks": "DME Unusable:150°-170° beyond 30nm BLW 4000ft.170°-200° beyond 30nm BLW 6000ft.260°-280° beyond 30nm BLW 6000ft."
     },
     {
@@ -865,7 +865,7 @@
         "hours_of_operation": "H24",
         "latitude": 42.555006,
         "longitude": 141.955631,
-        "elevation": "28.8m(95ft)",
+        "elevation": "95ft",
         "remarks": ""
     },
     {
@@ -876,7 +876,7 @@
         "hours_of_operation": "H24",
         "latitude": 33.489714,
         "longitude": 131.728756,
-        "elevation": "30.4m(100ft)",
+        "elevation": "100ft",
         "remarks": "VOR Unusable:210°-220° beyond 35nm BLW 8000ft.240°-260° beyond 35nm BLW 8000ft.270°-330° beyond 30nm BLW 6000ft.DME Unusable:260°-270° beyond 35nm BLW 8000ft.270°-290° beyond 15nm BLW 6000ft.290°-330° beyond 30nm BLW 6000ft.330°-340° beyond 30nm BLW 5000ft."
     },
     {
@@ -887,7 +887,7 @@
         "hours_of_operation": "H24",
         "latitude": 32.905247,
         "longitude": 129.917981,
-        "elevation": "46.8m(154ft)",
+        "elevation": "154ft",
         "remarks": "VOR Unusable:040°-070° beyond 25nm BLW 6000ft.070°-090° beyond 20nm BLW 6000ft.DME Unusable:030°-070° beyond 20nm BLW 6000ft.070°-090° beyond 15nm BLW 6000ft.160°-170° beyond 30nm BLW 5000ft.170°-200° beyond 20nm BLW 4000ft.200°-210° beyond 10nm BLW 4000ft.210°-240° beyond 20nm BLW 4000ft.260°-300° beyond 20nm BLW 4000ft."
     },
     {
@@ -909,7 +909,7 @@
         "hours_of_operation": "H24",
         "latitude": 35.265486,
         "longitude": 136.914508,
-        "elevation": "25.2m(83ft)",
+        "elevation": "83ft",
         "remarks": "TACAN DME unusable:200°-210° beyond 35nm BLW 5000ft.TACAN AZM unusable:160°-180° beyond 35nm BLW 5000ft.180°-200° beyond 30nm BLW 5000ft.200°-210° beyond 25nm BLW 5000ft.260°-270° beyond 35nm BLW 7000ft."
     },
     {
@@ -931,7 +931,7 @@
         "hours_of_operation": "H24",
         "latitude": 26.208197,
         "longitude": 127.642622,
-        "elevation": "17.3m(56.8ft)",
+        "elevation": "56.8ft",
         "remarks": "TACAN AZM Unusable: 340°-030° beyond 35nm BLW 3000ft.060°-070° beyond 35nm BLW 3000ft.070°-120° beyond 30nm BLW 3000ft.120°-130° beyond 20nm BLW 3000ft.130°-150° beyond 25nm BLW 3000ft.150°-160° beyond 30nm BLW 3000ft.170°-180° beyond 35nm BLW 3000ft.240°-300° beyond 35nm BLW 3000ft."
     },
     {
@@ -942,7 +942,7 @@
         "hours_of_operation": "2330-0930",
         "latitude": 43.577361,
         "longitude": 144.950503,
-        "elevation": "80.2m(264ft)",
+        "elevation": "264ft",
         "remarks": "VOR unusable:290°-300° beyond 30nm BLW 6000ft.300°-310° beyond 25nm BLW 6000ft.310°-320° beyond 30nm BLW 8000ft.320°-340° beyond 25nm BLW 8000ft.340°-350° beyond 20nm BLW 8000ft.350°-010° beyond 30nm BLW 8000ft.DME unusable:280°-300° beyond 30nm BLW 6000ft.300°-310° beyond 25nm BLW 6000ft.310°-320° beyond 30nm BLW 8000ft.320°-340° beyond 25nm BLW 8000ft.340°-350° beyond 15nm BLW 8000ft.350°-010° beyond 30nm BLW 8000ft."
     },
     {
@@ -953,7 +953,7 @@
         "hours_of_operation": "H24",
         "latitude": 30.602156,
         "longitude": 130.991533,
-        "elevation": "247.0m(810.4ft)",
+        "elevation": "810.4ft",
         "remarks": "DME unusable:130°-160° beyond 15nm BLW 3000ft."
     },
     {
@@ -964,7 +964,7 @@
         "hours_of_operation": "H24",
         "latitude": 33.661264,
         "longitude": 135.359414,
-        "elevation": "103.0m(338ft)",
+        "elevation": "338ft",
         "remarks": ""
     },
     {
@@ -975,7 +975,7 @@
         "hours_of_operation": "H24",
         "latitude": 35.782344,
         "longitude": 140.362536,
-        "elevation": "46.9m(154ft)",
+        "elevation": "154ft",
         "remarks": "VOR unusable:110°-120° beyond 15nm BLW 3000ft.120°-150° beyond 25nm BLW 3000ft.170°-180° beyond 35nm BLW 3000ft.210°-220° beyond 35nm BLW 4000ft.260°-270° beyond 35nm BLW 3000ft.280°-300° beyond 25nm BLW 3000ft.Note:There is a course roughness due to  crossing over the station by other aircraft.DME unusable:060°-110° beyond 30nm BLW 3000ft.110°-120° beyond 20nm BLW 3000ft.130°-140° beyond 25nm BLW 3000ft.140°-150° beyond 35nm BLW 4000ft.260°-270° beyond 35nm BLW 3000ft.280°-300° beyond 25nm BLW 3000ft."
     },
     {
@@ -997,7 +997,7 @@
         "hours_of_operation": "H24",
         "latitude": 37.958253,
         "longitude": 139.115567,
-        "elevation": "11.89m(39ft)",
+        "elevation": "39ft",
         "remarks": "TACAN DME unusable:100°-110°  beyond 35nm BLW 9000ft.TACAN AZM unusable:100°-120° beyond 35nm BLW 9000ft.320°-330° beyond 20nm BLW 3000ft."
     },
     {
@@ -1008,7 +1008,7 @@
         "hours_of_operation": "H24",
         "latitude": 37.289961,
         "longitude": 136.962911,
-        "elevation": "241.5m(793ft)",
+        "elevation": "793ft",
         "remarks": "DME unusable:000°-010° beyond 30nm BLW 4000ft.010°-030° beyond 35nm BLW 4000ft.350°-360° beyond 35nm BLW 4000ft."
     },
     {
@@ -1019,7 +1019,7 @@
         "hours_of_operation": "H24",
         "latitude": 32.080411,
         "longitude": 131.453783,
-        "elevation": "80.2m(263ft)",
+        "elevation": "263ft",
         "remarks": "Unusable:R360-010 beyond 22NM BLW 8,000ft.R010-020 beyond 30NM BLW 8,000ft.R040-050 beyond 38NM BLW 5,000ft.R050-060 beyond 38NM BLW 4,000ft.R060-070 beyond 28NM BLW 2,000ft.R070-090 beyond 33NM BLW 2,000ft.R090-100 beyond 30NM BLW 2,000ft.R100-170 beyond 29NM BLW 2,000ft.R170-180 beyond 21NM BLW 5,000ft.R180-190 beyond 27NM BLW 6,000ft.R190-200 beyond 30NM BLW 6,000ft.R200-210 beyond 23NM BLW 6,000ft.R210-230 beyond 31NM BLW 6,000ft.R230-270 beyond 36NM BLW 8,000ft.R270-280 beyond 30NM BLW 8,000ft.R280-290 beyond 23NM BLW 7,000ft.R290-310 beyond 28NM BLW 8,000ft.R310-320 beyond 26NM BLW 8,000ft.R320-330 beyond 30NM BLW 8,000ft.R330-360 beyond 27NM BLW 8,000ft."
     },
     {
@@ -1030,7 +1030,7 @@
         "hours_of_operation": "H24",
         "latitude": 42.733964,
         "longitude": 143.220453,
-        "elevation": "161.4m(530ft)",
+        "elevation": "530ft",
         "remarks": "Unusable:230°-240° beyond 35nm BLW 8000ft.250°-260° beyond 35nm BLW 9000ft.260°-280° beyond 30nm BLW 9000ft.280°-290° beyond 35nm BLW 9000ft.300°-310° beyond 35nm BLW 8000ft."
     },
     {
@@ -1041,7 +1041,7 @@
         "hours_of_operation": "2300-1030",
         "latitude": 40.198342,
         "longitude": 140.361856,
-        "elevation": "93.85m(308ft)",
+        "elevation": "308ft",
         "remarks": "VOR Unusable:010°-020° beyond 35nm BLW 8000ft.100°-110° beyond 35nm BLW 6000ft.110°-130° beyond 35nm BLW 9000ft.150°-160° beyond 30nm BLW 8000ft.320°-340° beyond 35nm BLW 6000ft.340°-350° beyond 25nm BLW 6000ft.350°-360° beyond 35nm BLW 8000ft.DME Unusable:100°-110° beyond 35nm BLW 6000ft.110°-130° beyond 35nm BLW 9000ft.150°-160° beyond 30nm BLW 8000ft.320°-340° beyond 35nm BLW 6000ft.340°-350° beyond 35nm BLW 6000ft.350°-360° beyond 35nm BLW 8000ft."
     },
     {
@@ -1052,7 +1052,7 @@
         "hours_of_operation": "H24",
         "latitude": 36.176742,
         "longitude": 133.322822,
-        "elevation": "82.3m(270ft)",
+        "elevation": "270ft",
         "remarks": "Unusable:020°-030° beyond 15nm BLW 3000ft.200°-240° beyond 20nm BLW 3000ft.290°-020° beyond 15nm BLW 4000ft."
     },
     {
@@ -1063,7 +1063,7 @@
         "hours_of_operation": "0000-0800",
         "latitude": 42.070303,
         "longitude": 139.443403,
-        "elevation": "51.1m(168ft)",
+        "elevation": "168ft",
         "remarks": "VOR unusable:360°-010° beyond 15nm BLW 4000ft.010°-030° beyond 10nm BLW 4000ft.030°-070° beyond 30nm BLW 7000ft.350°-360° beyond 30nm BLW 3000ft.DME unusable:360°-010° beyond 15nm BLW 4000ft.010°-030° beyond 10nm BLW 4000ft.030°-050° beyond 25nm BLW 7000ft.050°-070° beyond 30nm BLW 7000ft.320°-350° beyond 30nm BLW 3000ft.350°-360° beyond 25nm BLW 3000ft."
     },
     {
@@ -1074,7 +1074,7 @@
         "hours_of_operation": "2300-0800EXC \nFRI 0801-SUN 2259 \nand HOL.Other\ntime \n1HR PN.",
         "latitude": 41.230833,
         "longitude": 141.135833,
-        "elevation": "16.0m(52.6ft)",
+        "elevation": "52.6ft",
         "remarks": "TACAN unusable:R010-020 beyond 16NM BLW 5000ft.R020-030 beyond 30NM BLW 5000ft.R090-100 beyond 35NM BLW 3000ft.R100-120 beyond 33NM BLW 4000ft.R120-130 beyond 30NM BLW 4000ft.R130-150 beyond 28NM BLW 4000ft.R150-160 beyond 32NM BLW 4000ft.R250-260 beyond 29NM BLW 5000ft.R260-270 beyond 27NM BLW 5000ft.R270-290 beyond 25NM BLW 5000ft.R290-300 beyond 20NM BLW 5000ft.R300-320 beyond 12NM BLW 5000ft.R320-350 beyond 5NM BLW 5000ft.R350-010 beyond 7NM BLW 5000ft."
     },
     {
@@ -1085,7 +1085,7 @@
         "hours_of_operation": "H24",
         "latitude": 32.925833,
         "longitude": 129.932222,
-        "elevation": "24.3m(80ft)",
+        "elevation": "80ft",
         "remarks": "TACAN Unusable:R350 - 010 beyond 26nm BLW 5000ftR010 - 020 beyond 31nm BLW 6000ftR020 - 030 beyond 25nm BLW 6000ftR030 - 040 beyond 21nm BLW 6000ftR040 - 090 beyond 14nm BLW 6000ftR090 - 100 beyond 21nm BLW 6000ftR100 - 110 beyond 30nm BLW 7000ftR120 - 130 beyond 30nm BLW 7000ftR140 - 150 beyond 29nm BLW 5000ftR150 - 160 beyond 37nm BLW 5000ftR160 - 170 beyond 29nm BLW 5000ftR170 - 180 beyond 26nm BLW 5000ftR180 - 200 beyond 20nm BLW 4000ftR200 - 220 beyond 12nm BLW 4000ftR220 - 230 beyond 20nm BLW 4000ftR230 - 240 beyond 27nm BLW 4000ftR240 - 250 beyond 36nm BLW 4000ftR250 - 260 beyond 28nm BLW 4000ftR260 - 270 beyond 22nm BLW 4000ftR270 - 280 beyond 19nm BLW 4000ftR280 - 290 beyond 25nm BLW 4000ftR290 - 300 beyond 36nm BLW 4000ftR310 - 320 beyond 37nm BLW 4000ftR330 - 350 beyond 36nm BLW 5000ft"
     },
     {
@@ -1096,7 +1096,7 @@
         "hours_of_operation": "H24",
         "latitude": 35.184136,
         "longitude": 140.371428,
-        "elevation": "111.2m(365ft)",
+        "elevation": "365ft",
         "remarks": "TACAN AZM unusable:360°-060° beyond 10nm BLW 3000ft.180°-190° beyond 25nm BLW 3000ft.250°-270° beyond 10nm BLW 4000ft.270°-310° beyond 30nm BLW 4000ft.223° BTN 10nm and 20nm  BLW 5500ft.225° BTN 10nm and 20nm  BLW 5500ft."
     },
     {
@@ -1118,7 +1118,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.712608,
         "longitude": 139.413503,
-        "elevation": "636.5m(2088ft)",
+        "elevation": "2088ft",
         "remarks": "TACAN DME unusable:300°-310° beyond 30nm BLW 7000ft.310°-330° beyond 25nm BLW 7000ft.330°-350° beyond 35nm BLW 7000ft.TACAN AZM unusable:300°-310° beyond 30nm BLW 7000ft.310°-330° beyond 10nm BLW 7000ft.330°-340° beyond 15nm BLW 7000ft.340°-350° beyond 30nm BLW 7000ft."
     },
     {
@@ -1129,7 +1129,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.071042,
         "longitude": 139.561289,
-        "elevation": "19.3m(63.3ft)",
+        "elevation": "63.3ft",
         "remarks": "Unusable:240°-350° beyond 4nm BLW 5000ft"
     },
     {
@@ -1140,7 +1140,7 @@
         "hours_of_operation": "2200-0800EXC \nFRI 0801-SUN 2159 \nand HOL.Other\ntime \n1HR PN.",
         "latitude": 34.044167,
         "longitude": 131.049722,
-        "elevation": "15.2m(50ft)",
+        "elevation": "50ft",
         "remarks": "TACAN unusable:R360-010 beyond 18nm BLW 5000ft.R010-040 beyond 20nm BLW 5000ft.R040-060 beyond 20nm BLW 6000ft.R060-070 beyond 15nm BLW 6000ft.R070-080 beyond 20nm BLW 6000ft.R080-090 beyond 28nm BLW 6000ft.R090-100 beyond 33nm BLW 6000ft.R110-120 beyond 38nm BLW 4000ft.R170-190 beyond 35nm BLW 6000ft.R210-220 beyond 35nm BLW 6000ft.R230-250 beyond 30nm BLW 6000ft.R250-260 beyond 13nm BLW 5000ft.R260-270 beyond 10nm BLW 4000ft.R270-280 beyond 16nm BLW 4000ft.R280-290 beyond 16nm BLW 5000ft.R290-320 beyond 14nm BLW 5000ft.R320-340 beyond 16nm BLW 5000ft.R340-360 beyond 18nm BLW 5000ft."
     },
     {
@@ -1151,7 +1151,7 @@
         "hours_of_operation": "H24",
         "latitude": 45.245661,
         "longitude": 141.186767,
-        "elevation": "33.4m(109.6ft)",
+        "elevation": "109.6ft",
         "remarks": "VOR unusable :130°-140°  beyond 35nm BLW 8000ft.140°-200°  BLW 8000ft.DME unusable:110°-120° beyond 35nm BLW 4000ft.130°-140° beyond 20nm BLW 8000ft.140°-200° BLW 8000ft."
     },
     {
@@ -1173,7 +1173,7 @@
         "hours_of_operation": "H24",
         "latitude": 43.174744,
         "longitude": 141.302006,
-        "elevation": "26.31m(87ft)",
+        "elevation": "87ft",
         "remarks": "DME unusable:190°-200° beyond 30nm BLW 7000ft.200°-210° beyond 35nm BLW 9000ft.210°-250° beyond 30nm BLW 9000ft.250°-260° beyond 35nm BLW 9000ft."
     },
     {
@@ -1195,7 +1195,7 @@
         "hours_of_operation": "H24",
         "latitude": 36.010808,
         "longitude": 139.839478,
-        "elevation": "24.4m(80ft)",
+        "elevation": "80ft",
         "remarks": ""
     },
     {
@@ -1206,7 +1206,7 @@
         "hours_of_operation": "H24",
         "latitude": 38.138572,
         "longitude": 140.921483,
-        "elevation": "16.36m(54ft)",
+        "elevation": "54ft",
         "remarks": "VOR unusable:271° BTN 20-22nm."
     },
     {
@@ -1228,7 +1228,7 @@
         "hours_of_operation": "H24",
         "latitude": 32.755964,
         "longitude": 132.995847,
-        "elevation": "453.8m(1489ft)",
+        "elevation": "1489ft",
         "remarks": "TACAN AZM unusable:010°-020° BLW 7000ft."
     },
     {
@@ -1239,7 +1239,7 @@
         "hours_of_operation": "H24",
         "latitude": 35.801944,
         "longitude": 140.009722,
-        "elevation": "37.3m(122ft)",
+        "elevation": "122ft",
         "remarks": "Unusable:R050-090 beyond 30nm BLW 2000ft.R090-100 beyond 25nm BLW 2000ft.R100-110 beyond 20nm BLW 2000ft.R110-130 beyond 25nm BLW 2000ft.R130-150 beyond 20nm BLW 2000ft.R150-160 beyond 38nm BLW 3000ft.R200-210 beyond 35nm BLW 4000ft.R210-220 beyond 30nm BLW 4000ft.R220-230 beyond 30nm BLW 5000ft.R240-250 beyond 35nm BLW 7000ft.R260-280 beyond 25nm BLW 7000ft.R280-290 beyond 22nm BLW 7000ft.R290-300 beyond 35nm BLW 7000ft.R350-360 beyond 38nm BLW 5000ft."
     },
     {
@@ -1250,7 +1250,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.814422,
         "longitude": 138.295811,
-        "elevation": "23.7m(78ft)",
+        "elevation": "78ft",
         "remarks": "Unusable:R240-250 beyond 38NM BLW 3000ft.R280-290 beyond 34NM BLW 6000ft.R290-300 beyond 35NM BLW 7000ft.R300-310 beyond 36NM BLW 8000ft.R310-320 beyond 38NM BLW 8000ft."
     },
     {
@@ -1261,7 +1261,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.796842,
         "longitude": 138.193197,
-        "elevation": "136.9m(449ft)",
+        "elevation": "449ft",
         "remarks": "VOR unusable:020° -030° beyond 20nm BLW 8000ft."
     },
     {
@@ -1272,7 +1272,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.512364,
         "longitude": 134.274214,
-        "elevation": "771.4m(2530.8ft)",
+        "elevation": "2530.8ft",
         "remarks": ""
     },
     {
@@ -1283,7 +1283,7 @@
         "hours_of_operation": "2200-1300",
         "latitude": 38.810781,
         "longitude": 139.799308,
-        "elevation": "49.4m(162ft)",
+        "elevation": "162ft",
         "remarks": "VOR unusable:067° BTN 13-15nm."
     },
     {
@@ -1294,7 +1294,7 @@
         "hours_of_operation": "H24",
         "latitude": 33.856617,
         "longitude": 131.0294,
-        "elevation": "19.0m(62.3ft)",
+        "elevation": "62.3ft",
         "remarks": "VOR unusable:230°-250° beyond 30nm BLW 5000ft.250°-260° beyond 35nm BLW 5000ft.270°-280° beyond 25nm BLW 5000ft.280°-310° beyond 30nm BLW 5000ft.DME unusable:090°-110° beyond 35nm BLW 3000ft.220°-230° beyond 35nm BLW 5000ft.230°-240° beyond 30nm BLW 5000ft.240°-250° beyond 25nm BLW 5000ft.250°-260° beyond 30nm BLW 5000ft.260°-270° beyond 35nm BLW 5000ft.270°-280° beyond 20nm BLW 5000ft.280°-290° beyond 15nm BLW 5000ft.290°-300° beyond 20nm BLW 5000ft.300°-310° beyond 15nm BLW 5000ft."
     },
     {
@@ -1305,7 +1305,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.946228,
         "longitude": 139.895322,
-        "elevation": "182.9m(600ft)",
+        "elevation": "600ft",
         "remarks": ""
     },
     {
@@ -1316,7 +1316,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.970833,
         "longitude": 139.838056,
-        "elevation": "153.5m(504ft)",
+        "elevation": "504ft",
         "remarks": "TACAN Unusable:R010-030 beyond 38nm BLW 8000ft.R110-120 beyond 28nm BLW 2000ft.R120-130 beyond 24nm BLW 2000ft.R130-140 beyond 35nm BLW 2000ft."
     },
     {
@@ -1327,7 +1327,7 @@
         "hours_of_operation": "2300-0800MON-FRI\nEXC HOL \nand \n12/29 -1/3.Other\ntime \n1HR PN.",
         "latitude": 42.893333,
         "longitude": 143.165833,
-        "elevation": "102.5m(336.3ft)",
+        "elevation": "336.3ft",
         "remarks": "Unusable:R210-220 beyond 38nm BLW 9000ft.R220-230 beyond 35nm BLW 9000ft.R230-240 beyond 25nm BLW 9000ft.R240-260 beyond 27nm BLW 9000ft.R260-270 beyond 29nm BLW 9000ft.R270-280 beyond 25nm BLW 9000ft.R280-290 beyond 25nm BLW 8000ft.R290-300 beyond 31nm BLW 8000ft.R300-310 beyond 36nm BLW 8000ft."
     },
     {
@@ -1349,7 +1349,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.13,
         "longitude": 134.61,
-        "elevation": "12.2m(40ft)",
+        "elevation": "40ft",
         "remarks": "TACAN unusable:R360-010 beyond 34nm BLW 4000ft.R010-020 beyond 29nm BLW 4000ft.R020-030 beyond 38nm BLW 5000ft.R060-070 beyond 36nm BLW 5000ft.R100-110 beyond 38nm BLW 6000ft.R180-190 beyond 37nm BLW 3000ft.R200-210 beyond 28nm BLW 6000ft.R210-220 beyond 35nm BLW 7000ft.R220-240 beyond 24nm BLW 9000ft.R240-250 beyond 33nm BLW 9000ft.R250-270 beyond 35nm BLW 9000ft.R270-280 beyond 35nm BLW 8000ft.R280-290 beyond 28nm BLW 6000ft.R290-300 beyond 30nm BLW 6000ft.R300-310 beyond 15nm BLW 4000ft.R310-340 beyond 15nm BLW 5000ft.R340-350 beyond 31nm BLW 5000ft.R350-360 beyond 22nm BLW 4000ft."
     },
     {
@@ -1360,7 +1360,7 @@
         "hours_of_operation": "H24",
         "latitude": 35.5273,
         "longitude": 134.164886,
-        "elevation": "34.9m(115ft)",
+        "elevation": "115ft",
         "remarks": "VOR unusable:080°-100° beyond 35nm BLW 5000ft.110°-120° beyond 30nm BLW 7000ft.120°-150° beyond 35nm BLW 7000ft.150°-160° beyond 30nm BLW 7000ft.180°-200° beyond 35nm BLW 7000ft.200°-210° beyond 30nm BLW 7000ft.210°-230° beyond 25nm BLW 7000ft.230°-240° beyond 30nm BLW 7000ft.DME unusable:120°-130° beyond 35nm BLW 7000ft.190°-220° beyond 35nm BLW 7000ft.220°-230° beyond 30nm BLW 7000ft.230°-240° beyond 35nm BLW 7000ft."
     },
     {
@@ -1371,7 +1371,7 @@
         "hours_of_operation": "H24",
         "latitude": 33.688228,
         "longitude": 131.035825,
-        "elevation": "24.7m(81ft)",
+        "elevation": "81ft",
         "remarks": "Unusable:070°-080° beyond 38NM BLW 4000ft.170°-180° beyond 33NM BLW 8000ft.180°-190° beyond 26NM BLW 8000ft.190°-210° beyond 21NM BLW 7000ft.210°-220° beyond 25NM BLW 7000ft.220°-230° beyond 25NM BLW 6000ft.230°-240° beyond 28NM BLW 6000ft.260°-270° beyond 24NM BLW 6000ft.270°-280° beyond 28NM BLW 5000ft.280°-310° beyond 16NM BLW 4000ft.310°-320° beyond 14NM BLW 4000ft.320°-330° beyond 16NM BLW 4000ft.330°-350° beyond 24NM BLW 4000ft."
     },
     {
@@ -1382,7 +1382,7 @@
         "hours_of_operation": "H24",
         "latitude": 33.935628,
         "longitude": 131.283531,
-        "elevation": "19.4m(64ft)",
+        "elevation": "64ft",
         "remarks": ""
     },
     {
@@ -1393,7 +1393,7 @@
         "hours_of_operation": "H24",
         "latitude": 36.516839,
         "longitude": 139.875531,
-        "elevation": "124.64m(408.91ft)",
+        "elevation": "408.91ft",
         "remarks": "Unusable:150°-160° beyond 35NM BLW 5000ft.310°-330° beyond 30NM BLW 11000ft.350°-360° beyond 35NM BLW 9000ft."
     },
     {
@@ -1415,7 +1415,7 @@
         "hours_of_operation": "H24",
         "latitude": 45.407453,
         "longitude": 141.805333,
-        "elevation": "14.9m(48.9ft)",
+        "elevation": "48.9ft",
         "remarks": ""
     },
     {
@@ -1426,7 +1426,7 @@
         "hours_of_operation": "H24",
         "latitude": 38.388622,
         "longitude": 140.357953,
-        "elevation": "110.0m(361ft)",
+        "elevation": "361ft",
         "remarks": "Unusable: 030°-040° beyond 35nm BLW 8000ft.040°-060° beyond 25nm BLW 8000ft.060°-070° beyond 15nm BLW 8000ft.070°-080° beyond 15nm BLW 7000ft.080°-110° beyond 20nm BLW 7000ft.110°-150° beyond 15nm BLW 7000ft.150°-160° beyond 25nm BLW 9000ft.160°-170° beyond 30nm BLW 9000ft.170°-180° beyond 25nm BLW 9000ft.250°-260° beyond 35nm BLW 9000ft.260°-270° beyond 35nm BLW 8000ft.300°-320° beyond 30nm BLW 9000ft.320°-330° beyond 20nm BLW 9000ft.330°-340° beyond 30nm BLW 10000ft."
     },
     {
@@ -1437,7 +1437,7 @@
         "hours_of_operation": "H24",
         "latitude": 35.255589,
         "longitude": 139.587464,
-        "elevation": "153.1m(502ft)",
+        "elevation": "502ft",
         "remarks": ""
     },
     {
@@ -1448,7 +1448,7 @@
         "hours_of_operation": "H24",
         "latitude": 34.598458,
         "longitude": 135.593706,
-        "elevation": "30.7m(101ft)",
+        "elevation": "101ft",
         "remarks": "VOR Unusable:040°-080° beyond 30nm BLW 7000ft.090°-100° beyond 20nm BLW 7000ft.160°-170° beyond 30nm BLW 9000ft.220°-230° beyond 30nm BLW 3000ft.340°-360° beyond 25nm BLW 5000ft.DME Unusable:030°-040° beyond 30nm BLW 6000ft.040°-060° beyond 25nm BLW 7000ft.060°-110° beyond 15nm BLW 7000ft.110°-130° beyond 30nm BLW 7000ft.130°-180° beyond 30nm BLW 9000ft.180°-200° beyond 30nm BLW 7000ft.220°-270° beyond 30nm BLW 3000ft.320°-360° beyond 25nm BLW 5000ft."
     },
     {
@@ -1459,7 +1459,7 @@
         "hours_of_operation": "H24",
         "latitude": 35.501378,
         "longitude": 133.257206,
-        "elevation": "13.0m(43ft)",
+        "elevation": "43ft",
         "remarks": "VOR unusable:360°-020° beyond 35nm BLW 4000ft.120°-130° beyond 25nm BLW 8000ft.290°-310° beyond 35nm BLW 4000ft.330°-340° beyond 35nm BLW 4000ft.DME unusable:360°-040° beyond 35nm BLW 4000ft.040°-060° beyond 30nm BLW 3000ft.110°-120° beyond 35nm BLW 7000ft.120°-130° beyond 25nm BLW 8000ft.280°-310° beyond 25nm BLW 4000ft.320°-330° beyond 25nm BLW 4000ft.330°-340° beyond 30nm BLW 4000ft.340°-350° beyond 25nm BLW 4000ft.350°-360° beyond 20nm BLW 4000ft."
     },
     {
@@ -1470,7 +1470,7 @@
         "hours_of_operation": "H24",
         "latitude": 24.464922,
         "longitude": 122.997739,
-        "elevation": "95.9m(314.6ft)",
+        "elevation": "314.6ft",
         "remarks": "Unusable:140°-170° beyond 20nm BLW 4000ft."
     },
     {
@@ -1481,7 +1481,7 @@
         "hours_of_operation": "H24",
         "latitude": 39.617128,
         "longitude": 140.186936,
-        "elevation": "87.1m(286ft)",
+        "elevation": "286ft",
         "remarks": ""
     }
 ]
