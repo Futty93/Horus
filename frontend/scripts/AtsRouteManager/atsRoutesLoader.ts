@@ -19,6 +19,7 @@ async function loadAtsRoutes(): Promise<{
       name: wp.name,
       latitude: parseFloat(wp.latitude),
       longitude: parseFloat(wp.longitude),
+      type: wp.type,
     }));
 
     const radioNavigationAids: RadioNavigationAid[] = data.radioNavigationAids.map((aid: any) => ({
