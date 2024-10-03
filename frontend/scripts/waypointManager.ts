@@ -1,34 +1,9 @@
-import { Waypoint } from './RouteInterfaces/Waypoint';
+import { Waypoint } from './AtsRouteManager/RouteInterfaces/Waypoint';
 
 export class WaypointManager {
   private waypoints: Waypoint[] = [];
   private filteredWaypoints: Waypoint[] = [];
   static loadWaypoints: any;
-
-  // constructor() {
-  //     this.loadWaypoints();
-  // }
-
-  /**
-   * ウェイポイントをJSONファイルから読み込みます。
-   */
-  async loadWaypoints() {
-    try {
-      const response = await fetch('./Waypoints.json'); // relative path from bundle.js
-      const loadedWaypoints = await response.json();
-
-      // Freeze each waypoint object to prevent modifications
-      loadedWaypoints.forEach((waypoint: Waypoint) => Object.freeze(waypoint));
-      
-      // Assign the frozen waypoints array to this.waypoints and freeze it
-      this.waypoints = Object.freeze(loadedWaypoints);
-      
-      console.log('Successfully loaded waypoints:', this.waypoints);
-
-    } catch (error) {
-      console.error('Failed to load waypoints:', error);
-    }
-  }
 
   /**
    * 指定された中心座標と表示範囲に基づいてウェイポイントをフィルタリングします。

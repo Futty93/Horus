@@ -4,10 +4,11 @@ const CANVAS_HEIGHT: number = 1000;
 const REFRESH_RATE: number = 60; //画面の更新頻度(fps)
 
 import { Aircraft } from "./aircraftClass.ts";
-import { Waypoint } from "./RouteInterfaces/Waypoint.ts";
+import { Waypoint } from "./AtsRouteManager/RouteInterfaces/Waypoint.ts";
 import { WaypointManager } from "./waypointManager.ts";
 import { CoordinateManager } from "./CoordinateManager.ts";
-import loadAtsRoutes from "./atsRoutesLoader.ts";
+import loadAtsRoutes from "./AtsRouteManager/atsRoutesLoader.ts";
+import { renderMap } from "./AtsRouteManager/routeRenderer.ts";
 
 /**
  * Represents the RadarGame class that encapsulates the game.
@@ -77,15 +78,15 @@ class RadarGame {
 
     this.displayRange = 200; // Default display range in kilometers
 
-    // //とりあえず10機の航空機を生成する
-    // for (let i = 1; i <= 10; i++) {
-    //   const airplane = new Airplane();
-    //   this.controlledAirplane.push(airplane);
-    // }
+    this.initializeAtsRouteData();
+
   }
-  // send_command(): any {
-  //   throw new Error("Method not implemented.");
-  // }
+
+  public atsRouteData: any;
+
+  private async initializeAtsRouteData() {
+    this.atsRouteData = await loadAtsRoutes();
+  }
 
   /**
    * Creates a canvas element with the specified id.
@@ -513,17 +514,12 @@ class RadarGame {
     }
   };
 
-  private update(): void {
+  private async update(): Promise<void> {
     //画面全体を更新する
     this.clearCanvas(this.bg);
-    for (let i = 0; i < this.displayingWaypoints.length; i++) {
-      this.drawWaypoint(
-        this.bg,
-        this.displayingWaypoints[i].name,
-        this.displayingWaypoints[i].latitude,
-        this.displayingWaypoints[i].longitude,
-      );
-    }
+
+    renderMap(this.atsRouteData.waypoints, this.atsRouteData.radioNavigationAids, this.atsRouteData.atsLowerRoutes, this.atsRouteData.rnavRoutes, this.centerCoordinates, this.displayRange, this.ctx[this.bg], CANVAS_WIDTH, CANVAS_HEIGHT);
+
     for (let i = 0; i < this.controlledAirplane.length; i++) {
       // this.updatePosition(this.controlledAirplane[i]);
       this.drawAirplaneDetails(this.bg, this.controlledAirplane[i]);
@@ -531,35 +527,11 @@ class RadarGame {
     this.toggleCanvasDisplay();
   }
 
-  public updateWaypoints(): void {
-    // Update the waypoints based on the center coordinates and display range
-    this.waypointManager.updateFilteredWaypoints(
-      this.centerCoordinates,
-      this.displayRange,
-    );
-    this.displayingWaypoints = this.waypointManager.getFilteredWaypoints();
-    // Calculate the canvas coordinates for the waypoints
-    for (let i = 0; i < this.displayingWaypoints.length; i++) {
-      const { x, y } = this.coordinateManager.calculateCanvasCoordinates(
-        this.centerCoordinates.latitude,
-        this.centerCoordinates.longitude,
-        this.displayRange,
-        this.displayingWaypoints[i].latitude,
-        this.displayingWaypoints[i].longitude,
-      );
-      this.displayingWaypoints[i].latitude = x;
-      this.displayingWaypoints[i].longitude = y;
-    }
-    this.update(); // Update the display with new waypoints
-  }
-
   public async makeFirstCanvas(): Promise<void> {
     if (!this.ctx[0] || !this.ctx[1]) {
       console.error("Failed to get 2D context");
       return;
     }
-    await this.waypointManager.loadWaypoints();
-    this.updateWaypoints();
   }
 
   public async start(): Promise<void> {
@@ -765,7 +737,6 @@ const displayRangeElement = document.getElementById("displayRange");
 displayRangeElement?.addEventListener("input", (event) => {
   const newRange = parseFloat((event.target as HTMLInputElement).value);
   radarGame.displayRange = newRange;
-  radarGame.updateWaypoints();
 });
 
 // Resetボタンの参照を取得
