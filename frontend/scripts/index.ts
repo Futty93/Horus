@@ -1,6 +1,6 @@
 // Define constants for canvas dimensions
-const CANVAS_WIDTH: number = 1000;
-const CANVAS_HEIGHT: number = 1000;
+const CANVAS_WIDTH: number = 2000;
+const CANVAS_HEIGHT: number = 2000;
 const REFRESH_RATE: number = 60; //画面の更新頻度(fps)
 
 import { Aircraft } from "./aircraftClass.ts";
