@@ -27,6 +27,13 @@ dependencies {
 	implementation 'javax.validation:validation-api:2.0.1.Final'
 }
 
+task runAtsRouteRepository(type: JavaExec) {
+	classpath = sourceSets.main.runtimeClasspath
+	main = 'jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.AtsRouteRepository'
+}
+
+build.dependsOn runAtsRouteRepository
+
 tasks.named('test') {
 	useJUnitPlatform()
 }
