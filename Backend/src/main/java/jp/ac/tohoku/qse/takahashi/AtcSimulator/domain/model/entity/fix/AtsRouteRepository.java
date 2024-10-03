@@ -24,7 +24,7 @@ public class AtsRouteRepository {
     private List<Route> rnavRoutes;
 
     private AtsRouteRepository() throws IOException {
-        this.waypoints = loadWaypoints();
+        waypoints = loadWaypoints();
         this.radioNavigationAids = loadRadioNavigationAids();
         this.atsLowerRoutes = loadAtsLowerRoutes();
         this.rnavRoutes = loadRnavRoutes();
@@ -39,23 +39,6 @@ public class AtsRouteRepository {
 
     public static void main(String[] args) throws IOException {
         AtsRouteRepository.getInstance();
-    }
-
-    // Methods to get data
-    public List<Waypoint> getWaypoints() {
-        return waypoints;
-    }
-
-    public List<RadioNavigationAid> getRadioNavigationAids() {
-        return radioNavigationAids;
-    }
-
-    public List<Route> getAtsLowerRoutes() {
-        return atsLowerRoutes;
-    }
-
-    public List<Route> getRnavRoutes() {
-        return rnavRoutes;
     }
 
     // Private methods to load data from JSON files
@@ -170,5 +153,10 @@ public class AtsRouteRepository {
         }
 
         return rnavRoutes;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("{\"waypoints\":%s, \"radioNavigationAids\":%s, \"atsLowerRoutes\":%s, \"rnavRoutes\":%s}", waypoints, radioNavigationAids, atsLowerRoutes, rnavRoutes);
     }
 }

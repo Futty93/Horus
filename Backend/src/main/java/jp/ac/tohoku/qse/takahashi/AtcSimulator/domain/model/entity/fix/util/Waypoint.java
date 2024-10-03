@@ -10,4 +10,9 @@ public class Waypoint {
         this.latitude = latitude;
         this.longitude = longitude;
     }
+
+    @Override
+    public String toString() {
+        return String.format("{\"name\":\"%s\", \"latitude\":%f, \"longitude\":%f}", this.name, this.latitude, this.longitude);
+    }
 }

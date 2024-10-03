@@ -12,4 +12,9 @@ public class RoutePoint {
         this.longitude = longitude;
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return String.format("{\"name\":\"%s\", \"latitude\":%f, \"longitude\":%f, \"type\":\"%s\"}", this.name, this.latitude, this.longitude, this.type);
+    }
 }

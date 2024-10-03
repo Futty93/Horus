@@ -19,4 +19,9 @@ public class RadioNavigationAid {
         this.latitude = latitude;
         this.longitude = longitude;
     }
+
+    @Override
+    public String toString() {
+        return String.format("{\"name\":\"%s\", \"id\":\"%s\", \"type\":\"%s\", \"frequency\":\"%s\", \"latitude\":%f, \"longitude\":%f}", this.name, this.id, this.type, this.frequency, this.latitude, this.longitude);
+    }
 }
