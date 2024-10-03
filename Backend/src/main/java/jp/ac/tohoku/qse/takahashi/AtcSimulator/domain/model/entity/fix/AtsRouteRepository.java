@@ -53,8 +53,9 @@ public class AtsRouteRepository {
             String pointName = pointNode.get("name").asText();
             double latitude = pointNode.get("latitude").asDouble();
             double longitude = pointNode.get("longitude").asDouble();
+            String type = pointNode.get("type").asText();  // e.g., "waypoint"
 
-            Waypoint waypoint = new Waypoint(pointName, latitude, longitude);
+            Waypoint waypoint = new Waypoint(pointName, latitude, longitude, type);
             waypoints.add(waypoint);
         }
 
