@@ -76,7 +76,7 @@ public class AtsRouteRepository {
             double latitude = pointNode.get("latitude").asDouble();
             double longitude = pointNode.get("longitude").asDouble();
 
-            RadioNavigationAid radioNavigationAid = new RadioNavigationAid(name, id, type, frequency, latitude, longitude);
+            RadioNavigationAid radioNavigationAid = new RadioNavigationAid(name, type, latitude, longitude);
             radioNavigationAids.add(radioNavigationAid);
         }
 

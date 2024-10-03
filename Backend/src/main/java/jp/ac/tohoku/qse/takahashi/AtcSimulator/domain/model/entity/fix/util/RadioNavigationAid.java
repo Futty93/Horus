@@ -11,17 +11,15 @@ public class RadioNavigationAid {
     private String elevation;
     private String remarks;
 
-    public RadioNavigationAid(String name, String id, String type, String frequency, double latitude, double longitude) {
+    public RadioNavigationAid(String name, String type, double latitude, double longitude) {
         this.name = name;
-        this.id = id;
         this.type = type;
-        this.frequency = frequency;
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
     @Override
     public String toString() {
-        return String.format("{\"name\":\"%s\", \"id\":\"%s\", \"type\":\"%s\", \"frequency\":\"%s\", \"latitude\":%f, \"longitude\":%f}", this.name, this.id, this.type, this.frequency, this.latitude, this.longitude);
+        return String.format("{\"name\":\"%s\", \"type\":\"%s\", \"latitude\":%f, \"longitude\":%f}", this.name, this.type, this.latitude, this.longitude);
     }
 }
