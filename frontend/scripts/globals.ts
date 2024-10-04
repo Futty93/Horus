@@ -14,6 +14,7 @@ export const GLOBAL_SETTINGS = {
   canvasWidth: 2000,
   canvasHeight: 2000,
   displayRange: 200,
+  centerCoordinates: { latitude: 35.6895, longitude: 139.6917 },
   isDisplayingWaypointName: true,
   isDisplayingWaypointPoint: true,
   isDisplayingRadioNavigationAidsName: true,

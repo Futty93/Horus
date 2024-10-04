@@ -19,20 +19,20 @@ export class CoordinateManager {
    * @param targetLongitude 対象の経度
    * @returns キャンバス上の座標 {x, y}
    */
-  public calculateCanvasCoordinates(centerLat: number, centerLon: number, pointLat: number, pointLon: number): { x: number, y: number } {
+  public calculateCanvasCoordinates(pointLat: number, pointLon: number): { x: number, y: number } {
     // Convert degrees to radians
     const toRadians = (degrees) => degrees * (Math.PI / 180);
 
     // Haversine formula to calculate the distance between two points on the Earth
-    const deltaLat = toRadians(pointLat - centerLat);
-    const deltaLon = toRadians(pointLon - centerLon);
-    const a = Math.sin(deltaLat / 2) ** 2 + Math.cos(toRadians(centerLat)) * Math.cos(toRadians(pointLat)) * Math.sin(deltaLon / 2) ** 2;
+    const deltaLat = toRadians(pointLat - GLOBAL_SETTINGS.centerCoordinates.latitude);
+    const deltaLon = toRadians(pointLon - GLOBAL_SETTINGS.centerCoordinates.longitude);
+    const a = Math.sin(deltaLat / 2) ** 2 + Math.cos(toRadians(GLOBAL_SETTINGS.centerCoordinates.latitude)) * Math.cos(toRadians(pointLat)) * Math.sin(deltaLon / 2) ** 2;
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distanceKm = GLOBAL_CONSTANTS.EARTH_RADIUS_KM * c;
 
     // Calculate the bearing from the center to the point
     const y = Math.sin(deltaLon) * Math.cos(toRadians(pointLat));
-    const x = Math.cos(toRadians(centerLat)) * Math.sin(toRadians(pointLat)) - Math.sin(toRadians(centerLat)) * Math.cos(toRadians(pointLat)) * Math.cos(deltaLon);
+    const x = Math.cos(toRadians(GLOBAL_SETTINGS.centerCoordinates.latitude)) * Math.sin(toRadians(pointLat)) - Math.sin(toRadians(GLOBAL_SETTINGS.centerCoordinates.latitude)) * Math.cos(toRadians(pointLat)) * Math.cos(deltaLon);
     const bearing = Math.atan2(y, x);
 
     // Scale distance to canvas pixels

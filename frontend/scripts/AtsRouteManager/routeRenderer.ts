@@ -10,34 +10,33 @@ export function renderMap(
   radioNavAids: RadioNavigationAid[],
   atsRoutes: Route[],
   rnavRoutes: Route[],
-  center: { latitude: number, longitude: number },
   ctx: CanvasRenderingContext2D,
 ) {
   const coordinateManager = new CoordinateManager(GLOBAL_SETTINGS.canvasWidth, GLOBAL_SETTINGS.canvasHeight);
   // Draw ATS and RNAV routes
   if (GLOBAL_SETTINGS.isDisplayingAtsLowerRoute) {
     [...atsRoutes].forEach((route) => {
-      drawRoute(ctx, route, center, coordinateManager, '#0ff');
+      drawRoute(ctx, route, coordinateManager, '#0ff');
     });
   }
   if (GLOBAL_SETTINGS.isDisplayingRnavRoute) {
     [...rnavRoutes].forEach((route) => {
-      drawRoute(ctx, route, center, coordinateManager, '#ff0');
+      drawRoute(ctx, route, coordinateManager, '#ff0');
     });
   }
 
 
   // Draw all waypoints and radio navigation aids in one loop
   [...waypoints].forEach((point) => {
-    drawPoint(ctx, point, center, coordinateManager, '#0f0', GLOBAL_SETTINGS.isDisplayingWaypointName, GLOBAL_SETTINGS.isDisplayingWaypointPoint);
+    drawPoint(ctx, point, coordinateManager, '#0f0', GLOBAL_SETTINGS.isDisplayingWaypointName, GLOBAL_SETTINGS.isDisplayingWaypointPoint);
   });
   [...radioNavAids].forEach((point) => {
-    drawPoint(ctx, point, center, coordinateManager, "#f8b", GLOBAL_SETTINGS.isDisplayingRadioNavigationAidsName, GLOBAL_SETTINGS.isDisplayingRadioNavigationAidsPoint);
+    drawPoint(ctx, point, coordinateManager, "#f8b", GLOBAL_SETTINGS.isDisplayingRadioNavigationAidsName, GLOBAL_SETTINGS.isDisplayingRadioNavigationAidsPoint);
   });
 }
 
-function drawPoint(ctx: CanvasRenderingContext2D, point: Waypoint | RadioNavigationAid, center: { latitude: number, longitude: number }, coordinateManager: CoordinateManager, color, isDisplayingName: boolean, isDisplayingPoint: boolean) {
-  const { x, y } = coordinateManager.calculateCanvasCoordinates(center.latitude, center.longitude, point.latitude, point.longitude);
+function drawPoint(ctx: CanvasRenderingContext2D, point: Waypoint | RadioNavigationAid, coordinateManager: CoordinateManager, color, isDisplayingName: boolean, isDisplayingPoint: boolean) {
+  const { x, y } = coordinateManager.calculateCanvasCoordinates(point.latitude, point.longitude);
 
   const markerSize = 5;
 
@@ -63,18 +62,18 @@ function drawPoint(ctx: CanvasRenderingContext2D, point: Waypoint | RadioNavigat
   }
 }
 
-function drawRoute(ctx: CanvasRenderingContext2D, route: Route, center: { latitude: number, longitude: number }, coordinateManager: CoordinateManager, color: string) {
+function drawRoute(ctx: CanvasRenderingContext2D, route: Route, coordinateManager: CoordinateManager, color: string) {
   const points = route.points;
 
   // Draw lines between consecutive points
   for (let i = 0; i < points.length - 1; i++) {
-    drawLineBetweenPoints(ctx, points[i], points[i + 1], center, coordinateManager, color);
+    drawLineBetweenPoints(ctx, points[i], points[i + 1], coordinateManager, color);
   }
 }
 
-function drawLineBetweenPoints(ctx: CanvasRenderingContext2D, point1: RoutePoint, point2: RoutePoint, center: { latitude: number, longitude: number }, coordinateManager: CoordinateManager, color: string) {
-  const point1Coordinate = coordinateManager.calculateCanvasCoordinates(center.latitude, center.longitude, point1.latitude, point1.longitude);
-  const point2Coordinate = coordinateManager.calculateCanvasCoordinates(center.latitude, center.longitude, point2.latitude, point2.longitude);
+function drawLineBetweenPoints(ctx: CanvasRenderingContext2D, point1: RoutePoint, point2: RoutePoint, coordinateManager: CoordinateManager, color: string) {
+  const point1Coordinate = coordinateManager.calculateCanvasCoordinates(point1.latitude, point1.longitude);
+  const point2Coordinate = coordinateManager.calculateCanvasCoordinates(point2.latitude, point2.longitude);
 
   ctx.beginPath();
   ctx.moveTo(point1Coordinate.x, point1Coordinate.y);
