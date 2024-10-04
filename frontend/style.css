@@ -28,3 +28,15 @@
     justify-content: center; /* 中央に配置する */
     gap: 10px; /* ボタン間のスペースを作る */
 }
+
+#routeInfoDisplaySetting {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.name-point-display-setting {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+}

@@ -16,7 +16,6 @@
 		</div>
 		<div class="controlPanel">
 			<div id="callsignDisplay">
-				<!-- <b><font size="6">&nbsp;</font></b> -->
 				<p id="callsign">&nbsp;</p>
 			</div>
 			<div id="AltitudeInput">
@@ -44,7 +43,44 @@
 				</div>
 			</div>
 			<input type="button" value="Confirm" id="confirmButton">
-			<!-- <input type="button" value="Send" id="sendButton"> -->
+
+			<div id="routeInfoDisplaySetting">
+				<div>
+					<span>Waypoint</span>
+					<div class="name-point-display-setting">
+						<div>
+							<input type="checkbox" id="waypoint-name" checked>
+							<span>Name</span>
+						</div>
+						<div>
+							<input type="checkbox" id="waypoint-point" checked>
+							<span>Point</span>
+						</div>
+					</div>
+				</div>
+				<div>
+					<span>Radio Navigation AIDs</span>
+					<div class="name-point-display-setting">
+						<div>
+							<input type="checkbox" id="radio-navigation-aids-name" checked>
+							<span>Name</span>
+						</div>
+						<div>
+							<input type="checkbox" id="radio-navigation-aids-point" checked>
+							<span>Point</span>
+						</div>
+					</div>
+				</div>
+				<div>
+					<input type="checkbox" id="ats-lower-routes" checked>
+					<span>ATS Lower Route</span>
+				</div>
+				<div>
+					<input type="checkbox" id="rnav-routes" checked>
+					<span>RNAV Route</span>
+				</div>
+
+			</div>
 		</div>
 	</div>
 	<div class="settingButtonArea">

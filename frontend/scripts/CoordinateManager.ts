@@ -1,3 +1,5 @@
+import { GLOBAL_CONSTANTS, GLOBAL_SETTINGS } from "./globals";
+
 // 地球の丸みを考慮にいれ、緯度・経度をキャンバス上の座標に変換するクラス
 export class CoordinateManager {
   private canvasWidth: number;
@@ -17,8 +19,7 @@ export class CoordinateManager {
    * @param targetLongitude 対象の経度
    * @returns キャンバス上の座標 {x, y}
    */
-  public calculateCanvasCoordinates(centerLat: number, centerLon: number, range: number, pointLat: number, pointLon: number): { x: number, y: number } {
-    const EARTH_RADIUS_KM = 6371; 
+  public calculateCanvasCoordinates(centerLat: number, centerLon: number, pointLat: number, pointLon: number): { x: number, y: number } {
     // Convert degrees to radians
     const toRadians = (degrees) => degrees * (Math.PI / 180);
 
@@ -27,7 +28,7 @@ export class CoordinateManager {
     const deltaLon = toRadians(pointLon - centerLon);
     const a = Math.sin(deltaLat / 2) ** 2 + Math.cos(toRadians(centerLat)) * Math.cos(toRadians(pointLat)) * Math.sin(deltaLon / 2) ** 2;
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distanceKm = EARTH_RADIUS_KM * c;
+    const distanceKm = GLOBAL_CONSTANTS.EARTH_RADIUS_KM * c;
 
     // Calculate the bearing from the center to the point
     const y = Math.sin(deltaLon) * Math.cos(toRadians(pointLat));
@@ -36,7 +37,7 @@ export class CoordinateManager {
 
     // Scale distance to canvas pixels
     // const pixelsPerKm = range / this.canvasWidth;
-    const pixelsPerKm = this.canvasWidth / range;
+    const pixelsPerKm = this.canvasWidth / GLOBAL_SETTINGS.displayRange;
     const distancePx = distanceKm * pixelsPerKm;
 
     // Calculate canvas coordinates
@@ -64,7 +65,6 @@ export class CoordinateManager {
    * @returns 距離（キロメートル）
    */
   public calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-      const R = 6371; // 地球の半径（キロメートル）
       const dLat = this.degToRad(lat2 - lat1);
       const dLon = this.degToRad(lon2 - lon1);
       const a =
@@ -72,7 +72,7 @@ export class CoordinateManager {
           Math.cos(this.degToRad(lat1)) * Math.cos(this.degToRad(lat2)) *
           Math.sin(dLon / 2) * Math.sin(dLon / 2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      const distance = R * c;
+      const distance = GLOBAL_CONSTANTS.EARTH_RADIUS_KM * c;
       return distance;
   }
 

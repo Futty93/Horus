@@ -1,14 +1,11 @@
 // Define constants for canvas dimensions
-const CANVAS_WIDTH: number = 2000;
-const CANVAS_HEIGHT: number = 2000;
-const REFRESH_RATE: number = 60; //画面の更新頻度(fps)
 
 import { Aircraft } from "./aircraftClass.ts";
 import { Waypoint } from "./AtsRouteManager/RouteInterfaces/Waypoint.ts";
-import { WaypointManager } from "./waypointManager.ts";
 import { CoordinateManager } from "./CoordinateManager.ts";
 import loadAtsRoutes from "./AtsRouteManager/atsRoutesLoader.ts";
 import { renderMap } from "./AtsRouteManager/routeRenderer.ts";
+import { GLOBAL_CONSTANTS, GLOBAL_SETTINGS } from "./globals.ts";
 
 /**
  * Represents the RadarGame class that encapsulates the game.
@@ -23,10 +20,9 @@ class RadarGame {
   private inputSpeed: HTMLInputElement;
   private inputHeading: HTMLInputElement;
   private confirmButton: HTMLInputElement;
-  private waypointManager: WaypointManager;
   public coordinateManager: CoordinateManager = new CoordinateManager(
-    CANVAS_WIDTH,
-    CANVAS_HEIGHT,
+    GLOBAL_SETTINGS.canvasWidth,
+    GLOBAL_SETTINGS.canvasHeight,
   );
   // private sendButton: HTMLInputElement;
   private inGame: boolean; //シミュレーションゲーム中かどうかを判断する
@@ -41,7 +37,6 @@ class RadarGame {
     latitude: 35.54823,
     longitude: 139.77795,
   };
-  public displayRange: number;
 
   private selectedAircraft: Aircraft | null = null; //選択中の航空機を保持するための変数
 
@@ -73,10 +68,7 @@ class RadarGame {
     this.canvas[1].addEventListener("mouseup", () => this.onMouseUp());
     this.confirmButton.addEventListener("click", () => this.controlAircraft());
 
-    this.waypointManager = new WaypointManager();
-    this.coordinateManager = new CoordinateManager(CANVAS_WIDTH, CANVAS_HEIGHT);
-
-    this.displayRange = 200; // Default display range in kilometers
+    this.coordinateManager = new CoordinateManager(GLOBAL_SETTINGS.canvasWidth, GLOBAL_SETTINGS.canvasHeight);
 
     this.initializeAtsRouteData();
 
@@ -109,17 +101,8 @@ class RadarGame {
   private clearCanvas(index: number): void {
     //ダブルバッファで新しい画面を描画する前に一旦消す
     this.ctx[index].fillStyle = "black";
-    this.ctx[index].fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    this.ctx[index].fillRect(0, 0, GLOBAL_SETTINGS.canvasWidth, GLOBAL_SETTINGS.canvasHeight);
   }
-
-  // /**
-  //  * Updates the position of the specified airplane.
-  //  * @param airplane - The airplane to update the position for.
-  //  */
-  // private updatePosition(airplane: Airplane): void {
-  //   //航空機の速度に合わせてポジションを更新する
-  //   airplane.updateLocation(REFRESH_RATE);
-  // }
 
   /**
    * Gets a mouse click event and returns the aircraft closest to the clicked location.
@@ -281,9 +264,9 @@ class RadarGame {
       .calculateFuturePositionOnCanvas(
         groundSpeed,
         heading,
-        CANVAS_WIDTH,
-        CANVAS_HEIGHT,
-        this.displayRange,
+        GLOBAL_SETTINGS.canvasWidth,
+        GLOBAL_SETTINGS.canvasHeight,
+        GLOBAL_SETTINGS.displayRange,
         airplane.position,
       );
 
@@ -383,7 +366,7 @@ class RadarGame {
 
     // Draw labels with airplane information
     this.ctx[index].fillStyle = "white";
-    this.ctx[index].font = "12px Arial";
+    this.ctx[index].font = GLOBAL_CONSTANTS.FONT_STYLE_IN_CANVAS;
     this.ctx[index].textAlign = "left";
 
     this.ctx[index].fillText(airplane.callsign, labelX, labelY);
@@ -456,23 +439,6 @@ class RadarGame {
     this.bg = 1 - this.bg;
   }
 
-  // private send_command(): void {
-  //   if (this.selectedAircraft) {
-  //     const { newAltitude, newSpeed, newHeading } = this.selectedAircraft
-  //       .changeCommandedInfo(
-  //         Number(this.inputAltitude.value),
-  //         Number(this.inputSpeed.value),
-  //         Number(this.inputHeading.value),
-  //       );
-
-  //     // Now you have the extracted values in newAltitude, newSpeed, and newHeading
-  //     this.inputAltitude.value = newAltitude;
-  //     this.inputSpeed.value = newSpeed;
-  //     this.inputHeading.value = newHeading;
-  //   }
-  //   console.log(this.selectedAircraft);
-  // }
-
   private controlAircraft = async () => {
     if (this.selectedAircraft) {
       const callsign = this.selectedAircraft.callsign;
@@ -518,7 +484,7 @@ class RadarGame {
     //画面全体を更新する
     this.clearCanvas(this.bg);
 
-    renderMap(this.atsRouteData.waypoints, this.atsRouteData.radioNavigationAids, this.atsRouteData.atsLowerRoutes, this.atsRouteData.rnavRoutes, this.centerCoordinates, this.displayRange, this.ctx[this.bg], CANVAS_WIDTH, CANVAS_HEIGHT);
+    renderMap(this.atsRouteData.waypoints, this.atsRouteData.radioNavigationAids, this.atsRouteData.atsLowerRoutes, this.atsRouteData.rnavRoutes, this.centerCoordinates, this.ctx[this.bg]);
 
     for (let i = 0; i < this.controlledAirplane.length; i++) {
       // this.updatePosition(this.controlledAirplane[i]);
@@ -537,7 +503,7 @@ class RadarGame {
   public async start(): Promise<void> {
     this.updateInterval = setInterval(() => {
       this.update();
-    }, 1000 / REFRESH_RATE);
+    }, 1000 / GLOBAL_CONSTANTS.REFRESH_RATE);
   }
 
   public stop(): void {
@@ -643,7 +609,6 @@ const parseAircraftString = (aircraftString: string): Aircraft => {
       .calculateCanvasCoordinates(
         radarGame.centerCoordinates.latitude,
         radarGame.centerCoordinates.longitude,
-        radarGame.displayRange,
         parseFloat(lat),
         parseFloat(lon),
       );
@@ -736,7 +701,7 @@ stopButton?.addEventListener("click", () => {
 const displayRangeElement = document.getElementById("displayRange");
 displayRangeElement?.addEventListener("input", (event) => {
   const newRange = parseFloat((event.target as HTMLInputElement).value);
-  radarGame.displayRange = newRange;
+  GLOBAL_SETTINGS.displayRange = newRange;
 });
 
 // Resetボタンの参照を取得
@@ -775,3 +740,30 @@ interface CommercialAircraft {
 
 // ボタンにクリックイベントリスナーを追加
 resetButton?.addEventListener("click", handleResetButtonClick);
+
+
+// マッピングオブジェクトを作成
+const settingsMap = {
+  "waypoint-name": "isDisplayingWaypointName",
+  "waypoint-point": "isDisplayingWaypointPoint",
+  "radio-navigation-aids-name": "isDisplayingRadioNavigationAidsName",
+  "radio-navigation-aids-point": "isDisplayingRadioNavigationAidsPoint",
+  "ats-lower-routes": "isDisplayingAtsLowerRoute",
+  "rnav-routes": "isDisplayingRnavRoute",
+};
+
+// 共通のイベントハンドラ
+function handleCheckboxChange(settingKey: string) {
+  return (event: Event) => {
+    const isChecked = (event.target as HTMLInputElement).checked;
+    GLOBAL_SETTINGS[settingKey] = isChecked;
+  };
+}
+
+// マッピングに従ってイベントリスナーを追加
+Object.keys(settingsMap).forEach((checkboxId) => {
+  const checkBoxElement = document.getElementById(checkboxId);
+  const settingKey = settingsMap[checkboxId];
+  
+  checkBoxElement?.addEventListener("change", handleCheckboxChange(settingKey));
+});
