@@ -137,6 +137,10 @@ public class CommercialAircraft extends AircraftBase implements Aircraft {
                 "heading=" + aircraftVector.heading.toString() +
                 ", groundSpeed=" + aircraftVector.groundSpeed.toString() +
                 ", verticalSpeed=" + aircraftVector.verticalSpeed.toString() +
+                "}, instructedVector={" +
+                "heading=" + this.getInstructedVector().instructedHeading.toString() +
+                ", groundSpeed=" + this.getInstructedVector().instructedGroundSpeed.toString() +
+                ", altitude=" + this.getInstructedVector().instructedAltitude.toString() +
                 "}, type=" + this.getAircraftType() +
                 ", originIata=" + this.originIata +
                 ", originIcao=" + this.originIcao +

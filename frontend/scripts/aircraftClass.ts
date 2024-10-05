@@ -2,6 +2,7 @@ export class Aircraft {
   callsign: string;
   position: { x: number; y: number; altitude: number };
   vector: { heading: number; groundSpeed: number; verticalSpeed: number };
+  instructedVector: { heading: number; groundSpeed: number; altitude: number };
   type: string;
   originIata: string;
   originIcao: string;
@@ -14,6 +15,7 @@ export class Aircraft {
     callsign: string,
     position: { x: number; y: number; altitude: number },
     vector: { heading: number; groundSpeed: number; verticalSpeed: number },
+    instructedVector: { heading: number; groundSpeed: number; altitude: number },
     type: string,
     originIata: string,
     originIcao: string,
@@ -26,6 +28,7 @@ export class Aircraft {
     this.callsign = callsign;
     this.position = position;
     this.vector = vector;
+    this.instructedVector = instructedVector;
     this.type = type;
     this.originIata = originIata;
     this.originIcao = originIcao;

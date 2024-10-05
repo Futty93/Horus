@@ -578,8 +578,7 @@ const parseAircraftData = (data: string): Aircraft[] | null => {
 
 const parseAircraftString = (aircraftString: string): Aircraft => {
   const aircraftRegex =
-    /callsign=(.*?), position=\{latitude=(.*?), longitude=(.*?), altitude=(.*?)\}, vector=\{heading=(.*?), groundSpeed=(.*?), verticalSpeed=(.*?)\}, type=(.*?), originIata=(.*?), originIcao=(.*?), destinationIata=(.*?), destinationIcao=(.*?), eta=(.*?)\}/;
-
+    /callsign=(.*?), position=\{latitude=(.*?), longitude=(.*?), altitude=(.*?)\}, vector=\{heading=(.*?), groundSpeed=(.*?), verticalSpeed=(.*?)\}, instructedVector=\{heading=(.*?), groundSpeed=(.*?), altitude=(.*?)\}, type=(.*?), originIata=(.*?), originIcao=(.*?), destinationIata=(.*?), destinationIcao=(.*?), eta=(.*?)\}/;
   const matches = aircraftString.match(aircraftRegex);
   if (matches) {
     const [
@@ -591,6 +590,9 @@ const parseAircraftString = (aircraftString: string): Aircraft => {
       heading,
       groundSpeed,
       verticalSpeed,
+      instructedHeading,
+      instructedGroundSpeed,
+      instructedAltitude,
       type,
       originIata,
       originIcao,
@@ -618,6 +620,11 @@ const parseAircraftString = (aircraftString: string): Aircraft => {
         groundSpeed: parseFloat(groundSpeed),
         verticalSpeed: parseFloat(verticalSpeed),
       }, // vector
+      {
+        heading: parseFloat(instructedHeading),
+        groundSpeed: parseFloat(instructedGroundSpeed),
+        altitude: parseFloat(instructedAltitude),
+      }, // instructedVector
       type,
       originIata,
       originIcao,
@@ -656,6 +663,7 @@ function updateControlledAirplanes(apiResponse: Aircraft[]) {
       newAircraft.callsign,
       newAircraft.position,
       newAircraft.vector,
+      newAircraft.instructedVector,
       newAircraft.type,
       newAircraft.originIata,
       newAircraft.originIcao,
