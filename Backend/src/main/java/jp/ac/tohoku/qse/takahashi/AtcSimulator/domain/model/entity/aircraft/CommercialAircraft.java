@@ -81,13 +81,29 @@ public class CommercialAircraft extends AircraftBase implements Aircraft {
         return new GroundSpeed(nextGroundSpeed);
     }
 
+    /**
+     * instructedVector から 航空機の次のHeadingを計算する
+     */
+//    private Heading calculateNextHeading(final double currentHeading, final double targetHeading) {
+//        double nextHeading = currentHeading;
+//        if (currentHeading < targetHeading) {
+//            if (targetHeading - currentHeading > 180) {
+//                nextHeading -= Math.min(MAX_TURN_RATE, 360 - targetHeading + currentHeading);
+//            } else {
+//                nextHeading += Math.min(MAX_TURN_RATE, targetHeading - currentHeading);
+//            }
+//        } else if (currentHeading > targetHeading) {
+//            nextHeading -= Math.min(MAX_TURN_RATE, currentHeading - targetHeading);
+//        }
+//        return new Heading(nextHeading);
+//    }
     private Heading calculateNextHeading(final double currentHeading, final double targetHeading) {
-        double nextHeading = currentHeading;
-        if (currentHeading < targetHeading) {
-            nextHeading += Math.min(MAX_TURN_RATE, targetHeading - currentHeading);
-        } else if (currentHeading > targetHeading) {
-            nextHeading -= Math.min(MAX_TURN_RATE, currentHeading - targetHeading);
-        }
+        // ヘディング差を-180度から180度の範囲に正規化
+        double headingDifference = ((targetHeading - currentHeading + 540) % 360) - 180;
+
+        // ヘディング差が正の場合は右回転、負の場合は左回転
+        double nextHeading = currentHeading + Math.signum(headingDifference) * Math.min(MAX_TURN_RATE, Math.abs(headingDifference));
+
         return new Heading(nextHeading);
     }
 
