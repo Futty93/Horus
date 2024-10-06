@@ -41,6 +41,7 @@ export class Aircraft {
   public updateAircraftInfo(newAircraft: Aircraft) {
     this.position = newAircraft.position;
     this.vector = newAircraft.vector;
+    this.instructedVector = newAircraft.instructedVector;
     this.eta = newAircraft.eta;
   }
 }

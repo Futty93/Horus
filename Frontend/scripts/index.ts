@@ -121,9 +121,9 @@ class RadarGame {
       // Check if the clicked position is near the aircraft's position
       if (this.isWithinRadius(x, y, position, aircraftRadius)) {
         this.changeDisplayCallsign(callsign);
-        this.inputAltitude.value = airplane.position.altitude.toString();
-        this.inputSpeed.value = airplane.vector.groundSpeed.toString();
-        this.inputHeading.value = airplane.vector.heading.toString();
+        this.inputAltitude.value = airplane.instructedVector.altitude.toString();
+        this.inputSpeed.value = airplane.instructedVector.groundSpeed.toString();
+        this.inputHeading.value = airplane.instructedVector.heading.toString();
         this.selectedAircraft = airplane;
         break; // Exit loop once an aircraft is found
       }
@@ -395,37 +395,37 @@ class RadarGame {
     this.drawLabel(index, airplane);
   }
 
-  public drawWaypoint(
-    index: number,
-    name: string,
-    latitude: number,
-    longitude: number,
-  ): void {
-    const radius: number = 5;
-    const sides: number = 5; // 5角形
-    const angle: number = (2 * Math.PI) / sides;
+  // public drawWaypoint(
+  //   index: number,
+  //   name: string,
+  //   latitude: number,
+  //   longitude: number,
+  // ): void {
+  //   const radius: number = 5;
+  //   const sides: number = 5; // 5角形
+  //   const angle: number = (2 * Math.PI) / sides;
 
-    this.ctx[index].beginPath();
-    for (let i = 0; i <= sides; i++) {
-      const x = latitude + radius * Math.cos(i * angle);
-      const y = longitude + radius * Math.sin(i * angle);
-      if (i === 0) {
-        this.ctx[index].moveTo(x, y);
-      } else {
-        this.ctx[index].lineTo(x, y);
-      }
-    }
-    this.ctx[index].closePath();
-    this.ctx[index].strokeStyle = "gray";
-    this.ctx[index].stroke();
+  //   this.ctx[index].beginPath();
+  //   for (let i = 0; i <= sides; i++) {
+  //     const x = latitude + radius * Math.cos(i * angle);
+  //     const y = longitude + radius * Math.sin(i * angle);
+  //     if (i === 0) {
+  //       this.ctx[index].moveTo(x, y);
+  //     } else {
+  //       this.ctx[index].lineTo(x, y);
+  //     }
+  //   }
+  //   this.ctx[index].closePath();
+  //   this.ctx[index].strokeStyle = "gray";
+  //   this.ctx[index].stroke();
 
-    // 五角形の右上にテキストを描画
-    const textX = latitude + radius * Math.cos(angle / 2); // 右上の頂点のX座標
-    const textY = longitude - radius; // 五角形の上の方に少し離す
-    this.ctx[index].fillStyle = "gray";
-    this.ctx[index].font = "12px Arial";
-    this.ctx[index].fillText(name, textX, textY);
-  }
+  //   // 五角形の右上にテキストを描画
+  //   const textX = latitude + radius * Math.cos(angle / 2); // 右上の頂点のX座標
+  //   const textY = longitude - radius; // 五角形の上の方に少し離す
+  //   this.ctx[index].fillStyle = "gray";
+  //   this.ctx[index].font = "12px Arial";
+  //   this.ctx[index].fillText(name, textX, textY);
+  // }
 
   private toggleCanvasDisplay(): void {
     //ダブルバッファの表示するキャンバスを切り替える
