@@ -366,12 +366,12 @@ class RadarGame {
 
     this.ctx[index].fillText(airplane.callsign, labelX, labelY);
     this.ctx[index].fillText(
-      airplanePosition.altitude.toString(),
+      Math.floor(airplanePosition.altitude / 100).toString(),
       labelX,
       labelY + 15,
     );
     this.ctx[index].fillText(
-      airplane.vector.groundSpeed.toString(),
+      "G" + (Math.floor(airplane.vector.groundSpeed / 10)).toString(),
       labelX,
       labelY + 30,
     );
@@ -729,15 +729,6 @@ const handleResetButtonClick = async () => {
     console.error("Error occurred:", error);
   }
 };
-
-interface CommercialAircraft {
-  callsign: string;
-  altitude: number;
-  location: { positionX: number; positionY: number };
-  heading: number;
-  speed: number;
-  destination: string;
-}
 
 // ボタンにクリックイベントリスナーを追加
 resetButton?.addEventListener("click", handleResetButtonClick);
