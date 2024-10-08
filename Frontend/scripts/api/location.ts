@@ -16,7 +16,7 @@ export const fetchAircraftLocation = async (controllingAircrafts: Aircraft[]) =>
 
     if (response.ok) {
       const textData = await response.text(); // Fetches text data
-      console.log("Raw Aircraft Locations:", textData);
+      // console.log("Raw Aircraft Locations:", textData);
 
       // Example: Parsing custom format (e.g., CommercialAircraft{callsign=...})
       const aircraftData = parseAircraftData(textData);

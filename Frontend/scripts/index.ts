@@ -8,6 +8,7 @@ import { renderMap } from "./AtsRouteManager/routeRenderer.ts";
 import { GLOBAL_CONSTANTS } from "./globals/constants.ts";
 import { GLOBAL_SETTINGS } from "./globals/settings.ts";
 import { fetchAircraftLocation } from "./api/location.ts";
+import { controlAircraft } from "./api/controlAircraft.ts";
 
 /**
  * Represents the RadarGame class that encapsulates the game.
@@ -31,7 +32,7 @@ class RadarGame {
   private offsetX: number = 0;
   private offsetY: number = 0;
 
-  private selectedAircraft: Aircraft | null = null; //選択中の航空機を保持するための変数
+  public selectedAircraft: Aircraft | null = null; //選択中の航空機を保持するための変数
 
   /**
    * Initializes a new instance of the RadarGame class.
@@ -45,7 +46,7 @@ class RadarGame {
     this.clickedPosition = null;
     this.displayCallsign = <HTMLDivElement> document.getElementById("callsign");
     this.inputAltitude = <HTMLInputElement> document.getElementById("altitude");
-    this.inputSpeed = <HTMLInputElement> document.getElementById("speed");
+    this.inputSpeed = <HTMLInputElement> document.getElementById("groundSpeed");
     this.inputHeading = <HTMLInputElement> document.getElementById("heading");
     this.confirmButton = <HTMLInputElement> document.getElementById(
       "confirmButton",
@@ -59,7 +60,6 @@ class RadarGame {
     this.canvas[1].addEventListener("mousemove", (e) => this.onMouseMove(e));
     this.canvas[0].addEventListener("mouseup", () => this.onMouseUp());
     this.canvas[1].addEventListener("mouseup", () => this.onMouseUp());
-    this.confirmButton.addEventListener("click", () => this.controlAircraft());
 
     this.initializeAtsRouteData();
 
@@ -351,47 +351,6 @@ class RadarGame {
     this.bg = 1 - this.bg;
   }
 
-  private controlAircraft = async () => {
-    if (this.selectedAircraft) {
-      const callsign = this.selectedAircraft.callsign;
-      // Get the input values from the form
-      const instructedAltitude = Number(this.inputAltitude.value);
-      const instructedGroundSpeed = Number(this.inputSpeed.value);
-      const instructedHeading = Number(this.inputHeading.value);
-
-      // Create the DTO object
-      const controlAircraftDto = {
-        instructedAltitude,
-        instructedGroundSpeed,
-        instructedHeading,
-      };
-
-      try {
-        const response = await fetch(
-          `http://localhost:8080/api/aircraft/control/${callsign}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(controlAircraftDto),
-          },
-        );
-
-        if (response.ok) {
-          console.log(`Aircraft ${callsign} controlled successfully.`);
-        } else {
-          console.error(
-            `Failed to control aircraft ${callsign}. Status:`,
-            response.status,
-          );
-        }
-      } catch (error) {
-        console.error("Error occurred while controlling aircraft:", error);
-      }
-    }
-  };
-
   private async update(): Promise<void> {
     //画面全体を更新する
     this.clearCanvas(this.bg);
@@ -463,6 +422,17 @@ stopButton?.addEventListener("click", () => {
   if (GLOBAL_SETTINGS.locationUpdateInterval) {
     clearInterval(GLOBAL_SETTINGS.locationUpdateInterval);
     GLOBAL_SETTINGS.locationUpdateInterval = null;
+  }
+});
+
+//* when the confirm button is clicked, control the selected aircraft
+const confirmButton = document.getElementById("confirmButton");
+confirmButton?.addEventListener("click", () => {
+  if (radarGame.selectedAircraft) {
+    console.log("Confirm button clicked");
+    controlAircraft(radarGame.selectedAircraft.callsign);
+  } else {
+    console.error("No aircraft selected");
   }
 });
 
