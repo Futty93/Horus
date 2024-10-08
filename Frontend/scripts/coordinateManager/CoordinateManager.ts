@@ -1,14 +1,8 @@
-import { GLOBAL_CONSTANTS, GLOBAL_SETTINGS } from "./globals";
+import { GLOBAL_CONSTANTS } from "../globals/constants";
+import { GLOBAL_SETTINGS } from "../globals/settings";
 
 // 地球の丸みを考慮にいれ、緯度・経度をキャンバス上の座標に変換するクラス
 export class CoordinateManager {
-  private canvasWidth: number;
-  private canvasHeight: number;
-
-  constructor(canvasWidth: number, canvasHeight: number) {
-      this.canvasWidth = canvasWidth;
-      this.canvasHeight = canvasHeight;
-  }
 
   /**
    * 緯度・経度をキャンバス上の座標に変換します。
@@ -19,7 +13,7 @@ export class CoordinateManager {
    * @param targetLongitude 対象の経度
    * @returns キャンバス上の座標 {x, y}
    */
-  public calculateCanvasCoordinates(pointLat: number, pointLon: number): { x: number, y: number } {
+  public static calculateCanvasCoordinates(pointLat: number, pointLon: number): { x: number, y: number } {
     // Convert degrees to radians
     const toRadians = (degrees) => degrees * (Math.PI / 180);
 
@@ -37,12 +31,12 @@ export class CoordinateManager {
 
     // Scale distance to canvas pixels
     // const pixelsPerKm = range / this.canvasWidth;
-    const pixelsPerKm = this.canvasWidth / GLOBAL_SETTINGS.displayRange;
+    const pixelsPerKm = GLOBAL_SETTINGS.canvasWidth / GLOBAL_SETTINGS.displayRange;
     const distancePx = distanceKm * pixelsPerKm;
 
     // Calculate canvas coordinates
-    const canvasX = (this.canvasWidth / 2) + distancePx * Math.sin(bearing);
-    const canvasY = (this.canvasHeight / 2) - distancePx * Math.cos(bearing);
+    const canvasX = (GLOBAL_SETTINGS.canvasWidth / 2) + distancePx * Math.sin(bearing);
+    const canvasY = (GLOBAL_SETTINGS.canvasHeight / 2) - distancePx * Math.cos(bearing);
 
     return { x: canvasX, y: canvasY };
 }
@@ -86,7 +80,7 @@ export class CoordinateManager {
  * @param currentPosition - Current position of the aircraft on the canvas in pixels.
  * @returns The position of the aircraft on the canvas after 1 minute.
  */
-public calculateFuturePositionOnCanvas(
+public static calculateFuturePositionOnCanvas(
     speed: number,
     heading: number,
     canvasWidth: number,

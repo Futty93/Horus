@@ -1,11 +1,13 @@
 // Define constants for canvas dimensions
 
-import { Aircraft } from "./aircraftClass.ts";
+import { Aircraft } from "./aircraft/aircraftClass.ts";
 import { Waypoint } from "./AtsRouteManager/RouteInterfaces/Waypoint.ts";
-import { CoordinateManager } from "./CoordinateManager.ts";
+import { CoordinateManager } from "./coordinateManager/CoordinateManager.ts";
 import loadAtsRoutes from "./AtsRouteManager/atsRoutesLoader.ts";
 import { renderMap } from "./AtsRouteManager/routeRenderer.ts";
-import { GLOBAL_CONSTANTS, GLOBAL_SETTINGS } from "./globals.ts";
+import { GLOBAL_CONSTANTS } from "./globals/constants.ts";
+import { GLOBAL_SETTINGS } from "./globals/settings.ts";
+import { fetchAircraftLocation } from "./api/location.ts";
 
 /**
  * Represents the RadarGame class that encapsulates the game.
@@ -20,14 +22,10 @@ class RadarGame {
   private inputSpeed: HTMLInputElement;
   private inputHeading: HTMLInputElement;
   private confirmButton: HTMLInputElement;
-  public coordinateManager: CoordinateManager = new CoordinateManager(
-    GLOBAL_SETTINGS.canvasWidth,
-    GLOBAL_SETTINGS.canvasHeight,
-  );
   // private sendButton: HTMLInputElement;
   private inGame: boolean; //シミュレーションゲーム中かどうかを判断する
   private bg: number; //ダブルバッファの背景と表示を切り替えるためのインデックスを管理
-  public controlledAirplane: Aircraft[] = [];
+  public controllingAircratfts: Aircraft[] = [];
   private displayingWaypoints: Waypoint[] = [];
   private draggingLabelIndex: number = -1; // Index of the label being dragged
   private offsetX: number = 0;
@@ -62,8 +60,6 @@ class RadarGame {
     this.canvas[0].addEventListener("mouseup", () => this.onMouseUp());
     this.canvas[1].addEventListener("mouseup", () => this.onMouseUp());
     this.confirmButton.addEventListener("click", () => this.controlAircraft());
-
-    this.coordinateManager = new CoordinateManager(GLOBAL_SETTINGS.canvasWidth, GLOBAL_SETTINGS.canvasHeight);
 
     this.initializeAtsRouteData();
 
@@ -113,7 +109,7 @@ class RadarGame {
     const aircraftRadius = 30; // Adjust the radius as needed
 
     // Iterate through the aircraft to check if they are near the clicked position
-    for (const [index, airplane] of this.controlledAirplane.entries()) {
+    for (const [index, airplane] of this.controllingAircratfts.entries()) {
       const { position, label, callsign } = airplane;
       const labelX = position.x + label.x;
       const labelY = position.y - label.y;
@@ -194,7 +190,7 @@ class RadarGame {
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
 
-    const aircraft = this.controlledAirplane[this.draggingLabelIndex];
+    const aircraft = this.controllingAircratfts[this.draggingLabelIndex];
     const label = aircraft.label;
     const aircraftPosition = aircraft.position;
 
@@ -255,7 +251,7 @@ class RadarGame {
     const { groundSpeed, heading } = airplane.vector;
 
     // Calculate the future position of the airplane on the canvas
-    const futurePosition = this.coordinateManager
+    const futurePosition = CoordinateManager
       .calculateFuturePositionOnCanvas(
         groundSpeed,
         heading,
@@ -298,53 +294,6 @@ class RadarGame {
     this.ctx[index].lineTo(labelX - 5, labelY + 15);
     this.ctx[index].strokeStyle = "white";
     this.ctx[index].stroke();
-
-    // コールサイン等のラベルの背景に色をつける
-    // if ( airplaneInfo.heading == '26' ) {
-    //   //ラベルの周りを線で囲いたいとき↓↓
-    //   // this.ctx[index].beginPath();
-    //   // this.ctx[index].strokeStyle = "white";
-    //   // this.ctx[index].lineWidth = 2;
-    //   // this.ctx[index].moveTo(labelX-5, labelY-20); // Move to the starting point
-    //   // this.ctx[index].lineTo(labelX + 70, labelY-20); // Draw top line
-    //   // this.ctx[index].lineTo(labelX + 70, labelY + 40); // Draw right line
-    //   // this.ctx[index].lineTo(labelX-5, labelY + 40); // Draw bottom line
-    //   // this.ctx[index].lineTo(labelX-5, labelY-20); // Draw left line to close the rectangle
-    //   // this.ctx[index].stroke(); // Stroke the path
-    //   const cornerRadius = 5;
-    //   const labelWidth = 75;  // 70 + 5 for padding
-    //   const labelHeight = 60; // 40 + 20 for padding
-
-    //   this.ctx[index].beginPath();
-    //   this.ctx[index].moveTo(labelX - 5 + cornerRadius, labelY - 20);
-
-    //   // Top Line with top-right corner
-    //   this.ctx[index].lineTo(labelX - 5 + labelWidth - cornerRadius, labelY - 20);
-    //   this.ctx[index].arcTo(labelX - 5 + labelWidth, labelY - 20, labelX - 5 + labelWidth, labelY - 20 + cornerRadius, cornerRadius);
-
-    //   // Right Line with bottom-right corner
-    //   this.ctx[index].lineTo(labelX - 5 + labelWidth, labelY + 40 - cornerRadius);
-    //   this.ctx[index].arcTo(labelX - 5 + labelWidth, labelY + 40, labelX - 5 + labelWidth - cornerRadius, labelY + 40, cornerRadius);
-
-    //   // Bottom Line with bottom-left corner
-    //   this.ctx[index].lineTo(labelX - 5 + cornerRadius, labelY + 40);
-    //   this.ctx[index].arcTo(labelX - 5, labelY + 40, labelX - 5, labelY + 40 - cornerRadius, cornerRadius);
-
-    //   // Left Line with top-left corner
-    //   this.ctx[index].lineTo(labelX - 5, labelY - 20 + cornerRadius);
-    //   this.ctx[index].arcTo(labelX - 5, labelY - 20, labelX - 5 + cornerRadius, labelY - 20, cornerRadius);
-
-    //   this.ctx[index].closePath();
-
-    //   // Fill with light green color
-    //   this.ctx[index].fillStyle = "#008000";
-    //   this.ctx[index].fill();
-
-    //   // // Draw the border with white color
-    //   // this.ctx[index].strokeStyle = "white";
-    //   // this.ctx[index].lineWidth = 2;
-    //   // this.ctx[index].stroke();
-    // }
   }
 
   /**
@@ -394,38 +343,6 @@ class RadarGame {
     this.drawLabelLine(index, airplane);
     this.drawLabel(index, airplane);
   }
-
-  // public drawWaypoint(
-  //   index: number,
-  //   name: string,
-  //   latitude: number,
-  //   longitude: number,
-  // ): void {
-  //   const radius: number = 5;
-  //   const sides: number = 5; // 5角形
-  //   const angle: number = (2 * Math.PI) / sides;
-
-  //   this.ctx[index].beginPath();
-  //   for (let i = 0; i <= sides; i++) {
-  //     const x = latitude + radius * Math.cos(i * angle);
-  //     const y = longitude + radius * Math.sin(i * angle);
-  //     if (i === 0) {
-  //       this.ctx[index].moveTo(x, y);
-  //     } else {
-  //       this.ctx[index].lineTo(x, y);
-  //     }
-  //   }
-  //   this.ctx[index].closePath();
-  //   this.ctx[index].strokeStyle = "gray";
-  //   this.ctx[index].stroke();
-
-  //   // 五角形の右上にテキストを描画
-  //   const textX = latitude + radius * Math.cos(angle / 2); // 右上の頂点のX座標
-  //   const textY = longitude - radius; // 五角形の上の方に少し離す
-  //   this.ctx[index].fillStyle = "gray";
-  //   this.ctx[index].font = "12px Arial";
-  //   this.ctx[index].fillText(name, textX, textY);
-  // }
 
   private toggleCanvasDisplay(): void {
     //ダブルバッファの表示するキャンバスを切り替える
@@ -481,9 +398,9 @@ class RadarGame {
 
     renderMap(this.atsRouteData.waypoints, this.atsRouteData.radioNavigationAids, this.atsRouteData.atsLowerRoutes, this.atsRouteData.rnavRoutes, this.ctx[this.bg]);
 
-    for (let i = 0; i < this.controlledAirplane.length; i++) {
+    for (let i = 0; i < this.controllingAircratfts.length; i++) {
       // this.updatePosition(this.controlledAirplane[i]);
-      this.drawAirplaneDetails(this.bg, this.controlledAirplane[i]);
+      this.drawAirplaneDetails(this.bg, this.controllingAircratfts[i]);
     }
     this.toggleCanvasDisplay();
   }
@@ -522,159 +439,6 @@ loadAtsRoutes().then((data) => {
   console.error(error);
 });
 
-// Timer variable to hold interval reference
-let locationUpdateInterval: number | null = null;
-
-const fetchAircraftLocation = async () => {
-  try {
-    const response = await fetch(
-      "http://localhost:8080/aircraft/location/all",
-      {
-        method: "GET",
-        headers: {
-          "accept": "*/*", // Assuming the server sends a custom format
-        },
-      },
-    );
-
-    if (response.ok) {
-      const textData = await response.text(); // Fetches text data
-      console.log("Raw Aircraft Locations:", textData);
-
-      // Example: Parsing custom format (e.g., CommercialAircraft{callsign=...})
-      const aircraftData = parseAircraftData(textData);
-      if (aircraftData) {
-        updateControlledAirplanes(aircraftData); // Call the function to update controlledAirplanes
-      } else {
-        console.error("Failed to parse aircraft data");
-      }
-    } else {
-      console.error("Request failed with status:", response.status);
-    }
-  } catch (error) {
-    console.error("Error occurred while fetching aircraft location:", error);
-  }
-};
-
-// Function to parse custom format into an array of objects
-const parseAircraftData = (data: string): Aircraft[] | null => {
-  // Implement parsing logic based on the actual format of your data
-  // This is a placeholder example; you'll need to adjust it according to the actual format
-  try {
-    // Example parsing logic (assuming data is in some custom text format)
-    const aircraftStrings = data.split("\n").filter((line) =>
-      line.startsWith("CommercialAircraft")
-    );
-    return aircraftStrings.map((aircraftString) => {
-      // Parse each aircraftString into an Aircraft object
-      // Example: Implement a function to parse the string into a valid Aircraft object
-      return parseAircraftString(aircraftString);
-    });
-  } catch (error) {
-    console.error("Error parsing aircraft data:", error);
-    return null;
-  }
-};
-
-const parseAircraftString = (aircraftString: string): Aircraft => {
-  const aircraftRegex =
-    /callsign=(.*?), position=\{latitude=(.*?), longitude=(.*?), altitude=(.*?)\}, vector=\{heading=(.*?), groundSpeed=(.*?), verticalSpeed=(.*?)\}, instructedVector=\{heading=(.*?), groundSpeed=(.*?), altitude=(.*?)\}, type=(.*?), originIata=(.*?), originIcao=(.*?), destinationIata=(.*?), destinationIcao=(.*?), eta=(.*?)\}/;
-  const matches = aircraftString.match(aircraftRegex);
-  if (matches) {
-    const [
-      _,
-      callsign,
-      lat,
-      lon,
-      altitude,
-      heading,
-      groundSpeed,
-      verticalSpeed,
-      instructedHeading,
-      instructedGroundSpeed,
-      instructedAltitude,
-      type,
-      originIata,
-      originIcao,
-      destinationIata,
-      destinationIcao,
-      eta,
-    ] = matches;
-
-    // Convert latitude and longitude into canvas coordinates using radarGame utility
-    const coordinateOnCanvas = radarGame.coordinateManager
-      .calculateCanvasCoordinates(
-        parseFloat(lat),
-        parseFloat(lon),
-      );
-
-    return new Aircraft(
-      callsign,
-      {
-        x: coordinateOnCanvas.x,
-        y: coordinateOnCanvas.y,
-        altitude: parseFloat(altitude),
-      }, // position
-      {
-        heading: parseFloat(heading),
-        groundSpeed: parseFloat(groundSpeed),
-        verticalSpeed: parseFloat(verticalSpeed),
-      }, // vector
-      {
-        heading: parseFloat(instructedHeading),
-        groundSpeed: parseFloat(instructedGroundSpeed),
-        altitude: parseFloat(instructedAltitude),
-      }, // instructedVector
-      type,
-      originIata,
-      originIcao,
-      destinationIata,
-      destinationIcao,
-      eta,
-    );
-  }
-
-  throw new Error("Failed to parse aircraft string: " + aircraftString);
-};
-
-// Function to update controlledAirplanes based on API data (from earlier code)
-function updateControlledAirplanes(apiResponse: Aircraft[]) {
-  const newAircraftMap = new Map<string, Aircraft>();
-
-  apiResponse.forEach((aircraft) => {
-    newAircraftMap.set(aircraft.callsign, aircraft);
-  });
-
-  radarGame.controlledAirplane = radarGame.controlledAirplane.filter(
-    (airplane) => {
-      const newAircraft = newAircraftMap.get(airplane.callsign);
-      if (newAircraft) {
-        airplane.updateAircraftInfo(newAircraft);
-        newAircraftMap.delete(airplane.callsign);
-        return true;
-      } else {
-        return false;
-      }
-    },
-  );
-
-  newAircraftMap.forEach((newAircraft) => {
-    const newAirplane = new Aircraft(
-      newAircraft.callsign,
-      newAircraft.position,
-      newAircraft.vector,
-      newAircraft.instructedVector,
-      newAircraft.type,
-      newAircraft.originIata,
-      newAircraft.originIcao,
-      newAircraft.destinationIata,
-      newAircraft.destinationIcao,
-      newAircraft.eta,
-    );
-    radarGame.controlledAirplane.push(newAirplane);
-  });
-}
-
 // when the start button is clicked, start the game and start fetching aircraft locations
 const startButton = document.getElementById("startButton");
 startButton?.addEventListener("click", () => {
@@ -682,8 +446,11 @@ startButton?.addEventListener("click", () => {
 
   console.log("Game started");
   // Start fetching aircraft location every 1 second
-  if (!locationUpdateInterval) {
-    locationUpdateInterval = setInterval(fetchAircraftLocation, 1000); // 1 second interval
+  if (!GLOBAL_SETTINGS.locationUpdateInterval) {
+    // GLOBAL_SETTINGS.locationUpdateInterval = setInterval(fetchAircraftLocation, 1000); // 1 second interval
+    GLOBAL_SETTINGS.locationUpdateInterval = setInterval(async () => {
+      radarGame.controllingAircratfts = await fetchAircraftLocation(radarGame.controllingAircratfts);
+    }, 1000); // 1 second interval
   }
 });
 
@@ -693,9 +460,9 @@ stopButton?.addEventListener("click", () => {
   radarGame.stop();
 
   // Stop fetching aircraft location
-  if (locationUpdateInterval) {
-    clearInterval(locationUpdateInterval);
-    locationUpdateInterval = null;
+  if (GLOBAL_SETTINGS.locationUpdateInterval) {
+    clearInterval(GLOBAL_SETTINGS.locationUpdateInterval);
+    GLOBAL_SETTINGS.locationUpdateInterval = null;
   }
 });
 

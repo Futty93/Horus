@@ -1,4 +1,4 @@
-import { Waypoint } from "./RouteInterfaces/Waypoint";
+import { Waypoint} from "./RouteInterfaces/Waypoint";
 import { Route } from "./RouteInterfaces/Route";
 import { RoutePoint } from "./RouteInterfaces/RoutePoint";
 import { RadioNavigationAid } from "./RouteInterfaces/RadioNavigationAid";

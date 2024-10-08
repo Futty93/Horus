@@ -2,8 +2,9 @@ import { Waypoint } from "./RouteInterfaces/Waypoint";
 import { Route } from "./RouteInterfaces/Route";
 import { RoutePoint } from "./RouteInterfaces/RoutePoint";
 import { RadioNavigationAid } from "./RouteInterfaces/RadioNavigationAid";
-import { CoordinateManager } from "../CoordinateManager";
-import { GLOBAL_CONSTANTS, GLOBAL_SETTINGS } from "../globals";
+import { CoordinateManager } from "../coordinateManager/CoordinateManager";
+import { GLOBAL_SETTINGS } from "../globals/settings";
+import { GLOBAL_CONSTANTS } from "../globals/constants";
 
 export function renderMap(
   waypoints: Waypoint[],
@@ -12,31 +13,30 @@ export function renderMap(
   rnavRoutes: Route[],
   ctx: CanvasRenderingContext2D,
 ) {
-  const coordinateManager = new CoordinateManager(GLOBAL_SETTINGS.canvasWidth, GLOBAL_SETTINGS.canvasHeight);
   // Draw ATS and RNAV routes
-  if (GLOBAL_SETTINGS.isDisplayingAtsLowerRoute) {
+  if (GLOBAL_SETTINGS.isDisplaying.atsLowerRoute) {
     [...atsRoutes].forEach((route) => {
-      drawRoute(ctx, route, coordinateManager, '#0ff');
+      drawRoute(ctx, route, '#0ff');
     });
   }
-  if (GLOBAL_SETTINGS.isDisplayingRnavRoute) {
+  if (GLOBAL_SETTINGS.isDisplaying.rnavRoute) {
     [...rnavRoutes].forEach((route) => {
-      drawRoute(ctx, route, coordinateManager, '#ff0');
+      drawRoute(ctx, route, '#ff0');
     });
   }
 
 
   // Draw all waypoints and radio navigation aids in one loop
   [...waypoints].forEach((point) => {
-    drawPoint(ctx, point, coordinateManager, '#0f0', GLOBAL_SETTINGS.isDisplayingWaypointName, GLOBAL_SETTINGS.isDisplayingWaypointPoint);
+    drawPoint(ctx, point, '#0f0', GLOBAL_SETTINGS.isDisplaying.waypointName, GLOBAL_SETTINGS.isDisplaying.waypointPoint);
   });
   [...radioNavAids].forEach((point) => {
-    drawPoint(ctx, point, coordinateManager, "#f8b", GLOBAL_SETTINGS.isDisplayingRadioNavigationAidsName, GLOBAL_SETTINGS.isDisplayingRadioNavigationAidsPoint);
+    drawPoint(ctx, point, "#f8b", GLOBAL_SETTINGS.isDisplaying.radioNavigationAidsName, GLOBAL_SETTINGS.isDisplaying.radioNavigationAidsPoint);
   });
 }
 
-function drawPoint(ctx: CanvasRenderingContext2D, point: Waypoint | RadioNavigationAid, coordinateManager: CoordinateManager, color, isDisplayingName: boolean, isDisplayingPoint: boolean) {
-  const { x, y } = coordinateManager.calculateCanvasCoordinates(point.latitude, point.longitude);
+function drawPoint(ctx: CanvasRenderingContext2D, point: Waypoint | RadioNavigationAid, color, isDisplayingName: boolean, isDisplayingPoint: boolean) {
+  const { x, y } = CoordinateManager.calculateCanvasCoordinates(point.latitude, point.longitude);
 
   const markerSize = 5;
 
@@ -62,18 +62,18 @@ function drawPoint(ctx: CanvasRenderingContext2D, point: Waypoint | RadioNavigat
   }
 }
 
-function drawRoute(ctx: CanvasRenderingContext2D, route: Route, coordinateManager: CoordinateManager, color: string) {
+function drawRoute(ctx: CanvasRenderingContext2D, route: Route, color: string) {
   const points = route.points;
 
   // Draw lines between consecutive points
   for (let i = 0; i < points.length - 1; i++) {
-    drawLineBetweenPoints(ctx, points[i], points[i + 1], coordinateManager, color);
+    drawLineBetweenPoints(ctx, points[i], points[i + 1], color);
   }
 }
 
-function drawLineBetweenPoints(ctx: CanvasRenderingContext2D, point1: RoutePoint, point2: RoutePoint, coordinateManager: CoordinateManager, color: string) {
-  const point1Coordinate = coordinateManager.calculateCanvasCoordinates(point1.latitude, point1.longitude);
-  const point2Coordinate = coordinateManager.calculateCanvasCoordinates(point2.latitude, point2.longitude);
+function drawLineBetweenPoints(ctx: CanvasRenderingContext2D, point1: RoutePoint, point2: RoutePoint, color: string) {
+  const point1Coordinate = CoordinateManager.calculateCanvasCoordinates(point1.latitude, point1.longitude);
+  const point2Coordinate = CoordinateManager.calculateCanvasCoordinates(point2.latitude, point2.longitude);
 
   ctx.beginPath();
   ctx.moveTo(point1Coordinate.x, point1Coordinate.y);
