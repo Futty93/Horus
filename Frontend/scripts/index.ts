@@ -9,6 +9,7 @@ import { GLOBAL_CONSTANTS } from "./globals/constants.ts";
 import { GLOBAL_SETTINGS } from "./globals/settings.ts";
 import { fetchAircraftLocation } from "./api/location.ts";
 import { controlAircraft } from "./api/controlAircraft.ts";
+import { DrawAircraft } from "./aircraft/drawAircraft.ts";
 
 /**
  * Represents the RadarGame class that encapsulates the game.
@@ -219,131 +220,6 @@ class RadarGame {
     }
   }
 
-  /**
-   * Draws the airplane representation on the canvas.
-   * @param index - The index of the airplane in the list.
-   * @param airplane - The instance of the Airplane class.
-   */
-  private drawAirplane(index: number, airplane: Aircraft): void {
-    const position = airplane.position;
-    const radius: number = 5;
-
-    // Draw airplane as a filled white circle
-    this.ctx[index].beginPath();
-    this.ctx[index].arc(
-      position.x,
-      position.y,
-      radius,
-      0,
-      2 * Math.PI,
-    );
-    this.ctx[index].fillStyle = "white";
-    this.ctx[index].fill();
-  }
-
-  /**
-   * Draws the heading line representing the airplane's movement direction.
-   * @param index - The index of the airplane in the list.
-   * @param airplane - The instance of the Aircraft class.
-   */
-  private drawHeadingLine(index: number, airplane: Aircraft): void {
-    const { x: startX, y: startY } = airplane.position;
-    const { groundSpeed, heading } = airplane.vector;
-
-    // Calculate the future position of the airplane on the canvas
-    const futurePosition = CoordinateManager
-      .calculateFuturePositionOnCanvas(
-        groundSpeed,
-        heading,
-        GLOBAL_SETTINGS.canvasWidth,
-        GLOBAL_SETTINGS.canvasHeight,
-        GLOBAL_SETTINGS.displayRange,
-        airplane.position,
-      );
-
-    // Draw the heading line
-    this.ctx[index].beginPath();
-    this.ctx[index].moveTo(startX, startY);
-    this.ctx[index].lineTo(futurePosition.futureX, futurePosition.futureY);
-    this.ctx[index].strokeStyle = "white";
-    this.ctx[index].stroke();
-  }
-
-  /**
-   * Draws the line connecting airplane to its label position.
-   * @param index - The index of the airplane in the list.
-   * @param airplane - The instance of the Airplane class.
-   */
-  private drawLabelLine(index: number, airplane: Aircraft): void {
-    const position = airplane.position;
-    const labelX: number = position.x + airplane.label.x;
-    const labelY: number = position.y - airplane.label.y;
-    const labelDistance = Math.sqrt(
-      Math.pow(airplane.label.x, 2) +
-        Math.pow(airplane.label.y, 2),
-    );
-    const sin = airplane.label.y / labelDistance;
-    const cos = airplane.label.x / labelDistance;
-
-    // Draw a line connecting airplane to its label
-    this.ctx[index].beginPath();
-    this.ctx[index].moveTo(
-      position.x + (10 * cos),
-      position.y - (10 * sin),
-    );
-    this.ctx[index].lineTo(labelX - 5, labelY + 15);
-    this.ctx[index].strokeStyle = "white";
-    this.ctx[index].stroke();
-  }
-
-  /**
-   * Draw the label containing airplane information.
-   * @param index - Index of the airplane in the list.
-   * @param airplane - Instance of the Airplane class.
-   */
-  private drawLabel(index: number, airplane: Aircraft): void {
-    const airplanePosition = airplane.position;
-    const labelX: number = airplanePosition.x +
-      airplane.label.x;
-    const labelY: number = airplanePosition.y -
-      airplane.label.y;
-
-    // Draw labels with airplane information
-    this.ctx[index].fillStyle = "white";
-    this.ctx[index].font = GLOBAL_CONSTANTS.FONT_STYLE_IN_CANVAS;
-    this.ctx[index].textAlign = "left";
-
-    this.ctx[index].fillText(airplane.callsign, labelX, labelY);
-    this.ctx[index].fillText(
-      Math.floor(airplanePosition.altitude / 100).toString(),
-      labelX,
-      labelY + 15,
-    );
-    this.ctx[index].fillText(
-      "G" + (Math.floor(airplane.vector.groundSpeed / 10)).toString(),
-      labelX,
-      labelY + 30,
-    );
-    this.ctx[index].fillText(
-      airplane.destinationIata,
-      labelX + 40,
-      labelY + 30,
-    );
-  }
-
-  /**
-   * Draw the airplane details on the canvas.
-   * @param index - Index of the airplane in the list.
-   * @param airplane - Instance of the Airplane class.
-   */
-  public drawAirplaneDetails(index: number, airplane: Aircraft): void {
-    // Draw airplane representation, heading line, label line, and label
-    this.drawAirplane(index, airplane);
-    this.drawHeadingLine(index, airplane);
-    this.drawLabelLine(index, airplane);
-    this.drawLabel(index, airplane);
-  }
-
   private toggleCanvasDisplay(): void {
     //ダブルバッファの表示するキャンバスを切り替える
     this.canvas[1 - this.bg].style.display = "none";
@@ -359,7 +235,8 @@ class RadarGame {
 
     for (let i = 0; i < this.controllingAircratfts.length; i++) {
       // this.updatePosition(this.controlledAirplane[i]);
-      this.drawAirplaneDetails(this.bg, this.controllingAircratfts[i]);
+      // DrawAircraddrawAirplaneDetails(this.bg, this.controllingAircratfts[i]);
+      DrawAircraft.drawAircraft(this.ctx[this.bg], this.controllingAircratfts[i]);
     }
     this.toggleCanvasDisplay();
   }
