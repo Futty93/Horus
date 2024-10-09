@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<!DOCTYPE html>
+	<title>ATC Radar</title>
+	<link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+	<div class="container">
+		<div class="radarArea">
+			<canvas id="radar" width="1000" height="1000"></canvas>
+			<canvas id="radar2" width="1000" height="1000"></canvas>
+		</div>
+		<div class="controlPanel">
+			<div id="callsignDisplay">
+				<!-- <b><font size="6">&nbsp;</font></b> -->
+				<p id="callsign">&nbsp;</p>
+			</div>
+			<div id="AltitudeInput">
+				<div class="tagArea">
+					Altitude
+				</div>
+				<div class="inputArea">
+					<input type="number" id="altitude" placeholder="0">
+				</div>
+			</div>
+			<div id="SpeedInput">
+				<div class="tagArea">
+					Speed
+				</div>
+				<div class="inputArea">
+					<input type="number" id="speed" placeholder="0">
+				</div>
+			</div>
+			<div id="HeadingInput">
+				<div class="tagArea">
+					Heading
+				</div>
+				<div class="inputArea">
+					<input type="number" id="heading" placeholder="0">
+				</div>
+			</div>
+			<input type="button" value="Confirm" id="confirmButton">
+			<!-- <input type="button" value="Send" id="sendButton"> -->
+		</div>
+	</div>
+	<div class="settingButtonArea">
+		<label for="selectSector">担当セクター:</label>
+		<select id="selectSector">
+			<option value="関東北">関東北</option>
+			<option value="サンプル2">関東南</option>
+			<option value="サンプル3">サンプル3</option>
+		</select>
+		<label for="displayRange">表示範囲:</label>
+		<input type="number" id="displayRange" value="200" min="10" max="4000">km
+		<input type="button" value="Start" id="startButton">
+		<input type="button" value="Stop" id="stopButton">
+		<input type="button" value="Reset" id="resetButton">
+	</div>
+	
+
+	<script src="bundle.js"></script>
+</body>
+
+</html>
