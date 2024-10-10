@@ -1,5 +1,6 @@
 import { Aircraft } from "../aircraft/aircraftClass";
 import { CoordinateManager } from "../coordinateManager/CoordinateManager";
+import { GLOBAL_SETTINGS } from "../globals/settings";
 
 export const fetchAircraftLocation = async (controllingAircrafts: Aircraft[]) => {
   let updatedControllingAircraft: Aircraft[] = [];
@@ -18,6 +19,14 @@ export const fetchAircraftLocation = async (controllingAircrafts: Aircraft[]) =>
       const textData = await response.text(); // Fetches text data
       // console.log("Raw Aircraft Locations:", textData);
 
+      const extractionStatus = parseCallsignStatus(textData);
+      if (extractionStatus) {
+        console.log("Callsign Extraction Status:", extractionStatus);
+        GLOBAL_SETTINGS.callsignExtractionStatus = extractionStatus;
+      } else {
+        console.error("Failed to extract Callsign Extraction Status.");
+      }
+
       // Example: Parsing custom format (e.g., CommercialAircraft{callsign=...})
       const aircraftData = parseAircraftData(textData);
       if (aircraftData) {
@@ -33,6 +42,12 @@ export const fetchAircraftLocation = async (controllingAircrafts: Aircraft[]) =>
     console.error("Error occurred while fetching aircraft location:", error);
   }
   return updatedControllingAircraft;
+};
+
+// Function to parse the Callsign Extraction Status from the response
+const parseCallsignStatus = (data: string): string | null => {
+  const statusMatch = data.match(/Callsign Extraction Status: (.*)/);
+  return statusMatch ? statusMatch[1] : null;
 };
 
 // Function to parse custom format into an array of objects

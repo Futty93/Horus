@@ -6,6 +6,7 @@ interface GlobalSettings {
   centerCoordinates: { latitude: number; longitude: number }; // 座標はオブジェクトとして定義
   isDisplaying: DisplaySettings;
   locationUpdateInterval: number | null; // 更新間隔（ms）
+  callsignExtractionStatus: string;
 }
 
 // 表示に関する設定を別途分けて定義
@@ -33,4 +34,5 @@ export const GLOBAL_SETTINGS: GlobalSettings = {
     rnavRoute: true,
   },
   locationUpdateInterval: null, // 更新間隔（ms）
+  callsignExtractionStatus: 'NO_VALUE',
 };
