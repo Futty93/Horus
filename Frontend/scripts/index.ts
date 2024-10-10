@@ -96,6 +96,40 @@ class RadarGame {
     this.ctx[index].fillRect(0, 0, GLOBAL_SETTINGS.canvasWidth, GLOBAL_SETTINGS.canvasHeight);
   }
 
+  private drawWarningFrame(index: number): void {
+    const ctx = this.ctx[index];
+    const gradientWidth = 200; // グラデーションの幅
+  
+    // 四辺それぞれに赤いグラデーションを描画
+    // 上辺
+    let gradient = ctx.createLinearGradient(0, 0, 0, gradientWidth);
+    gradient.addColorStop(0, "red");
+    gradient.addColorStop(1, "transparent");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, GLOBAL_SETTINGS.canvasWidth, gradientWidth);
+  
+    // 下辺
+    gradient = ctx.createLinearGradient(0, GLOBAL_SETTINGS.canvasHeight, 0, GLOBAL_SETTINGS.canvasHeight - gradientWidth);
+    gradient.addColorStop(0, "red");
+    gradient.addColorStop(1, "transparent");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, GLOBAL_SETTINGS.canvasHeight - gradientWidth, GLOBAL_SETTINGS.canvasWidth, gradientWidth);
+  
+    // 左辺
+    gradient = ctx.createLinearGradient(0, 0, gradientWidth, 0);
+    gradient.addColorStop(0, "red");
+    gradient.addColorStop(1, "transparent");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, gradientWidth, GLOBAL_SETTINGS.canvasHeight);
+  
+    // 右辺
+    gradient = ctx.createLinearGradient(GLOBAL_SETTINGS.canvasWidth, 0, GLOBAL_SETTINGS.canvasWidth - gradientWidth, 0);
+    gradient.addColorStop(0, "red");
+    gradient.addColorStop(1, "transparent");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(GLOBAL_SETTINGS.canvasWidth - gradientWidth, 0, gradientWidth, GLOBAL_SETTINGS.canvasHeight);
+  }
+
   /**
    * Gets a mouse click event and returns the aircraft closest to the clicked location.
    * @param event - The mouse click event.
@@ -230,6 +264,9 @@ class RadarGame {
   private async update(): Promise<void> {
     //画面全体を更新する
     this.clearCanvas(this.bg);
+    if (GLOBAL_SETTINGS.callsignExtractionStatus === "FAILURE") {
+      this.drawWarningFrame(this.bg);
+    }
 
     renderMap(this.atsRouteData.waypoints, this.atsRouteData.radioNavigationAids, this.atsRouteData.atsLowerRoutes, this.atsRouteData.rnavRoutes, this.ctx[this.bg]);
 
