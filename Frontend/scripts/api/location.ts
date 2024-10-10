@@ -56,8 +56,7 @@ const parseAircraftData = (data: string): Aircraft[] | null => {
 };
 
 const parseAircraftString = (aircraftString: string): Aircraft => {
-  const aircraftRegex =
-    /callsign=(.*?), position=\{latitude=(.*?), longitude=(.*?), altitude=(.*?)\}, vector=\{heading=(.*?), groundSpeed=(.*?), verticalSpeed=(.*?)\}, instructedVector=\{heading=(.*?), groundSpeed=(.*?), altitude=(.*?)\}, type=(.*?), originIata=(.*?), originIcao=(.*?), destinationIata=(.*?), destinationIcao=(.*?), eta=(.*?)\}/;
+  const aircraftRegex = /callsign=(.*?), position=\{latitude=(.*?), longitude=(.*?), altitude=(.*?)\}, vector=\{heading=(.*?), groundSpeed=(.*?), verticalSpeed=(.*?)\}, instructedVector=\{heading=(.*?), groundSpeed=(.*?), altitude=(.*?)\}, type=(.*?), originIata=(.*?), originIcao=(.*?), destinationIata=(.*?), destinationIcao=(.*?), eta=(.*?), highlight=(.*?)\}/;
   const matches = aircraftString.match(aircraftRegex);
   if (matches) {
     const [
@@ -78,6 +77,7 @@ const parseAircraftString = (aircraftString: string): Aircraft => {
       destinationIata,
       destinationIcao,
       eta,
+      highlightRank,
     ] = matches;
 
     // Convert latitude and longitude into canvas coordinates using radarGame utility
@@ -109,6 +109,7 @@ const parseAircraftString = (aircraftString: string): Aircraft => {
       destinationIata,
       destinationIcao,
       eta,
+      parseInt(highlightRank),
     );
   }
 
@@ -148,6 +149,7 @@ function updateControllingAircrafts(apiResponse: Aircraft[], controllingAircraft
       newAircraft.destinationIata,
       newAircraft.destinationIcao,
       newAircraft.eta,
+      newAircraft.highlightRank,
     );
     controllingAircrafts.push(newAirplane);
   });
