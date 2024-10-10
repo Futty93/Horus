@@ -19,7 +19,7 @@ class DrawAircraft {
   public static drawAircraft(ctx: CanvasRenderingContext2D, aircraft: Aircraft) {
     this.drawAircraftMarker(ctx, aircraft.position);
     this.drawHeadingLine(ctx, aircraft.position, aircraft.vector.groundSpeed, aircraft.vector.heading);
-    this.drawLabelLiine(ctx, aircraft.position, aircraft.label);
+    this.drawLabelLiine(ctx, aircraft.position, aircraft.label, aircraft.highlightRank);
     this.drawAircraftLabel(ctx, aircraft);
   }
 
@@ -85,7 +85,7 @@ class DrawAircraft {
     );
   }
 
-  private static drawLabelLiine(ctx: CanvasRenderingContext2D, aircraftPosition: { x: number; y: number }, labelPosition: { x: number; y: number }) {
+  private static drawLabelLiine(ctx: CanvasRenderingContext2D, aircraftPosition: { x: number; y: number }, labelPosition: { x: number; y: number }, highlightRank: number) {
     const labelX: number = aircraftPosition.x + labelPosition.x;
     const labelY: number = aircraftPosition.y - labelPosition.y;
     const labelDistance: number = Math.sqrt(Math.pow(labelPosition.x, 2) + Math.pow(labelPosition.y, 2));
@@ -97,6 +97,45 @@ class DrawAircraft {
     ctx.lineTo(labelX - 5, labelY + 15);
     ctx.strokeStyle = "white";
     ctx.stroke();
+
+    // コールサイン等のラベルの背景に色をつける
+    if ( highlightRank == 0 ) {
+      return;
+    }
+
+    const cornerRadius = 5;
+    const labelWidth = 75;  // 70 + 5 for padding
+    const labelHeight = 60; // 40 + 20 for padding
+
+    ctx.beginPath();
+    ctx.moveTo(labelX - 5 + cornerRadius, labelY - 20);
+
+    // Top Line with top-right corner
+    ctx.lineTo(labelX - 5 + labelWidth - cornerRadius, labelY - 20);
+    ctx.arcTo(labelX - 5 + labelWidth, labelY - 20, labelX - 5 + labelWidth, labelY - 20 + cornerRadius, cornerRadius);
+
+    // Right Line with bottom-right corner
+    ctx.lineTo(labelX - 5 + labelWidth, labelY + 40 - cornerRadius);
+    ctx.arcTo(labelX - 5 + labelWidth, labelY + 40, labelX - 5 + labelWidth - cornerRadius, labelY + 40, cornerRadius);
+
+    // Bottom Line with bottom-left corner
+    ctx.lineTo(labelX - 5 + cornerRadius, labelY + 40);
+    ctx.arcTo(labelX - 5, labelY + 40, labelX - 5, labelY + 40 - cornerRadius, cornerRadius);
+
+    // Left Line with top-left corner
+    ctx.lineTo(labelX - 5, labelY - 20 + cornerRadius);
+    ctx.arcTo(labelX - 5, labelY - 20, labelX - 5 + cornerRadius, labelY - 20, cornerRadius);
+
+    ctx.closePath();
+
+    // Fill with light green color
+    if ( highlightRank == 1 ) {
+      ctx.fillStyle = "#00FFFF";
+    } else if ( highlightRank == 2 ) {
+      ctx.fillStyle = "#00FF00";
+    }
+    ctx.fill();
+    
   }
 }
 
