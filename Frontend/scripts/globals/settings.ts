@@ -26,9 +26,9 @@ export const GLOBAL_SETTINGS: GlobalSettings = {
   displayRange: 200,
   centerCoordinates: { latitude: 35.6895, longitude: 139.6917 }, // 東京の座標
   isDisplaying: {
-    waypointName: true,
+    waypointName: false,
     waypointPoint: true,
-    radioNavigationAidsName: true,
+    radioNavigationAidsName: false,
     radioNavigationAidsPoint: true,
     atsLowerRoute: true,
     rnavRoute: true,
