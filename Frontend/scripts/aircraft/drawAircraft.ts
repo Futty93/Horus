@@ -19,8 +19,8 @@ class DrawAircraft {
   public static drawAircraft(ctx: CanvasRenderingContext2D, aircraft: Aircraft) {
     this.drawAircraftMarker(ctx, aircraft.position);
     this.drawHeadingLine(ctx, aircraft.position, aircraft.vector.groundSpeed, aircraft.vector.heading);
-    this.drawAircraftLabel(ctx, aircraft);
     this.drawLabelLiine(ctx, aircraft.position, aircraft.label);
+    this.drawAircraftLabel(ctx, aircraft);
   }
 
   private static drawAircraftMarker(ctx: CanvasRenderingContext2D, position: { x: number; y: number }) {
