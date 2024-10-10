@@ -15,7 +15,7 @@ export const GLOBAL_CONSTANTS: GlobalConstants = {
   WAYPOINT_COLOR: '#00f',
   NAV_AID_COLOR: '#f00',
   LINE_COLOR: '#000',
-  FONT_STYLE_IN_CANVAS: '10px Arial',
+  FONT_STYLE_IN_CANVAS: '12px Arial',
 
   REFRESH_RATE: 60,
 };
