@@ -350,19 +350,20 @@ resetButton?.addEventListener("click", handleResetButtonClick);
 
 // マッピングオブジェクトを作成
 const settingsMap = {
-  "waypoint-name": "isDisplayingWaypointName",
-  "waypoint-point": "isDisplayingWaypointPoint",
-  "radio-navigation-aids-name": "isDisplayingRadioNavigationAidsName",
-  "radio-navigation-aids-point": "isDisplayingRadioNavigationAidsPoint",
-  "ats-lower-routes": "isDisplayingAtsLowerRoute",
-  "rnav-routes": "isDisplayingRnavRoute",
+  "waypoint-name": "waypointName",
+  "waypoint-point": "waypointPoint",
+  "radio-navigation-aids-name": "radioNavigationAidsName",
+  "radio-navigation-aids-point": "radioNavigationAidsPoint",
+  "ats-lower-routes": "atsLowerRoute",
+  "rnav-routes": "rnavRoute",
 };
 
 // 共通のイベントハンドラ
 function handleCheckboxChange(settingKey: string) {
   return (event: Event) => {
     const isChecked = (event.target as HTMLInputElement).checked;
-    GLOBAL_SETTINGS[settingKey] = isChecked;
+    GLOBAL_SETTINGS.isDisplaying[settingKey] = isChecked;
+    console.log(`${settingKey} setting changed to:`, GLOBAL_SETTINGS.isDisplaying[settingKey]);
   };
 }
 
