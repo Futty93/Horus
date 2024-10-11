@@ -6,9 +6,8 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.InstructedVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
-import org.apache.tomcat.util.http.HeaderUtil;
 
-import static jp.ac.tohoku.qse.takahashi.AtcSimulator.config.constants.GlobalConstants.*;
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalConstants.*;
 
 public class CommercialAircraft extends AircraftBase implements Aircraft {
     // 最大加速度（kts/s）
