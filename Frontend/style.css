@@ -1,5 +1,13 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    /* overflow: hidden; スクロールを防ぐ */
+}
+
 .container {
     display: flex; /* フレックスレイアウトを使用 */
+    height: 100%; /* 画面全体を覆う */
     margin-bottom: 20px; /* settingButtonAreaとの間にスペースを作る */
 }
 
@@ -7,11 +15,17 @@
     flex: 1; /* radarAreaが利用可能なスペースを取る */
 }
 
+.radarArea canvas {
+    width: 100%; /* canvasを親要素に合わせる */
+    height: 100vh; /* 画面全体に表示 */
+}
+
 .controlPanel {
     flex: 0; /* controlPanelは自然なサイズで表示 */
-    min-width: 300px; /* 必要に応じて幅を調整 */
+    min-width: 400px; /* 必要に応じて幅を調整 */
     background-color: #ddd;
-    padding: 10px;
+    padding: 0 20px; /* radarAreaとの間にスペースを作る */
+    height: 100%;
 }
 
 .controlPanel input {
@@ -24,7 +38,6 @@
 }
 
 .settingButtonArea {
-    display: flex; /* 横並びにする */
     justify-content: center; /* 中央に配置する */
     gap: 10px; /* ボタン間のスペースを作る */
 }

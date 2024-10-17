@@ -11,8 +11,8 @@
 <body>
 	<div class="container">
 		<div class="radarArea">
-			<canvas id="radar" width="2000" height="2000"></canvas>
-			<canvas id="radar2" width="2000" height="2000"></canvas>
+			<canvas id="radar" style="background-color: black;"></canvas>
+			<canvas id="radar2" style="display: none;"></canvas>
 		</div>
 		<div class="controlPanel">
 			<div id="callsignDisplay">
@@ -49,7 +49,7 @@
 					<span>Waypoint</span>
 					<div class="name-point-display-setting">
 						<div>
-							<input type="checkbox" id="waypoint-name" checked>
+							<input type="checkbox" id="waypoint-name">
 							<span>Name</span>
 						</div>
 						<div>
@@ -62,7 +62,7 @@
 					<span>Radio Navigation AIDs</span>
 					<div class="name-point-display-setting">
 						<div>
-							<input type="checkbox" id="radio-navigation-aids-name" checked>
+							<input type="checkbox" id="radio-navigation-aids-name">
 							<span>Name</span>
 						</div>
 						<div>
@@ -79,71 +79,74 @@
 					<input type="checkbox" id="rnav-routes" checked>
 					<span>RNAV Route</span>
 				</div>
+			</div>
 
+			<div class="settingButtonArea">
+				<div>
+					<label for="selectSector">担当セクター:</label>
+					<select id="selectSector">
+						<option value="T09">T09 関東南A</option>
+						<option value="T10">T10 関東南B</option>
+						<option value="T14">T14 伊豆</option>
+						<option value="T25">T25 知多</option>
+						<option value="T30">T30</option>
+						<option value="T31">T31</option>
+						<option value="T32">T32</option>
+						<option value="T33">T33</option>
+						<option value="T34">T34</option>
+						<option value="T35">T35</option>
+						<option value="T36">T36</option>
+						<option value="T38">T38</option>
+						<option value="T39">T39</option>
+						<option value="T45">T45</option>
+						<option value="T46">T46</option>
+						<option value="T92">T92</option>
+						<option value="T93">T93</option>
+			
+						<option value="F01">F01</option>
+						<option value="F04">F04</option>
+						<option value="F05">F05</option>
+						<option value="F07">F07</option>
+						<option value="F08">F08</option>
+						<option value="F09">F09</option>
+						<option value="F10">F10</option>
+						<option value="F11">F11</option>
+						<option value="F12">F12</option>
+						<option value="F13">F13</option>
+						<option value="F14">F14</option>
+						<option value="F15">F15</option>
+						<option value="F16">F16</option>
+						<option value="F17">F17</option>
+			
+						<option value="N43">F43</option>
+						<option value="N44">F44</option>
+						<option value="N47">F47</option>
+						<option value="N48">F48</option>
+						<option value="N49">F49</option>
+						<option value="N50">F50</option>
+						<option value="N51">F51</option>
+						<option value="N52">F52</option>
+						<option value="N53">F53</option>
+						<option value="N54">F54</option>
+						<option value="N55">F55</option>
+			
+						<option value="A01">A01</option>
+						<option value="A02">A02</option>
+						<option value="A03">A03</option>
+						<option value="A04">A04</option>
+						<option value="A05">A05</option>
+					</select>
+					<label for="displayRange">表示範囲:</label>
+					<input type="number" id="displayRange" value="200" min="10" max="4000">km
+				</div>
+				<div>
+					<input type="button" value="Start" id="startButton">
+					<input type="button" value="Stop" id="stopButton">
+					<input type="button" value="Reset" id="resetButton">
+				</div>
 			</div>
 		</div>
 	</div>
-	<div class="settingButtonArea">
-		<label for="selectSector">担当セクター:</label>
-		<select id="selectSector">
-			<option value="T09">T09 関東南A</option>
-			<option value="T10">T10 関東南B</option>
-			<option value="T14">T14 伊豆</option>
-			<option value="T25">T25 知多</option>
-			<option value="T30">T30</option>
-			<option value="T31">T31</option>
-			<option value="T32">T32</option>
-			<option value="T33">T33</option>
-			<option value="T34">T34</option>
-			<option value="T35">T35</option>
-			<option value="T36">T36</option>
-			<option value="T38">T38</option>
-			<option value="T39">T39</option>
-			<option value="T45">T45</option>
-			<option value="T46">T46</option>
-			<option value="T92">T92</option>
-			<option value="T93">T93</option>
-
-			<option value="F01">F01</option>
-			<option value="F04">F04</option>
-			<option value="F05">F05</option>
-			<option value="F07">F07</option>
-			<option value="F08">F08</option>
-			<option value="F09">F09</option>
-			<option value="F10">F10</option>
-			<option value="F11">F11</option>
-			<option value="F12">F12</option>
-			<option value="F13">F13</option>
-			<option value="F14">F14</option>
-			<option value="F15">F15</option>
-			<option value="F16">F16</option>
-			<option value="F17">F17</option>
-
-			<option value="N43">F43</option>
-			<option value="N44">F44</option>
-			<option value="N47">F47</option>
-			<option value="N48">F48</option>
-			<option value="N49">F49</option>
-			<option value="N50">F50</option>
-			<option value="N51">F51</option>
-			<option value="N52">F52</option>
-			<option value="N53">F53</option>
-			<option value="N54">F54</option>
-			<option value="N55">F55</option>
-
-			<option value="A01">A01</option>
-			<option value="A02">A02</option>
-			<option value="A03">A03</option>
-			<option value="A04">A04</option>
-			<option value="A05">A05</option>
-		</select>
-		<label for="displayRange">表示範囲:</label>
-		<input type="number" id="displayRange" value="200" min="10" max="4000">km
-		<input type="button" value="Start" id="startButton">
-		<input type="button" value="Stop" id="stopButton">
-		<input type="button" value="Reset" id="resetButton">
-	</div>
-	
 
 	<script src="bundle.js"></script>
 </body>

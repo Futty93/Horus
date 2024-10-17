@@ -41,6 +41,17 @@ class RadarGame {
   constructor() {
     //初期変数を初期化する
     this.canvas = [this.createCanvas("radar"), this.createCanvas("radar2")];
+    const canvasContainer = document.getElementsByClassName("radarArea")[0];
+
+    // 画面サイズに合わせて canvas の描画サイズを設定する
+    this.canvas.forEach(c => {
+      c.width = canvasContainer.clientWidth; // 画面の幅に合わせる
+      c.height = canvasContainer.clientHeight; // 画面の高さに合わせる
+    });
+
+    GLOBAL_SETTINGS.canvasWidth = this.canvas[0].width;
+    GLOBAL_SETTINGS.canvasHeight = this.canvas[0].height;
+    console.log("Canvas width:", GLOBAL_SETTINGS.canvasWidth, "Canvas height:", GLOBAL_SETTINGS.canvasHeight);
     this.ctx = this.canvas.map((c) =>
       c.getContext("2d") as CanvasRenderingContext2D
     );
@@ -69,7 +80,12 @@ class RadarGame {
   public atsRouteData: any;
 
   private async initializeAtsRouteData() {
-    this.atsRouteData = await loadAtsRoutes();
+    try {
+      this.atsRouteData = await loadAtsRoutes(); // loadAtsRoutes() が完了するまで待つ
+      this.update(); // 完了後に一度だけ update() を呼び出す
+    } catch (error) {
+      console.error('Error loading ATS routes:', error); // エラーハンドリングを追加
+    }
   }
 
   /**
@@ -261,7 +277,7 @@ class RadarGame {
     this.bg = 1 - this.bg;
   }
 
-  private async update(): Promise<void> {
+  public async update(): Promise<void> {
     //画面全体を更新する
     this.clearCanvas(this.bg);
     if (GLOBAL_SETTINGS.callsignExtractionStatus === "FAILURE") {
@@ -305,6 +321,7 @@ const radarGame = new RadarGame();
 
 // when the page is loaded, make the first canvas
 radarGame.makeFirstCanvas();
+// radarGame.update();
 
 loadAtsRoutes().then((data) => {
   console.log(data);
