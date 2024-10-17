@@ -21,25 +21,80 @@ html, body {
 }
 
 .controlPanel {
-    flex: 0; /* controlPanelは自然なサイズで表示 */
+    display: flex;
+    flex-direction: column; /* 要素を縦に並べる */
+    justify-content: space-between; /* 上下にスペースを作る */
     min-width: 400px; /* 必要に応じて幅を調整 */
-    background-color: #ddd;
-    padding: 0 20px; /* radarAreaとの間にスペースを作る */
     height: 100%;
+    background-color: #1a1a1a; /* モダンな黒に近い背景色 */
+    color: #fff; /* 白い文字で視認性を確保 */
+    padding: 0 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* モダンなフォント */
 }
 
-.controlPanel input {
-    margin-bottom: 17px;
+.controlPanel input[type="number"] {
+    width: 60%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #00ff80; /* 緑のアクセント */
+    background-color: #333;
+    color: #fff;
+    margin-bottom: 15px;
+    transition: all 0.3s ease; /* スムーズなインタラクション */
 }
 
-#callsign {
-    font-size: x-large;
+.controlPanel input[type="number"]:focus {
+    outline: none;
+    border-color: #00ff80; /* フォーカス時のハイライト */
+    box-shadow: 0 0 10px rgba(0, 255, 128, 0.7); /* レーダー風のフォーカスエフェクト */
+}
+
+.tagArea {
+    margin-bottom: 5px;
+    color: #00ff80; /* モダンな緑色を採用 */
     font-weight: bold;
 }
 
+.controlPanel input[type="button"] {
+    background-color: #00ff80;
+    color: #1a1a1a;
+    border: none;
+    padding: 10px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 5px;
+}
+
+.controlPanel input[type="button"]:hover {
+    background-color: #00cc66; /* ホバー時に少し暗く */
+    box-shadow: 0 0 10px rgba(0, 255, 128, 0.7);
+}
+
+#callsign {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-align: center;
+    color: #00ff80;
+    margin-bottom: 20px;
+}
+
+/* スムーズなインタラクション用アニメーション */
+.controlPanel div.inputArea, .controlPanel div.tagArea {
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+
+.controlPanel div:hover .tagArea {
+    transform: scale(1.05); /* ホバーで拡大する */
+}
+
 .settingButtonArea {
-    justify-content: center; /* 中央に配置する */
-    gap: 10px; /* ボタン間のスペースを作る */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
 }
 
 #routeInfoDisplaySetting {
@@ -48,8 +103,73 @@ html, body {
     gap: 10px;
 }
 
+#routeInfoDisplaySetting span {
+    color: #00ff80;
+    font-weight: bold;
+}
+
 .name-point-display-setting {
     display: flex;
     flex-direction: column;
-    margin-left: 10px;
+    margin-left: 20px;
+}
+
+#settingArea {
+    margin-top: auto; /* 他の要素の下側に配置する */
+    padding-top: 10px; /* 上側に少しスペースを追加 */
+    margin-bottom: 50px;
+}
+
+input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.settingButtonArea label {
+    font-weight: bold;
+    color: #00ff80;
+    margin-right: 10px;
+}
+
+.settingButtonArea select,
+.settingButtonArea input[type="number"] {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #00ff80;
+    background-color: #333;
+    color: #fff;
+    margin-bottom: 10px;
+    width: 200px;
+}
+
+.settingButtonArea input[type="number"] {
+    text-align: center;
+}
+
+.settingButtonArea input[type="button"] {
+    background-color: #00ff80;
+    color: #1a1a1a;
+    border: none;
+    padding: 10px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.settingButtonArea input[type="button"]:hover {
+    background-color: #00cc66;
+    box-shadow: 0 0 10px rgba(0, 255, 128, 0.7);
+}
+
+.settingButtonArea input[type="button"]:not(:last-child) {
+    margin-right: 10px;
+}
+
+/* レイアウト調整 */
+.settingButtonArea div {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
 }

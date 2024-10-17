@@ -21,26 +21,32 @@ export function renderMap(
   }
   if (GLOBAL_SETTINGS.isDisplaying.rnavRoute) {
     [...rnavRoutes].forEach((route) => {
-      drawRoute(ctx, route, '#ff0');
+      drawRoute(ctx, route, '#376');
     });
   }
 
 
   // Draw all waypoints and radio navigation aids in one loop
   [...waypoints].forEach((point) => {
-    drawPoint(ctx, point, '#0f0', GLOBAL_SETTINGS.isDisplaying.waypointName, GLOBAL_SETTINGS.isDisplaying.waypointPoint);
+    drawPoint(ctx, point, '#376', GLOBAL_SETTINGS.isDisplaying.waypointName, GLOBAL_SETTINGS.isDisplaying.waypointPoint);
   });
   [...radioNavAids].forEach((point) => {
-    drawPoint(ctx, point, "#f8b", GLOBAL_SETTINGS.isDisplaying.radioNavigationAidsName, GLOBAL_SETTINGS.isDisplaying.radioNavigationAidsPoint);
+    drawPoint(ctx, point, "#376", GLOBAL_SETTINGS.isDisplaying.radioNavigationAidsName, GLOBAL_SETTINGS.isDisplaying.radioNavigationAidsPoint);
   });
 }
 
 function drawPoint(ctx: CanvasRenderingContext2D, point: Waypoint | RadioNavigationAid, color, isDisplayingName: boolean, isDisplayingPoint: boolean) {
   const { x, y } = CoordinateManager.calculateCanvasCoordinates(point.latitude, point.longitude);
 
-  const markerSize = 5;
+  const markerSize = 3;
 
   if (isDisplayingPoint) {
+    // Draw black circle under the marker
+    ctx.beginPath();
+    ctx.arc(x, y, markerSize + 4, 0, 2 * Math.PI);
+    ctx.fillStyle = 'black';
+    ctx.fill();
+
     ctx.beginPath();
     if (point['type'] !== 'waypoint') {  // Checking if it's a RadioNavigationAid
       ctx.arc(x, y, markerSize, 0, 2 * Math.PI);
@@ -50,6 +56,7 @@ function drawPoint(ctx: CanvasRenderingContext2D, point: Waypoint | RadioNavigat
       ctx.lineTo(x + markerSize, y);
       ctx.moveTo(x, y - markerSize);
       ctx.lineTo(x, y + markerSize);
+      ctx.globalAlpha = 0.7;  // Set opacity for waypoints
       ctx.strokeStyle = color;  // Color for waypoints
     }
     ctx.stroke();
@@ -78,6 +85,7 @@ function drawLineBetweenPoints(ctx: CanvasRenderingContext2D, point1: RoutePoint
   ctx.beginPath();
   ctx.moveTo(point1Coordinate.x, point1Coordinate.y);
   ctx.lineTo(point2Coordinate.x, point2Coordinate.y);
+  ctx.globalAlpha = 0.7;  // Set opacity for waypoints
   ctx.strokeStyle = color;  // Line color
   ctx.stroke();
 }

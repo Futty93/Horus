@@ -30,7 +30,7 @@ export const GLOBAL_SETTINGS: GlobalSettings = {
     waypointPoint: true,
     radioNavigationAidsName: false,
     radioNavigationAidsPoint: true,
-    atsLowerRoute: true,
+    atsLowerRoute: false,
     rnavRoute: true,
   },
   locationUpdateInterval: null, // 更新間隔（ms）
