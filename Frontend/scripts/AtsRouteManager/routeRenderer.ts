@@ -41,12 +41,6 @@ function drawPoint(ctx: CanvasRenderingContext2D, point: Waypoint | RadioNavigat
   const markerSize = 3;
 
   if (isDisplayingPoint) {
-    // Draw black circle under the marker
-    ctx.beginPath();
-    ctx.arc(x, y, markerSize + 4, 0, 2 * Math.PI);
-    ctx.fillStyle = 'black';
-    ctx.fill();
-
     ctx.beginPath();
     if (point['type'] !== 'waypoint') {  // Checking if it's a RadioNavigationAid
       ctx.arc(x, y, markerSize, 0, 2 * Math.PI);
@@ -88,4 +82,15 @@ function drawLineBetweenPoints(ctx: CanvasRenderingContext2D, point1: RoutePoint
   ctx.globalAlpha = 0.7;  // Set opacity for waypoints
   ctx.strokeStyle = color;  // Line color
   ctx.stroke();
+
+
+  // Draw black circle under the marker
+  ctx.beginPath();
+  ctx.arc(point1Coordinate.x, point1Coordinate.y, 7, 0, 2 * Math.PI);
+  ctx.fillStyle = 'black';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(point2Coordinate.x, point2Coordinate.y, 7, 0, 2 * Math.PI);
+  ctx.fillStyle = 'black';
+  ctx.fill();
 }

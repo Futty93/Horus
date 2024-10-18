@@ -158,6 +158,18 @@ input[type="checkbox"] {
     margin-right: 10px;
 }
 
+#startButton {
+    background-color: #00ff80;
+}
+
+#stopButton {
+    background-color: #ff2255;
+}
+
+#resetButton {
+    background-color: #ffaa33;
+}
+
 .settingButtonArea input[type="button"]:hover {
     background-color: #00cc66;
     box-shadow: 0 0 10px rgba(0, 255, 128, 0.7);
