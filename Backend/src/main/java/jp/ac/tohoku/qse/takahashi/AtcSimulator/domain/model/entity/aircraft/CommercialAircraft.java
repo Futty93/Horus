@@ -1,5 +1,6 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft;
 
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalConstants;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.*;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
@@ -106,14 +107,18 @@ public class CommercialAircraft extends AircraftBase implements Aircraft {
         return new Heading(nextHeading);
     }
 
+    /**
+     * instructedVector から 航空機の次のVerticalSpeedを計算する
+     * 指示された高度と現在の高度を比較し、垂直速度を設定する
+     */
     private VerticalSpeed calculateNextVerticalSpeed(final double currentAltitude, final double targetAltitude) {
         double nextVarticalSpeed = 0;
         if (currentAltitude < targetAltitude) {
-            nextVarticalSpeed = Math.min(MAX_CLIMB_RATE / 60.0, targetAltitude - currentAltitude);
+            nextVarticalSpeed = Math.min(MAX_CLIMB_RATE / (60.0 * REFRESH_RATE), targetAltitude - currentAltitude);
         } else if (currentAltitude > targetAltitude) {
-            nextVarticalSpeed = Math.min(MAX_CLIMB_RATE / 60.0, currentAltitude - targetAltitude) * -1;
+            nextVarticalSpeed = Math.min(MAX_CLIMB_RATE / (60.0 * REFRESH_RATE), currentAltitude - targetAltitude) * -1;
         }
-        return new VerticalSpeed(nextVarticalSpeed);
+        return new VerticalSpeed(nextVarticalSpeed * 60);
     }
 
     /**
