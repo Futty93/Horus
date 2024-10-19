@@ -10,6 +10,7 @@ import { GLOBAL_SETTINGS } from "./globals/settings.ts";
 import { fetchAircraftLocation } from "./api/location.ts";
 import { controlAircraft } from "./api/controlAircraft.ts";
 import { DrawAircraft } from "./aircraft/drawAircraft.ts";
+import { SimulationManager } from "./api/simulation.ts";
 
 /**
  * Represents the RadarGame class that encapsulates the game.
@@ -74,7 +75,7 @@ class RadarGame {
     this.canvas[1].addEventListener("mouseup", () => this.onMouseUp());
 
     this.initializeAtsRouteData();
-
+    const simulationManager = new SimulationManager();
   }
 
   public atsRouteData: any;
@@ -83,6 +84,7 @@ class RadarGame {
     try {
       this.atsRouteData = await loadAtsRoutes(); // loadAtsRoutes() が完了するまで待つ
       this.update(); // 完了後に一度だけ update() を呼び出す
+      this.start();
     } catch (error) {
       console.error('Error loading ATS routes:', error); // エラーハンドリングを追加
     }
@@ -305,14 +307,10 @@ class RadarGame {
     this.updateInterval = setInterval(() => {
       this.update();
     }, 1000 / GLOBAL_CONSTANTS.REFRESH_RATE);
-  }
 
-  public stop(): void {
-    if (this.updateInterval) {
-      clearInterval(this.updateInterval);
-      this.updateInterval = null;
-      console.log("Game stopped");
-    }
+    const fetchLicationTimerId = setInterval(async () => {
+      radarGame.controllingAircratfts = await fetchAircraftLocation(radarGame.controllingAircratfts);
+    }, GLOBAL_CONSTANTS.LOCATION_UPDATE_INTERVAL); // 1 second interval
   }
 }
 
@@ -329,32 +327,20 @@ loadAtsRoutes().then((data) => {
   console.error(error);
 });
 
-// when the start button is clicked, start the game and start fetching aircraft locations
-const startButton = document.getElementById("startButton");
-startButton?.addEventListener("click", () => {
-  radarGame.start();
+// // when the start button is clicked, start the game and start fetching aircraft locations
+// const startButton = document.getElementById("startButton");
+// startButton?.addEventListener("click", () => {
+//   radarGame.start();
 
-  console.log("Game started");
-  // Start fetching aircraft location every 1 second
-  if (!GLOBAL_SETTINGS.locationUpdateInterval) {
-    // GLOBAL_SETTINGS.locationUpdateInterval = setInterval(fetchAircraftLocation, 1000); // 1 second interval
-    GLOBAL_SETTINGS.locationUpdateInterval = setInterval(async () => {
-      radarGame.controllingAircratfts = await fetchAircraftLocation(radarGame.controllingAircratfts);
-    }, 1000); // 1 second interval
-  }
-});
-
-// when the stop button is clicked, stop the game and stop fetching aircraft locations
-const stopButton = document.getElementById("stopButton");
-stopButton?.addEventListener("click", () => {
-  radarGame.stop();
-
-  // Stop fetching aircraft location
-  if (GLOBAL_SETTINGS.locationUpdateInterval) {
-    clearInterval(GLOBAL_SETTINGS.locationUpdateInterval);
-    GLOBAL_SETTINGS.locationUpdateInterval = null;
-  }
-});
+//   console.log("Game started");
+//   // Start fetching aircraft location every 1 second
+//   if (!GLOBAL_SETTINGS.locationUpdateInterval) {
+//     // GLOBAL_SETTINGS.locationUpdateInterval = setInterval(fetchAircraftLocation, 1000); // 1 second interval
+//     GLOBAL_SETTINGS.locationUpdateInterval = setInterval(async () => {
+//       radarGame.controllingAircratfts = await fetchAircraftLocation(radarGame.controllingAircratfts);
+//     }, 1000); // 1 second interval
+//   }
+// });
 
 //* when the confirm button is clicked, control the selected aircraft
 const confirmButton = document.getElementById("confirmButton");
@@ -373,33 +359,33 @@ displayRangeElement?.addEventListener("input", (event) => {
   GLOBAL_SETTINGS.displayRange = newRange;
 });
 
-// Resetボタンの参照を取得
-const resetButton = document.getElementById("resetButton");
+// // Resetボタンの参照を取得
+// const resetButton = document.getElementById("resetButton");
 
-// ボタンがクリックされたときにAPIリクエストを送信する関数
-const handleResetButtonClick = async () => {
-  console.log("Reset button clicked");
-  try {
-    const response = await fetch("http://localhost:8080/hello/", {
-      method: "GET",
-      headers: {
-        "accept": "*/*",
-      },
-    });
+// // ボタンがクリックされたときにAPIリクエストを送信する関数
+// const handleResetButtonClick = async () => {
+//   console.log("Reset button clicked");
+//   try {
+//     const response = await fetch("http://localhost:8080/hello/", {
+//       method: "GET",
+//       headers: {
+//         "accept": "*/*",
+//       },
+//     });
 
-    if (response.ok) {
-      const data = await response.text(); // Fetches text data
-      console.log("Response Data:", data);
-    } else {
-      console.error("Request failed with status:", response.status);
-    }
-  } catch (error) {
-    console.error("Error occurred:", error);
-  }
-};
+//     if (response.ok) {
+//       const data = await response.text(); // Fetches text data
+//       console.log("Response Data:", data);
+//     } else {
+//       console.error("Request failed with status:", response.status);
+//     }
+//   } catch (error) {
+//     console.error("Error occurred:", error);
+//   }
+// };
 
-// ボタンにクリックイベントリスナーを追加
-resetButton?.addEventListener("click", handleResetButtonClick);
+// // ボタンにクリックイベントリスナーを追加
+// resetButton?.addEventListener("click", handleResetButtonClick);
 
 
 // マッピングオブジェクトを作成

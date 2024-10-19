@@ -1,5 +1,6 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aggregate.airspace;
 
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalVariables;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
@@ -38,6 +39,9 @@ public class AirspaceManagementImpl implements AirspaceManagement {
 
     @Scheduled(fixedRate = 1000 / REFRESH_RATE)
     public void NextStep() {
+        if (!GlobalVariables.isSimulationRunning) {
+            return;
+        }
         System.out.println("Next step called  " + step++ + " times at AirspaceManagementImpl");
         aircraftRepository.NextStep();
     }

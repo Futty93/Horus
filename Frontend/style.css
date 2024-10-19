@@ -2,7 +2,6 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    /* overflow: hidden; スクロールを防ぐ */
 }
 
 .container {
@@ -146,7 +145,7 @@ input[type="checkbox"] {
 }
 
 .settingButtonArea input[type="button"] {
-    background-color: #00ff80;
+    /* background-color: #00ff80; */
     color: #1a1a1a;
     border: none;
     padding: 10px;
@@ -162,12 +161,12 @@ input[type="checkbox"] {
     background-color: #00ff80;
 }
 
-#stopButton {
-    background-color: #ff2255;
+#pauseButton {
+    background-color: #ffaa33;
 }
 
-#resetButton {
-    background-color: #ffaa33;
+#resetButton { 
+    background-color: #ff2255;
 }
 
 .settingButtonArea input[type="button"]:hover {

@@ -6,6 +6,7 @@ interface GlobalConstants {
   LINE_COLOR: string;
   FONT_STYLE_IN_CANVAS: string;
 
+  LOCATION_UPDATE_INTERVAL: number; // 更新間隔（ms）
   REFRESH_RATE: number;
 }
 
@@ -17,5 +18,6 @@ export const GLOBAL_CONSTANTS: GlobalConstants = {
   LINE_COLOR: '#000',
   FONT_STYLE_IN_CANVAS: '12px Arial',
 
+  LOCATION_UPDATE_INTERVAL: 1000, // 更新間隔（ms）
   REFRESH_RATE: 60,
 };
