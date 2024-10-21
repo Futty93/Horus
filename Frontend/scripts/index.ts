@@ -308,7 +308,7 @@ class RadarGame {
       this.update();
     }, 1000 / GLOBAL_CONSTANTS.REFRESH_RATE);
 
-    const fetchLicationTimerId = setInterval(async () => {
+    const fetchLocationTimerId = setInterval(async () => {
       radarGame.controllingAircratfts = await fetchAircraftLocation(radarGame.controllingAircratfts);
     }, GLOBAL_CONSTANTS.LOCATION_UPDATE_INTERVAL); // 1 second interval
   }
