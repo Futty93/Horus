@@ -7,6 +7,7 @@ import { GLOBAL_SETTINGS } from "../globals/settings";
 import { GLOBAL_CONSTANTS } from "../globals/constants";
 
 import { DisplaySettings, RouteInfoDisplaySettingContextType } from '@/context/routeInfoDisplaySettingContext'; // コンテキストをインポート
+import { Coordinate } from "@/context/centerCoordinateContext";
 
 export function renderMap(
   waypoints: Waypoint[],
@@ -22,30 +23,31 @@ export function renderMap(
     atsLowerRoute: false,
     rnavRoute: true,
   },
+  centerCoordinate: Coordinate,
 ) {
   // Draw ATS and RNAV routes
   if (displaySettings.atsLowerRoute) { // GLOBAL_SETTINGSではなくdisplaySettingsを使用
     [...atsRoutes].forEach((route) => {
-      drawRoute(ctx, route, '#0ff');
+      drawRoute(ctx, route, '#0ff', centerCoordinate);
     });
   }
   if (displaySettings.rnavRoute) { // GLOBAL_SETTINGSではなくdisplaySettingsを使用
     [...rnavRoutes].forEach((route) => {
-      drawRoute(ctx, route, '#376');
+      drawRoute(ctx, route, '#376', centerCoordinate);
     });
   }
 
   // Draw all waypoints and radio navigation aids in one loop
   [...waypoints].forEach((point) => {
-    drawPoint(ctx, point, '#376', displaySettings.waypointName, displaySettings.waypointPoint); // GLOBAL_SETTINGSではなくdisplaySettingsを使用
+    drawPoint(ctx, point, '#376', displaySettings.waypointName, displaySettings.waypointPoint, centerCoordinate); // GLOBAL_SETTINGSではなくdisplaySettingsを使用
   });
   [...radioNavAids].forEach((point) => {
-    drawPoint(ctx, point, "#376", displaySettings.radioNavigationAidsName, displaySettings.radioNavigationAidsPoint); // GLOBAL_SETTINGSではなくdisplaySettingsを使用
+    drawPoint(ctx, point, "#376", displaySettings.radioNavigationAidsName, displaySettings.radioNavigationAidsPoint, centerCoordinate); // GLOBAL_SETTINGSではなくdisplaySettingsを使用
   });
 }
 
-function drawPoint(ctx: CanvasRenderingContext2D, point: Waypoint | RadioNavigationAid, color: string, isDisplayingName: boolean, isDisplayingPoint: boolean) {
-  const { x, y } = CoordinateManager.calculateCanvasCoordinates(point.latitude, point.longitude);
+function drawPoint(ctx: CanvasRenderingContext2D, point: Waypoint | RadioNavigationAid, color: string, isDisplayingName: boolean, isDisplayingPoint: boolean, centerCoordinate: Coordinate) {
+  const { x, y } = CoordinateManager.calculateCanvasCoordinates(point, centerCoordinate); // GLOBAL_SETTINGSではなくcenterCoordinateを使用
 
   const markerSize = 3;
 
@@ -72,18 +74,18 @@ function drawPoint(ctx: CanvasRenderingContext2D, point: Waypoint | RadioNavigat
   }
 }
 
-function drawRoute(ctx: CanvasRenderingContext2D, route: Route, color: string) {
+function drawRoute(ctx: CanvasRenderingContext2D, route: Route, color: string, centerCoordinate: Coordinate) {
   const points = route.points;
 
   // Draw lines between consecutive points
   for (let i = 0; i < points.length - 1; i++) {
-    drawLineBetweenPoints(ctx, points[i], points[i + 1], color);
+    drawLineBetweenPoints(ctx, points[i], points[i + 1], color, centerCoordinate);
   }
 }
 
-function drawLineBetweenPoints(ctx: CanvasRenderingContext2D, point1: RoutePoint, point2: RoutePoint, color: string) {
-  const point1Coordinate = CoordinateManager.calculateCanvasCoordinates(point1.latitude, point1.longitude);
-  const point2Coordinate = CoordinateManager.calculateCanvasCoordinates(point2.latitude, point2.longitude);
+function drawLineBetweenPoints(ctx: CanvasRenderingContext2D, point1: RoutePoint, point2: RoutePoint, color: string, centerCoordinate: Coordinate) {
+  const point1Coordinate = CoordinateManager.calculateCanvasCoordinates(point1, centerCoordinate);
+  const point2Coordinate = CoordinateManager.calculateCanvasCoordinates(point2, centerCoordinate);
 
   ctx.beginPath();
   ctx.moveTo(point1Coordinate.x, point1Coordinate.y);

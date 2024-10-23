@@ -12,6 +12,7 @@ import { controlAircraft } from "../utility/api/controlAircraft";
 import { DrawAircraft } from "../utility/aircraft/drawAircraft";
 import { SimulationManager } from "../utility/api/simulation";
 import { useRouteInfoDisplaySetting } from '@/context/routeInfoDisplaySettingContext';
+import { useCenterCoordinate } from "@/context/centerCoordinateContext";
 
 const RadarCanvas: React.FC = () => {
   const canvasRefs = [useRef<HTMLCanvasElement>(null), useRef<HTMLCanvasElement>(null)];
@@ -26,6 +27,8 @@ const RadarCanvas: React.FC = () => {
   const offsetYRef = useRef(0);
   const { isDisplaying  } = useRouteInfoDisplaySetting();
   const isDisplayingRef = useRef(isDisplaying);
+  const { centerCoordinate } = useCenterCoordinate();
+  const centerCoordinateRef = useRef(centerCoordinate);
   
   useEffect(() => {
     const canvasContainer = document.getElementsByClassName("radarArea")[0] as HTMLElement;
@@ -95,7 +98,16 @@ const RadarCanvas: React.FC = () => {
 
   useEffect(() => {
     isDisplayingRef.current = isDisplaying;
+    console.log("isDisplayingRef.current", isDisplayingRef.current);
   }, [isDisplaying]);
+
+  useEffect(() => {
+    centerCoordinateRef.current = centerCoordinate;
+    console.log("centerCoordinateRef.current", centerCoordinateRef.current);
+    if (!centerCoordinateRef.current) {
+      centerCoordinateRef.current = { latitude: 34.482, longitude: 138.614 };
+    }
+  }, [centerCoordinate]);
 
   const updateCanvas = () => {
     if (!atsRouteData) {
@@ -112,7 +124,7 @@ const RadarCanvas: React.FC = () => {
     const ctx = canvas.getContext("2d");
     if (ctx) {
       clearCanvas(ctx);
-      renderMap(atsRouteData.waypoints, atsRouteData.radioNavigationAids, atsRouteData.atsLowerRoutes, atsRouteData.rnavRoutes, ctx, isDisplayingRef.current);
+      renderMap(atsRouteData.waypoints, atsRouteData.radioNavigationAids, atsRouteData.atsLowerRoutes, atsRouteData.rnavRoutes, ctx, isDisplayingRef.current, centerCoordinateRef.current);
       
       const currentAircrafts = controllingAircraftsRef.current; // 最新の値を参照
       currentAircrafts.forEach((aircraft) => {
@@ -225,16 +237,11 @@ const RadarCanvas: React.FC = () => {
     }
   };
 
-  // // useEffectで変更を監視してログを出力する方法
-  // useEffect(() => {
-  //   console.log("controllingAircrafts updated:", controllingAircrafts);
-  // }, [controllingAircrafts]);
-
   const startUpdatingAircraftLocations = () => {
     const fetchLocationInterval = setInterval(async () => {
       try {
         const currentControllingAircrafts = controllingAircraftsRef.current;
-        const updatedAircrafts = await fetchAircraftLocation(currentControllingAircrafts);
+        const updatedAircrafts = await fetchAircraftLocation(currentControllingAircrafts, centerCoordinateRef.current);
         // console.log("updatedAircrafts", updatedAircrafts);
 
         // 最新の controllingAircrafts を取得して状態を更新
@@ -250,9 +257,9 @@ const RadarCanvas: React.FC = () => {
   };
 
   return (
-    <div className="radarArea relative flex-grow">
+    <div className="radarArea relative w-full">
       <canvas ref={canvasRefs[0]} className="w-full h-full bg-black"></canvas>
-      <canvas ref={canvasRefs[1]} className="hidden"></canvas>
+      <canvas ref={canvasRefs[1]} className="w-full hidden"></canvas>
     </div>
   );
 };

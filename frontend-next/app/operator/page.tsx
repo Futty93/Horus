@@ -1,16 +1,20 @@
+"use client";
 import React from "react";
 import Image from "next/image";
 import RadarCanvas from "@/component/radarCanvas";
 import { RouteInfoDisplaySettingProvider } from "@/context/routeInfoDisplaySettingContext";
 import RouteInfoDisplaySetting from "@/component/routeInfoDisplaySetting";
+import SectorSelector from "@/component/sectorSelector";
+import { CenterCoordinateProvider } from "@/context/centerCoordinateContext";
 
 export default function OperatorPage() {
   return (
     <RouteInfoDisplaySettingProvider>
-      <div className="flex h-screen">
-        <div className="flex-1 flex">
+      <CenterCoordinateProvider>
+      <div className="flex h-screen w-full">
+        <div className="flex w-full">
             <RadarCanvas />
-          <div className="controlPanel bg-gray-800 text-white p-5 flex flex-col justify-between">
+          <div className="controlPanel bg-zinc-900 text-white p-5 flex flex-col justify-between min-w-80">
             <div id="callsignDisplay" className="text-center mb-5">
               <p id="callsign" className="text-2xl font-bold text-green-400">&nbsp;</p>
             </div>
@@ -22,7 +26,7 @@ export default function OperatorPage() {
                     type="number"
                     id={label.toLowerCase()}
                     placeholder="0"
-                    className="w-3/5 p-2 rounded border border-green-400 bg-gray-900 text-white focus:outline-none focus:border-green-400 focus:ring focus:ring-green-400 transition duration-300"
+                    className="w-4/5 p-2 rounded border border-green-400 bg-gray-900 text-white focus:outline-none focus:border-green-400 focus:ring focus:ring-green-400 transition duration-300"
                   />
                 </div>
               ))}
@@ -31,61 +35,7 @@ export default function OperatorPage() {
             <div id="settingArea" className="mt-auto">
               <RouteInfoDisplaySetting />
               <div className="flex flex-col">
-                <div className="flex justify-between mb-5">
-                  <label htmlFor="selectSector" className="font-bold text-green-400 mr-2">担当セクター:</label>
-                  <select id="selectSector" className="p-2 rounded border border-green-400 bg-gray-900 text-white">
-                    <option value="T09">T09 関東南A</option>
-                    <option value="T10">T10 関東南B</option>
-                    <option value="T14">T14 伊豆</option>
-                    <option value="T25">T25 知多</option>
-                    <option value="T30">T30</option>
-                    <option value="T31">T31</option>
-                    <option value="T32">T32</option>
-                    <option value="T33">T33</option>
-                    <option value="T34">T34</option>
-                    <option value="T35">T35</option>
-                    <option value="T36">T36</option>
-                    <option value="T38">T38</option>
-                    <option value="T39">T39</option>
-                    <option value="T45">T45</option>
-                    <option value="T46">T46</option>
-                    <option value="T92">T92</option>
-                    <option value="T93">T93</option>
-
-                    <option value="F01">F01</option>
-                    <option value="F04">F04</option>
-                    <option value="F05">F05</option>
-                    <option value="F07">F07</option>
-                    <option value="F08">F08</option>
-                    <option value="F09">F09</option>
-                    <option value="F10">F10</option>
-                    <option value="F11">F11</option>
-                    <option value="F12">F12</option>
-                    <option value="F13">F13</option>
-                    <option value="F14">F14</option>
-                    <option value="F15">F15</option>
-                    <option value="F16">F16</option>
-                    <option value="F17">F17</option>
-
-                    <option value="N43">F43</option>
-                    <option value="N44">F44</option>
-                    <option value="N47">F47</option>
-                    <option value="N48">F48</option>
-                    <option value="N49">F49</option>
-                    <option value="N50">F50</option>
-                    <option value="N51">F51</option>
-                    <option value="N52">F52</option>
-                    <option value="N53">F53</option>
-                    <option value="N54">F54</option>
-                    <option value="N55">F55</option>
-
-                    <option value="A01">A01</option>
-                    <option value="A02">A02</option>
-                    <option value="A03">A03</option>
-                    <option value="A04">A04</option>
-                    <option value="A05">A05</option>
-                  </select>
-                </div>
+                <SectorSelector onSectorChange={(coordinates) => console.log("Selected sector coordinates:", coordinates)} />
                 <div className="flex justify-between mb-5">
                   <label htmlFor="displayRange" className="font-bold text-green-400 mr-2">表示範囲:</label>
                   <input
@@ -107,6 +57,7 @@ export default function OperatorPage() {
           </div>
         </div>
       </div>
+      </CenterCoordinateProvider>
     </RouteInfoDisplaySettingProvider>
   );
 }
