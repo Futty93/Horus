@@ -11,6 +11,7 @@ import { fetchAircraftLocation } from "../utility/api/location";
 import { controlAircraft } from "../utility/api/controlAircraft";
 import { DrawAircraft } from "../utility/aircraft/drawAircraft";
 import { SimulationManager } from "../utility/api/simulation";
+import { useRouteInfoDisplaySetting } from '@/context/routeInfoDisplaySettingContext';
 
 const RadarCanvas: React.FC = () => {
   const canvasRefs = [useRef<HTMLCanvasElement>(null), useRef<HTMLCanvasElement>(null)];
@@ -23,6 +24,8 @@ const RadarCanvas: React.FC = () => {
   const draggingLabelIndexRef = useRef(-1);
   const offsetXRef = useRef(0);
   const offsetYRef = useRef(0);
+  const { isDisplaying  } = useRouteInfoDisplaySetting();
+  const isDisplayingRef = useRef(isDisplaying);
   
   useEffect(() => {
     const canvasContainer = document.getElementsByClassName("radarArea")[0] as HTMLElement;
@@ -81,9 +84,6 @@ const RadarCanvas: React.FC = () => {
     try {
       const data = await loadAtsRoutes();
       setAtsRouteData(data);
-      // updateCanvas();
-      // startUpdatingAircraftLocations();
-      // startRenderingLoop();
     } catch (error) {
       console.error("Error loading ATS routes from initializeAtsRouteData:", error);
     }
@@ -92,6 +92,10 @@ const RadarCanvas: React.FC = () => {
   useEffect(() => {
     controllingAircraftsRef.current = controllingAircrafts;  // controllingAircrafts が更新されたら、refも更新
   }, [controllingAircrafts]);
+
+  useEffect(() => {
+    isDisplayingRef.current = isDisplaying;
+  }, [isDisplaying]);
 
   const updateCanvas = () => {
     if (!atsRouteData) {
@@ -108,7 +112,7 @@ const RadarCanvas: React.FC = () => {
     const ctx = canvas.getContext("2d");
     if (ctx) {
       clearCanvas(ctx);
-      renderMap(atsRouteData.waypoints, atsRouteData.radioNavigationAids, atsRouteData.atsLowerRoutes, atsRouteData.rnavRoutes, ctx);
+      renderMap(atsRouteData.waypoints, atsRouteData.radioNavigationAids, atsRouteData.atsLowerRoutes, atsRouteData.rnavRoutes, ctx, isDisplayingRef.current);
       
       const currentAircrafts = controllingAircraftsRef.current; // 最新の値を参照
       currentAircrafts.forEach((aircraft) => {

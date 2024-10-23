@@ -6,32 +6,41 @@ import { CoordinateManager } from "../coordinateManager/CoordinateManager";
 import { GLOBAL_SETTINGS } from "../globals/settings";
 import { GLOBAL_CONSTANTS } from "../globals/constants";
 
+import { DisplaySettings, RouteInfoDisplaySettingContextType } from '@/context/routeInfoDisplaySettingContext'; // コンテキストをインポート
+
 export function renderMap(
   waypoints: Waypoint[],
   radioNavAids: RadioNavigationAid[],
   atsRoutes: Route[],
   rnavRoutes: Route[],
   ctx: CanvasRenderingContext2D,
+  displaySettings: DisplaySettings = { // デフォルト値を設定
+    waypointName: false,
+    waypointPoint: true,
+    radioNavigationAidsName: false,
+    radioNavigationAidsPoint: true,
+    atsLowerRoute: false,
+    rnavRoute: true,
+  },
 ) {
   // Draw ATS and RNAV routes
-  if (GLOBAL_SETTINGS.isDisplaying.atsLowerRoute) {
+  if (displaySettings.atsLowerRoute) { // GLOBAL_SETTINGSではなくdisplaySettingsを使用
     [...atsRoutes].forEach((route) => {
       drawRoute(ctx, route, '#0ff');
     });
   }
-  if (GLOBAL_SETTINGS.isDisplaying.rnavRoute) {
+  if (displaySettings.rnavRoute) { // GLOBAL_SETTINGSではなくdisplaySettingsを使用
     [...rnavRoutes].forEach((route) => {
       drawRoute(ctx, route, '#376');
     });
   }
 
-
   // Draw all waypoints and radio navigation aids in one loop
   [...waypoints].forEach((point) => {
-    drawPoint(ctx, point, '#376', GLOBAL_SETTINGS.isDisplaying.waypointName, GLOBAL_SETTINGS.isDisplaying.waypointPoint);
+    drawPoint(ctx, point, '#376', displaySettings.waypointName, displaySettings.waypointPoint); // GLOBAL_SETTINGSではなくdisplaySettingsを使用
   });
   [...radioNavAids].forEach((point) => {
-    drawPoint(ctx, point, "#376", GLOBAL_SETTINGS.isDisplaying.radioNavigationAidsName, GLOBAL_SETTINGS.isDisplaying.radioNavigationAidsPoint);
+    drawPoint(ctx, point, "#376", displaySettings.radioNavigationAidsName, displaySettings.radioNavigationAidsPoint); // GLOBAL_SETTINGSではなくdisplaySettingsを使用
   });
 }
 

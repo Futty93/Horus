@@ -15,7 +15,7 @@ export class CoordinateManager {
    */
   public static calculateCanvasCoordinates(pointLat: number, pointLon: number): { x: number, y: number } {
     // Convert degrees to radians
-    const toRadians = (degrees) => degrees * (Math.PI / 180);
+    const toRadians = (degrees: number) => degrees * (Math.PI / 180);
 
     // Haversine formula to calculate the distance between two points on the Earth
     const deltaLat = toRadians(pointLat - GLOBAL_SETTINGS.centerCoordinates.latitude);
