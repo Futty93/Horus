@@ -1,6 +1,5 @@
 "use client"
-import { useRouteInfoDisplaySetting, RouteInfoDisplaySettingContextType, DisplaySettings } from '@/context/routeInfoDisplaySettingContext';
-import { useState, useContext } from 'react';
+import { useRouteInfoDisplaySetting, DisplaySettings } from '@/context/routeInfoDisplaySettingContext';
 
 const RouteInfoDisplaySetting = () => {
   const { isDisplaying, setRouteInfoDisplaySetting } = useRouteInfoDisplaySetting();
@@ -10,23 +9,20 @@ const RouteInfoDisplaySetting = () => {
       const isChecked = event.target.checked;
       setRouteInfoDisplaySetting((prevSettings) => ({
         ...prevSettings,
-        isDisplaying: {
-          ...prevSettings.isDisplaying,
-          [settingKey]: isChecked, // isDisplayingの特定の設定を更新
-        },
+        [settingKey]: isChecked, // ここで特定の設定を直接更新
       }));
-      console.log(`${settingKey} setting changed to:`, isChecked);
     };
   };
 
   return (
-    <div id="routeInfoDisplaySetting" className="flex flex-col mb-5">
+    <div id="routeInfoDisplaySetting" className="flex flex-col mb-5 text-green-400 font-bold">
       {['Waypoint', 'Radio Navigation AIDs'].map((label) => (
         <div key={label} className="mb-2">
-          <span className="font-bold text-green-400">{label}</span>
+          <span className="">{label}</span>
           <div className="flex flex-col ml-5">
-            <label className="flex items-center">
+            <label htmlFor={`${label.toLowerCase()}Name`} className="flex items-center">
               <input
+                id={`${label.toLowerCase()}Name`}
                 type="checkbox"
                 checked={label === 'Waypoint' ? isDisplaying.waypointName : isDisplaying.radioNavigationAidsName}
                 onChange={handleCheckboxChange(label === 'Waypoint' ? 'waypointName' : 'radioNavigationAidsName')}
@@ -34,8 +30,9 @@ const RouteInfoDisplaySetting = () => {
               />
               <span>Name</span>
             </label>
-            <label className="flex items-center">
+            <label htmlFor={`${label.toLowerCase()}Point`} className="flex items-center">
               <input
+                id={`${label.toLowerCase()}Point`}
                 type="checkbox"
                 checked={label === 'Waypoint' ? isDisplaying.waypointPoint : isDisplaying.radioNavigationAidsPoint}
                 onChange={handleCheckboxChange(label === 'Waypoint' ? 'waypointPoint' : 'radioNavigationAidsPoint')}
@@ -46,8 +43,9 @@ const RouteInfoDisplaySetting = () => {
           </div>
         </div>
       ))}
-      <label className="flex items-center mb-2">
+      <label htmlFor="atsLowerRoute" className="flex items-center mb-2">
         <input
+          id="atsLowerRoute"
           type="checkbox"
           checked={isDisplaying.atsLowerRoute}
           onChange={handleCheckboxChange('atsLowerRoute')}
@@ -55,8 +53,9 @@ const RouteInfoDisplaySetting = () => {
         />
         <span>ATS Lower Route</span>
       </label>
-      <label className="flex items-center mb-2">
+      <label htmlFor="rnavRoute" className="flex items-center mb-2">
         <input
+          id="rnavRoute"
           type="checkbox"
           checked={isDisplaying.rnavRoute}
           onChange={handleCheckboxChange('rnavRoute')}

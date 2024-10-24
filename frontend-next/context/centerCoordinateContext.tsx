@@ -8,22 +8,19 @@ export interface Coordinate {
 
 export interface CenterCoordinateContextType {
   centerCoordinate: Coordinate;
-  setCenterCoordinate: React.Dispatch<React.SetStateAction<CenterCoordinateContextType>>;
+  setCenterCoordinate: React.Dispatch<React.SetStateAction<Coordinate>>;
 }
 
 export const CenterCoordinateContext = createContext<CenterCoordinateContextType | undefined>(undefined);
 
 export const CenterCoordinateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [centerCoordinate, setCenterCoordinate] = useState<CenterCoordinateContextType>({
-    centerCoordinate: {
-      latitude: 34.482,
-      longitude: 138.614,
-    },
-    setCenterCoordinate: () => {},
+  const [centerCoordinate, setCenterCoordinate] = useState<Coordinate>({
+    latitude: 34.482,
+    longitude: 138.614,
   });
 
   return (
-    <CenterCoordinateContext.Provider value={{ ...centerCoordinate, setCenterCoordinate }}>
+    <CenterCoordinateContext.Provider value={{ centerCoordinate, setCenterCoordinate }}>
       {children}
     </CenterCoordinateContext.Provider>
   );

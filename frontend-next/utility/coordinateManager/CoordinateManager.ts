@@ -1,6 +1,7 @@
 import { Coordinate } from "@/context/centerCoordinateContext";
 import { GLOBAL_CONSTANTS } from "../globals/constants";
 import { GLOBAL_SETTINGS } from "../globals/settings";
+import { DisplayRange } from "@/context/displayRangeContext";
 
 // 地球の丸みを考慮にいれ、緯度・経度をキャンバス上の座標に変換するクラス
 export class CoordinateManager {
@@ -14,7 +15,7 @@ export class CoordinateManager {
    * @param targetLongitude 対象の経度
    * @returns キャンバス上の座標 {x, y}
    */
-  public static calculateCanvasCoordinates(pointCoordinate: Coordinate, centerCoordinate: Coordinate): { x: number, y: number } {
+  public static calculateCanvasCoordinates(pointCoordinate: Coordinate, centerCoordinate: Coordinate, displayRange: DisplayRange): { x: number, y: number } {
     // Convert degrees to radians
     const toRadians = (degrees: number) => degrees * (Math.PI / 180);
 
@@ -32,7 +33,7 @@ export class CoordinateManager {
 
     // Scale distance to canvas pixels
     // const pixelsPerKm = range / this.canvasWidth;
-    const pixelsPerKm = GLOBAL_SETTINGS.canvasWidth / GLOBAL_SETTINGS.displayRange;
+    const pixelsPerKm = GLOBAL_SETTINGS.canvasWidth / displayRange.range;
     const distancePx = distanceKm * pixelsPerKm;
 
     // Calculate canvas coordinates

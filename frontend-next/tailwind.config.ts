@@ -12,6 +12,9 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      boxShadow: {
+        'lg-no-offset': '0 0px 15px 0px rgba(0, 0, 0, 0.1)',
+      },
     },
   },
   plugins: [],

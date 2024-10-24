@@ -53,19 +53,14 @@ const sectorCenterCoordinates: { [key: string]: { latitude: number; longitude: n
   "A05": { latitude: 24.915694444444444 , longitude: 132.88125 }
 };
 
-interface SectorSelectorProps {
-  onSectorChange: (coordinates: { latitude: number; longitude: number }) => void;
-}
-
-const SectorSelector = ({ onSectorChange }: SectorSelectorProps) => {
+const SectorSelector = () => {
   const [selectedSector, setSelectedSector] = useState("T09"); // Default sector
-  const { centerCoordinate, setCenterCoordinate } = useCenterCoordinate();
+  const { setCenterCoordinate } = useCenterCoordinate();
 
   // Update the selected sector and call the callback
   const handleSectorChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const sector = event.target.value;
     setSelectedSector(sector);
-    onSectorChange(sectorCenterCoordinates[sector]);
     setCenterCoordinate((prev) => ({
       ...prev,
       centerCoordinate: {
@@ -82,7 +77,7 @@ const SectorSelector = ({ onSectorChange }: SectorSelectorProps) => {
         id="selectSector"
         value={selectedSector}
         onChange={handleSectorChange}
-        className="p-2 rounded border border-green-400 bg-gray-900 text-white"
+        className="p-2 rounded border border-green-400 bg-gray-800 text-white"
       >
         {Object.keys(sectorCenterCoordinates).map(sector => (
           <option key={sector} value={sector}>{sector}</option>

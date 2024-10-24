@@ -1,8 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Aircraft } from "../utility/aircraft/aircraftClass";
-// import { Waypoint } from "../utility/AtsRouteManager/RouteInterfaces/Waypoint";
-import { CoordinateManager } from "../utility/coordinateManager/CoordinateManager";
 import loadAtsRoutes from "../utility/AtsRouteManager/atsRoutesLoader";
 import { renderMap } from "../utility/AtsRouteManager/routeRenderer";
 import { GLOBAL_CONSTANTS } from "../utility/globals/constants";
@@ -13,6 +11,7 @@ import { DrawAircraft } from "../utility/aircraft/drawAircraft";
 import { SimulationManager } from "../utility/api/simulation";
 import { useRouteInfoDisplaySetting } from '@/context/routeInfoDisplaySettingContext';
 import { useCenterCoordinate } from "@/context/centerCoordinateContext";
+import { useDisplayRange } from "@/context/displayRangeContext";
 
 const RadarCanvas: React.FC = () => {
   const canvasRefs = [useRef<HTMLCanvasElement>(null), useRef<HTMLCanvasElement>(null)];
@@ -29,10 +28,12 @@ const RadarCanvas: React.FC = () => {
   const isDisplayingRef = useRef(isDisplaying);
   const { centerCoordinate } = useCenterCoordinate();
   const centerCoordinateRef = useRef(centerCoordinate);
-  
+  const { displayRange } = useDisplayRange();
+  const displayRangeRef = useRef(displayRange);
+
   useEffect(() => {
     const canvasContainer = document.getElementsByClassName("radarArea")[0] as HTMLElement;
-    
+  
     // Initialize canvas dimensions
     canvasRefs.forEach((canvasRef) => {
       const canvas = canvasRef.current;
@@ -41,36 +42,36 @@ const RadarCanvas: React.FC = () => {
         canvas.height = canvasContainer.clientHeight;
       }
     });
-
+  
     GLOBAL_SETTINGS.canvasWidth = canvasRefs[0].current!.width;
     GLOBAL_SETTINGS.canvasHeight = canvasRefs[0].current!.height;
-
-    // Load ATS route data and set up event listeners
+  
+    // Load ATS route data and initialize event listeners
     initializeAtsRouteData();
-
+    
     const simulationManager = new SimulationManager();
-
-    // Set up mouse event listeners
-    const handleMouseDown = (event: MouseEvent) => onMouseDown(event);
-    const handleMouseMove = (event: MouseEvent) => onMouseMove(event);
-    const handleMouseUp = () => onMouseUp();
-
+    
+    const handleMouseEvents = (canvas: HTMLCanvasElement) => {
+      canvas.addEventListener("mousedown", onMouseDown);
+      canvas.addEventListener("mousemove", onMouseMove);
+      canvas.addEventListener("mouseup", onMouseUp);
+    };
+  
+    const removeMouseEvents = (canvas: HTMLCanvasElement) => {
+      canvas.removeEventListener("mousedown", onMouseDown);
+      canvas.removeEventListener("mousemove", onMouseMove);
+      canvas.removeEventListener("mouseup", onMouseUp);
+    };
+  
     canvasRefs.forEach((canvasRef) => {
       const canvas = canvasRef.current;
-      canvas?.addEventListener("mousedown", handleMouseDown);
-      canvas?.addEventListener("mousemove", handleMouseMove);
-      canvas?.addEventListener("mouseup", handleMouseUp);
+      if (canvas) handleMouseEvents(canvas);
     });
-
-    // startRenderingLoop();
-
-    // Clean up event listeners on component unmount
+  
     return () => {
       canvasRefs.forEach((canvasRef) => {
         const canvas = canvasRef.current;
-        canvas?.removeEventListener("mousedown", handleMouseDown);
-        canvas?.removeEventListener("mousemove", handleMouseMove);
-        canvas?.removeEventListener("mouseup", handleMouseUp);
+        if (canvas) removeMouseEvents(canvas);
       });
     };
   }, []);
@@ -93,48 +94,60 @@ const RadarCanvas: React.FC = () => {
   };
 
   useEffect(() => {
-    controllingAircraftsRef.current = controllingAircrafts;  // controllingAircrafts が更新されたら、refも更新
+    controllingAircraftsRef.current = controllingAircrafts;
   }, [controllingAircrafts]);
 
   useEffect(() => {
     isDisplayingRef.current = isDisplaying;
-    console.log("isDisplayingRef.current", isDisplayingRef.current);
   }, [isDisplaying]);
 
   useEffect(() => {
     centerCoordinateRef.current = centerCoordinate;
-    console.log("centerCoordinateRef.current", centerCoordinateRef.current);
-    if (!centerCoordinateRef.current) {
-      centerCoordinateRef.current = { latitude: 34.482, longitude: 138.614 };
-    }
   }, [centerCoordinate]);
+
+  useEffect(() => {
+    displayRangeRef.current = displayRange;
+  }, [displayRange]);
 
   const updateCanvas = () => {
     if (!atsRouteData) {
       console.error("ATS Route data is missing or incomplete.");
       return;
     }
-
+  
+    const ctx = getCanvasContext(bg);
+    if (!ctx) return;
+  
+    clearCanvas(ctx);
+    renderMapOnCanvas(ctx);
+    renderAircraftsOnCanvas(ctx);
+  
+    toggleCanvasDisplay();
+  };
+  
+  const getCanvasContext = (bg: number): CanvasRenderingContext2D | null => {
     const canvas = canvasRefs[bg]?.current;
     if (!canvas) {
       console.error(`Canvas element is not found for bg: ${bg}`);
-      return;
+      return null;
     }
-
-    const ctx = canvas.getContext("2d");
-    if (ctx) {
-      clearCanvas(ctx);
-      renderMap(atsRouteData.waypoints, atsRouteData.radioNavigationAids, atsRouteData.atsLowerRoutes, atsRouteData.rnavRoutes, ctx, isDisplayingRef.current, centerCoordinateRef.current);
-      
-      const currentAircrafts = controllingAircraftsRef.current; // 最新の値を参照
-      currentAircrafts.forEach((aircraft) => {
-        DrawAircraft.drawAircraft(ctx, aircraft);
-      });
-      
-      toggleCanvasDisplay();
-    } else {
-      console.error("Failed to get 2D context for canvas.");
-    }
+  
+    return canvas.getContext("2d");
+  };
+  
+  const renderMapOnCanvas = (ctx: CanvasRenderingContext2D) => {
+    renderMap(
+      atsRouteData.waypoints, atsRouteData.radioNavigationAids,
+      atsRouteData.atsLowerRoutes, atsRouteData.rnavRoutes,
+      ctx, isDisplayingRef.current, centerCoordinateRef.current,
+      displayRangeRef.current
+    );
+  };
+  
+  const renderAircraftsOnCanvas = (ctx: CanvasRenderingContext2D) => {
+    controllingAircraftsRef.current.forEach((aircraft) => {
+      DrawAircraft.drawAircraft(ctx, aircraft);
+    });
   };
 
   const clearCanvas = (ctx: CanvasRenderingContext2D) => {
@@ -164,26 +177,28 @@ const RadarCanvas: React.FC = () => {
     const y = event.clientY - rect.top;
     const aircraftRadius = 30;
     console.log("Mouse down at", x, y);
-
+  
     const currentControllingAircrafts = controllingAircraftsRef.current;
-    for (const [index, aircraft] of currentControllingAircrafts.entries()) {
+  
+    for (let index = 0; index < currentControllingAircrafts.length; index++) {
+      const aircraft = currentControllingAircrafts[index];
       const { position, label, callsign } = aircraft;
       const labelX = position.x + label.x;
       const labelY = position.y - label.y;
-
+  
       if (isWithinRadius(x, y, position, aircraftRadius)) {
-        console.log("Clicked on aircraft", callsign);
-        changeDisplayCallsign(callsign);
+        changeDisplayAircraftInfo(aircraft);
         setSelectedAircraft(aircraft);
-        break;
+        console.log("Clicked on aircraft", aircraft);
+        break; // 条件が満たされた場合はループを抜ける
       }
-
+  
       if (isWithinLabelBounds(x, y, labelX, labelY)) {
         console.log("Clicked on label", callsign);
         draggingLabelIndexRef.current = index;
         offsetXRef.current = x - labelX;
         offsetYRef.current = y - labelY;
-        break;
+        break; // 条件が満たされた場合はループを抜ける
       }
     }
   };
@@ -230,10 +245,22 @@ const RadarCanvas: React.FC = () => {
     console.log("Mouse up");
   };
 
-  const changeDisplayCallsign = (newCallsign: string) => {
+  const changeDisplayAircraftInfo = (aircraft: Aircraft) => {
     const fontElement = document.getElementById("callsign") as HTMLParagraphElement;
+    const inputAltitude = document.getElementById("altitude") as HTMLInputElement;
+    const inputSpeed = document.getElementById("speed") as HTMLInputElement;
+    const inputHeading = document.getElementById("heading") as HTMLInputElement;
     if (fontElement) {
-      fontElement.textContent = newCallsign;
+      fontElement.textContent = aircraft.callsign;
+    }
+    if (inputAltitude) {
+      inputAltitude.value = aircraft.instructedVector.altitude.toString();
+    }
+    if (inputSpeed) {
+      inputSpeed.value = aircraft.instructedVector.groundSpeed.toString();
+    }
+    if (inputHeading) {
+      inputHeading.value = aircraft.instructedVector.heading.toString();
     }
   };
 
@@ -241,7 +268,7 @@ const RadarCanvas: React.FC = () => {
     const fetchLocationInterval = setInterval(async () => {
       try {
         const currentControllingAircrafts = controllingAircraftsRef.current;
-        const updatedAircrafts = await fetchAircraftLocation(currentControllingAircrafts, centerCoordinateRef.current);
+        const updatedAircrafts = await fetchAircraftLocation(currentControllingAircrafts, centerCoordinateRef.current, displayRangeRef.current);
         // console.log("updatedAircrafts", updatedAircrafts);
 
         // 最新の controllingAircrafts を取得して状態を更新

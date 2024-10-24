@@ -2,8 +2,9 @@ import { Coordinate } from "@/context/centerCoordinateContext";
 import { Aircraft } from "../aircraft/aircraftClass";
 import { CoordinateManager } from "../coordinateManager/CoordinateManager";
 import { GLOBAL_SETTINGS } from "../globals/settings";
+import { DisplayRange } from "@/context/displayRangeContext";
 
-export const fetchAircraftLocation = async (controllingAircrafts: Aircraft[], centerCoordinate: Coordinate) => {
+export const fetchAircraftLocation = async (controllingAircrafts: Aircraft[], centerCoordinate: Coordinate, displayRange: DisplayRange) => {
   let updatedControllingAircraft: Aircraft[] = [];
   try {
     const response = await fetch(
@@ -20,7 +21,7 @@ export const fetchAircraftLocation = async (controllingAircrafts: Aircraft[], ce
       const textData = await response.text(); // Fetches text data
       // console.log("Raw Aircraft Locations:", textData);
 
-      const aircraftData = parseAircraftData(textData, centerCoordinate); // Parse the text data
+      const aircraftData = parseAircraftData(textData, centerCoordinate, displayRange); // Parse the text data
       if (aircraftData) {
         updatedControllingAircraft =  updateControllingAircrafts(aircraftData, controllingAircrafts); // Call the function to update controlledAirplanes
       } else {
@@ -36,7 +37,7 @@ export const fetchAircraftLocation = async (controllingAircrafts: Aircraft[], ce
 };
 
 // Function to parse custom format into an array of objects
-const parseAircraftData = (data: string, centerCoordinate: Coordinate): Aircraft[] | null => {
+const parseAircraftData = (data: string, centerCoordinate: Coordinate, displayRange: DisplayRange): Aircraft[] | null => {
   // Implement parsing logic based on the actual format of your data
   // This is a placeholder example; you'll need to adjust it according to the actual format
   try {
@@ -47,7 +48,7 @@ const parseAircraftData = (data: string, centerCoordinate: Coordinate): Aircraft
     return aircraftStrings.map((aircraftString) => {
       // Parse each aircraftString into an Aircraft object
       // Example: Implement a function to parse the string into a valid Aircraft object
-      return parseAircraftString(aircraftString, centerCoordinate);
+      return parseAircraftString(aircraftString, centerCoordinate, displayRange);
     });
   } catch (error) {
     console.error("Error parsing aircraft data:", error);
@@ -55,7 +56,7 @@ const parseAircraftData = (data: string, centerCoordinate: Coordinate): Aircraft
   }
 };
 
-const parseAircraftString = (aircraftString: string, centerCoordinate: Coordinate): Aircraft => {
+const parseAircraftString = (aircraftString: string, centerCoordinate: Coordinate, displayRange: DisplayRange): Aircraft => {
   const aircraftRegex = /callsign=(.*?), position=\{latitude=(.*?), longitude=(.*?), altitude=(.*?)\}, vector=\{heading=(.*?), groundSpeed=(.*?), verticalSpeed=(.*?)\}, instructedVector=\{heading=(.*?), groundSpeed=(.*?), altitude=(.*?)\}, type=(.*?), originIata=(.*?), originIcao=(.*?), destinationIata=(.*?), destinationIcao=(.*?), eta=(.*?)\}/;
   const matches = aircraftString.match(aircraftRegex);
   if (matches) {
@@ -82,7 +83,8 @@ const parseAircraftString = (aircraftString: string, centerCoordinate: Coordinat
     // Convert latitude and longitude into canvas coordinates using radarGame utility
     const coordinateOnCanvas = CoordinateManager.calculateCanvasCoordinates(
       { latitude: parseFloat(lat), longitude: parseFloat(lon) },
-      centerCoordinate
+      centerCoordinate,
+      displayRange
     );
 
     return new Aircraft(
