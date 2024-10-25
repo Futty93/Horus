@@ -159,7 +159,7 @@ const RadarCanvas: React.FC = () => {
   
   const renderAircraftsOnCanvas = (ctx: CanvasRenderingContext2D) => {
     controllingAircraftsRef.current.forEach((aircraft) => {
-      DrawAircraft.drawAircraft(ctx, aircraft);
+      DrawAircraft.drawAircraft(ctx, aircraft, displayRangeRef.current);
     });
   };
 

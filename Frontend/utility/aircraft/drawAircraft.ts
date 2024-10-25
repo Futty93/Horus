@@ -1,7 +1,9 @@
+import { Display } from "next/dist/compiled/@next/font";
 import CoordinateManager from "../coordinateManager/CoordinateManager";
 import { GLOBAL_CONSTANTS } from "../globals/constants";
 import { GLOBAL_SETTINGS } from "../globals/settings";
 import { Aircraft } from "./aircraftClass";
+import { DisplayRange } from "@/context/displayRangeContext";
 
 
 /**
@@ -16,9 +18,9 @@ import { Aircraft } from "./aircraftClass";
  * @see CanvasRenderingContext2D
  */
 class DrawAircraft {
-  public static drawAircraft(ctx: CanvasRenderingContext2D, aircraft: Aircraft) {
+  public static drawAircraft(ctx: CanvasRenderingContext2D, aircraft: Aircraft, displayRange: DisplayRange) {
     this.drawAircraftMarker(ctx, aircraft.position);
-    this.drawHeadingLine(ctx, aircraft.position, aircraft.vector.groundSpeed, aircraft.vector.heading);
+    this.drawHeadingLine(ctx, aircraft.position, aircraft.vector.groundSpeed, aircraft.vector.heading, displayRange);
     this.drawLabelLiine(ctx, aircraft.position, aircraft.label);
     this.drawAircraftLabel(ctx, aircraft);
   }
@@ -39,13 +41,13 @@ class DrawAircraft {
     ctx.fill();
   }
 
-  private static drawHeadingLine(ctx: CanvasRenderingContext2D, position: { x: number; y: number }, groundSpeed: number, heading: number) {
+  private static drawHeadingLine(ctx: CanvasRenderingContext2D, position: { x: number; y: number }, groundSpeed: number, heading: number, displayRange: DisplayRange) {
     const futurePosition = CoordinateManager.calculateFuturePositionOnCanvas(
       groundSpeed,
       heading,
       GLOBAL_SETTINGS.canvasWidth,
       GLOBAL_SETTINGS.canvasHeight,
-      GLOBAL_SETTINGS.displayRange,
+      displayRange,
       position,
     );
 
