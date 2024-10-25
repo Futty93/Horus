@@ -7,14 +7,18 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.util.Radi
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.util.Route;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.util.RoutePoint;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.util.Waypoint;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-@Component
+@Service
 public class AtsRouteRepository {
     private static AtsRouteRepository instance;
 
@@ -23,6 +27,7 @@ public class AtsRouteRepository {
     private List<Route> atsLowerRoutes;
     private List<Route> rnavRoutes;
 
+    @Autowired
     private AtsRouteRepository() throws IOException {
         waypoints = loadWaypoints();
         this.radioNavigationAids = loadRadioNavigationAids();
@@ -154,6 +159,25 @@ public class AtsRouteRepository {
         }
 
         return rnavRoutes;
+    }
+
+    public Optional<FixPosition> findFixPositionByName(String fixName) {
+        // Search through waypoints
+        for (Waypoint waypoint : waypoints) {
+            if (waypoint.getName().equals(fixName)) {
+                return Optional.of(new FixPosition(waypoint.getLatitude(), waypoint.getLongitude()));
+            }
+        }
+
+        // Search through radio navigation aids
+        for (RadioNavigationAid aid : radioNavigationAids) {
+            if (aid.getName().equals(fixName)) {
+                return Optional.of(new FixPosition(aid.getLatitude(), aid.getLongitude()));
+            }
+        }
+
+        // Return empty if no match is found
+        return Optional.empty();
     }
 
     @Override

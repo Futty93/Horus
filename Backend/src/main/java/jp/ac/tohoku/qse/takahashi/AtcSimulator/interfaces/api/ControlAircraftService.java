@@ -32,4 +32,18 @@ public class ControlAircraftService {
             return ResponseEntity.badRequest().body("Aircraft with callsign " + callsign + " does not exist.");
         }
     }
+
+    @RequestMapping(path = "/{callsign}/direct/{fixName}", method = RequestMethod.POST)
+    public ResponseEntity<String> directAircraftToFix(
+        @PathVariable String callsign,
+        @PathVariable String fixName
+    ) {
+        if (aircraftRepository.isAircraftExist(new Callsign(callsign))) {
+            scenarioService.directFixAircraft(new Callsign(callsign), fixName);
+            System.out.println("Aircraft directed to fix:" + fixName);
+            return ResponseEntity.ok("Aircraft directed to fix:" + fixName);
+        } else {
+            return ResponseEntity.badRequest().body("Aircraft with callsign " + callsign + " does not exist.");
+        }
+    }
 }
