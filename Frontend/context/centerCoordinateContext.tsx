@@ -14,6 +14,7 @@ export interface CenterCoordinateContextType {
 export const CenterCoordinateContext = createContext<CenterCoordinateContextType | undefined>(undefined);
 
 export const CenterCoordinateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // state定義はシンプルに定義し、直接プロバイダに渡す
   const [centerCoordinate, setCenterCoordinate] = useState<Coordinate>({
     latitude: 34.482,
     longitude: 138.614,

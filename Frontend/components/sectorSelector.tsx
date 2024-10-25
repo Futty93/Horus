@@ -8,7 +8,7 @@ const sectorCenterCoordinates: { [key: string]: { latitude: number; longitude: n
   "T10": { latitude: 33.041 , longitude: 139.456 },
   "T14": { latitude: 33.667 , longitude: 137.918 },
   "T25": { latitude: 34.549 , longitude: 136.966 },
-  "T30": { latitude: 43.29444444444445 , longitude: 142.67916666666667 },
+  "T30": { latitude: 43.294 , longitude: 142.679 },
   "T31": { latitude: 41.85805555555555 , longitude: 140.1590277777778 },
   "T32": { latitude: 40.209722222222226 , longitude: 141.23722222222221 },
   "T33": { latitude: 38.474999999999994 , longitude: 138.8048611111111 },
@@ -61,13 +61,11 @@ const SectorSelector = () => {
   const handleSectorChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const sector = event.target.value;
     setSelectedSector(sector);
-    setCenterCoordinate((prev) => ({
-      ...prev,
-      centerCoordinate: {
-        latitude: sectorCenterCoordinates[sector].latitude,
-        longitude: sectorCenterCoordinates[sector].longitude
-      },
-    }));
+    setCenterCoordinate({
+      latitude: sectorCenterCoordinates[sector].latitude,
+      longitude: sectorCenterCoordinates[sector].longitude
+    });
+    console.log('Selected sector:', sector, sectorCenterCoordinates[sector]);
   };
 
   return (

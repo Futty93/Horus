@@ -132,7 +132,7 @@ public static calculateFuturePositionOnCanvas(
     heading: number,
     canvasWidth: number,
     canvasHeight: number,
-    displayRange: number,
+    displayRange: DisplayRange,
     currentPosition: { x: number; y: number }
   ): { futureX: number; futureY: number } {
     // Convert speed from knots to kilometers per minute
@@ -150,7 +150,7 @@ public static calculateFuturePositionOnCanvas(
     const futurePositionY = currentPosition.y + deltaY;
   
     // Convert the future position from kilometers to canvas pixels
-    const kmPerPixel = displayRange / canvasWidth;
+    const kmPerPixel = displayRange.range / canvasWidth;
     const futureX = currentPosition.x + (futurePositionX - currentPosition.x) / kmPerPixel;
     const futureY = currentPosition.y - (futurePositionY - currentPosition.y) / kmPerPixel;
   
