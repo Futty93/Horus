@@ -10,7 +10,7 @@ import { controlAircraft } from "../utility/api/controlAircraft";
 import { DrawAircraft } from "../utility/aircraft/drawAircraft";
 import { SimulationManager } from "../utility/api/simulation";
 import { useRouteInfoDisplaySetting } from '@/context/routeInfoDisplaySettingContext';
-import { useCenterCoordinate } from "@/context/centerCoordinateContext";
+import { Coordinate, useCenterCoordinate } from "@/context/centerCoordinateContext";
 import { useDisplayRange } from "@/context/displayRangeContext";
 import { useSelectFixMode } from "@/context/selectFixModeContext";
 import { searchFixName } from "@/utility/AtsRouteManager/FixNameSearch";
@@ -108,10 +108,12 @@ const RadarCanvas: React.FC = () => {
 
   useEffect(() => {
     centerCoordinateRef.current = centerCoordinate;
+    console.log("centerCoordinate", centerCoordinate, centerCoordinateRef.current);
   }, [centerCoordinate]);
 
   useEffect(() => {
     displayRangeRef.current = displayRange;
+    console.log("displayRange", displayRangeRef.current);
   }, [displayRange]);
 
   useEffect(() => {
