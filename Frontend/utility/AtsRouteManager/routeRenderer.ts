@@ -6,7 +6,7 @@ import { CoordinateManager } from "../coordinateManager/CoordinateManager";
 import { GLOBAL_SETTINGS } from "../globals/settings";
 import { GLOBAL_CONSTANTS } from "../globals/constants";
 
-import { DisplaySettings, RouteInfoDisplaySettingContextType } from '@/context/routeInfoDisplaySettingContext'; // コンテキストをインポート
+import { DisplaySettings } from '@/context/routeInfoDisplaySettingContext'; // コンテキストをインポート
 import { Coordinate } from "@/context/centerCoordinateContext";
 import { DisplayRange } from "@/context/displayRangeContext";
 

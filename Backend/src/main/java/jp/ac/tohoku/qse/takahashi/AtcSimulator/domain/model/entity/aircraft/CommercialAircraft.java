@@ -5,6 +5,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Aircraft
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.InstructedVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
 
@@ -128,6 +129,73 @@ public class CommercialAircraft extends AircraftBase implements Aircraft {
     }
 
     /**
+     * Calculates the turn angle required for an aircraft to reach a target position.
+     * The function takes into account the current heading, aircraft coordinates,
+     * and target coordinates. It calculates the shortest angle
+     * (either left or right) needed for the aircraft to align its heading towards the target.
+     *
+     * @param targetFix The target position (latitude and longitude).
+     * @return The turn angle in degrees, rounded to the nearest integer.
+     */
+    public double calculateTurnAngle(FixPosition targetFix) {
+        final AircraftPosition currentPos = this.aircraftPosition;
+        final double currentHeading = this.aircraftVector.heading.toDouble();
+
+        // ターゲット位置への相対位置差を計算
+        double targetDeltaX = targetFix.longitude.toDouble() - currentPos.longitude.toDouble();
+        double targetDeltaY = targetFix.latitude.toDouble() - currentPos.latitude.toDouble();
+
+        // ターゲット位置の方位（北基準、度単位）
+        double targetHeading = Math.toDegrees(Math.atan2(targetDeltaX, targetDeltaY));
+        targetHeading = normalizeAngle(targetHeading);
+
+        // 現在のヘディングとの差を計算
+        double headingDifference = ((targetHeading - currentHeading + 540) % 360) - 180;
+
+        // 旋回方向と角速度を設定
+        double turnIncrement = headingDifference > 0 ? 0.1 : -0.1;
+        double accumulatedTurnAngle = headingDifference > 0 ? targetHeading - 10 : targetHeading + 10;
+
+        // 距離と位置変化量の計算
+        final double timeStep = 1.0 / REFRESH_RATE;
+        final double speedKmPerHour = this.aircraftVector.groundSpeed.toDouble() * KNOTS_TO_KM_PER_HOUR;
+        double travelDistance = speedKmPerHour * (timeStep / 3600.0);
+        double deltaLatitude = travelDistance / EARTH_RADIUS;
+
+        // 航空機の現在位置
+        double aircraftLng = currentPos.longitude.toDouble();
+        double aircraftLat = currentPos.latitude.toDouble();
+
+        // 旋回を行いターゲット方向に一致するまで繰り返す
+        while (true) {
+            // 旋回角度に基づき、航空機の位置を更新
+            aircraftLng += (Math.toDegrees(deltaLatitude * Math.cos(accumulatedTurnAngle)) / (MAX_TURN_RATE / turnIncrement));
+            aircraftLat += (Math.toDegrees(deltaLatitude * Math.sin(accumulatedTurnAngle)) / (MAX_TURN_RATE / turnIncrement));
+
+            // 更新された位置からターゲット方向を再計算
+            double updatedDeltaX = targetFix.longitude.toDouble() - aircraftLng;
+            double updatedDeltaY = targetFix.latitude.toDouble() - aircraftLat;
+            double updatedHeadingToTarget = Math.toDegrees(Math.atan2(updatedDeltaX, updatedDeltaY));
+            updatedHeadingToTarget = updatedHeadingToTarget < 0 ? updatedHeadingToTarget + 360 : updatedHeadingToTarget;
+
+            // ターゲットヘディングと一致（許容範囲内）した場合にループを終了
+            if (Math.abs(normalizeAngle(updatedHeadingToTarget - accumulatedTurnAngle)) < 0.1) {
+                break;
+            }
+
+            // 無限ループ回避のため180度以上旋回したら終了
+            if (Math.abs(accumulatedTurnAngle) > 720) {
+                break;
+            }
+
+            accumulatedTurnAngle = normalizeAngle(accumulatedTurnAngle + turnIncrement);
+        }
+
+        System.out.println("Turn angle: " + accumulatedTurnAngle);
+        return accumulatedTurnAngle;
+    }
+
+    /**
      * Calculates the turn radius based on the aircraft's ground speed and the maximum turn rate.
      *
      * @param groundSpeed The aircraft's ground speed in knots.
@@ -139,76 +207,6 @@ public class CommercialAircraft extends AircraftBase implements Aircraft {
 
         // Calculate the turn radius (in nautical miles)
         return groundSpeed / turnRateRadiansPerSecond;
-    }
-
-    /**
-     * Calculates the turn angle required for an aircraft to reach a target position.
-     * The function takes into account the current heading, aircraft coordinates,
-     * target coordinates, and turn radius. It calculates the shortest angle
-     * (either left or right) needed for the aircraft to align its heading towards the target.
-     *
-     *  @param targetLongitude             The X coordinate (longitude) of the target point.
-     * @param targetLatitude             The Y coordinate (latitude) of the target point.
-     * @param turnRadius          The turn radius of the aircraft.
-     * @return The turn angle in degrees, rounded to the nearest integer.
-     */
-    public int calculateTurnAngle(double targetLongitude, double targetLatitude) {
-        final AircraftPosition currentPosition = this.aircraftPosition;
-        final double currentHeading = this.aircraftVector.heading.toDouble();
-
-        // 1. Calculate the angle between the current position and the target position
-        double deltaX = targetLongitude - currentPosition.longitude.toDouble();
-        double deltaY = targetLatitude - currentPosition.latitude.toDouble();
-
-        // Convert the target position to an angle in degrees (relative to North)
-        double targetHeading = Math.toDegrees(Math.atan2(deltaX, deltaY));
-
-        // Ensure targetHeading is between 0 and 360 degrees
-        if (targetHeading < 0) {
-            targetHeading += 360;
-        }
-
-        // 3. Simulate aircraft moving along the turn radius until the target is aligned
-        double aircraftLongitude = currentPosition.longitude.toDouble();
-        double aircraftLatitude = currentPosition.latitude.toDouble();
-        double heading = currentHeading;
-        double turnAngleAccumulated = 0.0;
-
-
-        // Loop until the aircraft's heading aligns with the target heading
-        while (true) {
-            turnAngleAccumulated += MAX_TURN_RATE;
-
-            // Calculate new heading
-            heading = normalizeAngle(heading + MAX_TURN_RATE);
-
-            // Update the aircraft's position along the circular arc
-            double currentGroundSpeed = this.aircraftVector.groundSpeed.toDouble();
-            aircraftLongitude += currentGroundSpeed * Math.cos(Math.toRadians(heading));
-            aircraftLatitude += currentGroundSpeed * Math.sin(Math.toRadians(heading));
-
-            // Recalculate the angle between the updated position and the target
-            double newDeltaX = targetLongitude - aircraftLongitude;
-            double newDeltaY = targetLatitude - aircraftLatitude;
-            double newHeadingToTarget = Math.toDegrees(Math.atan2(newDeltaX, newDeltaY));
-
-            if (newHeadingToTarget < 0) {
-                newHeadingToTarget += 360;
-            }
-
-            // Check if the heading aligns with the target heading (within a small tolerance)
-            if (Math.abs(normalizeAngle(newHeadingToTarget - heading)) < 1.0) {
-                break; // Stop if the heading is aligned with the target
-            }
-
-            // Prevent infinite loops by breaking after a full 360-degree turn
-            if (turnAngleAccumulated > 360) {
-                break; // Exit after making a full circle
-            }
-        }
-
-        // Return the total accumulated turn angle, rounded to the nearest integer
-        return (int) Math.round(turnAngleAccumulated);
     }
 
     /**

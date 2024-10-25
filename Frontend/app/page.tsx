@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import RadarCanvas from "@/component/radarCanvas";
+import RadarCanvas from "@/components/radarCanvas";
 
 export default function Home() {
   return (

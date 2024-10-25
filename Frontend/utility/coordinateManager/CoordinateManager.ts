@@ -41,7 +41,52 @@ export class CoordinateManager {
     const canvasY = (GLOBAL_SETTINGS.canvasHeight / 2) - distancePx * Math.cos(bearing);
 
     return { x: canvasX, y: canvasY };
-}
+  }
+
+  /**
+   * キャンバス上の座標を緯度・経度に変換します。
+   * @param canvasX キャンバス上のX座標
+   * @param canvasY キャンバス上のY座標
+   * @param centerCoordinate 中心の緯度・経度
+   * @param displayRange 表示領域の1辺の長さ（キロメートル）
+   * @returns 緯度・経度 {latitude, longitude}
+   */
+  public static calculateGeoCoordinates(canvasX: number, canvasY: number, centerCoordinate: Coordinate, displayRange: DisplayRange): { latitude: number, longitude: number } {
+    // Convert degrees to radians
+    const toRadians = (degrees: number) => degrees * (Math.PI / 180);
+    // Convert radians to degrees
+    const toDegrees = (radians: number) => radians * (180 / Math.PI);
+
+    // Calculate the distance from the center of the canvas
+    const deltaX = canvasX - (GLOBAL_SETTINGS.canvasWidth / 2);
+    const deltaY = (GLOBAL_SETTINGS.canvasHeight / 2) - canvasY;
+    const distancePx = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+
+    // Scale pixels to kilometers
+    const pixelsPerKm = GLOBAL_SETTINGS.canvasWidth / displayRange.range;
+    const distanceKm = distancePx / pixelsPerKm;
+
+    // Calculate the bearing from the center point to the canvas point
+    const bearing = Math.atan2(deltaX, deltaY);
+
+    // Haversine formula to calculate new latitude and longitude
+    const angularDistance = distanceKm / GLOBAL_CONSTANTS.EARTH_RADIUS_KM;
+
+    const newLatitude = Math.asin(
+        Math.sin(toRadians(centerCoordinate.latitude)) * Math.cos(angularDistance) +
+        Math.cos(toRadians(centerCoordinate.latitude)) * Math.sin(angularDistance) * Math.cos(bearing)
+    );
+
+    const newLongitude = toRadians(centerCoordinate.longitude) + Math.atan2(
+        Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(toRadians(centerCoordinate.latitude)),
+        Math.cos(angularDistance) - Math.sin(toRadians(centerCoordinate.latitude)) * Math.sin(newLatitude)
+    );
+
+    return {
+        latitude: toDegrees(newLatitude),
+        longitude: toDegrees(newLongitude)
+    };
+  }
 
   /**
    * 度をラジアンに変換します。

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 
 const ControlAircraft = () => {
@@ -8,7 +9,7 @@ const ControlAircraft = () => {
     const inputAltitude = document.getElementById("altitude") as HTMLInputElement;
     const inputSpeed = document.getElementById("speed") as HTMLInputElement;
     const inputHeading = document.getElementById("heading") as HTMLInputElement;
-    if (callsignElement) {
+    if (callsignElement.innerText.length >= 2) {
       callsign = callsignElement.innerText;
     } else {
       console.error("Callsign element not found");

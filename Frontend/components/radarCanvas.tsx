@@ -12,6 +12,8 @@ import { SimulationManager } from "../utility/api/simulation";
 import { useRouteInfoDisplaySetting } from '@/context/routeInfoDisplaySettingContext';
 import { useCenterCoordinate } from "@/context/centerCoordinateContext";
 import { useDisplayRange } from "@/context/displayRangeContext";
+import { useSelectFixMode } from "@/context/selectFixModeContext";
+import { searchFixName } from "@/utility/AtsRouteManager/FixNameSearch";
 
 const RadarCanvas: React.FC = () => {
   const canvasRefs = [useRef<HTMLCanvasElement>(null), useRef<HTMLCanvasElement>(null)];
@@ -30,6 +32,9 @@ const RadarCanvas: React.FC = () => {
   const centerCoordinateRef = useRef(centerCoordinate);
   const { displayRange } = useDisplayRange();
   const displayRangeRef = useRef(displayRange);
+  const { isSelectFixMode } = useSelectFixMode();
+  const isSelectFixModeRef = useRef(isSelectFixMode);
+  const atsRouteDataRef = useRef(atsRouteData);
 
   useEffect(() => {
     const canvasContainer = document.getElementsByClassName("radarArea")[0] as HTMLElement;
@@ -109,6 +114,14 @@ const RadarCanvas: React.FC = () => {
     displayRangeRef.current = displayRange;
   }, [displayRange]);
 
+  useEffect(() => {
+    isSelectFixModeRef.current = isSelectFixMode;
+  }, [isSelectFixMode]);
+
+  useEffect(() => {
+    atsRouteDataRef.current = atsRouteData;
+  }, [atsRouteData]);
+
   const updateCanvas = () => {
     if (!atsRouteData) {
       console.error("ATS Route data is missing or incomplete.");
@@ -179,7 +192,23 @@ const RadarCanvas: React.FC = () => {
     console.log("Mouse down at", x, y);
   
     const currentControllingAircrafts = controllingAircraftsRef.current;
-  
+
+    if (isSelectFixModeRef.current.selectFixMode) {
+      // フィックス選択モードの場合
+      const atsRouteData = atsRouteDataRef.current;
+      if (!atsRouteData || !atsRouteData.waypoints || !atsRouteData.radioNavigationAids) {
+        console.error("atsRouteData is not available");
+        return;
+      }
+      const selectedFixName: string = searchFixName(atsRouteData.waypoints, atsRouteData.radioNavigationAids, {x, y}, centerCoordinateRef.current, displayRangeRef.current);
+      if (selectedFixName) {
+        console.log("Selected fix:", selectedFixName);
+        const selectedFixNameElement = document.getElementById("selectedFixName") as HTMLParagraphElement;
+        selectedFixNameElement.textContent = selectedFixName;
+      }
+      return;
+    }
+    
     for (let index = 0; index < currentControllingAircrafts.length; index++) {
       const aircraft = currentControllingAircrafts[index];
       const { position, label, callsign } = aircraft;
