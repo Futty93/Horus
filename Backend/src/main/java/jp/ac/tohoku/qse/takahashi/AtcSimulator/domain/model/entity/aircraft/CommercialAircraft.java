@@ -141,6 +141,8 @@ public class CommercialAircraft extends AircraftBase implements Aircraft {
         final AircraftPosition currentPos = this.aircraftPosition;
         final double currentHeading = this.aircraftVector.heading.toDouble();
 
+        final double currentHeadingRad = Math.toRadians(currentHeading);
+
         // ターゲット位置への相対位置差を計算
         double targetDeltaX = targetFix.longitude.toDouble() - currentPos.longitude.toDouble();
         double targetDeltaY = targetFix.latitude.toDouble() - currentPos.latitude.toDouble();
@@ -149,50 +151,84 @@ public class CommercialAircraft extends AircraftBase implements Aircraft {
         double targetHeading = Math.toDegrees(Math.atan2(targetDeltaX, targetDeltaY));
         targetHeading = normalizeAngle(targetHeading);
 
-        // 現在のヘディングとの差を計算
-        double headingDifference = ((targetHeading - currentHeading + 540) % 360) - 180;
+        return targetHeading;
 
-        // 旋回方向と角速度を設定
-        double turnIncrement = headingDifference > 0 ? 0.1 : -0.1;
-        double accumulatedTurnAngle = headingDifference > 0 ? targetHeading - 10 : targetHeading + 10;
+//        // 現在のヘディングとの差を計算
+//        double headingDifference = ((targetHeading - currentHeading + 540) % 360) - 180;
+//
+//        final double R = calculateTurnRadius(this.aircraftVector.groundSpeed.toDouble());
+//
+//        double deltaCenterLat = R * Math.sin(currentHeadingRad);
+//        double deltaCenterLon = R * Math.cos(currentHeadingRad);
+//
+//        // 旋回中心の緯度と経度を計算
+//        double turnCenterLat = headingDifference > 0 ? currentPos.latitude.toDouble() + deltaCenterLat : currentPos.latitude.toDouble() - deltaCenterLat;
+//        double turnCenterLon = headingDifference > 0 ? currentPos.longitude.toDouble() - deltaCenterLon : currentPos.longitude.toDouble() + deltaCenterLon;
+//
+//        double slopeCenterToTarget = (targetFix.longitude.toDouble() - turnCenterLon) / (targetFix.latitude.toDouble() - turnCenterLat);
+//
+//        double angleCenterToTarget = Math.toDegrees(Math.atan(slopeCenterToTarget));
+//
+//        double dx = targetFix.latitude.toDouble() - turnCenterLat;
+//        double dy = targetFix.longitude.toDouble() - turnCenterLon;
+//        // 円の接線の傾き m1 と m2 を求める
+//        double discriminant = R * R * (dx * dx + dy * dy) - (dy * dx) * (dy * dx);
+//        if (discriminant < 0) {
+//            throw new IllegalArgumentException("接線が存在しません。指定された点は円の外部にありません。");
+//        }
+//
+//        // 2つの接線の傾き
+//        double m1 = (dy * dx + Math.sqrt(discriminant)) / (dx * dx - R * R);
+//        double m2 = (dy * dx - Math.sqrt(discriminant)) / (dx * dx - R * R);
+//
+//        // `theta` のラジアン角に最も近い傾きを選択
+//        double thetaRad = Math.atan2(dy, dx);
+//        double closestSlope = Math.abs(currentHeadingRad - Math.atan(m1)) < Math.abs(currentHeadingRad - Math.atan(m2)) ? m1 : m2;
+//
+//        return closestSlope;
 
-        // 距離と位置変化量の計算
-        final double timeStep = 1.0 / REFRESH_RATE;
-        final double speedKmPerHour = this.aircraftVector.groundSpeed.toDouble() * KNOTS_TO_KM_PER_HOUR;
-        double travelDistance = speedKmPerHour * (timeStep / 3600.0);
-        double deltaLatitude = travelDistance / EARTH_RADIUS;
-
-        // 航空機の現在位置
-        double aircraftLng = currentPos.longitude.toDouble();
-        double aircraftLat = currentPos.latitude.toDouble();
-
-        // 旋回を行いターゲット方向に一致するまで繰り返す
-        while (true) {
-            // 旋回角度に基づき、航空機の位置を更新
-            aircraftLng += (Math.toDegrees(deltaLatitude * Math.cos(accumulatedTurnAngle)) / (MAX_TURN_RATE / turnIncrement));
-            aircraftLat += (Math.toDegrees(deltaLatitude * Math.sin(accumulatedTurnAngle)) / (MAX_TURN_RATE / turnIncrement));
-
-            // 更新された位置からターゲット方向を再計算
-            double updatedDeltaX = targetFix.longitude.toDouble() - aircraftLng;
-            double updatedDeltaY = targetFix.latitude.toDouble() - aircraftLat;
-            double updatedHeadingToTarget = Math.toDegrees(Math.atan2(updatedDeltaX, updatedDeltaY));
-            updatedHeadingToTarget = updatedHeadingToTarget < 0 ? updatedHeadingToTarget + 360 : updatedHeadingToTarget;
-
-            // ターゲットヘディングと一致（許容範囲内）した場合にループを終了
-            if (Math.abs(normalizeAngle(updatedHeadingToTarget - accumulatedTurnAngle)) < 0.1) {
-                break;
-            }
-
-            // 無限ループ回避のため180度以上旋回したら終了
-            if (Math.abs(accumulatedTurnAngle) > 720) {
-                break;
-            }
-
-            accumulatedTurnAngle = normalizeAngle(accumulatedTurnAngle + turnIncrement);
-        }
-
-        System.out.println("Turn angle: " + accumulatedTurnAngle);
-        return accumulatedTurnAngle;
+//
+//        // 旋回方向と角速度を設定
+//        double turnIncrement = headingDifference > 0 ? 0.1 : -0.1;
+//        double accumulatedTurnAngle = headingDifference > 0 ? targetHeading - 10 : targetHeading + 10;
+//
+//        // 距離と位置変化量の計算
+//        final double timeStep = 1.0 / REFRESH_RATE;
+//        final double speedKmPerHour = this.aircraftVector.groundSpeed.toDouble() * KNOTS_TO_KM_PER_HOUR;
+//        double travelDistance = speedKmPerHour * (timeStep / 3600.0);
+//        double deltaLatitude = travelDistance / EARTH_RADIUS;
+//
+//        // 航空機の現在位置
+//        double aircraftLng = currentPos.longitude.toDouble();
+//        double aircraftLat = currentPos.latitude.toDouble();
+//
+//        // 旋回を行いターゲット方向に一致するまで繰り返す
+//        while (true) {
+//            // 旋回角度に基づき、航空機の位置を更新
+//            aircraftLng += (Math.toDegrees(deltaLatitude * Math.cos(accumulatedTurnAngle)) / (MAX_TURN_RATE / turnIncrement));
+//            aircraftLat += (Math.toDegrees(deltaLatitude * Math.sin(accumulatedTurnAngle)) / (MAX_TURN_RATE / turnIncrement));
+//
+//            // 更新された位置からターゲット方向を再計算
+//            double updatedDeltaX = targetFix.longitude.toDouble() - aircraftLng;
+//            double updatedDeltaY = targetFix.latitude.toDouble() - aircraftLat;
+//            double updatedHeadingToTarget = Math.toDegrees(Math.atan2(updatedDeltaX, updatedDeltaY));
+//            updatedHeadingToTarget = updatedHeadingToTarget < 0 ? updatedHeadingToTarget + 360 : updatedHeadingToTarget;
+//
+//            // ターゲットヘディングと一致（許容範囲内）した場合にループを終了
+//            if (Math.abs(normalizeAngle(updatedHeadingToTarget - accumulatedTurnAngle)) < 0.1) {
+//                break;
+//            }
+//
+//            // 無限ループ回避のため180度以上旋回したら終了
+//            if (Math.abs(accumulatedTurnAngle) > 720) {
+//                break;
+//            }
+//
+//            accumulatedTurnAngle = normalizeAngle(accumulatedTurnAngle + turnIncrement);
+//        }
+//
+//        System.out.println("Turn angle: " + accumulatedTurnAngle);
+//        return accumulatedTurnAngle;
     }
 
     /**
