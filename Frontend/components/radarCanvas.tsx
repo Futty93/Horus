@@ -285,13 +285,13 @@ const RadarCanvas: React.FC = () => {
       fontElement.textContent = aircraft.callsign;
     }
     if (inputAltitude) {
-      inputAltitude.value = aircraft.instructedVector.altitude.toString();
+      inputAltitude.value = Math.round(aircraft.instructedVector.altitude).toString();
     }
     if (inputSpeed) {
-      inputSpeed.value = aircraft.instructedVector.groundSpeed.toString();
+      inputSpeed.value = Math.round(aircraft.instructedVector.groundSpeed).toString();
     }
     if (inputHeading) {
-      inputHeading.value = aircraft.instructedVector.heading.toString();
+      inputHeading.value = Math.round(aircraft.instructedVector.heading).toString();
     }
   };
 
