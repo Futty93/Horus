@@ -4,7 +4,7 @@ import { CoordinateManager } from "../coordinateManager/CoordinateManager";
 import { GLOBAL_SETTINGS } from "../globals/settings";
 import { DisplayRange } from "@/context/displayRangeContext";
 
-export const fetchAircraftLocation = async (controllingAircrafts: Aircraft[], centerCoordinate: Coordinate, displayRange: DisplayRange) => {
+export const fetchAircraftLocation = async (controllingAircrafts: Aircraft[], centerCoordinate: Coordinate, displayRange: DisplayRange, pathname: string) => {
   let updatedControllingAircraft: Aircraft[] = [];
   try {
     const response = await fetch(
@@ -23,7 +23,7 @@ export const fetchAircraftLocation = async (controllingAircrafts: Aircraft[], ce
 
       const aircraftData = parseAircraftData(textData, centerCoordinate, displayRange); // Parse the text data
       if (aircraftData) {
-        updatedControllingAircraft =  updateControllingAircrafts(aircraftData, controllingAircrafts); // Call the function to update controlledAirplanes
+        updatedControllingAircraft =  updateControllingAircrafts(aircraftData, controllingAircrafts, pathname); // Call the function to update controlledAirplanes
       } else {
         console.error("Failed to parse aircraft data");
       }
@@ -117,7 +117,7 @@ const parseAircraftString = (aircraftString: string, centerCoordinate: Coordinat
 };
 
 // Function to update controlledAirplanes based on API data (from earlier code)
-function updateControllingAircrafts(apiResponse: Aircraft[], controllingAircrafts: Aircraft[]): Aircraft[] {
+function updateControllingAircrafts(apiResponse: Aircraft[], controllingAircrafts: Aircraft[], pathname: string): Aircraft[] {
   const newAircraftMap = new Map<string, Aircraft>();
 
   apiResponse.forEach((aircraft) => {
@@ -128,7 +128,11 @@ function updateControllingAircrafts(apiResponse: Aircraft[], controllingAircraft
     (airplane) => {
       const newAircraft = newAircraftMap.get(airplane.callsign);
       if (newAircraft) {
-        airplane.updateAircraftInfo(newAircraft);
+        if (pathname === "/operator") {
+          airplane.updateAircraftInfo(newAircraft);
+        } else {
+          airplane.updateAircraftLocationInfo(newAircraft);
+        }
         newAircraftMap.delete(airplane.callsign);
         return true;
       } else {

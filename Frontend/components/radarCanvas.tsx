@@ -1,28 +1,28 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import { Aircraft } from "../utility/aircraft/aircraftClass";
 import loadAtsRoutes from "../utility/AtsRouteManager/atsRoutesLoader";
 import { renderMap } from "../utility/AtsRouteManager/routeRenderer";
 import { GLOBAL_CONSTANTS } from "../utility/globals/constants";
 import { GLOBAL_SETTINGS } from "../utility/globals/settings";
 import { fetchAircraftLocation } from "../utility/api/location";
-import { controlAircraft } from "../utility/api/controlAircraft";
 import { DrawAircraft } from "../utility/aircraft/drawAircraft";
 import { SimulationManager } from "../utility/api/simulation";
 import { useRouteInfoDisplaySetting } from '@/context/routeInfoDisplaySettingContext';
-import { Coordinate, useCenterCoordinate } from "@/context/centerCoordinateContext";
+import { useCenterCoordinate } from "@/context/centerCoordinateContext";
 import { useDisplayRange } from "@/context/displayRangeContext";
 import { useSelectFixMode } from "@/context/selectFixModeContext";
 import { searchFixName } from "@/utility/AtsRouteManager/FixNameSearch";
+import { usePathname } from "next/navigation";
 
 const RadarCanvas: React.FC = () => {
   const canvasRefs = [useRef<HTMLCanvasElement>(null), useRef<HTMLCanvasElement>(null)];
   const [controllingAircrafts, setControllingAircrafts] = useState<Aircraft[]>([]);
   const controllingAircraftsRef = useRef<Aircraft[]>(controllingAircrafts);
   const [selectedAircraft, setSelectedAircraft] = useState<Aircraft | null>(null);
+  const selectedAircraftRef = useRef(selectedAircraft);
   const [atsRouteData, setAtsRouteData] = useState<any>(null);
   const [bg, setBg] = useState(0);
-  const clickedPositionRef = useRef<{ x: number; y: number } | null>(null);
   const draggingLabelIndexRef = useRef(-1);
   const offsetXRef = useRef(0);
   const offsetYRef = useRef(0);
@@ -35,6 +35,11 @@ const RadarCanvas: React.FC = () => {
   const { isSelectFixMode } = useSelectFixMode();
   const isSelectFixModeRef = useRef(isSelectFixMode);
   const atsRouteDataRef = useRef(atsRouteData);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    console.log("pathname: ", pathname);
+  }, [pathname]);
 
   useEffect(() => {
     const canvasContainer = document.getElementsByClassName("radarArea")[0] as HTMLElement;
@@ -97,6 +102,10 @@ const RadarCanvas: React.FC = () => {
       console.error("Error loading ATS routes from initializeAtsRouteData:", error);
     }
   };
+
+  useEffect(() => {
+    selectedAircraftRef.current = selectedAircraft;
+  }, [selectedAircraft]);
 
   useEffect(() => {
     controllingAircraftsRef.current = controllingAircrafts;
@@ -299,7 +308,7 @@ const RadarCanvas: React.FC = () => {
     const fetchLocationInterval = setInterval(async () => {
       try {
         const currentControllingAircrafts = controllingAircraftsRef.current;
-        const updatedAircrafts = await fetchAircraftLocation(currentControllingAircrafts, centerCoordinateRef.current, displayRangeRef.current);
+        const updatedAircrafts = await fetchAircraftLocation(currentControllingAircrafts, centerCoordinateRef.current, displayRangeRef.current, pathname);
         // console.log("updatedAircrafts", updatedAircrafts);
 
         // 最新の controllingAircrafts を取得して状態を更新
@@ -313,6 +322,41 @@ const RadarCanvas: React.FC = () => {
 
     return () => clearInterval(fetchLocationInterval);
   };
+
+// コントローラー画面における航空機情報の変更
+  useEffect(() => {
+    const confirmButton = document.getElementById("confirmButton") as HTMLButtonElement;
+    const handleClick = () => {
+      const inputAltitude = document.getElementById("altitude") as HTMLInputElement;
+      const inputSpeed = document.getElementById("speed") as HTMLInputElement;
+      const inputHeading = document.getElementById("heading") as HTMLInputElement;
+      console.log("confirmButton clicked");
+
+      if (!inputAltitude || !inputSpeed || !inputHeading) {
+        console.error("Input elements not found");
+        return;
+      }
+
+      console.log("Input elements found");
+      console.log(selectedAircraftRef.current);
+
+      if (selectedAircraftRef.current) {
+        console.log("Selected aircraft:", selectedAircraftRef.current.callsign);
+        selectedAircraftRef.current.instructedVector = {
+          heading: parseInt(inputHeading.value),
+          groundSpeed: parseInt(inputSpeed.value),
+          altitude: parseInt(inputAltitude.value)
+        };
+      }
+    };
+
+    confirmButton?.addEventListener("click", handleClick);
+
+    return () => {
+      confirmButton?.removeEventListener("click", handleClick);
+    };
+  }, []);
+
 
   return (
     <div className="radarArea relative w-full">

@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 
-const ControlAircraft = () => {
+const InputAircraftInfo = () => {
   let callsign: string = "";
 
   const controlAircraft = async () => {
@@ -22,34 +22,8 @@ const ControlAircraft = () => {
     const instructedAltitude = parseInt(inputAltitude.value);
     const instructedGroundSpeed = parseInt(inputSpeed.value);
     const instructedHeading = parseInt(inputHeading.value);
-
-    const controlAircraftDto = {
-      instructedAltitude,
-      instructedGroundSpeed,
-      instructedHeading,
-    };
-
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/aircraft/control/${callsign}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(controlAircraftDto),
-        }
-      );
-
-      if (response.ok) {
-        console.log(`Aircraft ${callsign} controlled successfully.`);
-      } else {
-        console.error(`Failed to control aircraft ${callsign}. Status:`, response.status);
-      }
-    } catch (error) {
-      console.error("Error occurred while controlling aircraft:", error);
-    }
   };
+
 
   return (
     <div className="flex flex-col">
@@ -66,12 +40,13 @@ const ControlAircraft = () => {
       ))}
       <input
         type="button"
-        value="Execute"
+        value="Confirm"
         onClick={controlAircraft}
+        id='confirmButton'
         className="bg-green-400 text-gray-900 border-none px-4 py-2 text-lg font-bold cursor-pointer transition-all duration-300 ease-in-out rounded-md hover:bg-green-500 hover:shadow-lg-no-offset hover:shadow-green-400/70"
       />
     </div>
   );
 };
 
-export default ControlAircraft;
+export default InputAircraftInfo;
