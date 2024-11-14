@@ -15,7 +15,7 @@ export const DisplayRangeContext = createContext<DisplayRangeContextType | undef
 export const DisplayRangeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // 修正: DisplayRange のみを useState で管理し、setDisplayRange を直接提供する
   const [displayRange, setDisplayRange] = useState<DisplayRange>({
-    range: 200,  // 初期値
+    range: 400,  // 初期値
   });
 
   return (

@@ -92,7 +92,7 @@ class DrawAircraft {
       labelY + 30,
     );
     ctx.fillText(
-      aircraft.destinationIata,
+      aircraft.destinationIcao.length >= 4 ? aircraft.destinationIcao.slice(-3) : aircraft.destinationIcao,
       labelX + 40,
       labelY + 30,
     );

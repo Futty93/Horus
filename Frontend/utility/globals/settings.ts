@@ -22,7 +22,7 @@ interface DisplaySettings {
 export const GLOBAL_SETTINGS: GlobalSettings = {
   canvasWidth: 2000,
   canvasHeight: 2000,
-  displayRange: 200,
+  displayRange: 400,
   centerCoordinates: { latitude: 35.6895, longitude: 139.6917 }, // 東京の座標
   isDisplaying: {
     waypointName: false,

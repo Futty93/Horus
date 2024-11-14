@@ -4,11 +4,14 @@ import { CoordinateManager } from "../coordinateManager/CoordinateManager";
 import { GLOBAL_SETTINGS } from "../globals/settings";
 import { DisplayRange } from "@/context/displayRangeContext";
 
+const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
+const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
+
 export const fetchAircraftLocation = async (controllingAircrafts: Aircraft[], centerCoordinate: Coordinate, displayRange: DisplayRange, pathname: string) => {
   let updatedControllingAircraft: Aircraft[] = [];
   try {
     const response = await fetch(
-      "http://localhost:8080/aircraft/location/all",
+      `http://${serverIp}:${serverPort}/aircraft/location/all`,
       {
         method: "GET",
         headers: {

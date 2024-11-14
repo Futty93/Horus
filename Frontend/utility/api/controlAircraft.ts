@@ -1,3 +1,6 @@
+const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
+const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
+
 export async function controlAircraft(callsign: string): Promise<void> {
   const inputAltitude: HTMLInputElement = document.getElementById('altitude') as HTMLInputElement;
   const inputHeading: HTMLInputElement = document.getElementById('heading') as HTMLInputElement;
@@ -17,7 +20,7 @@ export async function controlAircraft(callsign: string): Promise<void> {
 
   try {
     const response = await fetch(
-      `http://localhost:8080/api/aircraft/control/${callsign}`,
+      `http://${serverIp}:${serverPort}/api/aircraft/control/${callsign}`,
       {
         method: "POST",
         headers: {

@@ -1,6 +1,4 @@
-"use client";
 import React from "react";
-import Image from "next/image";
 import RadarCanvas from "@/components/radarCanvas";
 import { RouteInfoDisplaySettingProvider } from "@/context/routeInfoDisplaySettingContext";
 import RouteInfoDisplaySetting from "@/components/routeInfoDisplaySetting";
@@ -11,6 +9,11 @@ import DisplayRangeSetting from "@/components/displayRangeSetting";
 import ControlAircraft from "@/components/controlAircraft";
 import { SelectFixModeProvider } from "@/context/selectFixModeContext";
 import SelectFixMode from "@/components/selectFixMode";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Operator",
+};
 
 export default function OperatorPage() {
   return (

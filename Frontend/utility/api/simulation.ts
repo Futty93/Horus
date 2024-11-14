@@ -1,3 +1,6 @@
+const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
+const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
+
 export class SimulationManager {
   constructor() {
     const startButton: HTMLImageElement = document.getElementById("startButton") as HTMLImageElement;
@@ -9,7 +12,7 @@ export class SimulationManager {
 
   // シミュレーションの開始・一時停止を処理する共通メソッド
   private async handleSimulationAction(action: "start" | "pause"): Promise<void> {
-    const url = `http://localhost:8080/simulation/${action}`;
+    const url = `http://${serverIp}:${serverPort}/simulation/${action}`;
     try {
       const response = await fetch(url, {
         method: "POST",  // メソッドをPOSTに変更

@@ -1,6 +1,5 @@
 "use client";
-import React, { use, useEffect } from "react";
-import Image from "next/image";
+import React from "react";
 import RadarCanvas from "@/components/radarCanvas";
 import { RouteInfoDisplaySettingProvider } from "@/context/routeInfoDisplaySettingContext";
 import RouteInfoDisplaySetting from "@/components/routeInfoDisplaySetting";
@@ -11,6 +10,11 @@ import DisplayRangeSetting from "@/components/displayRangeSetting";
 import { SelectFixModeProvider } from "@/context/selectFixModeContext";
 import SelectFixMode from "@/components/selectFixMode";
 import InputAircraftInfo from "@/components/inputInfoArea";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Controller",
+};
 
 export default function ControllerPage() {
 

@@ -1,5 +1,9 @@
+"use client";
 import { useSelectFixMode } from "@/context/selectFixModeContext";
 import React from "react";
+
+const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
+const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
 
 const SelectFixMode = () => {
   const { isSelectFixMode, setIsSelectFixMode } = useSelectFixMode();
@@ -50,7 +54,7 @@ const SelectFixMode = () => {
                 const selectedFixName = selectedFixNameElement.innerText;
                 try {
                   const response = await fetch(
-                    `http://localhost:8080/api/aircraft/control/${callsign}/direct/${selectedFixName}`,
+                    `http://${serverIp}:${serverPort}/api/aircraft/control/${callsign}/direct/${selectedFixName}`,
                     {
                       method: "POST",
                       headers: {

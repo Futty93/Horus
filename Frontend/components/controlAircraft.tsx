@@ -1,6 +1,9 @@
 "use client";
 import React from 'react';
 
+const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
+const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
+
 const ControlAircraft = () => {
   let callsign: string = "";
 
@@ -31,7 +34,7 @@ const ControlAircraft = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/aircraft/control/${callsign}`,
+        `http://${serverIp}:${serverPort}/api/aircraft/control/${callsign}`,
         {
           method: "POST",
           headers: {

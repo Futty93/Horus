@@ -3,6 +3,12 @@ import { Route } from "./RouteInterfaces/Route";
 import { RoutePoint } from "./RouteInterfaces/RoutePoint";
 import { RadioNavigationAid } from "./RouteInterfaces/RadioNavigationAid";
 
+// import dotenv from 'dotenv';
+// dotenv.config({ path: '.env.local' });
+
+const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
+const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
+
 // データを取得し、パースする関数
 async function loadAtsRoutes(): Promise<{
   waypoints: Waypoint[];
@@ -11,7 +17,7 @@ async function loadAtsRoutes(): Promise<{
   rnavRoutes: Route[];
 }> {
   try {
-    const response = await fetch('http://localhost:8080/ats/route/all');
+    const response = await fetch(`http://${serverIp}:${serverPort}/ats/route/all`);
 
     // レスポンスのステータスコードをチェック
     if (!response.ok) {

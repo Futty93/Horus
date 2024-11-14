@@ -3,7 +3,7 @@ import React from 'react';
 import { useDisplayRange } from '@/context/displayRangeContext';
 
 const DisplayRangeSetting = () => {
-  const { setDisplayRange } = useDisplayRange();
+  const { displayRange, setDisplayRange } = useDisplayRange();
 
   const handleRangeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newRange = Number(event.target.value);
@@ -20,7 +20,7 @@ const DisplayRangeSetting = () => {
       <input
         type="number"
         id="displayRange"
-        defaultValue="200"
+        defaultValue={`${displayRange.range}`}
         min="10"
         max="4000"
         onChange={handleRangeChange}
