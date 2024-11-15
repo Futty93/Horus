@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import RadarCanvas from "@/components/radarCanvas";
 import { RouteInfoDisplaySettingProvider } from "@/context/routeInfoDisplaySettingContext";
@@ -8,7 +7,7 @@ import { CenterCoordinateProvider } from "@/context/centerCoordinateContext";
 import { DisplayRangeProvider } from "@/context/displayRangeContext";
 import DisplayRangeSetting from "@/components/displayRangeSetting";
 import { SelectFixModeProvider } from "@/context/selectFixModeContext";
-import SelectFixMode from "@/components/selectFixMode";
+// import SelectFixMode from "@/components/selectFixMode";
 import InputAircraftInfo from "@/components/inputInfoArea";
 import { Metadata } from "next";
 
