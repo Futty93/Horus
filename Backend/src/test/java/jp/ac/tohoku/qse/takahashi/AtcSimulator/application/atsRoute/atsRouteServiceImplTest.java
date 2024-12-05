@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class atsRouteServiceImplTest {
 
-    private final atsRouteServiceImpl atsRouteService = new atsRouteServiceImpl();
+    private final AtsRouteServiceImpl atsRouteService = new AtsRouteServiceImpl();
 
     public atsRouteServiceImplTest() throws IOException {
     }

@@ -1,9 +1,9 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aggregate.airspace;
 
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.atsRoute.AtsRouteServiceImpl;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalVariables;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.AtsRouteRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
 import org.springframework.context.annotation.Configuration;
@@ -19,12 +19,12 @@ import static jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalConst
 @EnableScheduling
 public class AirspaceManagementImpl implements AirspaceManagement {
     AircraftRepository aircraftRepository;
-    AtsRouteRepository atsRouteRepository;
+    AtsRouteServiceImpl atsRouteService;
 
     private int step = 0;
-    public AirspaceManagementImpl(AircraftRepository aircraftRepository, AtsRouteRepository atsRouteRepository) {
+    public AirspaceManagementImpl(AircraftRepository aircraftRepository, AtsRouteServiceImpl atsRouteServiceImpl) {
         this.aircraftRepository = aircraftRepository;
-        this.atsRouteRepository = atsRouteRepository;
+        this.atsRouteService = atsRouteServiceImpl;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class AirspaceManagementImpl implements AirspaceManagement {
 
     @Override
     public Optional<FixPosition> getFixPosition(String fixName) {
-        return atsRouteRepository.findFixPositionByName(fixName);
+        return atsRouteService.findFixPositionByName(fixName);
     }
 
     @Scheduled(fixedRate = 1000 / REFRESH_RATE)

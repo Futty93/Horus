@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Service
 public class AtsRouteRepository {
     private static AtsRouteRepository instance;
 
@@ -27,8 +26,7 @@ public class AtsRouteRepository {
     private List<Route> atsLowerRoutes;
     private List<Route> rnavRoutes;
 
-    @Autowired
-    private AtsRouteRepository() throws IOException {
+    public AtsRouteRepository() throws IOException {
         waypoints = loadWaypoints();
         this.radioNavigationAids = loadRadioNavigationAids();
         this.atsLowerRoutes = loadAtsLowerRoutes();
