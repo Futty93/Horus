@@ -25,6 +25,9 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0"
 	implementation 'javax.validation:validation-api:2.0.1.Final'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testAnnotationProcessor('org.projectlombok:lombok')
 }
 
 task runAtsRouteRepository(type: JavaExec) {
@@ -34,6 +37,20 @@ task runAtsRouteRepository(type: JavaExec) {
 
 build.dependsOn runAtsRouteRepository
 
-tasks.named('test') {
+test {
 	useJUnitPlatform()
+}
+
+tasks.create("smallTest", Test) {
+	useJUnitPlatform({
+		includeTags 'small'
+	})
+	mustRunAfter check
+}
+
+tasks.create("largeTest", Test) {
+	useJUnitPlatform({
+		includeTags 'large'
+	})
+	mustRunAfter check
 }

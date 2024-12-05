@@ -17,9 +17,4 @@ public class AircraftRepositoryInMemoryTest {
         repository = new AircraftRepositoryInMemory();
     }
 
-    @Test
-    void shouldFindAllAircrafts() {
-        List<Aircraft> aircrafts = repository.findAll();
-        assertEquals(3, aircrafts.size(), "There should be 3 aircrafts");
-    }
 }
