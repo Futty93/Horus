@@ -1,36 +1,284 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# オモテノス (Omotenus): ATCレーダーシミュレーションシステム フロントエンド
 
-## Getting Started
+## 概要
 
-First, run the development server:
+オモテノスは、ATCレーダーシミュレーションシステム「Horus」のフロントエンドコンポーネントです。Next.js 14.2.15とTypeScriptを使用して実装されており、モダンなUIとリアルタイムな航空機情報の表示を提供します。
 
+## 技術スタック
+
+- **フレームワーク**: Next.js 14.2.15
+- **言語**: TypeScript
+- **スタイリング**: Tailwind CSS
+- **状態管理**: React Context API
+- **ビルドツール**: esbuild
+
+## 環境構築
+
+### 前提条件
+
+- Node.js 18.0.0以上
+- npm 9.0.0以上
+
+### インストール手順
+
+1. リポジトリのクローン
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/your-username/horus.git
+cd horus/Frontend
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. 依存関係のインストール
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. 開発サーバーの起動
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. ブラウザでアクセス
+```
+http://localhost:3333
+```
 
-## Learn More
+## プロジェクト構造
 
-To learn more about Next.js, take a look at the following resources:
+```
+Frontend/
+├── app/                    # Next.jsのアプリケーションルート
+│   ├── controller/        # コントローラー画面
+│   ├── operator/          # オペレーター画面
+│   └── layout.tsx         # 共通レイアウト
+├── components/            # 再利用可能なコンポーネント
+│   ├── radarCanvas.tsx    # レーダー表示キャンバス
+│   ├── controlAircraft.tsx # 航空機制御パネル
+│   ├── inputInfoArea.tsx  # 航空機情報入力フォーム
+│   ├── sectorSelector.tsx # セクター選択コンポーネント
+│   └── ...
+├── context/              # React Context定義
+│   ├── centerCoordinateContext.tsx
+│   ├── displayRangeContext.tsx
+│   └── ...
+├── utility/             # ユーティリティ関数
+│   ├── aircraft/        # 航空機関連のユーティリティ
+│   ├── api/            # API通信関連
+│   └── AtsRouteManager/ # 経路管理関連
+└── public/             # 静的ファイル
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 主要コンポーネント
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 1. レーダー表示画面 (RadarCanvas)
 
-## Deploy on Vercel
+航空機の位置情報をリアルタイムで表示するキャンバスコンポーネント。
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**主な機能**:
+- 航空機の位置表示
+- 経路情報の表示
+- マウスインタラクション
+- ズーム/パン機能
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**実装詳細**:
+- ダブルバッファリングによる描画
+- 航空機のラベル表示
+- 経路情報の動的表示
+
+### 2. 管制指示入力インターフェース (ControlAircraft)
+
+航空機への管制指示を入力するためのインターフェース。
+
+**主な機能**:
+- 高度変更指示
+- 針路変更指示
+- 速度変更指示
+- 指示の送信
+
+### 3. 航空機情報入力フォーム (InputAircraftInfo)
+
+新しい航空機の情報を入力するためのフォーム。
+
+**入力項目**:
+- コールサイン
+- 出発地/目的地
+- 機種
+- 初期位置情報
+
+### 4. セクター選択機能 (SectorSelector)
+
+管制セクターの選択と表示を管理するコンポーネント。
+
+**主な機能**:
+- セクターの選択
+- セクター境界の表示
+- セクター情報の表示
+
+## 状態管理
+
+React Context APIを使用して、以下の状態を管理しています：
+
+1. **中心座標** (CenterCoordinateContext)
+   - レーダー表示の中心位置
+   - パン操作の状態
+
+2. **表示範囲** (DisplayRangeContext)
+   - レーダーの表示範囲
+   - ズームレベル
+
+3. **経路情報表示設定** (RouteInfoDisplaySettingContext)
+   - 経路情報の表示/非表示
+   - 表示する経路の種類
+
+4. **Fix選択モード** (SelectFixModeContext)
+   - 経路点選択モードの状態
+   - 選択された経路点の情報
+
+## API通信
+
+バックエンドとの通信は以下のエンドポイントを使用：
+
+- `/startGame`: シミュレーション開始
+- `/inGame`: 航空機情報の取得と更新
+- `/controlAircraft`: 管制指示の送信
+
+## 開発ガイドライン
+
+### コンポーネントの作成
+
+1. コンポーネントは`components`ディレクトリに配置
+2. TypeScriptの型定義を適切に行う
+3. スタイリングはTailwind CSSを使用
+
+### 状態管理
+
+1. グローバルな状態はContext APIを使用
+2. ローカルな状態はuseStateを使用
+3. 副作用はuseEffectで管理
+
+### スタイリング
+
+1. Tailwind CSSのユーティリティクラスを使用
+2. カスタムスタイルは`globals.css`に定義
+3. レスポンシブデザインを考慮
+
+## デプロイメント
+
+### ビルド
+
+```bash
+npm run build
+```
+
+### 本番環境での実行
+
+```bash
+npm start
+```
+
+## トラブルシューティング
+
+### よくある問題と解決方法
+
+1. **キャンバスの表示が更新されない**
+   - ブラウザのキャッシュをクリア
+   - 開発サーバーを再起動
+
+2. **API通信エラー**
+   - バックエンドサーバーが起動しているか確認
+   - CORSの設定を確認
+
+3. **パフォーマンスの問題**
+   - 不要な再レンダリングを確認
+   - メモ化の使用を検討
+
+## 貢献ガイドライン
+
+1. コードの品質を維持
+2. テストの作成と実行
+3. ドキュメントの更新
+4. プルリクエストの作成
+
+## ライセンス
+
+このプロジェクトはオープンソースとして公開されており、研究・教育目的で自由に利用できます。
+
+## TODO: 実装の改善点
+
+### パフォーマンス最適化
+
+1. **RadarCanvasコンポーネント**
+   - [ ] 不要な再レンダリングの削減
+     - `useMemo`と`useCallback`を使用して関数と計算結果をメモ化
+     - コンポーネントをより小さな単位に分割
+   - [ ] レンダリングループの最適化
+     - `requestAnimationFrame`の使用を最適化
+     - フレームレート制御の実装
+   - [ ] キャンバス描画の最適化
+     - ダブルバッファリングの実装を改善
+     - 描画領域の最適化（表示範囲外の描画をスキップ）
+
+2. **状態管理の改善**
+   - [ ] Contextの最適化
+     - 不要なContextの分割
+     - 状態更新の最適化
+   - [ ] 型定義の強化
+     - `any`型の使用を排除
+     - より厳密な型定義の実装
+
+### コード品質の向上
+
+1. **コンポーネント設計**
+   - [ ] コンポーネントの責務の明確化
+     - 単一責任の原則に基づく分割
+     - プレゼンテーショナル/コンテナコンポーネントの分離
+   - [ ] カスタムフックの活用
+     - ロジックの再利用性向上
+     - テスト容易性の向上
+
+2. **エラーハンドリング**
+   - [ ] エラーバウンダリの実装
+   - [ ] ユーザーフレンドリーなエラーメッセージ
+   - [ ] エラー状態の適切な管理
+
+3. **テストの追加**
+   - [ ] ユニットテストの実装
+   - [ ] 統合テストの実装
+   - [ ] E2Eテストの実装
+
+### 機能の拡張
+
+1. **ユーザーインターフェース**
+   - [ ] アクセシビリティの改善
+     - ARIA属性の追加
+     - キーボードナビゲーションの実装
+   - [ ] レスポンシブデザインの強化
+   - [ ] ダークモード/ライトモードの実装
+
+2. **パフォーマンスモニタリング**
+   - [ ] パフォーマンスメトリクスの収集
+   - [ ] エラーログの集約
+   - [ ] ユーザー行動の分析
+
+### セキュリティ強化
+
+1. **API通信**
+   - [ ] CSRF対策の実装
+   - [ ] レート制限の実装
+   - [ ] 入力値のバリデーション強化
+
+2. **環境変数**
+   - [ ] 環境変数の型定義
+   - [ ] 機密情報の適切な管理
+   - [ ] 環境ごとの設定管理
+
+### ドキュメント整備
+
+1. **コードドキュメント**
+   - [ ] JSDocコメントの追加
+   - [ ] コンポーネントの使用方法の説明
+   - [ ] 型定義の詳細な説明
+
+2. **開発者向けドキュメント**
+   - [ ] アーキテクチャの詳細な説明
+   - [ ] 開発フローの整備
+   - [ ] デプロイメント手順の詳細化

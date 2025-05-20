@@ -1,58 +1,318 @@
-<!-- バックエンドのREADME -->
-以下は、航空機の情報を受け取り、その後の状態を計算し、管制指示を反映するシステムのためのファイル構成の提案です。各ファイルに何が記載されるべきかを含めた構成ツリーと、それぞれのファイルの内容の説明をMarkdown形式で出力します。
+# ウラノス (Uranus): ATCレーダーシミュレーションシステム バックエンド
 
-### Backendのファイル構成
+## 概要
+
+ウラノスは、ATCレーダーシミュレーションシステム「Horus」のバックエンドコンポーネントです。クリーンアーキテクチャに基づいて設計されており、Java 22とSpring Boot 3.3.2を使用して実装されています。航空機の位置情報管理、管制指示の処理、シナリオファイルの読み込みと実行などの機能を提供します。
+
+## 技術スタック
+
+- **言語**: Java 22
+- **フレームワーク**: Spring Boot 3.3.2
+- **API仕様**: OpenAPI 3.0.2
+- **ビルドツール**: Gradle
+- **アーキテクチャ**: クリーンアーキテクチャ
+
+## 環境構築
+
+### 前提条件
+
+- Java Development Kit (JDK) 22以上
+- Gradle 8.3以上
+
+### インストール手順
+
+1. リポジトリのクローン
+```bash
+git clone https://github.com/your-username/horus.git
+cd horus/Backend
+```
+
+2. アプリケーションのビルド
+```bash
+./gradlew build
+```
+
+3. アプリケーションの実行
+```bash
+./gradlew bootRun
+```
+
+4. APIドキュメントへのアクセス
+```
+http://localhost:8080/docs.html
+```
+
+## プロジェクト構造
+
+プロジェクトはクリーンアーキテクチャに基づき、以下のレイヤーで構成されています：
 
 ```
-.
-├── AtcSimulatorApplication.java
-├── application
-│   ├── AircraftRadarService.java
-│   └── aircraft
-│       └── AircraftRadarServiceImpl.java
-├── config
-│   ├── AtcSimulatorApplicationConfig.java
-│   └── WebConfig.java
-├── domain
-│   └── model
-│       ├── aggregate
-│       │   └── airspace
-│       │       ├── AirSpace.java
-│       │       ├── AirSpaceImpl.java
-│       │       ├── AirspaceManagement.java
-│       │       └── AirspaceManagementImpl.java
-│       ├── entity
-│       │   └── aircraft
-│       │       ├── Aircraft.java
-│       │       ├── AircraftBase.java
-│       │       ├── AircraftRepository.java
-│       │       └── CommercialAircraft.java
-│       ├── service
-│       │   └── scenario
-│       │       ├── ScenarioService.java
-│       │       └── ScenarioServiceImpl.java
-│       └── valueObject
-│           ├── Callsign
-│           │   ├── Callsign.java
-│           │   ├── Company.java
-│           │   └── FlightNumber.java
-│           ├── Position
-│           │   ├── AircraftPosition.java
-│           │   ├── AircraftVector.java
-│           │   └── InstructedVector.java
-│           └── Type
-│               └── AircraftType.java
-├── infrastructure
-│   └── persistance
-│       └── inMemory
-│           └── AircraftRepositoryInMemory.java
-└── interfaces
-    ├── api
-    │   ├── ControlAircraftService.java
-    │   ├── CreateAircraftService.java
-    │   ├── HelloService.java
-    │   └── LocationService.java
-    └── dto
+jp.ac.tohoku.qse.takahashi.AtcSimulator/
+├── application/                # アプリケーションレイヤー
+│   ├── AircraftRadarService.java     # 航空機レーダーサービスインターフェース
+│   └── aircraft/               # 航空機関連のアプリケーションサービス
+│       └── AircraftRadarServiceImpl.java
+├── config/                    # 設定クラス
+│   ├── globals/               # グローバル定数・変数
+│   ├── AtcSimulatorApplicationConfig.java
+│   └── WebConfig.java
+├── domain/                    # ドメインレイヤー
+│   └── model/
+│       ├── aggregate/         # 集約
+│       │   └── airspace/      # 空域関連の集約
+│       ├── entity/            # エンティティ
+│       │   └── aircraft/      # 航空機関連のエンティティ
+│       ├── service/           # ドメインサービス
+│       │   └── scenario/      # シナリオ関連のサービス
+│       └── valueObject/       # 値オブジェクト
+│           ├── AircraftAttributes/ # 航空機属性の値オブジェクト
+│           ├── Callsign/      # コールサイン関連の値オブジェクト
+│           ├── Position/      # 位置関連の値オブジェクト
+│           └── Type/          # 航空機タイプの値オブジェクト
+├── infrastructure/            # インフラストラクチャレイヤー
+│   └── persistance/           # 永続化関連
+│       └── inMemory/          # インメモリ実装
+│           └── AircraftRepositoryInMemory.java
+└── interfaces/                # インターフェースレイヤー
+    ├── api/                   # REST API
+    │   ├── AtsRouteService.java
+    │   ├── ControlAircraftService.java
+    │   ├── CreateAircraftService.java
+    │   ├── LocationService.java
+    │   └── SimulationService.java
+    └── dto/                   # データ転送オブジェクト
         ├── ControlAircraftDto.java
         └── CreateAircraftDto.java
 ```
+
+## 主要コンポーネント
+
+### 1. ドメインモデル
+
+#### 航空機エンティティ
+
+航空機の状態と振る舞いを表現します。
+
+**主要クラス**:
+- `Aircraft.java` - 航空機インターフェース
+- `AircraftBase.java` - 基本的な航空機の実装
+- `CommercialAircraft.java` - 商用航空機の実装
+
+**主な機能**:
+- 位置情報の更新
+- 速度ベクトルの計算
+- 管制指示の反映
+- 航跡の計算
+
+#### 値オブジェクト
+
+不変の値を表現します。
+
+**主要クラス**:
+- `AircraftPosition.java` - 航空機の位置
+- `AircraftVector.java` - 航空機の速度ベクトル
+- `InstructedVector.java` - 指示された速度ベクトル
+- `Callsign.java` - 航空機のコールサイン
+
+### 2. アプリケーションサービス
+
+ドメインモデルを操作するためのサービスを提供します。
+
+**主要クラス**:
+- `AircraftRadarService.java` - 航空機の位置情報取得サービス
+- `ScenarioService.java` - シナリオ実行サービス
+
+### 3. インフラストラクチャ
+
+データの永続化とシステムリソースへのアクセスを提供します。
+
+**主要クラス**:
+- `AircraftRepositoryInMemory.java` - インメモリの航空機リポジトリ実装
+
+### 4. インターフェース
+
+外部とのインターフェースを提供します。
+
+**主要クラス**:
+- `ControlAircraftService.java` - 航空機制御APIエンドポイント
+- `CreateAircraftService.java` - 航空機作成APIエンドポイント
+- `LocationService.java` - 位置情報取得APIエンドポイント
+- `SimulationService.java` - シミュレーション制御APIエンドポイント
+
+## API仕様
+
+RESTful APIを提供しており、詳細なAPI仕様は`UranosAPI.yml`ファイルに記載されています。
+
+主なエンドポイント:
+
+1. **航空機制御**
+   - `POST /api/aircraft/control/{callsign}` - 特定の航空機に管制指示を与える
+   - `POST /api/aircraft/control/{callsign}/direct/{fixName}` - 特定の航空機を特定のFIXに直行させる
+
+2. **位置情報取得**
+   - `GET /inGame` - 全航空機の現在位置を取得
+
+3. **シミュレーション制御**
+   - `POST /simulation/start` - シミュレーションを開始
+   - `POST /simulation/pause` - シミュレーションを一時停止
+   - `GET /simulation/status` - シミュレーションの状態を取得
+
+## 開発ガイドライン
+
+### コード規約
+
+1. **クリーンアーキテクチャの原則を遵守**
+   - 依存関係は外側から内側に向かうようにする
+   - ドメインレイヤーはフレームワークに依存しない
+
+2. **DDD (ドメイン駆動設計) の原則を適用**
+   - エンティティ、値オブジェクト、集約、リポジトリの区別を明確にする
+   - ユビキタス言語を使用する
+
+3. **SOLIDの原則を遵守**
+   - 単一責任の原則
+   - オープン・クローズドの原則
+   - リスコフの置換原則
+   - インターフェース分離の原則
+   - 依存性逆転の原則
+
+### テスト
+
+1. ユニットテスト
+   - ドメインモデルのテスト
+   - アプリケーションサービスのテスト
+   - リポジトリのテスト
+
+2. 統合テスト
+   - APIエンドポイントのテスト
+   - シナリオのテスト
+
+## 将来の拡張
+
+1. **永続化層の追加**
+   - インメモリからデータベースへの移行
+   - キャッシュの実装
+
+2. **シナリオ機能の拡張**
+   - 複雑なフライトシナリオの追加
+   - シナリオエディタの開発
+
+3. **パフォーマンス最適化**
+   - 大規模シミュレーションのサポート
+   - 分散処理の実装
+
+## ライセンス
+
+このプロジェクトはオープンソースとして公開されており、研究・教育目的で自由に利用できます。
+
+## TODO: 実装の改善点
+
+### パフォーマンス最適化
+
+1. **CommercialAircraft クラスの最適化**
+   - [ ] 航跡計算ロジックの効率化
+     - 地球の曲率を考慮した計算が複雑であり、頻繁に呼び出される場合にパフォーマンス低下の原因となる可能性がある
+     - 近距離の場合は平面近似による計算を使用し、遠距離の場合のみ球面計算を使用するなどの最適化が考えられる
+   - [ ] 冗長な計算の削減
+     - `calculateNextAircraftPosition` メソッド内での不要な変数宣言や計算の削除
+     - 定数値のキャッシュ化
+
+2. **リポジトリ実装の改善**
+   - [ ] `AircraftRepositoryInMemory` クラスのデータ構造最適化
+     - リストではなくマップを使用してコールサインによる検索を効率化
+     - インデックスの活用
+
+3. **API応答時間の短縮**
+   - [ ] シリアライズ/デシリアライズの最適化
+     - カスタムシリアライザの実装検討
+     - フィールドの選択的シリアライズ
+
+### コード品質の向上
+
+1. **型安全性の強化**
+   - [ ] `any` 型や raw 型の使用を排除
+   - [ ] ジェネリックスの適切な活用
+   - [ ] Null安全性の強化（Optional の活用）
+
+2. **エラーハンドリングの改善**
+   - [ ] グローバルな例外ハンドラの実装
+   - [ ] 適切な例外クラスの設計と使用
+   - [ ] トランザクション管理の強化
+
+3. **コード重複の削減**
+   - [ ] ユーティリティメソッドの抽出と再利用
+   - [ ] テンプレートメソッドパターンの活用
+   - [ ] ヘルパークラスの設計
+
+4. **テスタビリティの向上**
+   - [ ] モックやスタブの活用を容易にするためのインターフェース設計
+   - [ ] 依存性注入の徹底
+   - [ ] 副作用の少ない関数型設計の導入
+
+### アーキテクチャの改善
+
+1. **DDD原則の徹底**
+   - [ ] 集約（Aggregate）の境界の明確化
+   - [ ] 値オブジェクトの徹底的な利用
+   - [ ] ドメインイベントの導入
+
+2. **レイヤー間の依存関係の整理**
+   - [ ] インターフェースレイヤーの分離強化
+   - [ ] アプリケーションサービスの責務の明確化
+   - [ ] ドメインモデルの純粋さの確保
+
+3. **設定の外部化**
+   - [ ] 環境変数やプロパティファイルの活用
+   - [ ] 環境ごとの設定の分離
+   - [ ] 設定の型安全な管理
+
+### 機能拡張
+
+1. **シナリオ機能の強化**
+   - [ ] シナリオDSLの設計
+   - [ ] シナリオのバージョン管理
+   - [ ] シナリオのエクスポート/インポート機能
+
+2. **モニタリングと可観測性**
+   - [ ] パフォーマンスメトリクスの収集
+   - [ ] ログの構造化
+   - [ ] 分散トレーシングの導入
+
+3. **セキュリティ強化**
+   - [ ] 認証・認可の実装
+   - [ ] 入力値のバリデーション強化
+   - [ ] APIレート制限の実装
+
+### 特定の実装の問題点
+
+1. **CommercialAircraft クラス**
+   - [ ] コメントアウトされたコードの除去（特に `calculateTurnAngle` メソッド内の実装）
+   - [ ] 航空機の物理的特性を考慮した現実的な挙動のモデリング
+   - [ ] フライトダイナミクスの計算精度向上
+
+2. **AircraftRepositoryInMemory クラス**
+   - [ ] スレッドセーフな実装への改善
+   - [ ] `NextStep` メソッドの責務が不明確（リポジトリの責務から逸脱）
+   - [ ] 初期実装のコメントアウトコードの削除
+
+3. **制御フローの改善**
+   - [ ] コールバックやプロミスではなくリアクティブプログラミングの導入検討
+   - [ ] 同期・非同期処理の明確な分離
+   - [ ] リソースの適切な解放（try-with-resources の活用）
+
+4. **APIエンドポイントの設計**
+   - [ ] RESTful 原則に準拠した URI 設計の見直し
+   - [ ] 操作性の向上（HATEOAS の導入検討）
+   - [ ] API バージョニング戦略の策定
+
+### ドキュメンテーション
+
+1. **コードドキュメントの充実**
+   - [ ] Javadoc コメントの追加
+   - [ ] クラス図・シーケンス図などの作成
+   - [ ] 設計意図の説明
+
+2. **開発者向けドキュメント**
+   - [ ] コーディング規約の作成
+   - [ ] 開発環境のセットアップガイド
+   - [ ] トラブルシューティングガイド
