@@ -62,13 +62,18 @@
 
 # Java環境のセットアップの実行手順
 
+> [!CAUTION]
+> このシステムは Java 21 または Java 22 で動作します。Java 24 では互換性の問題が発生するため使用しないでください。
+
 1. **Javaのインストール**
 
-    - [JDKのダウンロードサイト](https://www.oracle.com/jp/java/technologies/downloads/#java22)からJavaをダウンロードしてインストールします。
+    - [JDKのダウンロードサイト](https://www.oracle.com/jp/java/technologies/downloads/#java21)からJava 21をダウンロードしてインストールします。
+    - Java 22も使用可能ですが、必ずGradle 8.8以上と組み合わせてください。
 
 2. **Javaの環境設定**
 
     - インストールが完了したら、コマンドラインで `java --version` を実行し、Javaが正しくインストールされていることを確認します。
+    - 複数のJavaバージョンがインストールされている場合は、Java 21または22を使用するように環境を設定してください。
 
 3. **依存関係のダウンロード**
     - Gradleを使用しています。実行時によしなにしてくれるはずです。
@@ -77,4 +82,8 @@
 
 `cd ./Backend`と`./gradlew bootRun`を実行してバックエンドを起動します。
 
-ブラウザで<http://localhost:8080/docs.htmlにアクセスすることで、サーバー側のコマンドを確認できます。>
+> [!NOTE]
+> Java 24がシステムのデフォルトになっている場合は、`JAVA_HOME`環境変数を設定してJava 21または22を指定してください：
+> `JAVA_HOME=/path/to/java21 ./gradlew bootRun`
+
+ブラウザで<http://localhost:8080/docs.html>にアクセスすることで、サーバー側のコマンドを確認できます。
