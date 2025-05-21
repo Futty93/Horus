@@ -1,6 +1,0 @@
-{
-  "tasks": {
-    "dev": "esbuild ./Frontend/scripts/index.ts --bundle --outfile=./Frontend/bundle.js && deno run --allow-net --allow-read https://deno.land/std@0.159.0/http/file_server.ts",
-    "build": "esbuild ./Frontend/scripts/index.ts --bundle --outfile=./Frontend/bundle.js"
-  }
-}
