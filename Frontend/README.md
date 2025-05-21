@@ -32,12 +32,22 @@ cd horus/Frontend
 npm install
 ```
 
-3. 開発サーバーの起動
+3. 環境変数の設定
+```bash
+cp .env.sample .env.local
+```
+`.env.local`ファイルを開き、以下の環境変数を設定してください：
+```
+NEXT_PUBLIC_SERVER_IP=localhost  # バックエンドサーバーのIPアドレス
+NEXT_PUBLIC_SERVER_PORT=8080     # バックエンドサーバーのポート番号
+```
+
+4. 開発サーバーの起動
 ```bash
 npm run dev
 ```
 
-4. ブラウザでアクセス
+5. ブラウザでアクセス
 ```
 http://localhost:3333
 ```
