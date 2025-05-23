@@ -60,8 +60,10 @@ const parseAircraftData = (data: string, centerCoordinate: Coordinate, displayRa
 };
 
 const parseAircraftString = (aircraftString: string, centerCoordinate: Coordinate, displayRange: DisplayRange): Aircraft => {
-  const aircraftRegex = /callsign=(.*?), position=\{latitude=(.*?), longitude=(.*?), altitude=(.*?)\}, vector=\{heading=(.*?), groundSpeed=(.*?), verticalSpeed=(.*?)\}, instructedVector=\{heading=(.*?), groundSpeed=(.*?), altitude=(.*?)\}, type=(.*?), originIata=(.*?), originIcao=(.*?), destinationIata=(.*?), destinationIcao=(.*?), eta=(.*?)\}/;
+  const aircraftRegex = /callsign=(.*?), position=\{latitude=(.*?), longitude=(.*?), altitude=(.*?)\}, vector=\{heading=(.*?), groundSpeed=(.*?), verticalSpeed=(.*?)\}, instructedVector=\{heading=(.*?), groundSpeed=(.*?), altitude=(.*?)\}, type=(.*?), originIata=(.*?), originIcao=(.*?), destinationIata=(.*?), destinationIcao=(.*?), eta=(.*?), riskLevel=(.*?)\}/;
+
   const matches = aircraftString.match(aircraftRegex);
+
   if (matches) {
     const [
       _,
@@ -81,6 +83,7 @@ const parseAircraftString = (aircraftString: string, centerCoordinate: Coordinat
       destinationIata,
       destinationIcao,
       eta,
+      riskLevel,
     ] = matches;
 
     // Convert latitude and longitude into canvas coordinates using radarGame utility
@@ -113,6 +116,9 @@ const parseAircraftString = (aircraftString: string, centerCoordinate: Coordinat
       destinationIata,
       destinationIcao,
       eta,
+      50, // labelX
+      50, // labelY
+      parseFloat(riskLevel) // riskLevel
     );
   }
 

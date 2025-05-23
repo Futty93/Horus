@@ -10,6 +10,7 @@ export class Aircraft {
   destinationIcao: string;
   eta: string; // You may want to change this to a Date object if needed
   label: { x: number; y: number };
+  riskLevel: number; // 危険度（0-100）
 
   constructor(
     callsign: string,
@@ -23,7 +24,8 @@ export class Aircraft {
     destinationIcao: string,
     eta: string,
     labelX: number = 50,
-    labelY: number = 50
+    labelY: number = 50,
+    riskLevel: number = 0
   ) {
     this.callsign = callsign;
     this.position = position;
@@ -36,6 +38,7 @@ export class Aircraft {
     this.destinationIcao = destinationIcao;
     this.eta = eta;
     this.label = { x: labelX, y: labelY }; // Default label position at (50, 50)
+    this.riskLevel = riskLevel;
   }
 
   public updateAircraftInfo(newAircraft: Aircraft) {
@@ -43,11 +46,13 @@ export class Aircraft {
     this.vector = newAircraft.vector;
     this.instructedVector = newAircraft.instructedVector;
     this.eta = newAircraft.eta;
+    this.riskLevel = newAircraft.riskLevel;
   }
 
   public updateAircraftLocationInfo(newAircraft: Aircraft) {
     this.position = newAircraft.position;
     this.vector = newAircraft.vector;
     this.eta = newAircraft.eta;
+    this.riskLevel = newAircraft.riskLevel;
   }
 }

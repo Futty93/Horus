@@ -75,6 +75,17 @@ class DrawAircraft {
       altitudeLabel = Math.floor(airplanePosition.altitude / 100).toString();
     }
 
+    // 危険度情報を取得（デフォルトは0）
+    const riskLevel = aircraft.riskLevel || 0;
+
+    // 危険度に基づく色の決定
+    let riskColor = "white"; // デフォルト（~30）
+    if (riskLevel >= 70) {
+      riskColor = "red";     // 70以上は赤
+    } else if (riskLevel >= 30) {
+      riskColor = "yellow";  // 30-70は黄色
+    }
+
     // Draw labels with airplane information
     ctx.fillStyle = "white";
     ctx.font = GLOBAL_CONSTANTS.FONT_STYLE_IN_CANVAS;
@@ -95,6 +106,14 @@ class DrawAircraft {
       aircraft.destinationIcao.length >= 4 ? aircraft.destinationIcao.slice(-3) : aircraft.destinationIcao,
       labelX + 40,
       labelY + 30,
+    );
+
+    // 危険度を色分けして表示
+    ctx.fillStyle = riskColor;
+    ctx.fillText(
+      "R" + Math.floor(riskLevel).toString(),
+      labelX,
+      labelY + 45,
     );
   }
 
