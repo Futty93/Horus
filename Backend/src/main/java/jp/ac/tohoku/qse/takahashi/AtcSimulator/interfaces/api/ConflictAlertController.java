@@ -1,9 +1,13 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.api;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ConflictAlertService;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.ConflictDetectionException;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.InvalidParameterException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.AlertLevel;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.RiskAssessment;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +22,8 @@ import java.util.Map;
 @RequestMapping("/api/conflict")
 @CrossOrigin(origins = "*")
 public class ConflictAlertController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ConflictAlertController.class);
 
     private final ConflictAlertService conflictAlertService;
 
@@ -37,12 +43,12 @@ public class ConflictAlertController {
      */
     @GetMapping("/all")
     public ResponseEntity<Map<String, RiskAssessment>> getAllConflicts() {
-        try {
-            Map<String, RiskAssessment> conflicts = conflictAlertService.getAllConflictAlerts();
-            return ResponseEntity.ok(conflicts);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        logger.debug("全コンフリクトアラート取得要求");
+
+        Map<String, RiskAssessment> conflicts = conflictAlertService.getAllConflictAlerts();
+
+        logger.debug("全コンフリクトアラート取得完了: {}件", conflicts.size());
+        return ResponseEntity.ok(conflicts);
     }
 
     /**
@@ -50,18 +56,21 @@ public class ConflictAlertController {
      *
      * @param level 最小アラートレベル (SAFE, WHITE_CONFLICT, RED_CONFLICT)
      * @return フィルタされたコンフリクト評価結果
+     * @throws InvalidParameterException 無効なアラートレベルが指定された場合
      */
     @GetMapping("/filtered")
     public ResponseEntity<Map<String, RiskAssessment>> getFilteredConflicts(
             @RequestParam(defaultValue = "WHITE_CONFLICT") String level) {
+        logger.debug("フィルタされたコンフリクト取得要求: レベル={}", level);
+
         try {
             AlertLevel alertLevel = AlertLevel.valueOf(level.toUpperCase());
             Map<String, RiskAssessment> conflicts = conflictAlertService.getFilteredConflictAlerts(alertLevel);
+
+            logger.debug("フィルタされたコンフリクト取得完了: {}件", conflicts.size());
             return ResponseEntity.ok(conflicts);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            throw new InvalidParameterException("level", level, "有効な値: SAFE, WHITE_CONFLICT, RED_CONFLICT");
         }
     }
 
@@ -72,12 +81,12 @@ public class ConflictAlertController {
      */
     @GetMapping("/critical")
     public ResponseEntity<List<ConflictAlertService.ConflictAlert>> getCriticalAlerts() {
-        try {
-            List<ConflictAlertService.ConflictAlert> criticalAlerts = conflictAlertService.getCriticalAlerts();
-            return ResponseEntity.ok(criticalAlerts);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        logger.debug("緊急コンフリクトアラート取得要求");
+
+        List<ConflictAlertService.ConflictAlert> criticalAlerts = conflictAlertService.getCriticalAlerts();
+
+        logger.debug("緊急コンフリクトアラート取得完了: {}件", criticalAlerts.size());
+        return ResponseEntity.ok(criticalAlerts);
     }
 
     /**
@@ -87,12 +96,12 @@ public class ConflictAlertController {
      */
     @GetMapping("/violations")
     public ResponseEntity<List<ConflictAlertService.ConflictAlert>> getSeparationViolations() {
-        try {
-            List<ConflictAlertService.ConflictAlert> violations = conflictAlertService.getSeparationViolationAlerts();
-            return ResponseEntity.ok(violations);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        logger.debug("管制間隔欠如予測取得要求");
+
+        List<ConflictAlertService.ConflictAlert> violations = conflictAlertService.getSeparationViolationAlerts();
+
+        logger.debug("管制間隔欠如予測取得完了: {}件", violations.size());
+        return ResponseEntity.ok(violations);
     }
 
     /**
@@ -104,13 +113,13 @@ public class ConflictAlertController {
     @GetMapping("/aircraft/{callsign}")
     public ResponseEntity<List<ConflictAlertService.ConflictAlert>> getAircraftConflicts(
             @PathVariable String callsign) {
-        try {
-            List<ConflictAlertService.ConflictAlert> aircraftConflicts =
-                conflictAlertService.getAircraftConflicts(callsign);
-            return ResponseEntity.ok(aircraftConflicts);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        logger.debug("航空機固有コンフリクト取得要求: {}", callsign);
+
+        List<ConflictAlertService.ConflictAlert> aircraftConflicts =
+            conflictAlertService.getAircraftConflicts(callsign);
+
+        logger.debug("航空機固有コンフリクト取得完了: {} - {}件", callsign, aircraftConflicts.size());
+        return ResponseEntity.ok(aircraftConflicts);
     }
 
     /**
@@ -120,12 +129,12 @@ public class ConflictAlertController {
      */
     @GetMapping("/statistics")
     public ResponseEntity<ConflictAlertService.ConflictStatistics> getConflictStatistics() {
-        try {
-            ConflictAlertService.ConflictStatistics statistics = conflictAlertService.getConflictStatistics();
-            return ResponseEntity.ok(statistics);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        logger.debug("コンフリクト統計情報取得要求");
+
+        ConflictAlertService.ConflictStatistics statistics = conflictAlertService.getConflictStatistics();
+
+        logger.debug("コンフリクト統計情報取得完了");
+        return ResponseEntity.ok(statistics);
     }
 
     /**
@@ -135,24 +144,18 @@ public class ConflictAlertController {
      */
     @GetMapping("/health")
     public ResponseEntity<HealthStatus> getHealthStatus() {
-        try {
-            ConflictAlertService.ConflictStatistics statistics = conflictAlertService.getConflictStatistics();
-            HealthStatus status = new HealthStatus(
-                "OK",
-                System.currentTimeMillis(),
-                statistics.getTotalConflicts(),
-                statistics.getRedConflictCount()
-            );
-            return ResponseEntity.ok(status);
-        } catch (Exception e) {
-            HealthStatus status = new HealthStatus(
-                "ERROR",
-                System.currentTimeMillis(),
-                0,
-                0
-            );
-            return ResponseEntity.internalServerError().body(status);
-        }
+        logger.debug("ヘルスチェック要求");
+
+        ConflictAlertService.ConflictStatistics statistics = conflictAlertService.getConflictStatistics();
+        HealthStatus status = new HealthStatus(
+            "OK",
+            System.currentTimeMillis(),
+            statistics.getTotalConflicts(),
+            statistics.getRedConflictCount()
+        );
+
+        logger.debug("ヘルスチェック完了: ステータス={}", status.getStatus());
+        return ResponseEntity.ok(status);
     }
 
     /**

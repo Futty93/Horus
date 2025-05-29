@@ -1,11 +1,16 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.service.conflict;
 
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.ConflictDetectionException;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.InvalidParameterException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.AlertLevel;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.RiskAssessment;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,7 +28,10 @@ import static jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalConst
  * - アラートレベルの判定
  * - パフォーマンス最適化（最大200機対応）
  */
+@Service
 public class ConflictDetector {
+
+    private static final Logger logger = LoggerFactory.getLogger(ConflictDetector.class);
 
     // 計算の安定性を保つための微小値（並行飛行検出用に調整）
     private static final double EPSILON = 0.1; // 0.1 m/s ≈ 0.2 knots
@@ -33,20 +41,25 @@ public class ConflictDetector {
      *
      * @param aircraftList 航空機リスト
      * @return 航空機ペアIDをキーとするリスク評価マップ
-     * @throws IllegalArgumentException 航空機リストがnullまたは空の場合
+     * @throws InvalidParameterException 航空機リストがnullの場合
      */
     public Map<String, RiskAssessment> calculateAllConflicts(List<Aircraft> aircraftList) {
         validateAircraftList(aircraftList);
 
         if (aircraftList.size() < 2) {
+            logger.debug("航空機数が不足しているためコンフリクト計算をスキップ: {}機", aircraftList.size());
             return new HashMap<>();
         }
+
+        logger.debug("コンフリクト計算開始: {}機", aircraftList.size());
 
         // 並列処理対応のためConcurrentHashMapを使用
         Map<String, RiskAssessment> results = new ConcurrentHashMap<>();
 
         // 航空機ペアの事前フィルタリングでパフォーマンス向上
         List<AircraftPair> candidatePairs = preFilterAircraftPairs(aircraftList);
+
+        logger.debug("候補ペア数: {}", candidatePairs.size());
 
         // 並列ストリームで効率的に処理（200機対応）
         candidatePairs.parallelStream().forEach(pair -> {
@@ -62,62 +75,53 @@ public class ConflictDetector {
                     results.put(pairId, assessment);
                 }
             } catch (Exception e) {
-                // ログ出力（実装環境に応じて適切なロガーを使用）
-                System.err.println("航空機ペア計算エラー: " + e.getMessage());
+                String errorMsg = String.format("航空機ペア計算エラー: %s - %s",
+                                                pair.aircraft1.getCallsign().toString(),
+                                                pair.aircraft2.getCallsign().toString());
+                logger.error(errorMsg + " - " + e.getMessage(), e);
+
+                // 個別ペアのエラーは全体の処理を停止させない
+                // ただし、システムエラーとして記録する
             }
         });
 
+        logger.debug("コンフリクト計算完了: {}件のコンフリクトを検出", results.size());
         return results;
     }
 
     /**
-     * 2機間の危険度を詳細計算
+     * 2機の航空機間のコンフリクトリスクを計算
      *
      * @param aircraft1 航空機1
      * @param aircraft2 航空機2
      * @return リスク評価結果
-     * @throws IllegalArgumentException 航空機がnullの場合
+     * @throws InvalidParameterException 航空機がnullの場合
+     * @throws ConflictDetectionException 計算処理中にエラーが発生した場合
      */
     public RiskAssessment calculateConflictRisk(Aircraft aircraft1, Aircraft aircraft2) {
-        validateAircraft(aircraft1, "aircraft1");
-        validateAircraft(aircraft2, "aircraft2");
+        validateAircraftPair(aircraft1, aircraft2);
 
-        // 現在位置と速度ベクトルを取得
-        AircraftPosition pos1 = aircraft1.getAircraftPosition();
-        AircraftPosition pos2 = aircraft2.getAircraftPosition();
-        AircraftVector vec1 = aircraft1.getAircraftVector();
-        AircraftVector vec2 = aircraft2.getAircraftVector();
+        try {
+            // CPA分析による最接近点計算
+            CPAResult cpaResult = calculateCPA(aircraft1, aircraft2);
 
-        // 現在の距離をチェック
-        double currentHorizontalDistance = GeodeticUtils.calculateHorizontalDistance(pos1, pos2);
-        double currentVerticalDistance = GeodeticUtils.calculateVerticalDistance(pos1, pos2);
+            // 危険度評価の実行
+            double riskLevel = assessRiskLevel(cpaResult);
+            boolean isConflictPredicted = predictSeparationViolation(cpaResult);
 
-        // CPA計算による最接近点分析
-        CPAResult cpaResult = calculateCPA(pos1, vec1, pos2, vec2);
-
-        // 危険度計算
-        double riskLevel = calculateRiskLevel(
-            cpaResult.timeToClosest,
-            cpaResult.closestHorizontalDistance,
-            cpaResult.closestVerticalDistance,
-            currentHorizontalDistance,
-            currentVerticalDistance
-        );
-
-        // 管制間隔欠如予測
-        boolean isConflictPredicted = predictSeparationViolation(
-            cpaResult.closestHorizontalDistance,
-            cpaResult.closestVerticalDistance,
-            cpaResult.timeToClosest
-        );
-
-        return new RiskAssessment(
-            riskLevel,
-            cpaResult.timeToClosest,
-            cpaResult.closestHorizontalDistance,
-            cpaResult.closestVerticalDistance,
-            isConflictPredicted
-        );
+            return new RiskAssessment(
+                riskLevel,
+                cpaResult.timeToClosest,
+                cpaResult.horizontalDistance,
+                cpaResult.verticalDistance,
+                isConflictPredicted
+            );
+        } catch (Exception e) {
+            String errorMsg = String.format("コンフリクトリスク計算エラー: %s vs %s",
+                                            aircraft1.getCallsign().toString(),
+                                            aircraft2.getCallsign().toString());
+            throw new ConflictDetectionException(errorMsg, e);
+        }
     }
 
     /**
@@ -134,8 +138,12 @@ public class ConflictDetector {
      * CPA（Closest Point of Approach）計算
      * 3次元空間での最接近点を数学的に計算
      */
-    private CPAResult calculateCPA(AircraftPosition pos1, AircraftVector vec1,
-                                  AircraftPosition pos2, AircraftVector vec2) {
+    private CPAResult calculateCPA(Aircraft aircraft1, Aircraft aircraft2) {
+        // 現在位置と速度ベクトルを取得
+        AircraftPosition pos1 = aircraft1.getAircraftPosition();
+        AircraftPosition pos2 = aircraft2.getAircraftPosition();
+        AircraftVector vec1 = aircraft1.getAircraftVector();
+        AircraftVector vec2 = aircraft2.getAircraftVector();
 
         // 相対位置ベクトル（球面座標系での近似計算）
         double[] relativePosition = calculateRelativePosition(pos1, pos2);
@@ -331,21 +339,33 @@ public class ConflictDetector {
     }
 
     /**
-     * 管制間隔欠如の予測
+     * CPA結果に基づくリスク評価
      */
-    private boolean predictSeparationViolation(double closestHorizontalDistance,
-                                             double closestVerticalDistance,
-                                             double timeToClosest) {
-        if (timeToClosest < 0 || timeToClosest == Double.POSITIVE_INFINITY) {
+    private double assessRiskLevel(CPAResult cpaResult) {
+        // 既存のcalculateRiskLevelメソッドを使用
+        return calculateRiskLevel(
+            cpaResult.timeToClosest,
+            cpaResult.horizontalDistance,
+            cpaResult.verticalDistance,
+            cpaResult.horizontalDistance, // 現在距離として使用
+            cpaResult.verticalDistance   // 現在距離として使用
+        );
+    }
+
+    /**
+     * CPA結果に基づく管制間隔欠如予測
+     */
+    private boolean predictSeparationViolation(CPAResult cpaResult) {
+        if (cpaResult.timeToClosest < 0 || cpaResult.timeToClosest == Double.POSITIVE_INFINITY) {
             // すれ違った後や並行飛行は現在距離での判定は行わない
             return false;
         }
 
         // 予測時間範囲内かつ管制間隔基準を下回る場合
         // 航空管制では水平と垂直の両方が同時に不足している場合のみ真の管制間隔違反
-        return timeToClosest >= 0 && timeToClosest <= MAX_PREDICTION_TIME &&
-               (closestHorizontalDistance < MINIMUM_HORIZONTAL_SEPARATION &&
-                closestVerticalDistance < MINIMUM_VERTICAL_SEPARATION);
+        return cpaResult.timeToClosest >= 0 && cpaResult.timeToClosest <= MAX_PREDICTION_TIME &&
+               (cpaResult.horizontalDistance < MINIMUM_HORIZONTAL_SEPARATION &&
+                cpaResult.verticalDistance < MINIMUM_VERTICAL_SEPARATION);
     }
 
     /**
@@ -427,16 +447,24 @@ public class ConflictDetector {
         }
     }
 
-    // バリデーションメソッド
+    /**
+     * 航空機リストの妥当性を検証
+     */
     private void validateAircraftList(List<Aircraft> aircraftList) {
         if (aircraftList == null) {
-            throw new IllegalArgumentException("航空機リストがnullです");
+            throw new InvalidParameterException("aircraftList", null, "航空機リストがnullです");
         }
     }
 
-    private void validateAircraft(Aircraft aircraft, String paramName) {
-        if (aircraft == null) {
-            throw new IllegalArgumentException(paramName + "がnullです");
+    /**
+     * 航空機ペアの妥当性を検証
+     */
+    private void validateAircraftPair(Aircraft aircraft1, Aircraft aircraft2) {
+        if (aircraft1 == null) {
+            throw new InvalidParameterException("aircraft1", null, "航空機1がnullです");
+        }
+        if (aircraft2 == null) {
+            throw new InvalidParameterException("aircraft2", null, "航空機2がnullです");
         }
     }
 
@@ -445,13 +473,13 @@ public class ConflictDetector {
      */
     private static class CPAResult {
         final double timeToClosest;
-        final double closestHorizontalDistance;
-        final double closestVerticalDistance;
+        final double horizontalDistance;
+        final double verticalDistance;
 
-        CPAResult(double timeToClosest, double closestHorizontalDistance, double closestVerticalDistance) {
+        CPAResult(double timeToClosest, double horizontalDistance, double verticalDistance) {
             this.timeToClosest = timeToClosest;
-            this.closestHorizontalDistance = closestHorizontalDistance;
-            this.closestVerticalDistance = closestVerticalDistance;
+            this.horizontalDistance = horizontalDistance;
+            this.verticalDistance = verticalDistance;
         }
     }
 

@@ -1,5 +1,7 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.persistance.inMemory;
 
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.AircraftConflictException;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.AircraftNotFoundException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.types.commercial.CommercialAircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.*;
@@ -63,7 +65,7 @@ public class AircraftRepositoryInMemoryTest {
     void shouldThrowExceptionForNonExistentAircraft() {
         Callsign nonExistingCallsign = new Callsign("INVALID");
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(AircraftNotFoundException.class, () -> {
             repository.findByCallsign(nonExistingCallsign);
         });
     }
@@ -72,7 +74,7 @@ public class AircraftRepositoryInMemoryTest {
     void shouldPreventDuplicateCallsigns() {
         Aircraft duplicateAircraft = createTestAircraft("JAL001", 40.0, 140.0, 40000, 0, 500, 0);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(AircraftConflictException.class, () -> {
             repository.add(duplicateAircraft);
         });
     }
@@ -92,7 +94,7 @@ public class AircraftRepositoryInMemoryTest {
     void shouldThrowExceptionWhenRemovingNonExistentAircraft() {
         Aircraft nonExistentAircraft = createTestAircraft("INVALID", 40.0, 140.0, 40000, 0, 500, 0);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(AircraftNotFoundException.class, () -> {
             repository.remove(nonExistentAircraft);
         });
     }

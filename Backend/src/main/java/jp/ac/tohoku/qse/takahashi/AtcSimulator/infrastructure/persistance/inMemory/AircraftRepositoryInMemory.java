@@ -1,8 +1,12 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.persistance.inMemory;
 
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.AircraftConflictException;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.AircraftNotFoundException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -17,9 +21,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * - コールサインをキーとするMapによる高速検索（O(1)）
  * - スレッドセーフな実装（ConcurrentHashMap + ReadWriteLock）
  * - 効率的なデータ構造による大規模データ対応
+ * - 統一された例外処理による安定性向上
  */
 @Repository
 public class AircraftRepositoryInMemory implements AircraftRepository {
+
+    private static final Logger logger = LoggerFactory.getLogger(AircraftRepositoryInMemory.class);
 
     // コールサインをキーとするマップ（O(1)検索）
     private final ConcurrentHashMap<String, Aircraft> aircraftMap = new ConcurrentHashMap<>();
@@ -28,7 +35,7 @@ public class AircraftRepositoryInMemory implements AircraftRepository {
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public AircraftRepositoryInMemory() {
-        // コメントアウトされた初期化コードを削除し、クリーンな実装とする
+        logger.info("AircraftRepositoryInMemory初期化完了");
     }
 
     /**
@@ -40,6 +47,10 @@ public class AircraftRepositoryInMemory implements AircraftRepository {
      */
     @Override
     public boolean isAircraftExist(Callsign callsign) {
+        if (callsign == null) {
+            logger.warn("isAircraftExist: nullコールサインが渡されました");
+            return false;
+        }
         return aircraftMap.containsKey(callsign.toString());
     }
 
@@ -47,18 +58,25 @@ public class AircraftRepositoryInMemory implements AircraftRepository {
      * 航空機をリポジトリに追加
      *
      * @param aircraft 追加する航空機
-     * @throws IllegalArgumentException 同じコールサインの航空機が既に存在する場合
+     * @throws AircraftConflictException 同じコールサインの航空機が既に存在する場合
+     * @throws IllegalArgumentException aircraftがnullの場合
      */
     @Override
     public void add(Aircraft aircraft) {
+        if (aircraft == null) {
+            throw new IllegalArgumentException("追加する航空機がnullです");
+        }
+
         String callsignKey = aircraft.getCallsign().toString();
 
         // 重複チェック
         if (aircraftMap.containsKey(callsignKey)) {
-            throw new IllegalArgumentException("Aircraft with callsign " + callsignKey + " already exists");
+            logger.warn("航空機追加失敗: コールサイン '{}' は既に存在します", callsignKey);
+            throw new AircraftConflictException(callsignKey);
         }
 
         aircraftMap.put(callsignKey, aircraft);
+        logger.debug("航空機追加成功: {}", callsignKey);
     }
 
     /**
@@ -67,14 +85,23 @@ public class AircraftRepositoryInMemory implements AircraftRepository {
      *
      * @param callsign 検索するコールサイン
      * @return 見つかった航空機
-     * @throws IllegalArgumentException 航空機が見つからない場合
+     * @throws AircraftNotFoundException 航空機が見つからない場合
+     * @throws IllegalArgumentException callsignがnullの場合
      */
     @Override
     public Aircraft findByCallsign(Callsign callsign) {
-        Aircraft aircraft = aircraftMap.get(callsign.toString());
-        if (aircraft == null) {
-            throw new IllegalArgumentException("Aircraft not found: " + callsign.toString());
+        if (callsign == null) {
+            throw new IllegalArgumentException("検索するコールサインがnullです");
         }
+
+        String callsignKey = callsign.toString();
+        Aircraft aircraft = aircraftMap.get(callsignKey);
+
+        if (aircraft == null) {
+            logger.warn("航空機検索失敗: コールサイン '{}' が見つかりません", callsignKey);
+            throw new AircraftNotFoundException(callsignKey);
+        }
+
         return aircraft;
     }
 
@@ -85,23 +112,33 @@ public class AircraftRepositoryInMemory implements AircraftRepository {
      */
     @Override
     public List<Aircraft> findAll() {
-        return new ArrayList<>(aircraftMap.values());
+        List<Aircraft> aircraftList = new ArrayList<>(aircraftMap.values());
+        logger.debug("全航空機取得: {}機", aircraftList.size());
+        return aircraftList;
     }
 
     /**
      * 航空機をリポジトリから削除
      *
      * @param aircraft 削除する航空機
-     * @throws IllegalArgumentException 航空機が見つからない場合
+     * @throws AircraftNotFoundException 航空機が見つからない場合
+     * @throws IllegalArgumentException aircraftがnullの場合
      */
     @Override
     public void remove(Aircraft aircraft) {
+        if (aircraft == null) {
+            throw new IllegalArgumentException("削除する航空機がnullです");
+        }
+
         String callsignKey = aircraft.getCallsign().toString();
         Aircraft removed = aircraftMap.remove(callsignKey);
 
         if (removed == null) {
-            throw new IllegalArgumentException("Aircraft not found for removal: " + callsignKey);
+            logger.warn("航空機削除失敗: コールサイン '{}' が見つかりません", callsignKey);
+            throw new AircraftNotFoundException(callsignKey);
         }
+
+        logger.debug("航空機削除成功: {}", callsignKey);
     }
 
     /**
@@ -115,11 +152,22 @@ public class AircraftRepositoryInMemory implements AircraftRepository {
     public void NextStep() {
         lock.writeLock().lock();
         try {
+            logger.debug("全航空機の次ステップ計算開始: {}機", aircraftMap.size());
+
             // 全航空機の状態を一括更新
+            int processedCount = 0;
             for (Aircraft aircraft : aircraftMap.values()) {
-                aircraft.calculateNextAircraftVector();
-                aircraft.calculateNextAircraftPosition();
+                try {
+                    aircraft.calculateNextAircraftVector();
+                    aircraft.calculateNextAircraftPosition();
+                    processedCount++;
+                } catch (Exception e) {
+                    logger.error("航空機 '{}' の次ステップ計算でエラー: {}",
+                               aircraft.getCallsign().toString(), e.getMessage(), e);
+                }
             }
+
+            logger.debug("全航空機の次ステップ計算完了: {}/{}機処理", processedCount, aircraftMap.size());
         } finally {
             lock.writeLock().unlock();
         }
@@ -138,6 +186,8 @@ public class AircraftRepositoryInMemory implements AircraftRepository {
      * リポジトリをクリア（テスト用）
      */
     public void clear() {
+        int beforeSize = aircraftMap.size();
         aircraftMap.clear();
+        logger.info("リポジトリクリア完了: {}機削除", beforeSize);
     }
 }

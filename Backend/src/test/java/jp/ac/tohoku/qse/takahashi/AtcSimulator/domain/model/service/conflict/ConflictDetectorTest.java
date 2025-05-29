@@ -9,6 +9,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.InvalidParameterException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -212,17 +213,17 @@ class ConflictDetectorTest {
         @Test
         @DisplayName("null航空機リストエラー")
         void testCalculateAllConflicts_NullList() {
-            assertThrows(IllegalArgumentException.class,
+            assertThrows(InvalidParameterException.class,
                 () -> conflictDetector.calculateAllConflicts(null));
         }
 
         @Test
         @DisplayName("null航空機エラー")
         void testCalculateConflictRisk_NullAircraft() {
-            assertThrows(IllegalArgumentException.class,
+            assertThrows(InvalidParameterException.class,
                 () -> conflictDetector.calculateConflictRisk(null, testAircraft2));
 
-            assertThrows(IllegalArgumentException.class,
+            assertThrows(InvalidParameterException.class,
                 () -> conflictDetector.calculateConflictRisk(testAircraft1, null));
         }
 
