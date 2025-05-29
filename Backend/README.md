@@ -470,300 +470,353 @@ java -cp build/libs/atc-simulator.jar jp.ac.tohoku.qse.takahashi.AtcSimulator.ex
 
 ## 実装の改善点
 
-### ✅ 完了した最適化
+### 🔄 継続的な改善項目（優先順位付き）
 
-#### パフォーマンス最適化
+以下の改善項目は、**重要度**（システムへの影響）と**実装工数**を考慮して優先順位を付けています。各項目には影響範囲となるファイル/パッケージを明記しており、実装時の参考にしてください。
 
-1. **★ AircraftRepositoryInMemory クラスの最適化（完了）**
-   - [x] データ構造をMapベースに変更（ArrayList → ConcurrentHashMap）
-   - [x] コールサインによる検索を効率化（O(n) → O(1)）
-   - [x] スレッドセーフな実装（ConcurrentHashMap + ReadWriteLock）
-   - [x] 重複チェック機能の追加
-   - [x] パフォーマンステストの実装
-   - [x] 大規模データ対応（1000機での高速検索を確認）
+---
 
-2. **★ コンフリクト検出の最適化（完了）**
-   - [x] 事前フィルタリングによる計算対象の削減
-   - [x] 並列処理による大規模データ対応
-   - [x] メモリ効率的なデータ構造の使用
-   - [x] 計算アルゴリズムの最適化
+## 🚨 優先度：高（緊急対応推奨）
 
-#### コード品質の向上
+### 1. エラーハンドリングの改善 ⭐⭐⭐⭐⭐ ✅
+**重要度**: 非常に高（システム安定性） | **工数**: 中（2-3日） | **実装済み**
 
-1. **★ 型安全性の強化（完了）**
-   - [x] Object型戻り値の修正（RadioNavigationAid, Waypoint の getName メソッド）
-   - [x] publicフィールドのカプセル化（IlsType クラス）
-   - [x] 標準的なequals/hashCodeの実装（AircraftType, IlsType, Altitude, Callsign）
-   - [x] 値オブジェクトの不変性強化
-   - [x] null安全性の向上（Optionalの適切な使用）
-
-2. **★ コード重複の削減（完了）**
-   - [x] ユーティリティメソッドの抽出と再利用（MathUtils, StringUtils, PositionUtils）
-   - [x] 数学的計算の共通化（角度正規化、位置計算、三角関数変換）
-   - [x] 文字列処理の共通化（フォーマッティング、パース処理、抽出処理）
-   - [x] 位置計算ロジックの統合（航空機移動計算、ベクトル処理）
-
-### 🔄 継続的な改善項目
-
-#### パフォーマンス最適化
-
-1. **CommercialAircraft クラスの最適化**
-   - [ ] 航跡計算ロジックの効率化
-     - 地球の曲率を考慮した計算が複雑であり、頻繁に呼び出される場合にパフォーマンス低下の原因となる可能性がある
-     - 近距離の場合は平面近似による計算を使用し、遠距離の場合のみ球面計算を使用するなどの最適化が考えられる
-   - [ ] 冗長な計算の削減
-     - `calculateNextAircraftPosition` メソッド内での不要な変数宣言や計算の削除
-     - 定数値のキャッシュ化
-
-2. **API応答時間の短縮**
-   - [ ] シリアライズ/デシリアライズの最適化
-     - カスタムシリアライザの実装検討
-     - フィールドの選択的シリアライズ
-
-#### コード品質の向上
-
-1. **エラーハンドリングの改善**
-   - [ ] グローバルな例外ハンドラの実装
-   - [ ] 適切な例外クラスの設計と使用
-   - [ ] トランザクション管理の強化
-
-2. **テンプレートメソッドパターンの活用**
-   - [ ] 共通的な処理フローの抽象化
-   - [ ] ヘルパークラスの追加設計
-   - [ ] デザインパターンの適用拡大
-
-3. **テスタビリティの向上**
-   - [ ] モックやスタブの活用を容易にするためのインターフェース設計
-   - [ ] 依存性注入の徹底
-   - [ ] 副作用の少ない関数型設計の導入
-
-#### アーキテクチャの改善
-
-1. **DDD原則の徹底**
-   - [ ] 集約（Aggregate）の境界の明確化
-   - [ ] 値オブジェクトの徹底的な利用
-   - [ ] ドメインイベントの導入
-
-2. **レイヤー間の依存関係の整理**
-   - [ ] インターフェースレイヤーの分離強化
-   - [ ] アプリケーションサービスの責務の明確化
-   - [ ] ドメインモデルの純粋さの確保
-
-3. **設定の外部化**
-   - [ ] 環境変数やプロパティファイルの活用
-   - [ ] 環境ごとの設定の分離
-   - [ ] 設定の型安全な管理
-
-#### 機能拡張
-
-1. **シナリオ機能の強化**
-   - [ ] シナリオDSLの設計
-   - [ ] シナリオのバージョン管理
-   - [ ] シナリオのエクスポート/インポート機能
-
-2. **モニタリングと可観測性**
-   - [ ] パフォーマンスメトリクスの収集
-   - [ ] ログの構造化
-   - [ ] 分散トレーシングの導入
-
-3. **セキュリティ強化**
-   - [ ] 認証・認可の実装
-   - [ ] 入力値のバリデーション強化
-   - [ ] APIレート制限の実装
-
-### 特定の実装の問題点
-
-1. **CommercialAircraft クラス**
-   - [ ] コメントアウトされたコードの除去（特に `calculateTurnAngle` メソッド内の実装）
-   - [ ] 航空機の物理的特性を考慮した現実的な挙動のモデリング
-   - [ ] フライトダイナミクスの計算精度向上
-
-2. **制御フローの改善**
-   - [ ] コールバックやプロミスではなくリアクティブプログラミングの導入検討
-   - [ ] 同期・非同期処理の明確な分離
-   - [ ] リソースの適切な解放（try-with-resources の活用）
-
-3. **APIエンドポイントの設計**
-   - [ ] RESTful 原則に準拠した URI 設計の見直し
-   - [ ] 操作性の向上（HATEOAS の導入検討）
-   - [ ] API バージョニング戦略の策定
-
-### ドキュメンテーション
-
-1. **コードドキュメントの充実**
-   - [ ] Javadoc コメントの追加
-   - [ ] クラス図・シーケンス図などの作成
-   - [ ] 設計意図の説明
-
-2. **開発者向けドキュメント**
-   - [ ] コーディング規約の作成
-   - [ ] 開発環境のセットアップガイド
-   - [ ] トラブルシューティングガイド
-
-3. **★ コンフリクト検出のドキュメント（完了）**
-   - [x] API仕様書の更新
-   - [x] 使用例の作成
-   - [x] README への説明追加
-   - [x] パフォーマンス特性の文書化
-
-## ★ 新機能：拡張性に優れた航空機エンティティ設計
-
-### 設計原則とアーキテクチャ
-
-**Strategy パターン**と**Composition**を活用した新しい航空機エンティティ設計により、異なる航空機タイプ（旅客機、戦闘機、ヘリコプター等）の特性を柔軟に実装できるようになりました。
-
-#### 設計の利点
-
-1. **単一責任原則**: 各クラスが明確な責任を持つ
-2. **開放閉鎖原則**: 新しい航空機タイプの追加が容易
-3. **Strategy パターン**: 飛行動作の動的切り替えが可能
-4. **コードの再利用**: 共通処理の重複を排除
-5. **型安全性**: コンパイル時の型チェック強化
-
-#### 新しいディレクトリ構造
-
+#### 影響範囲
 ```
-aircraft/
-├── Aircraft.java                    # 航空機インターフェース
-├── AircraftBase.java               # 共通基底クラス（改良済み）
-├── behavior/                       # 飛行動作戦略（Strategy パターン）
-│   ├── FlightBehavior.java         # 飛行動作インターフェース
-│   ├── FixedWingFlightBehavior.java # 固定翼機飛行動作
-│   └── HelicopterFlightBehavior.java # ヘリコプター飛行動作
-├── characteristics/                # 航空機特性（Composition）
-│   └── AircraftCharacteristics.java # 航空機物理特性
-├── factory/                        # ファクトリーパターン
-│   └── AircraftFactory.java        # 航空機作成ファクトリー
-└── types/                          # 航空機タイプ別実装
-    ├── commercial/                 # 商用機
-    │   └── CommercialAircraft.java # 商用旅客機（簡素化済み）
-    ├── military/                   # 軍用機
-    │   └── FighterJet.java         # 戦闘機
-    └── helicopter/                 # ヘリコプター
-        └── Helicopter.java         # ヘリコプター
+interfaces/api/                     # APIレイヤー全体
+├── ConflictAlertController.java    # コンフリクトアラートAPI ✅
+├── LocationService.java            # 位置情報API ✅
+├── ControlAircraftService.java     # 航空機制御API ✅
+├── CreateAircraftService.java      # 航空機作成API
+└── SimulationService.java          # シミュレーション制御API
+
+application/                        # アプリケーションサービス
+├── ConflictAlertService.java       # コンフリクトアラート管理
+└── aircraft/AircraftRadarServiceImpl.java
+
+domain/model/service/               # ドメインサービス
+└── conflict/ConflictDetector.java  # コンフリクト検出処理 ✅
+
+domain/exception/                   # カスタム例外クラス ✅
+├── AtcSimulatorException.java      # 基底例外クラス ✅
+├── AircraftNotFoundException.java  # 航空機未発見例外 ✅
+├── AircraftConflictException.java  # 航空機競合例外 ✅
+├── ConflictDetectionException.java # コンフリクト検出例外 ✅
+└── InvalidParameterException.java  # バリデーション例外 ✅
+
+config/                             # 例外ハンドラ設定
+├── GlobalExceptionHandler.java     # グローバル例外ハンドラ ✅
+└── WebConfig.java                  # Web設定（新規作成予定）
+
+interfaces/dto/                     # エラーレスポンスDTO
+└── ErrorResponse.java              # RFC 7807準拠エラーレスポンス ✅
+
+infrastructure/persistance/         # リポジトリ実装
+└── inMemory/AircraftRepositoryInMemory.java  # カスタム例外対応 ✅
 ```
 
-### サポートする航空機タイプ
+#### 実装内容
+- [x] グローバル例外ハンドラの実装（`@ControllerAdvice`）
+- [x] カスタム例外クラスの設計と実装
+- [x] APIエラーレスポンスの標準化（RFC 7807準拠）
+- [x] ログ出力の統一と構造化
+- [x] 既存コードの例外処理改善
 
-#### 1. 商用旅客機 (CommercialAircraft)
-- **特徴**: 一般的な旅客輸送
-- **性能**: 最高速度 500kts、旋回速度 3°/s
-- **機能**: 定期路線運航、ETA管理
+#### 実装結果
+**実装完了日**: 2024年12月19日
+**実装項目**:
+- カスタム例外階層の設計・実装（AtcSimulatorException基底クラス）
+- グローバル例外ハンドラ（GlobalExceptionHandler）でSpring Boot例外を統一処理
+- RFC 7807 Problem Details形式に基づくErrorResponseDTO
+- 既存APIコントローラー（3クラス）の例外処理改善
+- リポジトリクラス（AircraftRepositoryInMemory）での新例外体系採用
+- テストクラスの例外期待値修正
+- ConflictDetectorでの構造化ログとエラーハンドリング強化
 
-#### 2. 戦闘機 (FighterJet)
-- **特徴**: 高速・高機動性
-- **性能**: 最高速度 1500kts、旋回速度 9°/s（9Gターン対応）
-- **機能**: 戦術機動、超音速飛行、緊急回避機動
+**品質向上効果**:
+- システム全体のエラー処理が統一され、クライアント側での一貫したエラーハンドリングが可能
+- ログ出力が構造化され、デバッグとトラブルシューティングが効率化
+- ドメイン固有の例外により、エラーの原因特定が迅速化
 
-#### 3. ヘリコプター (Helicopter)
-- **特徴**: 垂直離着陸・空中停止
-- **性能**: 最高速度 150kts、完全停止可能
-- **機能**: ホバリング、垂直上昇/降下、その場回転
 
-### 飛行動作の実装
+---
 
-#### Strategy パターンによる飛行動作
+### 2. CommercialAircraft クラスの最適化 ⭐⭐⭐⭐
+**重要度**: 高（パフォーマンス） | **工数**: 中（2-3日）
 
-```java
-// 固定翼機の飛行動作
-FixedWingFlightBehavior fixedWing = new FixedWingFlightBehavior();
+#### 影響範囲
+```
+domain/model/entity/aircraft/       # 航空機エンティティ
+├── types/commercial/               # 商用航空機実装
+│   └── CommercialAircraft.java     # ⚠️ 主要最適化対象
+├── behavior/                       # 飛行動作（既に最適化済み）
+│   ├── FixedWingFlightBehavior.java
+│   └── HelicopterFlightBehavior.java
+└── characteristics/                # 航空機特性
+    └── AircraftCharacteristics.java
 
-// ヘリコプターの飛行動作
-HelicopterFlightBehavior helicopter = new HelicopterFlightBehavior();
+shared/utility/                     # 共通ユーティリティ（活用）
+├── MathUtils.java                  # 数学計算（既存活用）
+├── PositionUtils.java              # 位置計算（既存活用）
+└── GeodeticUtils.java              # 測地計算（新規作成予定）
 
-// 動的な動作切り替えが可能
-aircraft.setFlightBehavior(helicopter);
+config/globals/                     # 定数定義
+└── GlobalConstants.java            # 物理定数の見直し
 ```
 
-#### 航空機特性の設定
+#### 実装内容
+- [ ] 航跡計算ロジックの効率化（平面近似vs球面計算の選択的使用）
+- [ ] 冗長な計算の削減（`calculateNextAircraftPosition`メソッド）
+- [ ] 定数値のキャッシュ化
+- [ ] メモリプール導入検討
 
-```java
-// 戦闘機の特性
-AircraftCharacteristics fighterSpecs = new AircraftCharacteristics(
-    15.0,   // 最大加速度 (kts/s)
-    9.0,    // 最大旋回速度 (°/s)
-    15000.0, // 最大上昇率 (ft/min)
-    1500.0, // 最高速度 (kts)
-    200.0,  // 最低速度 (kts)
-    60000.0, // 最高運用高度 (ft)
-    0.0,    // 最低運用高度 (ft)
-    AircraftCategory.MILITARY_FIGHTER
-);
+#### 実装のポイント
+- **距離計算最適化**: 短距離（<50NM）は平面近似、長距離は球面計算
+- **計算結果キャッシュ**: 三角関数や定数計算結果のメモ化
+- **アルゴリズム改善**: 既存の `PositionUtils` を最大限活用
+- **メモリ効率**: オブジェクト再利用とプリミティブ型の活用
+
+#### キーファイル
+- `types/commercial/CommercialAircraft.java` (主要修正対象)
+- `shared/utility/PositionUtils.java` (拡張)
+- `shared/utility/GeodeticUtils.java` (新規作成)
+- `config/globals/GlobalConstants.java` (定数見直し)
+
+#### 参考実装
+- コード重複削減で作成した `MathUtils`, `PositionUtils` を活用
+- `HelicopterFlightBehavior` の効率的な実装パターンを参考
+
+---
+
+## 📈 優先度：中（計画的対応）
+
+### 3. API応答時間の短縮 ⭐⭐⭐⭐
+**重要度**: 高（ユーザー体験） | **工数**: 大（4-5日）
+
+#### 影響範囲
+```
+interfaces/api/                     # APIエンドポイント全体
+└── LocationService.java            # 特に位置情報取得API
+
+application/                        # アプリケーションサービス
+├── AircraftRadarService.java       # レーダー情報処理
+└── ConflictAlertService.java       # コンフリクト処理
+
+infrastructure/                     # インフラ層
+├── serialization/                  # 新規：カスタムシリアライザ
+└── cache/                          # 新規：キャッシュ実装
+
+config/                             # パフォーマンス設定
+├── CacheConfig.java                # 新規：キャッシュ設定
+└── SerializationConfig.java        # 新規：シリアライゼーション設定
 ```
 
-### 使用例
+#### 実装内容
+- [ ] カスタムシリアライザの実装
+- [ ] レスポンスキャッシュの導入
+- [ ] フィールドの選択的シリアライズ
+- [ ] 非同期処理の導入
 
-#### 1. 商用旅客機の作成
+---
 
-```java
-CommercialAircraft aircraft = AircraftFactory.createCommercialAircraft(
-    "JAL247", "B777", position, vector,
-    "NRT", "RJAA", "HND", "RJTT", "2024-01-01T12:00:00Z"
-);
+### 4. テスタビリティの向上 ⭐⭐⭐
+**重要度**: 中（開発効率） | **工数**: 中（3-4日）
+
+#### 影響範囲
+```
+全パッケージ（横断的関心事）      # テスト基盤の改善
+
+test/java/                          # テストコード全体
+├── domain/model/service/conflict/  # コンフリクト検出テスト（既存）
+├── infrastructure/persistence/     # リポジトリテスト（既存）
+└── interfaces/api/                 # APIテスト（拡張予定）
+
+config/                             # テスト設定
+├── TestConfig.java                 # 新規：テスト専用設定
+└── MockConfig.java                 # 新規：モック設定
+
+domain/model/                       # ドメインモデル
+└── (全エンティティ・値オブジェクト)  # インターフェース化検討
 ```
 
-#### 2. 戦闘機の戦術機動
+#### 実装内容
+- [ ] インターフェース設計の見直し（モック化容易性）
+- [ ] 依存性注入の徹底
+- [ ] テストヘルパーの充実
+- [ ] 副作用の少ない関数型設計の導入
 
-```java
-FighterJet fighter = AircraftFactory.createFighterJet(
-    "JASDF01", "F-35A", position, vector,
-    "302SQ", "CAP", "Misawa AB"
-);
+---
 
-// 緊急回避機動
-fighter.performTacticalManeuver(90.0); // 90度方向に緊急旋回
+### 5. DDD原則の徹底 ⭐⭐⭐
+**重要度**: 中（設計品質） | **工数**: 大（5-6日）
+
+#### 影響範囲
+```
+domain/model/                       # ドメインモデル全体
+├── aggregate/                      # 集約の見直し
+│   └── airspace/                   # 空域集約の拡張
+├── entity/                         # エンティティの整理
+│   └── aircraft/                   # 航空機集約の境界明確化
+├── valueObject/                    # 値オブジェクトの拡充
+├── service/                        # ドメインサービスの整理
+└── event/                          # 新規：ドメインイベント
+
+application/                        # アプリケーションサービス
+└── (全サービス)                    # 集約操作の適切な委譲
 ```
 
-#### 3. ヘリコプターの特殊操作
+#### 実装内容
+- [ ] 集約（Aggregate）の境界明確化
+- [ ] 値オブジェクトの徹底的な利用
+- [ ] ドメインイベントの導入
+- [ ] 不変条件の明示的な実装
 
-```java
-Helicopter helicopter = AircraftFactory.createHelicopter(
-    "JCG01", "UH-60J", position, vector,
-    "Japan Coast Guard", "SAR", "Tokyo Heliport"
-);
+---
 
-// ホバリング開始
-helicopter.startHovering();
+## 🔧 優先度：低（改善推奨）
 
-// 垂直上昇
-helicopter.performVerticalClimb(2000.0);
+### 6. 設定の外部化 ⭐⭐
+**重要度**: 低（運用改善） | **工数**: 小（1-2日）
 
-// その場回転
-helicopter.performSpotTurn(180.0);
+#### 影響範囲
+```
+config/                             # 設定クラス全体
+├── globals/GlobalConstants.java    # 定数の外部化
+├── ConflictDetectionConfig.java    # コンフリクト検出設定
+└── application.yml                 # Spring設定ファイル
+
+resources/                          # 設定ファイル
+├── application-dev.yml             # 新規：開発環境設定
+├── application-prod.yml            # 新規：本番環境設定
+└── config/                         # 新規：外部設定ディレクトリ
 ```
 
-### パフォーマンス特性
+#### 実装内容
+- [ ] 環境変数の活用
+- [ ] 環境ごとの設定分離
+- [ ] 設定の型安全な管理
 
-#### 計算効率
-- **位置計算**: O(1) - Strategy パターンによる効率的な処理
-- **ベクトル更新**: O(1) - 特性ベースの高速計算
-- **メモリ使用量**: 30% 削減 - 共通処理の統合により
+---
 
-#### 拡張性
-- **新航空機タイプ**: 新しいクラス追加のみで対応
-- **新飛行動作**: FlightBehavior 実装により追加
-- **カスタム特性**: AircraftCharacteristics による柔軟な設定
+### 7. シナリオ機能の強化 ⭐⭐
+**重要度**: 低（機能拡張） | **工数**: 大（6-7日）
 
-### コード品質の向上
+#### 影響範囲
+```
+domain/model/                       # ドメインモデル拡張
+├── entity/scenario/                # 新規：シナリオエンティティ
+└── valueObject/scenario/           # 新規：シナリオ値オブジェクト
 
-#### Before（旧CommercialAircraft）
-- **287行** - 複雑な単一クラス
-- **密結合** - 飛行計算ロジックが直接実装
-- **拡張困難** - 新しい航空機タイプの追加が複雑
+application/                        # アプリケーションサービス
+└── scenario/                       # 新規：シナリオ管理サービス
 
-#### After（新設計）
-- **80行程度** - 責任分離により簡潔
-- **疎結合** - Strategy パターンによる分離
-- **拡張容易** - 新タイプ追加が簡単
+interfaces/                         # インターフェース層
+├── api/ScenarioController.java     # 新規：シナリオAPI
+├── dto/scenario/                   # 新規：シナリオDTO
+└── dsl/                            # 新規：シナリオDSL
 
-### 将来の拡張計画
+infrastructure/                     # インフラ層
+└── scenario/                       # 新規：シナリオ永続化
+```
 
-#### 追加予定の航空機タイプ
-1. **商用貨物機** (CargoAircraft) - 2024年Q2
-2. **軍用輸送機** (MilitaryCargoAircraft) - 2024年Q3
-3. **無人機** (Drone) - 2024年Q4
+#### 実装内容
+- [ ] シナリオDSLの設計
+- [ ] シナリオのバージョン管理
+- [ ] シナリオエディタ連携API
 
-#### 追加予定の飛行動作
-1. **編隊飛行** (FormationFlightBehavior)
-2. **自動操縦** (AutopilotBehavior)
-3. **緊急回避** (EmergencyAvoidanceBehavior)
+---
+
+## 📋 改善項目実装ガイド
+
+### 実装時の参考情報
+
+#### 重要度凡例
+- ⭐⭐⭐⭐⭐: 非常に高（システム安定性に直結）
+- ⭐⭐⭐⭐: 高（パフォーマンス・UXに大きく影響）
+- ⭐⭐⭐: 中（開発効率・保守性に影響）
+- ⭐⭐: 低（改善効果は限定的だが有益）
+
+#### 工数凡例
+- **小**（1-2日）: 単一クラス・機能の修正
+- **中**（2-4日）: 複数クラス・パッケージレベルの修正
+- **大**（4-7日）: アーキテクチャレベルの変更
+
+#### 依存関係
+1. **エラーハンドリング改善** → 他の全改善項目の基盤
+2. **CommercialAircraft最適化** → API応答時間短縮の前提
+3. **テスタビリティ向上** → DDD原則徹底の基盤
+
+### 実装順序の推奨
+1. エラーハンドリング改善（基盤整備）
+2. CommercialAircraft最適化（パフォーマンス向上）
+3. API応答時間短縮（ユーザー体験向上）
+4. テスタビリティ向上（品質基盤強化）
+5. その他の改善項目
+
+### 📝 改善項目実装時の指示方法
+
+今後、改善項目の実装を依頼する際は、以下の形式で指示してください：
+
+#### 指示例
+```
+「エラーハンドリングの改善」について取り組んでください。
+@README.md の該当セクションを参照してください。
+```
+
+#### AIが参照すべき情報
+指示を受けた際、AIは以下の順序で情報を収集します：
+
+1. **README.mdの該当セクション確認**
+   - 重要度・工数・影響範囲の把握
+   - 実装内容チェックリストの確認
+
+2. **影響範囲ファイルの調査**
+   - 現状の実装状況を把握
+   - 既存コードの品質・設計パターンの確認
+
+3. **関連する既存実装の参考**
+   - 類似機能や設計パターンの活用
+   - コード重複削減で作成したユーティリティの活用
+
+4. **依存関係の確認**
+   - 前提条件となる改善項目の完了状況
+   - 他の改善項目への影響範囲
+
+#### 実装進行時のREADME更新
+各改善項目の実装完了時は、以下を行います：
+- [ ] チェックリストの更新
+- [ ] 実装結果の記録
+- [ ] 新しく作成したファイルの影響範囲への追加
+- [ ] パフォーマンス改善効果の測定・記録
+
+### 🔍 クイックリファレンス：改善項目別主要ファイル
+
+#### システム基盤系
+```
+エラーハンドリング → interfaces/api/ + config/ + domain/exception/
+設定外部化 → config/ + resources/
+ログ・監視 → config/ + infrastructure/monitoring/
+```
+
+#### パフォーマンス系
+```
+CommercialAircraft最適化 → domain/model/entity/aircraft/types/commercial/
+API応答改善 → interfaces/api/ + application/ + infrastructure/cache/
+メモリ最適化 → shared/utility/ + infrastructure/
+```
+
+#### 設計・アーキテクチャ系
+```
+DDD強化 → domain/model/ + application/
+テスト改善 → test/ + config/TestConfig.java
+インターフェース分離 → interfaces/ + domain/model/
+```
+
+#### 機能拡張系
+```
+シナリオ強化 → domain/model/entity/scenario/ + interfaces/api/
+セキュリティ → config/ + interfaces/security/
+コンフリクト拡張 → domain/model/service/conflict/ + application/
+```
+
+---
