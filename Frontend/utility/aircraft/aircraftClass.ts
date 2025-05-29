@@ -3,7 +3,8 @@ export class Aircraft {
   position: { x: number; y: number; altitude: number };
   vector: { heading: number; groundSpeed: number; verticalSpeed: number };
   instructedVector: { heading: number; groundSpeed: number; altitude: number };
-  type: string;
+  type: string; // 航空機カテゴリ（Commercial, Military, Helicopter）
+  model: string; // 航空機機種（B738, F-35A, UH-60J等）
   originIata: string;
   originIcao: string;
   destinationIata: string;
@@ -18,6 +19,7 @@ export class Aircraft {
     vector: { heading: number; groundSpeed: number; verticalSpeed: number },
     instructedVector: { heading: number; groundSpeed: number; altitude: number },
     type: string,
+    model: string,
     originIata: string,
     originIcao: string,
     destinationIata: string,
@@ -32,6 +34,7 @@ export class Aircraft {
     this.vector = vector;
     this.instructedVector = instructedVector;
     this.type = type;
+    this.model = model;
     this.originIata = originIata;
     this.originIcao = originIcao;
     this.destinationIata = destinationIata;

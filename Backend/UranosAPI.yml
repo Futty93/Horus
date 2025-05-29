@@ -12,6 +12,8 @@ tags:
     description: "In game actions."
   - name: "endGame"
     description: "End a game."
+  - name: "aircraft"
+    description: "Aircraft location and status information."
 paths:
   "/startGame":
     post:
@@ -53,6 +55,56 @@ paths:
                   details:
                     type: string
 
+  "/aircraft/location/all":
+    get:
+      tags: ["aircraft"]
+      summary: "Get all aircraft locations and status"
+      description: "Returns detailed information for all aircraft including position, vector, instrumented vector, and risk level in text format."
+      deprecated: false
+      responses:
+        "200":
+          description: "Aircraft location data retrieved successfully"
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: "Aircraft data in custom text format with risk levels"
+                example: |
+                  Aircraft{callsign=JAL123, position={latitude=35.676200, longitude=139.650300, altitude=35000}, vector={heading=90.0, groundSpeed=450.0, verticalSpeed=0.0}, instructedVector={heading=90.0, groundSpeed=450.0, altitude=35000.0}, type=COMMERCIAL_PASSENGER, model=B777, originIata=HND, originIcao=RJTT, destinationIata=LAX, destinationIcao=KLAX, eta=2024-05-21T12:00:00Z, riskLevel=0.00}
+                  Aircraft{callsign=JSDF01, position={latitude=35.700000, longitude=139.650300, altitude=35000}, vector={heading=90.0, groundSpeed=450.0, verticalSpeed=0.0}, instructedVector={heading=90.0, groundSpeed=450.0, altitude=35000.0}, type=MILITARY_FIGHTER, model=F-35A, squadron=302SQ, mission=CAP, homeBase=Misawa AB, riskLevel=0.00}
+                  Aircraft{callsign=JCG01, position={latitude=35.650000, longitude=139.700000, altitude=2000}, vector={heading=180.0, groundSpeed=120.0, verticalSpeed=0.0}, instructedVector={heading=180.0, groundSpeed=120.0, altitude=2000.0}, type=HELICOPTER, model=UH-60J, operator=Japan Coast Guard, purpose=SAR, homeBase=Tokyo Heliport, hovering=NO, riskLevel=0.00}
+
+  "/aircraft/location":
+    get:
+      tags: ["aircraft"]
+      summary: "Get specific aircraft location and status"
+      description: "Returns detailed information for a specific aircraft by callsign including risk level."
+      deprecated: false
+      parameters:
+        - name: callsign
+          in: query
+          required: true
+          schema:
+            type: string
+          description: "The callsign of the aircraft to retrieve"
+          example: "JAL123"
+      responses:
+        "200":
+          description: "Aircraft location data retrieved successfully"
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: "Aircraft data in custom text format with risk level"
+                example: "Aircraft{callsign=JAL123, position={latitude=35.676200, longitude=139.650300, altitude=35000}, vector={heading=90.0, groundSpeed=450.0, verticalSpeed=0.0}, instructedVector={heading=90.0, groundSpeed=450.0, altitude=35000.0}, type=COMMERCIAL_PASSENGER, model=B777, originIata=HND, originIcao=RJTT, destinationIata=LAX, destinationIcao=KLAX, eta=2024-05-21T12:00:00Z, riskLevel=0.00}"
+        "400":
+          description: "Aircraft not found or bad request"
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Aircraft with callsign JAL123 does not exist."
+
   "/inGame":
     get:
       tags: ["inGame"]
@@ -70,7 +122,7 @@ paths:
                   gameState:
                     type: "array"
                     description: "Current state of the game."
-                    items: 
+                    items:
                       $ref: "#/components/schemas/Flight"
 
         "400":
@@ -159,12 +211,12 @@ paths:
                   error:
                     type: string
                     example: "Server error."
-    
+
 components:
   schemas:
     Flight:
       type: "object"
-      example: 
+      example:
         callsign: "AAL123"
         latitude: 35.553333
         longitude: 139.781113

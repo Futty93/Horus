@@ -46,7 +46,7 @@ const parseAircraftData = (data: string, centerCoordinate: Coordinate, displayRa
   try {
     // Example parsing logic (assuming data is in some custom text format)
     const aircraftStrings = data.split("\n").filter((line) =>
-      line.startsWith("CommercialAircraft")
+      line.startsWith("Aircraft{") && line.trim() !== ""
     );
     return aircraftStrings.map((aircraftString) => {
       // Parse each aircraftString into an Aircraft object
@@ -60,69 +60,83 @@ const parseAircraftData = (data: string, centerCoordinate: Coordinate, displayRa
 };
 
 const parseAircraftString = (aircraftString: string, centerCoordinate: Coordinate, displayRange: DisplayRange): Aircraft => {
-  const aircraftRegex = /callsign=(.*?), position=\{latitude=(.*?), longitude=(.*?), altitude=(.*?)\}, vector=\{heading=(.*?), groundSpeed=(.*?), verticalSpeed=(.*?)\}, instructedVector=\{heading=(.*?), groundSpeed=(.*?), altitude=(.*?)\}, type=(.*?), originIata=(.*?), originIcao=(.*?), destinationIata=(.*?), destinationIcao=(.*?), eta=(.*?), riskLevel=(.*?)\}/;
+  // 基本フィールドを抽出（全航空機タイプ共通）
+  const basicRegex = /callsign=(.*?), position=\{latitude=(.*?), longitude=(.*?), altitude=(.*?)\}, vector=\{heading=(.*?), groundSpeed=(.*?), verticalSpeed=(.*?)\}, instructedVector=\{heading=(.*?), groundSpeed=(.*?), altitude=(.*?)\}, type=(.*?), model=(.*?)(?:,|, riskLevel=)/;
 
-  const matches = aircraftString.match(aircraftRegex);
+  const basicMatches = aircraftString.match(basicRegex);
 
-  if (matches) {
-    const [
-      _,
-      callsign,
-      lat,
-      lon,
-      altitude,
-      heading,
-      groundSpeed,
-      verticalSpeed,
-      instructedHeading,
-      instructedGroundSpeed,
-      instructedAltitude,
-      type,
-      originIata,
-      originIcao,
-      destinationIata,
-      destinationIcao,
-      eta,
-      riskLevel,
-    ] = matches;
-
-    // Convert latitude and longitude into canvas coordinates using radarGame utility
-    const coordinateOnCanvas = CoordinateManager.calculateCanvasCoordinates(
-      { latitude: parseFloat(lat), longitude: parseFloat(lon) },
-      centerCoordinate,
-      displayRange
-    );
-
-    return new Aircraft(
-      callsign,
-      {
-        x: coordinateOnCanvas.x,
-        y: coordinateOnCanvas.y,
-        altitude: parseFloat(altitude),
-      }, // position
-      {
-        heading: parseFloat(heading),
-        groundSpeed: parseFloat(groundSpeed),
-        verticalSpeed: parseFloat(verticalSpeed),
-      }, // vector
-      {
-        heading: parseFloat(instructedHeading),
-        groundSpeed: parseFloat(instructedGroundSpeed),
-        altitude: parseFloat(instructedAltitude),
-      }, // instructedVector
-      type,
-      originIata,
-      originIcao,
-      destinationIata,
-      destinationIcao,
-      eta,
-      50, // labelX
-      50, // labelY
-      parseFloat(riskLevel) // riskLevel
-    );
+  if (!basicMatches) {
+    throw new Error("Failed to parse basic aircraft data: " + aircraftString);
   }
 
-  throw new Error("Failed to parse aircraft string: " + aircraftString);
+  const [
+    _,
+    callsign,
+    lat,
+    lon,
+    altitude,
+    heading,
+    groundSpeed,
+    verticalSpeed,
+    instructedHeading,
+    instructedGroundSpeed,
+    instructedAltitude,
+    type,
+    model,
+  ] = basicMatches;
+
+  // 航空機タイプ別の追加フィールドを抽出
+  let originIata = "", originIcao = "", destinationIata = "", destinationIcao = "", eta = "";
+
+  if (type === "COMMERCIAL_PASSENGER" || type === "COMMERCIAL_CARGO") {
+    // 商用航空機の場合、出発地・到着地・ETA情報を抽出
+    const commercialRegex = /originIata=(.*?), originIcao=(.*?), destinationIata=(.*?), destinationIcao=(.*?), eta=(.*?)(?:, riskLevel=|$)/;
+    const commercialMatches = aircraftString.match(commercialRegex);
+    if (commercialMatches) {
+      [, originIata, originIcao, destinationIata, destinationIcao, eta] = commercialMatches;
+    }
+  }
+
+  // riskLevel を抽出
+  const riskRegex = /riskLevel=([\d.]+)/;
+  const riskMatch = aircraftString.match(riskRegex);
+  const riskLevel = riskMatch ? parseFloat(riskMatch[1]) : 0;
+
+  // Convert latitude and longitude into canvas coordinates using radarGame utility
+  const coordinateOnCanvas = CoordinateManager.calculateCanvasCoordinates(
+    { latitude: parseFloat(lat), longitude: parseFloat(lon) },
+    centerCoordinate,
+    displayRange
+  );
+
+  return new Aircraft(
+    callsign,
+    {
+      x: coordinateOnCanvas.x,
+      y: coordinateOnCanvas.y,
+      altitude: parseFloat(altitude),
+    }, // position
+    {
+      heading: parseFloat(heading),
+      groundSpeed: parseFloat(groundSpeed),
+      verticalSpeed: parseFloat(verticalSpeed),
+    }, // vector
+    {
+      heading: parseFloat(instructedHeading),
+      groundSpeed: parseFloat(instructedGroundSpeed),
+      altitude: parseFloat(instructedAltitude),
+    }, // instructedVector
+    type,
+    model,
+    originIata,
+    originIcao,
+    destinationIata,
+    destinationIcao,
+    eta,
+    50, // labelX
+    50, // labelY
+    riskLevel // riskLevel
+  );
 };
 
 // Function to update controlledAirplanes based on API data (from earlier code)
@@ -157,11 +171,15 @@ function updateControllingAircrafts(apiResponse: Aircraft[], controllingAircraft
       newAircraft.vector,
       newAircraft.instructedVector,
       newAircraft.type,
+      newAircraft.model,
       newAircraft.originIata,
       newAircraft.originIcao,
       newAircraft.destinationIata,
       newAircraft.destinationIcao,
       newAircraft.eta,
+      50, // labelX
+      50, // labelY
+      newAircraft.riskLevel // riskLevel
     );
     controllingAircrafts.push(newAirplane);
   });

@@ -43,7 +43,7 @@ public class LocationService {
         String[] aircraftLines = basicLocationInfo.split("\n");
 
         for (String line : aircraftLines) {
-            if (line.startsWith("CommercialAircraft")) {
+            if (line.startsWith("Aircraft{") && !line.trim().isEmpty()) {
                 // 航空機のコールサインを抽出
                 String callsign = extractCallsignFromLine(line);
 
@@ -59,7 +59,7 @@ public class LocationService {
                 } else {
                     enhancedInfo.append(line).append("\n");
                 }
-            } else {
+            } else if (!line.trim().isEmpty()) {
                 enhancedInfo.append(line).append("\n");
             }
         }
