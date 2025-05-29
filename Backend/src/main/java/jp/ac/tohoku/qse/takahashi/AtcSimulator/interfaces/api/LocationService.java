@@ -6,6 +6,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Airc
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.RiskAssessment;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,8 +45,8 @@ public class LocationService {
 
         for (String line : aircraftLines) {
             if (line.startsWith("Aircraft{") && !line.trim().isEmpty()) {
-                // 航空機のコールサインを抽出
-                String callsign = extractCallsignFromLine(line);
+                // 航空機のコールサインを抽出（StringUtilsを使用）
+                String callsign = StringUtils.extractCallsignFromLine(line);
 
                 // その航空機の最高危険度を計算
                 double maxRiskLevel = calculateMaxRiskForAircraft(callsign, allConflicts, allAircraft);
@@ -54,7 +55,7 @@ public class LocationService {
                 int lastBraceIndex = line.lastIndexOf("}");
                 if (lastBraceIndex > 0) {
                     String enhancedLine = line.substring(0, lastBraceIndex) +
-                                         ", riskLevel=" + String.format("%.2f", maxRiskLevel) + "}";
+                                         ", riskLevel=" + StringUtils.formatRiskLevel(maxRiskLevel) + "}";
                     enhancedInfo.append(enhancedLine).append("\n");
                 } else {
                     enhancedInfo.append(line).append("\n");
@@ -82,7 +83,7 @@ public class LocationService {
             String enhancedInfo;
             if (lastBraceIndex > 0) {
                 enhancedInfo = basicInfo.substring(0, lastBraceIndex) +
-                              ", riskLevel=" + String.format("%.2f", maxRiskLevel) + "}";
+                              ", riskLevel=" + StringUtils.formatRiskLevel(maxRiskLevel) + "}";
             } else {
                 enhancedInfo = basicInfo;
             }
@@ -91,15 +92,6 @@ public class LocationService {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Aircraft with callsign " + callsign + " does not exist.");
         }
-    }
-
-    /**
-     * 航空機情報行からコールサインを抽出
-     */
-    private String extractCallsignFromLine(String line) {
-        int start = line.indexOf("callsign=") + 9;
-        int end = line.indexOf(",", start);
-        return line.substring(start, end);
     }
 
     /**

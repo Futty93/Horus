@@ -8,6 +8,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.InstructedVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.StringUtils;
 
 import static jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalConstants.REFRESH_RATE;
 
@@ -151,15 +152,13 @@ public abstract class AircraftBase implements Aircraft {
      * 既存のフロントエンドとの互換性を保つため
      */
     public String toRadarString() {
-        return String.format("Aircraft{callsign=%s, position={latitude=%.6f, longitude=%.6f, altitude=%.0f}, " +
-                "vector={heading=%.1f, groundSpeed=%.1f, verticalSpeed=%.0f}, " +
-                "instructedVector={heading=%.1f, groundSpeed=%.1f, altitude=%.0f}, " +
-                "type=%s, model=%s}",
-                callsign,
-                aircraftPosition.latitude.toDouble(), aircraftPosition.longitude.toDouble(), aircraftPosition.altitude.toDouble(),
-                aircraftVector.heading.toDouble(), aircraftVector.groundSpeed.toDouble(), aircraftVector.verticalSpeed.toDouble(),
-                instructedVector.instructedHeading.toDouble(), instructedVector.instructedGroundSpeed.toDouble(), instructedVector.instructedAltitude.toDouble(),
-                getAircraftCategory(), aircraftType);
+        return StringUtils.formatAircraftBaseInfo(
+            callsign.toString(),
+            aircraftPosition.latitude.toDouble(), aircraftPosition.longitude.toDouble(), aircraftPosition.altitude.toDouble(),
+            aircraftVector.heading.toDouble(), aircraftVector.groundSpeed.toDouble(), aircraftVector.verticalSpeed.toDouble(),
+            instructedVector.instructedHeading.toDouble(), instructedVector.instructedGroundSpeed.toDouble(), instructedVector.instructedAltitude.toDouble(),
+            getAircraftCategory(), aircraftType.toString()
+        ) + "}";
     }
 
     /**

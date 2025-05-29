@@ -4,17 +4,18 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Aircraft
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.MathUtils;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.PositionUtils;
 
 import static jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalConstants.*;
 
 /**
  * ヘリコプターの飛行動作実装
- * 空中停止、垂直上昇/降下、その場回転などのヘリコプター特有の飛行特性を実装
+ * ホバリング、垂直上昇、その場回転などの特殊能力を含む
  */
 public class HelicopterFlightBehavior implements FlightBehavior {
 
-    /** ホバリング判定の最小速度（knots） */
-    private static final double HOVERING_THRESHOLD = 5.0;
+    private static final double HOVERING_THRESHOLD = 5.0; // ホバリング判定の閾値（ノット）
 
     @Override
     public AircraftPosition calculateNextPosition(AircraftPosition currentPos, AircraftVector vector, double refreshRate) {
@@ -29,87 +30,45 @@ public class HelicopterFlightBehavior implements FlightBehavior {
             return new AircraftPosition(currentPos.latitude, currentPos.longitude, newAlt);
         }
 
-        // 通常の移動：固定翼機と同様の計算だが、より急激な機動が可能
-        double groundSpeedKmPerHour = vector.groundSpeed.toDouble() * KNOTS_TO_KM_PER_HOUR;
-        double distanceTraveled = groundSpeedKmPerHour * (refreshRateInSeconds / 3600.0);
-
-        double headingRad = Math.toRadians(vector.heading.toDouble());
-
-        // ヘリコプターの場合、より正確な位置計算
-        double deltaLat = distanceTraveled / EARTH_RADIUS;
-        Latitude newLat = new Latitude(currentPos.latitude.toDouble() +
-            Math.toDegrees(deltaLat * Math.cos(headingRad)));
-
-        double deltaLon = -distanceTraveled / (EARTH_RADIUS * Math.cos(Math.toRadians(currentPos.longitude.toDouble())));
-        Longitude newLon = new Longitude(currentPos.longitude.toDouble() +
-            Math.toDegrees(deltaLon * Math.sin(headingRad)));
-
-        // 垂直移動（ヘリコプターは急激な上昇/降下が可能）
-        Altitude newAlt = new Altitude(currentPos.altitude.toDouble() +
-            (vector.verticalSpeed.toDouble() * refreshRateInSeconds / 60.0));
-
-        return new AircraftPosition(newLat, newLon, newAlt);
+        // 通常の移動：共通ユーティリティを使用
+        return PositionUtils.calculateNextPosition(
+            currentPos,
+            vector.groundSpeed.toDouble(),
+            vector.heading.toDouble(),
+            vector.verticalSpeed.toDouble(),
+            refreshRateInSeconds
+        );
     }
 
     @Override
     public Heading calculateNextHeading(double currentHeading, double targetHeading, double maxTurnRate) {
-        // ヘリコプターはその場回転が可能なため、より高速な旋回を実現
-        double headingDifference = ((targetHeading - currentHeading + 540) % 360) - 180;
-
-        // ヘリコプターの場合、最大旋回速度をさらに活用
-        double helicopterTurnRate = maxTurnRate * 1.5; // ヘリコプターは1.5倍高速に旋回可能
-        double nextHeading = currentHeading + Math.signum(headingDifference) *
-            Math.min(helicopterTurnRate, Math.abs(headingDifference));
-
-        return new Heading(nextHeading);
+        // ヘリコプターはより急激な旋回が可能
+        double helicopterTurnRate = maxTurnRate * 1.5;
+        return PositionUtils.calculateNextHeading(currentHeading, targetHeading, helicopterTurnRate);
     }
 
     @Override
     public GroundSpeed calculateNextGroundSpeed(double currentGroundSpeed, double targetGroundSpeed, double maxAcceleration) {
-        // ヘリコプターは急激な加速・減速が可能
-        double helicopterAcceleration = maxAcceleration * 2.0; // より高い加速度
-
-        double nextGroundSpeed = currentGroundSpeed;
-        if (currentGroundSpeed < targetGroundSpeed) {
-            nextGroundSpeed += Math.min(helicopterAcceleration, targetGroundSpeed - currentGroundSpeed);
-        } else if (currentGroundSpeed > targetGroundSpeed) {
-            nextGroundSpeed -= Math.min(helicopterAcceleration, currentGroundSpeed - targetGroundSpeed);
-        }
-
-        // 完全停止（0 knots）もサポート
-        return new GroundSpeed(Math.max(0, nextGroundSpeed));
+        // ヘリコプターは急激な加減速が可能
+        double helicopterAcceleration = maxAcceleration * 1.2;
+        return PositionUtils.calculateNextGroundSpeed(currentGroundSpeed, targetGroundSpeed, helicopterAcceleration);
     }
 
     @Override
     public VerticalSpeed calculateNextVerticalSpeed(double currentAltitude, double targetAltitude, double maxClimbRate, double refreshRate) {
         // ヘリコプターは垂直上昇/降下が得意
-        double helicopterClimbRate = maxClimbRate * 1.8; // より高い上昇/降下速度
-
-        double nextVerticalSpeed = 0;
-        if (currentAltitude < targetAltitude) {
-            nextVerticalSpeed = Math.min(helicopterClimbRate / (60.0 * refreshRate), targetAltitude - currentAltitude);
-        } else if (currentAltitude > targetAltitude) {
-            nextVerticalSpeed = Math.min(helicopterClimbRate / (60.0 * refreshRate), currentAltitude - targetAltitude) * -1;
-        }
-
-        return new VerticalSpeed(nextVerticalSpeed * 60);
+        double helicopterClimbRate = maxClimbRate * 1.8;
+        return PositionUtils.calculateNextVerticalSpeed(currentAltitude, targetAltitude, helicopterClimbRate, refreshRate);
     }
 
     @Override
     public double calculateTurnAngle(AircraftPosition currentPos, double currentHeading, FixPosition targetFix) {
         // ヘリコプターはその場回転が可能なため、直接的な角度計算
-        double targetDeltaX = targetFix.longitude.toDouble() - currentPos.longitude.toDouble();
-        double targetDeltaY = targetFix.latitude.toDouble() - currentPos.latitude.toDouble();
-
-        double targetHeading = Math.toDegrees(Math.atan2(targetDeltaX, targetDeltaY));
-        return normalizeAngle(targetHeading);
-    }
-
-    /**
-     * 角度を0-360度の範囲に正規化
-     */
-    private static double normalizeAngle(double angle) {
-        return (angle % 360 + 360) % 360;
+        return PositionUtils.calculateBearingToTarget(
+            currentPos,
+            targetFix.latitude.toDouble(),
+            targetFix.longitude.toDouble()
+        );
     }
 
     /**

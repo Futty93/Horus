@@ -5,10 +5,11 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.RiskAssessment;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.IntStream;
+import java.util.stream.Collectors;
 
 import static jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalConstants.*;
 
@@ -54,7 +55,10 @@ public class ConflictDetector {
 
                 // 危険度が閾値以上の場合のみ結果に含める
                 if (assessment.getRiskLevel() > 0.0) {
-                    String pairId = generatePairId(pair.aircraft1, pair.aircraft2);
+                    String pairId = StringUtils.generatePairId(
+                        pair.aircraft1.getCallsign().toString(),
+                        pair.aircraft2.getCallsign().toString()
+                    );
                     results.put(pairId, assessment);
                 }
             } catch (Exception e) {
