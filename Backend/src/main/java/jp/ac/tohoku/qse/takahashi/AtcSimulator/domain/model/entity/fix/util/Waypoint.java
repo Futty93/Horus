@@ -21,7 +21,7 @@ public class Waypoint {
         return String.format("{\"name\":\"%s\", \"latitude\":%f, \"longitude\":%f, \"type\":\"%s\"}", this.name, this.latitude, this.longitude, this.type);
     }
 
-    public Object getName() {
+    public String getName() {
         return this.name;
     }
 

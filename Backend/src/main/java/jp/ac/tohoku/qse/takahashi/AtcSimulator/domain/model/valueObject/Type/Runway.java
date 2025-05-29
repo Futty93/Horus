@@ -1,5 +1,8 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type;
 
+/**
+ * 滑走路情報を表す値オブジェクト
+ */
 public class Runway {
     private final String name; // Runway name (e.g. 34L)
     private final int length;
@@ -17,7 +20,37 @@ public class Runway {
         this.ilsType = ilsType;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeading() {
+        return heading;
+    }
+
+    public int getElevation() {
+        return elevation;
+    }
+
+    public IlsType getIlsType() {
+        return ilsType;
+    }
+
     public Runway getRunwayInfo() {
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Runway{name='%s', length=%d, width=%d, heading=%d, elevation=%d, ilsType=%s}",
+                name, length, width, heading, elevation, ilsType);
     }
 }

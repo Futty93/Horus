@@ -26,7 +26,7 @@ public class RadioNavigationAid {
         return String.format("{\"name\":\"%s\", \"type\":\"%s\", \"latitude\":%f, \"longitude\":%f}", this.name, this.type, this.latitude, this.longitude);
     }
 
-    public Object getName() {
+    public String getName() {
         return this.name;
     }
 

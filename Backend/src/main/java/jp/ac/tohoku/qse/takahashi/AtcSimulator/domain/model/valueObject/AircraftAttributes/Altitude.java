@@ -1,5 +1,7 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes;
 
+import java.util.Objects;
+
 /**
  * 高度を表すクラス
  * 高度はフィートで表される
@@ -44,5 +46,18 @@ public class Altitude {
     @Override
     public String toString() {
         return String.valueOf(this.altitude);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Altitude altitude1 = (Altitude) obj;
+        return Double.compare(altitude1.altitude, altitude) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(altitude);
     }
 }

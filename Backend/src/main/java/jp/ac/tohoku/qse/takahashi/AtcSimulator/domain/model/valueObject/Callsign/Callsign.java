@@ -1,5 +1,10 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign;
 
+import java.util.Objects;
+
+/**
+ * 航空機のコールサインを表す値オブジェクト
+ */
 public class Callsign {
 //    private final Company company;
 //    private final FlightNumber flightNumber;
@@ -34,10 +39,20 @@ public class Callsign {
         return this.callsign;
     }
 
-    public boolean equals(Callsign callsign){
-        return this.callsign.equals(callsign.getCallsign());
+    @Override
+    public boolean equals(Object obj){
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Callsign that = (Callsign) obj;
+        return Objects.equals(callsign, that.callsign);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(callsign);
+    }
+
+    @Override
     public String toString(){
         return this.callsign;
     }

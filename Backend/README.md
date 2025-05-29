@@ -421,6 +421,31 @@ java -cp build/libs/atc-simulator.jar jp.ac.tohoku.qse.takahashi.AtcSimulator.ex
    - [x] エラーハンドリングの実装
    - [x] 境界値テストの実装
 
+3. **★ 型安全性の強化（完了）**
+   - [x] Object型戻り値の修正（RadioNavigationAid, Waypoint の getName メソッド）
+   - [x] publicフィールドのカプセル化（IlsType クラス）
+   - [x] 標準的なequals/hashCodeの実装（AircraftType, IlsType, Altitude, Callsign）
+   - [x] 値オブジェクトの不変性強化
+   - [x] null安全性の向上（Optionalの適切な使用）
+
+#### 型安全性強化の詳細
+
+**修正内容**:
+- **Object型戻り値の修正**: `RadioNavigationAid`と`Waypoint`クラスの`getName()`メソッドをObject型からString型に変更
+- **フィールドのカプセル化**: `IlsType`クラスのpublicフィールドをprivateに変更し、適切なgetter/setterを追加
+- **equals/hashCodeの標準実装**: 主要な値オブジェクトに標準的なequals/hashCodeメソッドを実装
+  - `AircraftType`: 型安全なequals（ObjectのequalsをオーバーライドするSpain）、hashCode追加
+  - `IlsType`: 完全なequals/hashCode実装とコンストラクタ追加
+  - `Altitude`: Double.compareを使用した浮動小数点の安全な比較
+  - `Callsign`: Objects.equalsを使用したnull安全な比較
+- **値オブジェクトの品質向上**: Runway, RadioNavigationAid, WaypointクラスにgetterメソッドとtoStringメソッドを追加
+
+**効果**:
+- コンパイル時の型チェックによるバグの早期発見
+- IDE支援の向上（自動補完、リファクタリング支援）
+- ハッシュベースのコレクション（HashMap, HashSet）での値オブジェクトの適切な動作
+- null安全性の向上によるNullPointerExceptionの予防
+
 ### 🔄 継続的な改善項目
 
 #### パフォーマンス最適化
@@ -440,22 +465,17 @@ java -cp build/libs/atc-simulator.jar jp.ac.tohoku.qse.takahashi.AtcSimulator.ex
 
 #### コード品質の向上
 
-1. **型安全性の強化**
-   - [ ] `any` 型や raw 型の使用を排除
-   - [ ] ジェネリックスの適切な活用
-   - [ ] Null安全性の強化（Optional の活用）
-
-2. **エラーハンドリングの改善**
+1. **エラーハンドリングの改善**
    - [ ] グローバルな例外ハンドラの実装
    - [ ] 適切な例外クラスの設計と使用
    - [ ] トランザクション管理の強化
 
-3. **コード重複の削減**
+2. **コード重複の削減**
    - [ ] ユーティリティメソッドの抽出と再利用
    - [ ] テンプレートメソッドパターンの活用
    - [ ] ヘルパークラスの設計
 
-4. **テスタビリティの向上**
+3. **テスタビリティの向上**
    - [ ] モックやスタブの活用を容易にするためのインターフェース設計
    - [ ] 依存性注入の徹底
    - [ ] 副作用の少ない関数型設計の導入
