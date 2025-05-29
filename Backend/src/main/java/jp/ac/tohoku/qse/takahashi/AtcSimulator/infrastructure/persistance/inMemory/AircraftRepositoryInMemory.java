@@ -3,56 +3,141 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.persistance.inMem
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Company;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.FlightNumber;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * インメモリによる航空機リポジトリの実装
+ * パフォーマンス最適化：
+ * - コールサインをキーとするMapによる高速検索（O(1)）
+ * - スレッドセーフな実装（ConcurrentHashMap + ReadWriteLock）
+ * - 効率的なデータ構造による大規模データ対応
+ */
 @Repository
 public class AircraftRepositoryInMemory implements AircraftRepository {
-    private final List<Aircraft> aircrafts = new ArrayList<>();
+
+    // コールサインをキーとするマップ（O(1)検索）
+    private final ConcurrentHashMap<String, Aircraft> aircraftMap = new ConcurrentHashMap<>();
+
+    // NextStepの同期制御用（全航空機の一括更新のため）
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public AircraftRepositoryInMemory() {
-//        aircrafts.add(new CommercialAircraft(1,0,0,0,0,0,0,"Company 1","Flight 1"));
-//        aircrafts.add(new CommercialAircraft(2, 0, 0, 0, 0, 0, 0, "Company 2", "Flight 2"));
-//        aircrafts.add(new CommercialAircraft(3, 0, 0, 0, 0, 0, 0, "Company 3", "Flight 3"));
+        // コメントアウトされた初期化コードを削除し、クリーンな実装とする
     }
 
     /**
-     * Check if the aircraft with the given callsign exists in the repository
-     * @param callsign the callsign of the aircraft
-     * @return true if the aircraft exists, false otherwise
+     * 指定されたコールサインの航空機が存在するかチェック
+     * O(1)の高速検索
+     *
+     * @param callsign 航空機のコールサイン
+     * @return 航空機が存在する場合true、そうでなければfalse
      */
-    public boolean isAircraftExist(Callsign callsign){
-        return aircrafts.stream()
-                .anyMatch(aircraft -> aircraft.isEqualCallsign(callsign));
+    @Override
+    public boolean isAircraftExist(Callsign callsign) {
+        return aircraftMap.containsKey(callsign.toString());
     }
 
+    /**
+     * 航空機をリポジトリに追加
+     *
+     * @param aircraft 追加する航空機
+     * @throws IllegalArgumentException 同じコールサインの航空機が既に存在する場合
+     */
+    @Override
     public void add(Aircraft aircraft) {
-        aircrafts.add(aircraft);
-    }
+        String callsignKey = aircraft.getCallsign().toString();
 
-    public Aircraft findByCallsign(Callsign callsign) {
-        return aircrafts.stream()
-                .filter(aircraft -> aircraft.isEqualCallsign(callsign))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Aircraft not found"));
-    }
-
-    public List<Aircraft> findAll() {
-        return aircrafts;
-    }
-
-    public void remove(Aircraft airplane) {
-        aircrafts.remove(airplane);
-    }
-
-    public void NextStep() {
-        for (Aircraft aircraft : aircrafts) {
-            aircraft.calculateNextAircraftVector();
-            aircraft.calculateNextAircraftPosition();
+        // 重複チェック
+        if (aircraftMap.containsKey(callsignKey)) {
+            throw new IllegalArgumentException("Aircraft with callsign " + callsignKey + " already exists");
         }
+
+        aircraftMap.put(callsignKey, aircraft);
+    }
+
+    /**
+     * コールサインによる航空機検索
+     * O(1)の高速検索
+     *
+     * @param callsign 検索するコールサイン
+     * @return 見つかった航空機
+     * @throws IllegalArgumentException 航空機が見つからない場合
+     */
+    @Override
+    public Aircraft findByCallsign(Callsign callsign) {
+        Aircraft aircraft = aircraftMap.get(callsign.toString());
+        if (aircraft == null) {
+            throw new IllegalArgumentException("Aircraft not found: " + callsign.toString());
+        }
+        return aircraft;
+    }
+
+    /**
+     * 全航空機のリストを取得
+     *
+     * @return 全航空機のリスト（新しいリストインスタンス）
+     */
+    @Override
+    public List<Aircraft> findAll() {
+        return new ArrayList<>(aircraftMap.values());
+    }
+
+    /**
+     * 航空機をリポジトリから削除
+     *
+     * @param aircraft 削除する航空機
+     * @throws IllegalArgumentException 航空機が見つからない場合
+     */
+    @Override
+    public void remove(Aircraft aircraft) {
+        String callsignKey = aircraft.getCallsign().toString();
+        Aircraft removed = aircraftMap.remove(callsignKey);
+
+        if (removed == null) {
+            throw new IllegalArgumentException("Aircraft not found for removal: " + callsignKey);
+        }
+    }
+
+    /**
+     * 全航空機の次ステップ計算を実行
+     * 同期制御により、計算の一貫性を保証
+     *
+     * Note: この操作は本来リポジトリの責務ではないが、
+     * 既存の設計との互換性のため維持している
+     */
+    @Override
+    public void NextStep() {
+        lock.writeLock().lock();
+        try {
+            // 全航空機の状態を一括更新
+            for (Aircraft aircraft : aircraftMap.values()) {
+                aircraft.calculateNextAircraftVector();
+                aircraft.calculateNextAircraftPosition();
+            }
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * リポジトリの状態情報を取得（デバッグ・監視用）
+     *
+     * @return 航空機数を含む状態情報
+     */
+    public String getRepositoryInfo() {
+        return String.format("AircraftRepositoryInMemory: %d aircraft(s) stored", aircraftMap.size());
+    }
+
+    /**
+     * リポジトリをクリア（テスト用）
+     */
+    public void clear() {
+        aircraftMap.clear();
     }
 }

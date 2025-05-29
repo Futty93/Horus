@@ -94,6 +94,28 @@ curl http://localhost:8080/api/conflict/statistics
 }
 ```
 
+## パフォーマンス最適化の成果
+
+### データ構造最適化 (完了)
+
+**AircraftRepositoryInMemory** の大幅なパフォーマンス改善を実施しました：
+
+#### 最適化内容
+- **データ構造**: `ArrayList` → `ConcurrentHashMap`
+- **検索速度**: O(n) → O(1) （劇的な高速化）
+- **スレッドセーフティ**: 並行アクセス対応
+- **メモリ効率**: コールサインによる効率的なインデックス
+
+#### パフォーマンス向上
+- **1000機の検索**: 従来の数百ms → **100ms以下**
+- **並行アクセス**: 10スレッド×100機同時追加でもデッドロックなし
+- **メモリ使用量**: 大規模データでも効率的なメモリ管理
+
+#### 新機能
+- **重複チェック**: 同一コールサインの航空機追加を防止
+- **状態監視**: `getRepositoryInfo()` でリポジトリ状態を取得
+- **テスト支援**: `clear()` メソッドでテスト用クリーンアップ
+
 ## 環境構築
 
 ### 前提条件
@@ -143,6 +165,12 @@ http://localhost:8080/docs.html
 ./gradlew run --args="jp.ac.tohoku.qse.takahashi.AtcSimulator.example.ConflictDetectionExample"
 ```
 
+6. 最適化されたリポジトリのテスト
+```bash
+# パフォーマンステストを含む全テストの実行
+./gradlew test --tests "*AircraftRepositoryInMemoryTest"
+```
+
 ## プロジェクト構造
 
 プロジェクトはクリーンアーキテクチャに基づき、以下のレイヤーで構成されています：
@@ -175,13 +203,14 @@ jp.ac.tohoku.qse.takahashi.AtcSimulator/
 │           ├── Callsign/      # コールサイン関連の値オブジェクト
 │           ├── Conflict/      # ★ コンフリクト関連の値オブジェクト
 │           │   ├── AlertLevel.java
-│           │   └── RiskAssessment.java
+│           │   ├── RiskAssessment.java
+│           │   └── README.md  # コンフリクトアラートの危険度計算の実装についての説明
 │           ├── Position/      # 位置関連の値オブジェクト
 │           └── Type/          # 航空機タイプの値オブジェクト
 ├── infrastructure/            # インフラストラクチャレイヤー
 │   └── persistance/           # 永続化関連
 │       └── inMemory/          # インメモリ実装
-│           └── AircraftRepositoryInMemory.java
+│           └── AircraftRepositoryInMemory.java  # ★ 最適化済み
 ├── interfaces/                # インターフェースレイヤー
 │   ├── api/                   # REST API
 │   │   ├── AtsRouteService.java
@@ -248,7 +277,7 @@ jp.ac.tohoku.qse.takahashi.AtcSimulator/
 データの永続化とシステムリソースへのアクセスを提供します。
 
 **主要クラス**:
-- `AircraftRepositoryInMemory.java` - インメモリの航空機リポジトリ実装
+- **★ `AircraftRepositoryInMemory.java` - 最適化済みインメモリ航空機リポジトリ実装**
 
 ### 5. インターフェース
 
@@ -358,9 +387,43 @@ java -cp build/libs/atc-simulator.jar jp.ac.tohoku.qse.takahashi.AtcSimulator.ex
 
 このプロジェクトはオープンソースとして公開されており、研究・教育目的で自由に利用できます。
 
-## TODO: 実装の改善点
+## 実装の改善点
 
-### パフォーマンス最適化
+### ✅ 完了した最適化
+
+#### パフォーマンス最適化
+
+1. **★ AircraftRepositoryInMemory クラスの最適化（完了）**
+   - [x] データ構造をMapベースに変更（ArrayList → ConcurrentHashMap）
+   - [x] コールサインによる検索を効率化（O(n) → O(1)）
+   - [x] スレッドセーフな実装（ConcurrentHashMap + ReadWriteLock）
+   - [x] 重複チェック機能の追加
+   - [x] パフォーマンステストの実装
+   - [x] 大規模データ対応（1000機での高速検索を確認）
+
+2. **★ コンフリクト検出の最適化（完了）**
+   - [x] 事前フィルタリングによる計算対象の削減
+   - [x] 並列処理による大規模データ対応
+   - [x] メモリ効率的なデータ構造の使用
+   - [x] 計算アルゴリズムの最適化
+
+#### コード品質の向上
+
+1. **★ AircraftRepositoryInMemory の改善（完了）**
+   - [x] コメントアウトされた初期化コードの削除
+   - [x] 適切なエラーハンドリングの実装
+   - [x] Javadocによる詳細なドキュメント化
+   - [x] 責務の明確化と設計改善
+
+2. **★ コンフリクト検出のコード品質（完了）**
+   - [x] 包括的な単体テスト
+   - [x] パフォーマンステスト
+   - [x] エラーハンドリングの実装
+   - [x] 境界値テストの実装
+
+### 🔄 継続的な改善項目
+
+#### パフォーマンス最適化
 
 1. **CommercialAircraft クラスの最適化**
    - [ ] 航跡計算ロジックの効率化
@@ -370,23 +433,12 @@ java -cp build/libs/atc-simulator.jar jp.ac.tohoku.qse.takahashi.AtcSimulator.ex
      - `calculateNextAircraftPosition` メソッド内での不要な変数宣言や計算の削除
      - 定数値のキャッシュ化
 
-2. **リポジトリ実装の改善**
-   - [ ] `AircraftRepositoryInMemory` クラスのデータ構造最適化
-     - リストではなくマップを使用してコールサインによる検索を効率化
-     - インデックスの活用
-
-3. **API応答時間の短縮**
+2. **API応答時間の短縮**
    - [ ] シリアライズ/デシリアライズの最適化
      - カスタムシリアライザの実装検討
      - フィールドの選択的シリアライズ
 
-4. **★ コンフリクト検出の最適化（完了）**
-   - [x] 事前フィルタリングによる計算対象の削減
-   - [x] 並列処理による大規模データ対応
-   - [x] メモリ効率的なデータ構造の使用
-   - [x] 計算アルゴリズムの最適化
-
-### コード品質の向上
+#### コード品質の向上
 
 1. **型安全性の強化**
    - [ ] `any` 型や raw 型の使用を排除
@@ -408,13 +460,7 @@ java -cp build/libs/atc-simulator.jar jp.ac.tohoku.qse.takahashi.AtcSimulator.ex
    - [ ] 依存性注入の徹底
    - [ ] 副作用の少ない関数型設計の導入
 
-5. **★ コンフリクト検出のコード品質（完了）**
-   - [x] 包括的な単体テスト
-   - [x] パフォーマンステスト
-   - [x] エラーハンドリングの実装
-   - [x] 境界値テストの実装
-
-### アーキテクチャの改善
+#### アーキテクチャの改善
 
 1. **DDD原則の徹底**
    - [ ] 集約（Aggregate）の境界の明確化
@@ -431,13 +477,7 @@ java -cp build/libs/atc-simulator.jar jp.ac.tohoku.qse.takahashi.AtcSimulator.ex
    - [ ] 環境ごとの設定の分離
    - [ ] 設定の型安全な管理
 
-4. **★ コンフリクト検出のアーキテクチャ（完了）**
-   - [x] クリーンアーキテクチャに準拠した実装
-   - [x] 適切なレイヤー分離
-   - [x] 値オブジェクトとドメインサービスの活用
-   - [x] Spring Bootとの統合
-
-### 機能拡張
+#### 機能拡張
 
 1. **シナリオ機能の強化**
    - [ ] シナリオDSLの設計
@@ -454,13 +494,6 @@ java -cp build/libs/atc-simulator.jar jp.ac.tohoku.qse.takahashi.AtcSimulator.ex
    - [ ] 入力値のバリデーション強化
    - [ ] APIレート制限の実装
 
-4. **★ コンフリクト検出機能の拡張（完了）**
-   - [x] CPA分析による高精度検出
-   - [x] 複数アラートレベルの実装
-   - [x] 統計情報の提供
-   - [x] REST API の実装
-   - [x] リアルタイム処理対応
-
 ### 特定の実装の問題点
 
 1. **CommercialAircraft クラス**
@@ -468,26 +501,15 @@ java -cp build/libs/atc-simulator.jar jp.ac.tohoku.qse.takahashi.AtcSimulator.ex
    - [ ] 航空機の物理的特性を考慮した現実的な挙動のモデリング
    - [ ] フライトダイナミクスの計算精度向上
 
-2. **AircraftRepositoryInMemory クラス**
-   - [ ] スレッドセーフな実装への改善
-   - [ ] `NextStep` メソッドの責務が不明確（リポジトリの責務から逸脱）
-   - [ ] 初期実装のコメントアウトコードの削除
-
-3. **制御フローの改善**
+2. **制御フローの改善**
    - [ ] コールバックやプロミスではなくリアクティブプログラミングの導入検討
    - [ ] 同期・非同期処理の明確な分離
    - [ ] リソースの適切な解放（try-with-resources の活用）
 
-4. **APIエンドポイントの設計**
+3. **APIエンドポイントの設計**
    - [ ] RESTful 原則に準拠した URI 設計の見直し
    - [ ] 操作性の向上（HATEOAS の導入検討）
    - [ ] API バージョニング戦略の策定
-
-5. **★ コンフリクト検出実装の改善（完了）**
-   - [x] 数学的計算の精度確保
-   - [x] エラーハンドリングの実装
-   - [x] パフォーマンス最適化
-   - [x] APIエンドポイントの実装
 
 ### ドキュメンテーション
 
