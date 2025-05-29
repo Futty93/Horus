@@ -111,11 +111,12 @@ public class RiskAssessment {
 
     /**
      * 管制間隔基準に基づく危険性判定
+     * 航空管制では水平と垂直の両方が同時に不足している場合のみ真の管制間隔違反となる
      *
-     * @return 水平5海里未満または垂直1000フィート未満の場合true
+     * @return 水平5海里未満かつ垂直1000フィート未満の場合true
      */
     public boolean isSeparationViolation() {
-        return closestHorizontalDistance < 5.0 || closestVerticalDistance < 1000.0;
+        return closestHorizontalDistance < 5.0 && closestVerticalDistance < 1000.0;
     }
 
     /**

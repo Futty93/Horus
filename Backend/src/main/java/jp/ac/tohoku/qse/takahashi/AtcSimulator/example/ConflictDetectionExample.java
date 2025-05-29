@@ -20,25 +20,37 @@ import java.util.*;
  */
 public class ConflictDetectionExample {
 
+    /**
+     * メイン実行メソッド（修正版テストを含む）
+     */
     public static void main(String[] args) {
-        System.out.println("=== 航空管制コンフリクトアラートシステム - 使用例 ===\n");
-
         ConflictDetectionExample example = new ConflictDetectionExample();
 
-        // 基本的な使用例
-        example.demonstrateBasicUsage();
+        try {
+            // 基本機能実演
+            example.demonstrateBasicUsage();
 
-        // パフォーマンステスト
-        example.demonstratePerformance();
+            // パフォーマンステスト
+            example.demonstratePerformance();
 
-        // 特殊シナリオ
-        example.demonstrateSpecialScenarios();
+            // 特殊シナリオ
+            example.demonstrateSpecialScenarios();
+
+            // 修正後の現実的なリスク評価の実演
+            example.demonstrateRealisticRiskAssessment();
+
+        } catch (Exception e) {
+            System.err.println("デモ実行中にエラーが発生しました: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
      * 基本的な使用例の実演
      */
     public void demonstrateBasicUsage() {
+        System.out.println("=== 航空管制コンフリクトアラートシステム - 使用例 ===\n");
+
         System.out.println("1. 基本的な使用例");
         System.out.println("================");
 
@@ -181,6 +193,56 @@ public class ConflictDetectionExample {
         System.out.println("- 精度: CPA分析による高精度予測");
         System.out.println("- スレッドセーフ: 並列処理対応");
         System.out.println("- 最適化: 事前フィルタリングによる高速化");
+    }
+
+    /**
+     * 修正後の現実的なリスク評価の実演
+     */
+    public void demonstrateRealisticRiskAssessment() {
+        System.out.println("4. 現実的なリスク評価テスト（修正版）");
+        System.out.println("====================================");
+
+        ConflictDetector detector = new ConflictDetector();
+
+        System.out.println("テスト1: 並行飛行（安全な間隔）");
+        Aircraft parallel1 = createSampleAircraft("PAR1", 35.0, 139.0, 35000, 90, 400, 0);
+        Aircraft parallel2 = createSampleAircraft("PAR2", 35.1, 139.0, 36500, 90, 400, 0); // 6NM + 1500ft
+
+        RiskAssessment parallelSafe = detector.calculateConflictRisk(parallel1, parallel2);
+        System.out.printf("危険度: %.2f, アラート: %s, 接近時間: %s\n",
+            parallelSafe.getRiskLevel(), parallelSafe.getAlertLevel(),
+            parallelSafe.getTimeToClosest() == Double.POSITIVE_INFINITY ? "無限大" : parallelSafe.getTimeToClosest() + "秒");
+
+        System.out.println("\nテスト2: 並行飛行（危険な間隔）");
+        Aircraft parallelDanger1 = createSampleAircraft("PD1", 35.0, 139.0, 35000, 90, 400, 0);
+        Aircraft parallelDanger2 = createSampleAircraft("PD2", 35.025, 139.0, 35000, 90, 400, 0); // 約1.5NM
+
+        RiskAssessment parallelDanger = detector.calculateConflictRisk(parallelDanger1, parallelDanger2);
+        System.out.printf("危険度: %.2f, アラート: %s, 接近時間: %s\n",
+            parallelDanger.getRiskLevel(), parallelDanger.getAlertLevel(),
+            parallelDanger.getTimeToClosest() == Double.POSITIVE_INFINITY ? "無限大" : parallelDanger.getTimeToClosest() + "秒");
+
+        System.out.println("\nテスト3: 段階的接近での危険度変化");
+        Aircraft base = createSampleAircraft("BASE", 35.0, 139.0, 35000, 90, 400, 0);
+        double[] distances = {10.0, 7.5, 5.0, 3.0, 1.0}; // NM
+
+        for (double distance : distances) {
+            Aircraft approaching = createSampleAircraft("APP", 35.0, 139.0 + distance * 0.016667, 35000, 270, 400, 0);
+            RiskAssessment risk = detector.calculateConflictRisk(base, approaching);
+            System.out.printf("距離 %.1fNM: 危険度=%.2f, アラート=%s\n",
+                distance, risk.getRiskLevel(), risk.getAlertLevel());
+        }
+
+        System.out.println("\nテスト4: 高度差による安全確保");
+        Aircraft alt1 = createSampleAircraft("ALT1", 35.0, 139.0, 35000, 90, 400, 0);
+        Aircraft alt2 = createSampleAircraft("ALT2", 35.01, 139.0, 37000, 90, 400, 0); // 0.6NM, 2000ft差
+
+        RiskAssessment altSafe = detector.calculateConflictRisk(alt1, alt2);
+        System.out.printf("危険度: %.2f, アラート: %s, 水平=%.2fNM, 垂直=%.0fft\n",
+            altSafe.getRiskLevel(), altSafe.getAlertLevel(),
+            altSafe.getClosestHorizontalDistance(), altSafe.getClosestVerticalDistance());
+
+        System.out.println();
     }
 
     /**
