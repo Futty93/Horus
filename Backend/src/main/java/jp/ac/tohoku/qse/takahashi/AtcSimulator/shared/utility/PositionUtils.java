@@ -107,6 +107,7 @@ public final class PositionUtils {
 
     /**
      * 次の垂直速度を計算
+     * 高度の同期問題を解決するため、目標高度到達時の安定化処理を追加
      *
      * @param currentAltitude 現在の高度
      * @param targetAltitude 目標高度
@@ -120,10 +121,21 @@ public final class PositionUtils {
                                                          double refreshRate) {
         double altitudeDifference = targetAltitude - currentAltitude;
 
-        if (MathUtils.approximately(altitudeDifference, 0.0)) {
+        // 高度差が非常に小さい場合（5フィート以内）は垂直速度を0にして安定化
+        if (Math.abs(altitudeDifference) <= 5.0) {
             return new VerticalSpeed(0.0);
         }
 
+        // 高度差が小さい場合（50フィート以内）は低速で調整
+        if (Math.abs(altitudeDifference) <= 50.0) {
+            // 低速調整：最大レートの10%で緩やかに調整
+            double gentleRate = maxClimbRate * 0.1;
+            double climbRate = Math.signum(altitudeDifference) *
+                              Math.min(gentleRate, Math.abs(altitudeDifference) * refreshRate);
+            return new VerticalSpeed(climbRate);
+        }
+
+        // 一般的な場合：通常の上昇率計算
         double maxRatePerSecond = maxClimbRate / (60.0 * refreshRate);
         double climbRate = Math.signum(altitudeDifference) *
                           Math.min(maxRatePerSecond, Math.abs(altitudeDifference));

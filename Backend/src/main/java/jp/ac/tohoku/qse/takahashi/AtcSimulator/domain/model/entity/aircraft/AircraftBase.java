@@ -76,6 +76,23 @@ public abstract class AircraftBase implements Aircraft {
 
         // 新しいAircraftVectorを設定
         this.aircraftVector = new AircraftVector(nextHeading, nextGroundSpeed, nextVerticalSpeed);
+
+        // 高度同期処理：目標高度に非常に近い場合は指示高度を現在高度に同期
+        double currentAltitude = this.aircraftPosition.altitude.toDouble();
+        double targetAltitude = this.instructedVector.instructedAltitude.toDouble();
+        double altitudeDifference = Math.abs(currentAltitude - targetAltitude);
+
+        // 5フィート以内かつ垂直速度がほぼ0の場合、高度を完全に同期
+        if (altitudeDifference <= 5.0 && Math.abs(nextVerticalSpeed.toDouble()) <= 50.0) {
+            // 高度を目標値に固定して、指示高度も現在高度に合わせる
+            this.aircraftPosition = new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition(
+                this.aircraftPosition.latitude,
+                this.aircraftPosition.longitude,
+                this.instructedVector.instructedAltitude
+            );
+            // 垂直速度を0に設定
+            this.aircraftVector = new AircraftVector(nextHeading, nextGroundSpeed, new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.VerticalSpeed(0.0));
+        }
     }
 
     @Override

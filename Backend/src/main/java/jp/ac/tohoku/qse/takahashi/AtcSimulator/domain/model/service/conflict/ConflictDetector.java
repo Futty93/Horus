@@ -7,6 +7,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.RiskAssessment;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.GeodeticUtils;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
