@@ -1,0 +1,53 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Horus: ATC Radar Simulation System - Backend Coding Rules
+
+These rules are specific to the **Uranus (Backend)** component (`./Backend/`) and supplement the rules in `Horus/.cursor/rules/project_wide.mdc`.
+
+## 🎯 Primary Document & Focus
+
+* **Authoritative README**: `./Backend/README.md`. All backend development must align strictly with this document.
+* **Focus**: Uranus backend system (Java, Spring Boot, Clean Architecture, Conflict Alert System).
+
+## 🛠️ Key Sections of `Backend/README.md` for Development
+
+Refer extensively to these sections in `./Backend/README.md`:
+* "技術スタック"
+* "アーキテクチャ" (Clean Architecture, Strategy, Composition)
+* "プロジェクト構造"
+* "主要コンポーネント" (Domain Model, Application Services, Domain Services, Infrastructure, Interfaces)
+* "API仕様" (including Conflict Alert API, and `UranosAPI.yml`)
+* "新機能: コンフリクトアラートシステム"
+* "パフォーマンス最適化の成果" (`AircraftRepositoryInMemory`, Code Duplication Reduction via `MathUtils`, `StringUtils`, `PositionUtils`)
+* Critically: **"実装の改善点"** (prioritized TODO list with detailed impact and implementation guidance).
+
+## 💻 Coding Guidelines & Standards
+
+* **Architecture**: Strictly adhere to Clean Architecture, DDD, and SOLID principles as detailed in `./Backend/README.md`.
+* **Utilities**: Leverage existing shared utilities (`shared/utility/MathUtils.java`, `shared/utility/StringUtils.java`, `shared/utility/PositionUtils.java`) to maintain consistency and reduce redundancy.
+* **Java Version**: Reiteration of the project-wide critical constraint: **Java 21 or Java 22 ONLY**. **DO NOT USE Java 24**.
+* **Gradle Version**: Gradle 8.8+ (8.8 recommended).
+* **Testing**: Create and update unit and integration tests as specified, especially for domain logic, services, and the Conflict Alert feature (`*ConflictDetectorTest`, `*AircraftRepositoryInMemoryTest`).
+
+## 🔄 Update Triggers and Protocol for `./Backend/README.md`
+
+* Any modification to Java code, Spring Boot configurations, API endpoints, domain logic (including Conflict Detection), infrastructure components, or database interactions.
+* **Progress on "実装の改善点"**:
+    * When a task is addressed, update its status checkbox (e.g., `[ ]` to `[x] ✅`).
+    * **Mandatory**: Record the "実装完了日".
+    * **Mandatory**: Provide a concise summary under "実装項目" detailing what was changed/added.
+    * **Mandatory**: Summarize the "品質向上効果" (e.g., performance gains, bug fixes, improved maintainability), mirroring the style of the completed "エラーハンドリングの改善" entry.
+    * Ensure the "影響範囲" for the item accurately lists all significantly modified or newly created files.
+* Changes to performance metrics (e.g., related to `AircraftRepositoryInMemory`, conflict detection, `CommercialAircraft` optimization).
+* Enhancements or modifications to the Conflict Alert System or any other core domain service.
+* Updates to backend-specific setup instructions, test execution commands, or Java/Gradle version requirements (if they diverge from project-wide but still within allowed versions).
+* When working on an item from "実装の改善点", explicitly follow the guidance in "改善項目実装ガイド" and use the "クイックリファレンス：改善項目別主要ファイル".
+## ✨ Specific Task Guidance (from `./Backend/README.md`)
+
+* **Error Handling**: Now marked as implemented. New error handling must conform to existing patterns (`GlobalExceptionHandler.java`, custom exceptions under `domain/exception/`, RFC 7807 `ErrorResponse.java`).
+* **`CommercialAircraft.java` Optimization**: If tasked, refer to the detailed plan in "実装の改善点" > "2. CommercialAircraft クラスの最適化 ⭐⭐⭐⭐". Implement its sub-points regarding distance calculation, caching, `PositionUtils` usage, and the new `GeodeticUtils.java`.
+* **API Response Time Shortening**: If tasked, refer to "実装の改善点" > "3. API応答時間の短縮 ⭐⭐⭐⭐" for its scope and implementation suggestions.
+* **General for "実装の改善点"**: Always consult the "重要度", "工数", "影響範囲", "実装内容", and "実装のポイント" for any item undertaken from this list.

@@ -1,0 +1,48 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Horus: ATC Radar Simulation System - Project-Wide Coding Rules
+
+## 📜 General Principles (Applicable to All Code and READMEs)
+
+1.  **READMEs as the Single Source of Truth**:
+    * Always refer to the `README.md` file located in the relevant scope (project root `./`, `./Backend/`, or `./Frontend/`) as the primary and authoritative source of information for that scope.
+    * Code generation and modifications must align with the specifications, architecture, and guidelines described in these READMEs.
+
+2.  **Synchronized Updates (Code & READMEs)**:
+    * If a code change impacts information in any `README.md`, that `README.md` **must** be updated within the same set of changes to maintain consistency.
+    * Conversely, updates to a `README.md` (e.g., new requirements, changed designs) must be reflected in subsequent code development.
+
+3.  **Leveraging READMEs for Impact Analysis & Navigation**:
+    * All READMEs, particularly those in `./Backend/` and `./Frontend/`, contain detailed structural and component information. Use this "project wiki" to understand the scope and impact of any changes.
+    * Specific rules for Backend and Frontend will further detail how to use their respective READMEs.
+
+4.  **Adherence to Project-Specific Guidelines & Critical Constraints**:
+    * Strictly follow any overarching coding standards, architectural patterns (Clean Architecture, DDD, SOLID, as mentioned in context-specific READMEs), and development guidelines.
+    * **Critical Java Version Constraint**: For any Java-related development (primarily Backend), use **Java 21 or Java 22 ONLY**. **DO NOT USE Java 24** due to compatibility issues. Ensure `JAVA_HOME` is correctly set. This is a non-negotiable project-wide constraint related to the backend.
+    * **Gradle Version**: Use Gradle 8.8 or higher (8.8 recommended with Java 22) for Java projects.
+
+## 🌳 Root Directory (`./`) Specific Rules
+* **Primary Document**: `./README.md`
+* **Focus**: Project-wide overview, system architecture (Horus, Uranus, Omotenus), development background, top-level Java setup instructions, and the main frontend access point.
+* **Update Triggers for `./README.md`**:
+    * Changes to the overall system components or their high-level interaction.
+    * Modifications to the global Java development setup instructions ("Java環境のセットアップの実行手順").
+    * Updates to project-wide licensing.
+    * Changes to the primary frontend access URL mentioned ("ブラウザからフロントエンドにアクセス": `http://localhost:4507/Frontend/index.html`).
+
+## 🔄 README Update Protocol (General)
+
+1.  **Accuracy and Precision**: Ensure all file paths, names, versions, commands, and technical details in any updated README are exact.
+2.  **Relevance and Placement**: Update only relevant sections, maintaining the existing README structure and style.
+3.  **Clarity and Readability**: Keep READMEs easy to understand and up-to-date.
+4.  **Cross-Directory Consistency**: If a change in one area (e.g., Backend API) affects another (e.g., Frontend API consumption), ensure relevant documentation in *both* areas is considered for updates, guided by their specific READMEs.
+
+## ➕ Supplementing Rules
+
+* This `project_wide.mdc` provides global rules.
+* For detailed rules pertaining to the backend and frontend, refer to:
+    * `Backend/.cursor/rules/backend.mdc`
+    * `Frontend/.cursor/rules/frontend.mdc`

@@ -1,0 +1,52 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Horus: ATC Radar Simulation System - Frontend Coding Rules
+
+These rules are specific to the **Omotenus (Frontend)** component (`./Frontend/`) and supplement the rules in `Horus/.cursor/rules/project_wide.mdc`.
+
+## 🎯 Primary Document & Focus
+
+* **Authoritative README**: `./Frontend/README.md`. All frontend development must align strictly with this document.
+* **Focus**: Omotenus frontend system (TypeScript, Next.js 14.2.15, Tailwind CSS, React Context API).
+
+## 🛠️ Key Sections of `Frontend/README.md` for Development
+
+Refer extensively to these sections in `./Frontend/README.md`:
+* "技術スタック"
+* "環境構築" (Node.js, npm versions, environment variables)
+* "プロジェクト構造"
+* "主要コンポーネント" (RadarCanvas, ControlAircraft, InputAircraftInfo, SectorSelector, etc.)
+* "状態管理" (React Context API definitions like `CenterCoordinateContext`, `DisplayRangeContext`)
+* "API通信" (Endpoints like `/startGame`, `/inGame`, `/controlAircraft`)
+* "開発ガイドライン" (Component creation, state management, styling)
+* Critically: **"TODO: 実装の改善点"** (categorized list of planned enhancements).
+
+## 💻 Coding Guidelines & Standards
+* **Frameworks/Libraries**: Utilize Next.js, TypeScript, Tailwind CSS, and React Context API as per existing patterns and versions specified.
+* **Node.js Version**: Node.js 18.0.0 or higher.
+* **npm Version**: npm 9.0.0 or higher.
+* **Environment Variables**: Configure and use `.env.local` (copied from `.env.sample`) for `NEXT_PUBLIC_SERVER_IP` and `NEXT_PUBLIC_SERVER_PORT` as specified.
+* **Development Server Access**: Default is `http://localhost:3333`. Note that the root `README.md` points to `http://localhost:4507/Frontend/index.html` for direct access; ensure clarity if these serve different purposes (e.g., dev vs. static build).
+* **Component Design**: Follow guidelines for creating reusable components in the `components/` directory.
+* **State Management**: Use React Context API for global state; `useState` for local state; `useEffect` for side effects.
+* **Styling**: Use Tailwind CSS utility classes; define custom styles in `globals.css`.
+
+## 🔄 Update Triggers and Protocol for `./Frontend/README.md`
+
+* Any modification to TypeScript code, Next.js pages/components, Tailwind CSS usage, state management logic (React Context API), or API client code.
+* **Progress on "TODO: 実装の改善点"**:
+    * When a task from any category (Performance, Code Quality, Features, Security, Docs) is completed, mark its checkbox (e.g., `[ ]` to `[x]`).
+    * If a task involves significant changes, consider adding a brief note or link to the relevant commit if appropriate, though the backend's detailed update style for its "実装の改善点" is more prescriptive.
+* Changes to API endpoints consumed by the frontend; ensure these align with the backend's API specifications (from `Backend/README.md` and `UranosAPI.yml`).
+* Updates to environment variable setup or usage.
+* Modifications to frontend-specific setup instructions (Node.js/npm versions) or development server access.
+* Improvements to UI/UX, accessibility, or responsive design as outlined in the TODOs.
+
+## ✨ Specific Task Guidance (from `./Frontend/README.md`)
+
+* **Performance Optimization (RadarCanvas)**: If working on this, refer to the sub-tasks under "TODO: 実装の改善点" > "パフォーマンス最適化" > "RadarCanvasコンポーネント" (reducing re-renders, optimizing render loop, canvas drawing).
+* **State Management Improvement**: Refer to "状態管理の改善" for optimizing Context and strengthening type definitions.
+* **Code Quality (Component Design)**: Refer to "コード品質の向上" for clarifying component responsibilities and utilizing custom hooks.
