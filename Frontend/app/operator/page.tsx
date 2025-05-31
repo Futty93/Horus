@@ -21,24 +21,87 @@ export default function OperatorPage() {
       <CenterCoordinateProvider>
         <DisplayRangeProvider>
           <SelectFixModeProvider>
-            <div className="flex h-screen w-full">
-              <div className="flex w-full">
+            <div className="flex h-screen w-full overflow-hidden">
+              <div className="flex w-full h-full">
                 <RadarCanvas />
-                <div className="controlPanel bg-zinc-900 text-white p-5 flex flex-col justify-between min-w-80">
-                  <div id="callsignDisplay" className="text-center mb-5">
-                    <p id="callsign" className="text-2xl font-bold text-green-400">&nbsp;</p>
+                <div className="controlPanel bg-cyber-gradient border-l border-matrix-accent
+                                text-white p-3 flex flex-col min-w-80 max-w-80
+                                h-full overflow-y-auto overflow-x-hidden
+                                scrollbar-thin scrollbar-track-matrix-dark scrollbar-thumb-radar-primary">
+                  {/* Fixed Header - Callsign Display */}
+                  <div className="flex-shrink-0 mb-4">
+                    <div id="callsignDisplay" className="text-center">
+                      <div className="bg-control-gradient border border-matrix-accent rounded-cyber p-3 backdrop-blur-sm">
+                        <p id="callsign" className="text-xl font-bold text-radar-primary font-mono tracking-wider">&nbsp;</p>
+                        <div className="mt-1 h-0.5 bg-gradient-to-r from-transparent via-radar-primary to-transparent opacity-50"></div>
+                      </div>
+                    </div>
                   </div>
-                  <ControlAircraft />
-                  <SelectFixMode />
-                  <div id="settingArea" className="mt-auto">
-                    <RouteInfoDisplaySetting />
-                    <div className="flex flex-col">
+
+                  {/* Scrollable Content */}
+                  <div className="flex-1 space-y-4 min-h-0">
+                    <ControlAircraft />
+                    <SelectFixMode />
+
+                    {/* Settings Area */}
+                    <div className="space-y-3">
+                      <RouteInfoDisplaySetting />
                       <SectorSelector />
                       <DisplayRangeSetting />
-                      <div className="flex justify-between">
-                        <input type="button" value="Start" id="startButton" className="bg-green-400 text-gray-800 font-bold p-2 rounded transition duration-300 cursor-pointer hover:bg-green-500 hover:shadow-lg-no-offset hover:shadow-green-400/70" />
-                        <input type="button" value="Pause" id="pauseButton" className="bg-yellow-400 text-gray-800 font-bold p-2 rounded transition duration-300 cursor-pointer hover:bg-yellow-500 hover:shadow-lg-no-offset hover:shadow-yellow-400/70" />
-                        <input type="button" value="Reset" id="resetButton" className="bg-red-500 text-gray-800 font-bold p-2 rounded transition duration-300 cursor-pointer hover:bg-red-600 hover:shadow-lg-no-offset hover:shadow-red-400/70" />
+
+                      {/* Control Buttons */}
+                      <div className="bg-control-gradient border border-matrix-accent rounded-cyber-lg p-3 backdrop-blur-sm">
+                        <h3 className="text-xs font-bold text-radar-primary font-mono tracking-wider mb-2 text-center">
+                          SIMULATION CONTROL
+                        </h3>
+                        <div className="flex flex-col space-y-2">
+                          <button
+                            id="startButton"
+                            className="w-full px-3 py-2 bg-button-gradient text-matrix-dark font-bold text-sm
+                                       rounded-cyber border border-transparent font-mono tracking-wider
+                                       transition-all duration-300 ease-out transform
+                                       hover:bg-button-hover-gradient hover:scale-105 hover:shadow-cyber-lg
+                                       active:scale-95 active:shadow-inset-cyber
+                                       focus:outline-none focus:ring-2 focus:ring-radar-primary focus:ring-offset-2 focus:ring-offset-matrix-dark
+                                       relative overflow-hidden group animate-glow"
+                          >
+                            <span className="relative z-10">START SIMULATION</span>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
+                                            transform translate-x-[-100%] group-hover:animate-scan transition-transform duration-500"></div>
+                          </button>
+
+                          <div className="flex space-x-2">
+                            <button
+                              id="pauseButton"
+                              className="flex-1 px-3 py-2 bg-warning-gradient text-matrix-dark font-bold text-xs
+                                         rounded-cyber border border-transparent font-mono tracking-wider
+                                         transition-all duration-300 ease-out transform
+                                         hover:scale-105 hover:shadow-purple-lg
+                                         active:scale-95 active:shadow-inset-cyber
+                                         focus:outline-none focus:ring-2 focus:ring-neon-yellow focus:ring-offset-2 focus:ring-offset-matrix-dark
+                                         relative overflow-hidden group"
+                            >
+                              <span className="relative z-10">PAUSE</span>
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
+                                              transform translate-x-[-100%] group-hover:animate-scan transition-transform duration-500"></div>
+                            </button>
+
+                            <button
+                              id="resetButton"
+                              className="flex-1 px-3 py-2 bg-danger-gradient text-white font-bold text-xs
+                                         rounded-cyber border border-transparent font-mono tracking-wider
+                                         transition-all duration-300 ease-out transform
+                                         hover:scale-105 hover:shadow-purple-lg
+                                         active:scale-95 active:shadow-inset-cyber
+                                         focus:outline-none focus:ring-2 focus:ring-neon-pink focus:ring-offset-2 focus:ring-offset-matrix-dark
+                                         relative overflow-hidden group"
+                              >
+                                <span className="relative z-10">RESET</span>
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
+                                                transform translate-x-[-100%] group-hover:animate-scan transition-transform duration-500"></div>
+                              </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -69,18 +69,44 @@ const SectorSelector = () => {
   };
 
   return (
-    <div className="flex justify-between mb-5">
-      <label htmlFor="selectSector" className="font-bold text-green-400 mr-2">担当セクター:</label>
-      <select
-        id="selectSector"
-        value={selectedSector}
-        onChange={handleSectorChange}
-        className="p-2 rounded border border-green-400 bg-gray-800 text-white"
-      >
-        {Object.keys(sectorCenterCoordinates).map(sector => (
-          <option key={sector} value={sector}>{sector}</option>
-        ))}
-      </select>
+    <div className="bg-control-gradient border border-matrix-accent rounded-cyber-lg p-3 backdrop-blur-sm mb-3">
+      <div className="flex items-center justify-between">
+        <label htmlFor="selectSector"
+               className="font-bold text-radar-primary font-mono tracking-wider text-xs">
+          担当セクター:
+        </label>
+        <div className="relative">
+          <select
+            id="selectSector"
+            value={selectedSector}
+            onChange={handleSectorChange}
+            className="appearance-none bg-matrix-dark border border-matrix-accent rounded-cyber
+                       px-3 py-1 pr-7 text-white font-mono text-xs
+                       transition-all duration-300 ease-out
+                       focus:outline-none focus:border-radar-primary focus:shadow-cyber
+                       hover:border-radar-secondary hover:shadow-neon
+                       cursor-pointer"
+          >
+            {Object.keys(sectorCenterCoordinates).map(sector => (
+              <option key={sector} value={sector} className="bg-matrix-dark text-white">
+                {sector}
+              </option>
+            ))}
+          </select>
+
+          {/* Custom dropdown arrow */}
+          <div className="absolute inset-y-0 right-0 flex items-center pr-1 pointer-events-none">
+            <svg className="w-3 h-3 text-radar-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </div>
+
+          {/* Glow effect */}
+          <div className="absolute inset-0 rounded-cyber opacity-0 hover:opacity-100
+                          transition-opacity duration-300 pointer-events-none
+                          bg-gradient-to-r from-transparent via-radar-primary/5 to-transparent"></div>
+        </div>
+      </div>
     </div>
   );
 };

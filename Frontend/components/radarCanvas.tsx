@@ -43,7 +43,7 @@ const RadarCanvas: React.FC = () => {
 
   useEffect(() => {
     const canvasContainer = document.getElementsByClassName("radarArea")[0] as HTMLElement;
-  
+
     // Initialize canvas dimensions
     canvasRefs.forEach((canvasRef) => {
       const canvas = canvasRef.current;
@@ -52,32 +52,32 @@ const RadarCanvas: React.FC = () => {
         canvas.height = canvasContainer.clientHeight;
       }
     });
-  
+
     GLOBAL_SETTINGS.canvasWidth = canvasRefs[0].current!.width;
     GLOBAL_SETTINGS.canvasHeight = canvasRefs[0].current!.height;
-  
+
     // Load ATS route data and initialize event listeners
     initializeAtsRouteData();
-    
+
     const simulationManager = new SimulationManager();
-    
+
     const handleMouseEvents = (canvas: HTMLCanvasElement) => {
       canvas.addEventListener("mousedown", onMouseDown);
       canvas.addEventListener("mousemove", onMouseMove);
       canvas.addEventListener("mouseup", onMouseUp);
     };
-  
+
     const removeMouseEvents = (canvas: HTMLCanvasElement) => {
       canvas.removeEventListener("mousedown", onMouseDown);
       canvas.removeEventListener("mousemove", onMouseMove);
       canvas.removeEventListener("mouseup", onMouseUp);
     };
-  
+
     canvasRefs.forEach((canvasRef) => {
       const canvas = canvasRef.current;
       if (canvas) handleMouseEvents(canvas);
     });
-  
+
     return () => {
       canvasRefs.forEach((canvasRef) => {
         const canvas = canvasRef.current;
@@ -138,27 +138,27 @@ const RadarCanvas: React.FC = () => {
       console.error("ATS Route data is missing or incomplete.");
       return;
     }
-  
+
     const ctx = getCanvasContext(bg);
     if (!ctx) return;
-  
+
     clearCanvas(ctx);
     renderMapOnCanvas(ctx);
     renderAircraftsOnCanvas(ctx);
-  
+
     toggleCanvasDisplay();
   };
-  
+
   const getCanvasContext = (bg: number): CanvasRenderingContext2D | null => {
     const canvas = canvasRefs[bg]?.current;
     if (!canvas) {
       console.error(`Canvas element is not found for bg: ${bg}`);
       return null;
     }
-  
+
     return canvas.getContext("2d");
   };
-  
+
   const renderMapOnCanvas = (ctx: CanvasRenderingContext2D) => {
     renderMap(
       atsRouteData.waypoints, atsRouteData.radioNavigationAids,
@@ -167,7 +167,7 @@ const RadarCanvas: React.FC = () => {
       displayRangeRef.current
     );
   };
-  
+
   const renderAircraftsOnCanvas = (ctx: CanvasRenderingContext2D) => {
     controllingAircraftsRef.current.forEach((aircraft) => {
       DrawAircraft.drawAircraft(ctx, aircraft, displayRangeRef.current);
@@ -190,7 +190,7 @@ const RadarCanvas: React.FC = () => {
       updateCanvas(); // Update the canvas at each frame
       requestAnimationFrame(renderLoop); // Schedule the next frame
     };
-    
+
     requestAnimationFrame(renderLoop); // Start the first frame
   };
 
@@ -201,7 +201,7 @@ const RadarCanvas: React.FC = () => {
     const y = event.clientY - rect.top;
     const aircraftRadius = 30;
     console.log("Mouse down at", x, y);
-  
+
     const currentControllingAircrafts = controllingAircraftsRef.current;
 
     if (isSelectFixModeRef.current.selectFixMode) {
@@ -219,20 +219,20 @@ const RadarCanvas: React.FC = () => {
       }
       return;
     }
-    
+
     for (let index = 0; index < currentControllingAircrafts.length; index++) {
       const aircraft = currentControllingAircrafts[index];
       const { position, label, callsign } = aircraft;
       const labelX = position.x + label.x;
       const labelY = position.y - label.y;
-  
+
       if (isWithinRadius(x, y, position, aircraftRadius)) {
         changeDisplayAircraftInfo(aircraft);
         setSelectedAircraft(aircraft);
         console.log("Clicked on aircraft", aircraft);
         break; // 条件が満たされた場合はループを抜ける
       }
-  
+
       if (isWithinLabelBounds(x, y, labelX, labelY)) {
         console.log("Clicked on label", callsign);
         draggingLabelIndexRef.current = index;
