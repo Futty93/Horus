@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.3.2'
-	id 'io.spring.dependency-management' version '1.1.6'
+	id 'org.springframework.boot' version '3.3.5'
+	id 'io.spring.dependency-management' version '1.1.7'
 	id "org.springdoc.openapi-gradle-plugin" version "1.8.0"
 }
 
@@ -11,6 +11,7 @@ version = '0.0.1-SNAPSHOT'
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
+    vendor = JvmVendorSpec.IBM
 	}
 }
 
@@ -27,12 +28,6 @@ dependencies {
 	implementation 'javax.validation:validation-api:2.0.1.Final'
 }
 
-task runAtsRouteRepository(type: JavaExec) {
-	classpath = sourceSets.main.runtimeClasspath
-	main = 'jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.AtsRouteRepository'
-}
-
-build.dependsOn runAtsRouteRepository
 
 tasks.named('test') {
 	useJUnitPlatform()
