@@ -1,53 +1,260 @@
 ---
-description:
+description: Backend (Uranus) specific coding rules for Horus ATC Radar Simulation System
 globs:
+  - "Backend/**/*.java"
+  - "Backend/**/*.yml"
+  - "Backend/**/*.yaml"
+  - "Backend/**/*.properties"
+  - "Backend/build.gradle"
 alwaysApply: false
 ---
 # Horus: ATC Radar Simulation System - Backend Coding Rules
 
 These rules are specific to the **Uranus (Backend)** component (`./Backend/`) and supplement the rules in `Horus/.cursor/rules/project_wide.mdc`.
 
-## 🎯 Primary Document & Focus
+## 🎯 Primary Documents
 
-* **Authoritative README**: `./Backend/README.md`. All backend development must align strictly with this document.
-* **Focus**: Uranus backend system (Java, Spring Boot, Clean Architecture, Conflict Alert System).
+* **README**: `./Backend/README.md` - Architecture, API specs, implementation status
+* **Design Docs**: `./Backend/docs/design/` - Feature design documents
+  * `flight-plan-implementation.md` - Flight plan feature design
 
-## 🛠️ Key Sections of `Backend/README.md` for Development
+## 🛠️ Technology Stack
 
-Refer extensively to these sections in `./Backend/README.md`:
-* "技術スタック"
-* "アーキテクチャ" (Clean Architecture, Strategy, Composition)
-* "プロジェクト構造"
-* "主要コンポーネント" (Domain Model, Application Services, Domain Services, Infrastructure, Interfaces)
-* "API仕様" (including Conflict Alert API, and `UranosAPI.yml`)
-* "新機能: コンフリクトアラートシステム"
-* "パフォーマンス最適化の成果" (`AircraftRepositoryInMemory`, Code Duplication Reduction via `MathUtils`, `StringUtils`, `PositionUtils`)
-* Critically: **"実装の改善点"** (prioritized TODO list with detailed impact and implementation guidance).
+| Component | Version | Notes |
+|-----------|---------|-------|
+| Java | **21 or 22 ONLY** | ⚠️ Java 24 is NOT supported |
+| Spring Boot | 3.3.2 | Latest stable |
+| Gradle | 8.8+ | Required for Java 22 |
+| OpenAPI | 3.0.2 | springdoc-openapi 2.6.0 |
 
-## 💻 Coding Guidelines & Standards
+## 💻 Coding Standards
 
-* **Architecture**: Strictly adhere to Clean Architecture, DDD, and SOLID principles as detailed in `./Backend/README.md`.
-* **Utilities**: Leverage existing shared utilities (`shared/utility/MathUtils.java`, `shared/utility/StringUtils.java`, `shared/utility/PositionUtils.java`) to maintain consistency and reduce redundancy.
-* **Java Version**: Reiteration of the project-wide critical constraint: **Java 21 or Java 22 ONLY**. **DO NOT USE Java 24**.
-* **Gradle Version**: Gradle 8.8+ (8.8 recommended).
-* **Testing**: Create and update unit and integration tests as specified, especially for domain logic, services, and the Conflict Alert feature (`*ConflictDetectorTest`, `*AircraftRepositoryInMemoryTest`).
+### Architecture Principles
 
-## 🔄 Update Triggers and Protocol for `./Backend/README.md`
+1. **Clean Architecture** - Dependencies flow inward only
+   ```
+   interfaces → application → domain ← infrastructure
+   ```
 
-* Any modification to Java code, Spring Boot configurations, API endpoints, domain logic (including Conflict Detection), infrastructure components, or database interactions.
-* **Progress on "実装の改善点"**:
-    * When a task is addressed, update its status checkbox (e.g., `[ ]` to `[x] ✅`).
-    * **Mandatory**: Record the "実装完了日".
-    * **Mandatory**: Provide a concise summary under "実装項目" detailing what was changed/added.
-    * **Mandatory**: Summarize the "品質向上効果" (e.g., performance gains, bug fixes, improved maintainability), mirroring the style of the completed "エラーハンドリングの改善" entry.
-    * Ensure the "影響範囲" for the item accurately lists all significantly modified or newly created files.
-* Changes to performance metrics (e.g., related to `AircraftRepositoryInMemory`, conflict detection, `CommercialAircraft` optimization).
-* Enhancements or modifications to the Conflict Alert System or any other core domain service.
-* Updates to backend-specific setup instructions, test execution commands, or Java/Gradle version requirements (if they diverge from project-wide but still within allowed versions).
-* When working on an item from "実装の改善点", explicitly follow the guidance in "改善項目実装ガイド" and use the "クイックリファレンス：改善項目別主要ファイル".
-## ✨ Specific Task Guidance (from `./Backend/README.md`)
+2. **DDD (Domain-Driven Design)**
+   - Entities, Value Objects, Aggregates, Repositories
+   - Ubiquitous language in aviation domain
 
-* **Error Handling**: Now marked as implemented. New error handling must conform to existing patterns (`GlobalExceptionHandler.java`, custom exceptions under `domain/exception/`, RFC 7807 `ErrorResponse.java`).
-* **`CommercialAircraft.java` Optimization**: If tasked, refer to the detailed plan in "実装の改善点" > "2. CommercialAircraft クラスの最適化 ⭐⭐⭐⭐". Implement its sub-points regarding distance calculation, caching, `PositionUtils` usage, and the new `GeodeticUtils.java`.
-* **API Response Time Shortening**: If tasked, refer to "実装の改善点" > "3. API応答時間の短縮 ⭐⭐⭐⭐" for its scope and implementation suggestions.
-* **General for "実装の改善点"**: Always consult the "重要度", "工数", "影響範囲", "実装内容", and "実装のポイント" for any item undertaken from this list.
+3. **SOLID Principles** - Strictly enforced
+
+### Java 21+ Best Practices
+
+```java
+// ✅ Use Records for immutable data (Value Objects, DTOs)
+public record AircraftPositionDto(
+    double latitude,
+    double longitude,
+    double altitude
+) {}
+
+// ✅ Use Pattern Matching for instanceof
+if (aircraft instanceof CommercialAircraft commercial) {
+    return commercial.getDestinationIcao();
+}
+
+// ✅ Use Switch Expressions
+String description = switch (alertLevel) {
+    case SAFE -> "No conflict";
+    case WHITE_CONFLICT -> "Potential conflict in 5 minutes";
+    case RED_CONFLICT -> "Imminent conflict";
+};
+
+// ✅ Use Sealed Classes for domain hierarchies (when appropriate)
+public sealed interface FlightBehavior 
+    permits FixedWingFlightBehavior, HelicopterFlightBehavior {}
+
+// ✅ Use Text Blocks for multi-line strings
+String json = """
+    {
+        "callsign": "%s",
+        "altitude": %d
+    }
+    """.formatted(callsign, altitude);
+```
+
+### Shared Utilities (MUST USE)
+
+Always leverage existing utilities to avoid code duplication:
+
+| Utility | Purpose | Location |
+|---------|---------|----------|
+| `MathUtils` | Angle normalization, trigonometry, interpolation | `shared/utility/` |
+| `StringUtils` | Formatting, callsign extraction, pair ID generation | `shared/utility/` |
+| `PositionUtils` | Position calculation, heading/speed computation | `shared/utility/` |
+| `GeodeticUtils` | Geodetic calculations, distance, bearing | `shared/utility/` |
+| `PerformanceUtils` | Caching, performance measurement, lookup tables | `shared/utility/` |
+
+```java
+// ✅ Correct - Use shared utilities
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.MathUtils.*;
+double normalized = normalizeAngle360(heading);
+
+// ❌ Wrong - Don't duplicate utility logic
+double normalized = heading % 360;
+if (normalized < 0) normalized += 360;
+```
+
+### Exception Handling
+
+Follow the established exception hierarchy:
+
+```
+AtcSimulatorException (base)
+├── AircraftNotFoundException
+├── AircraftConflictException
+├── ConflictDetectionException
+└── InvalidParameterException
+```
+
+```java
+// ✅ Use domain-specific exceptions
+throw new AircraftNotFoundException(callsign, "Aircraft not found in airspace");
+
+// ✅ Let GlobalExceptionHandler handle conversion to RFC 7807 response
+// Don't catch and re-wrap exceptions unnecessarily
+```
+
+### API Design
+
+```java
+// ✅ Use proper HTTP methods and status codes
+@PostMapping("/aircraft/spawn")
+@ResponseStatus(HttpStatus.CREATED)
+public AircraftDto spawnAircraft(@Valid @RequestBody CreateAircraftDto dto) {
+    // ...
+}
+
+// ✅ Use validation annotations (Jakarta Bean Validation)
+public record CreateAircraftDto(
+    @NotBlank String callsign,
+    @Min(-90) @Max(90) double latitude,
+    @Min(-180) @Max(180) double longitude,
+    @PositiveOrZero int altitude
+) {}
+```
+
+### Testing Standards
+
+```java
+// ✅ Use descriptive test names
+@Test
+@DisplayName("Should detect RED_CONFLICT when aircraft are within 1 minute of collision")
+void shouldDetectRedConflictWhenAircraftWithin1MinuteOfCollision() {
+    // Given
+    Aircraft aircraft1 = createAircraftAt(35.0, 139.0, 35000);
+    Aircraft aircraft2 = createAircraftAt(35.01, 139.01, 35000);
+    
+    // When
+    RiskAssessment result = conflictDetector.assess(aircraft1, aircraft2);
+    
+    // Then
+    assertThat(result.getAlertLevel()).isEqualTo(AlertLevel.RED_CONFLICT);
+    assertThat(result.getRiskLevel()).isGreaterThanOrEqualTo(70.0);
+}
+
+// ✅ Use parameterized tests for multiple scenarios
+@ParameterizedTest
+@CsvSource({
+    "1000, SAFE",
+    "500, WHITE_CONFLICT", 
+    "100, RED_CONFLICT"
+})
+void shouldReturnCorrectAlertLevelBasedOnDistance(int distance, AlertLevel expected) {
+    // ...
+}
+```
+
+## ⚠️ Known Issues & Constraints
+
+### Dependency Migration Required
+
+```groovy
+// ❌ Current (deprecated)
+implementation 'javax.validation:validation-api:2.0.1.Final'
+
+// ✅ Should migrate to (Spring Boot 3.x standard)
+implementation 'jakarta.validation:jakarta.validation-api'
+// Note: spring-boot-starter-validation includes this automatically
+```
+
+### Thread Safety
+
+- `AircraftRepositoryInMemory` uses `ConcurrentHashMap` - thread-safe
+- `CommercialAircraft` has mutable state - synchronize access in multi-threaded scenarios
+- Utility classes (`MathUtils`, etc.) are stateless and thread-safe
+
+## 📁 Project Structure
+
+```
+Backend/src/main/java/jp/ac/tohoku/qse/takahashi/AtcSimulator/
+├── application/           # Application services
+│   ├── AircraftRadarService.java
+│   └── ConflictAlertService.java
+├── config/                # Configuration
+│   ├── globals/           # Constants (GlobalConstants, GlobalVariables)
+│   └── *.java             # Spring configs
+├── domain/                # Domain layer (NO framework dependencies)
+│   ├── exception/         # Domain exceptions
+│   └── model/
+│       ├── aggregate/     # Aggregates (airspace)
+│       ├── entity/        # Entities (aircraft, airport, fix, flightplan)
+│       ├── service/       # Domain services (conflict, scenario)
+│       └── valueObject/   # Value objects
+├── infrastructure/        # Infrastructure implementations
+│   └── persistance/       # Repository implementations
+├── interfaces/            # API layer
+│   ├── api/               # REST controllers
+│   └── dto/               # Data transfer objects
+└── shared/                # Cross-cutting concerns
+    └── utility/           # Utility classes
+```
+
+## 🔄 README Update Protocol
+
+When modifying backend code, update `./Backend/README.md` if:
+
+1. **API changes** - New endpoints, modified request/response formats
+2. **Architecture changes** - New packages, design pattern changes
+3. **Performance improvements** - Update metrics in "パフォーマンス最適化の成果"
+4. **Implementation progress** - Update checkboxes in "実装の改善点"
+   - Mark completed items with `[x] ✅`
+   - Record "実装完了日" (completion date)
+   - Document "実装項目" (what was implemented)
+   - Summarize "品質向上効果" (quality improvements)
+
+## 🚀 Quick Commands
+
+```bash
+# Build
+./gradlew build
+
+# Run
+./gradlew bootRun
+
+# Test all
+./gradlew test
+
+# Test specific
+./gradlew test --tests "*ConflictDetectorTest"
+./gradlew test --tests "*AircraftRepositoryInMemoryTest"
+
+# API docs
+open http://localhost:8080/docs.html
+```
+
+## 📋 Code Review Checklist
+
+Before submitting changes, verify:
+
+- [ ] No `javax.*` imports (use `jakarta.*` for new code)
+- [ ] Shared utilities used instead of duplicating logic
+- [ ] Domain exceptions used for error cases
+- [ ] Tests follow Given-When-Then pattern
+- [ ] No hardcoded values (use `GlobalConstants`)
+- [ ] Thread-safety considered for shared state
+- [ ] README updated if applicable
