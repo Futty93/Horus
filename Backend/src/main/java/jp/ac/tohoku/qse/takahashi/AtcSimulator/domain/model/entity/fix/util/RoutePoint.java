@@ -13,6 +13,18 @@ public class RoutePoint {
         this.type = type;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
     @Override
     public String toString() {
         return String.format("{\"name\":\"%s\", \"latitude\":%f, \"longitude\":%f, \"type\":\"%s\"}", this.name, this.latitude, this.longitude, this.type);

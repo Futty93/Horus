@@ -1,0 +1,130 @@
+{
+  "airports": [
+    {
+      "icaoCode": "RJTT",
+      "name": "Tokyo Haneda",
+      "iataCode": "HND",
+      "latitude": 35.5494,
+      "longitude": 139.7798
+    },
+    {
+      "icaoCode": "RJAA",
+      "name": "Narita",
+      "iataCode": "NRT",
+      "latitude": 35.7720,
+      "longitude": 140.3929
+    },
+    {
+      "icaoCode": "RJBB",
+      "name": "Kansai",
+      "iataCode": "KIX",
+      "latitude": 34.4347,
+      "longitude": 135.2441
+    },
+    {
+      "icaoCode": "RJOO",
+      "name": "Osaka Itami",
+      "iataCode": "ITM",
+      "latitude": 34.7855,
+      "longitude": 135.4382
+    },
+    {
+      "icaoCode": "RJFK",
+      "name": "Kagoshima",
+      "iataCode": "KOJ",
+      "latitude": 31.8034,
+      "longitude": 130.7194
+    },
+    {
+      "icaoCode": "RJSM",
+      "name": "Miyazaki",
+      "iataCode": "KMI",
+      "latitude": 31.8772,
+      "longitude": 131.4486
+    },
+    {
+      "icaoCode": "RJOM",
+      "name": "Hiroshima",
+      "iataCode": "HIJ",
+      "latitude": 34.4361,
+      "longitude": 132.9194
+    },
+    {
+      "icaoCode": "RJSA",
+      "name": "Saga",
+      "iataCode": "HSG",
+      "latitude": 33.1497,
+      "longitude": 130.3022
+    },
+    {
+      "icaoCode": "RJFF",
+      "name": "Fukuoka",
+      "iataCode": "FUK",
+      "latitude": 33.5859,
+      "longitude": 130.4510
+    },
+    {
+      "icaoCode": "RJGG",
+      "name": "Chubu Centrair",
+      "iataCode": "NGO",
+      "latitude": 34.8584,
+      "longitude": 136.8042
+    },
+    {
+      "icaoCode": "RJFM",
+      "name": "Matsuyama",
+      "iataCode": "MYJ",
+      "latitude": 33.8272,
+      "longitude": 132.6997
+    },
+    {
+      "icaoCode": "RJOA",
+      "name": "Okayama",
+      "iataCode": "OKJ",
+      "latitude": 34.7569,
+      "longitude": 133.8553
+    },
+    {
+      "icaoCode": "RJBE",
+      "name": "Kobe",
+      "iataCode": "UKB",
+      "latitude": 34.6328,
+      "longitude": 135.2239
+    },
+    {
+      "icaoCode": "ROAH",
+      "name": "Naha",
+      "iataCode": "OKA",
+      "latitude": 26.2064,
+      "longitude": 127.6458
+    },
+    {
+      "icaoCode": "RJEC",
+      "name": "Memanbetsu",
+      "iataCode": "MMB",
+      "latitude": 43.8806,
+      "longitude": 144.1642
+    },
+    {
+      "icaoCode": "RJAG",
+      "name": "Amakusa",
+      "iataCode": "AXJ",
+      "latitude": 32.4823,
+      "longitude": 130.1589
+    },
+    {
+      "icaoCode": "ROMD",
+      "name": "Minamidaito",
+      "iataCode": "MMD",
+      "latitude": 25.8465,
+      "longitude": 131.2631
+    },
+    {
+      "icaoCode": "RJSN",
+      "name": "Niigata",
+      "iataCode": "KIJ",
+      "latitude": 37.9558,
+      "longitude": 139.1211
+    }
+  ]
+}
