@@ -4,11 +4,19 @@ import { useSelectedAircraft } from "@/context/selectedAircraftContext";
 import { controlAircraft as sendControlAircraft } from "@/utility/api/controlAircraft";
 
 const InputAircraftInfo = () => {
-  const { callsign, instructedVector, setInstructedVector } =
-    useSelectedAircraft();
+  const {
+    callsign,
+    instructedVector,
+    setInstructedVector,
+    applyInstructedVectorToRadar,
+  } = useSelectedAircraft();
 
-  const handleExecute = () =>
-    sendControlAircraft(callsign ?? "", instructedVector);
+  const handleExecute = async () => {
+    const ok = await sendControlAircraft(callsign ?? "", instructedVector);
+    if (ok && callsign) {
+      applyInstructedVectorToRadar(callsign, instructedVector);
+    }
+  };
 
   const fields = [
     { key: "altitude" as const, label: "Altitude" },

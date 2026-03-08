@@ -20,10 +20,10 @@ function toDto(vector: InstructedVector): ControlAircraftDto {
 export async function controlAircraft(
   callsign: string,
   instructedVector: InstructedVector
-): Promise<void> {
+): Promise<boolean> {
   if (!callsign || callsign.length < 2) {
     console.error("No aircraft selected");
-    return;
+    return false;
   }
 
   const dto = toDto(instructedVector);
@@ -40,13 +40,15 @@ export async function controlAircraft(
 
     if (response.ok) {
       console.log(`Aircraft ${callsign} controlled successfully.`);
-    } else {
-      console.error(
-        `Failed to control aircraft ${callsign}. Status:`,
-        response.status
-      );
+      return true;
     }
+    console.error(
+      `Failed to control aircraft ${callsign}. Status:`,
+      response.status
+    );
+    return false;
   } catch (error) {
     console.error("Error occurred while controlling aircraft:", error);
+    return false;
   }
 }

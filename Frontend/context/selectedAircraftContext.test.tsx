@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
@@ -81,6 +81,107 @@ describe("SelectedAircraftContext", () => {
       expect(screen.getByTestId("groundSpeed")).toHaveTextContent("250");
       expect(screen.getByTestId("heading")).toHaveTextContent("90");
     });
+  });
+
+  it("invokes registered handler when applyInstructedVectorToRadar is called", async () => {
+    const handler = jest.fn();
+    function RegistrarAndTrigger() {
+      const {
+        registerApplyInstructedVectorHandler,
+        applyInstructedVectorToRadar,
+        setCallsign,
+        setInstructedVector,
+      } = useSelectedAircraft();
+
+      useEffect(() => {
+        const unregister = registerApplyInstructedVectorHandler(handler);
+        return unregister;
+      }, [registerApplyInstructedVectorHandler]);
+
+      return (
+        <div>
+          <button
+            onClick={() => {
+              setCallsign("ANA456");
+              setInstructedVector({
+                altitude: 37000,
+                groundSpeed: 280,
+                heading: 180,
+              });
+            }}
+          >
+            Set State
+          </button>
+          <button
+            onClick={() =>
+              applyInstructedVectorToRadar("ANA456", {
+                altitude: 37000,
+                groundSpeed: 280,
+                heading: 180,
+              })
+            }
+          >
+            Apply
+          </button>
+        </div>
+      );
+    }
+
+    const user = userEvent.setup();
+    render(
+      <SelectedAircraftProvider>
+        <RegistrarAndTrigger />
+      </SelectedAircraftProvider>
+    );
+
+    await user.click(screen.getByRole("button", { name: "Apply" }));
+    await waitFor(() => {
+      expect(handler).toHaveBeenCalledTimes(1);
+      expect(handler).toHaveBeenCalledWith("ANA456", {
+        altitude: 37000,
+        groundSpeed: 280,
+        heading: 180,
+      });
+    });
+  });
+
+  it("does not invoke handler after unregister", async () => {
+    const handler = jest.fn();
+    function RegistrarAndUnregister() {
+      const {
+        registerApplyInstructedVectorHandler,
+        applyInstructedVectorToRadar,
+      } = useSelectedAircraft();
+
+      useEffect(() => {
+        const unregister = registerApplyInstructedVectorHandler(handler);
+        unregister();
+      }, [registerApplyInstructedVectorHandler]);
+
+      return (
+        <button
+          onClick={() =>
+            applyInstructedVectorToRadar("XXX", {
+              altitude: 0,
+              groundSpeed: 0,
+              heading: 0,
+            })
+          }
+        >
+          Apply
+        </button>
+      );
+    }
+
+    const user = userEvent.setup();
+    render(
+      <SelectedAircraftProvider>
+        <RegistrarAndUnregister />
+      </SelectedAircraftProvider>
+    );
+
+    await user.click(screen.getByRole("button", { name: "Apply" }));
+    await waitFor(() => expect(handler).not.toHaveBeenCalled());
   });
 
   it("throws when useSelectedAircraft is used outside Provider", () => {

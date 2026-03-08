@@ -2,7 +2,9 @@
 
 import React, {
   createContext,
+  useCallback,
   useMemo,
+  useRef,
   useContext,
   useState,
   type ReactNode,
@@ -14,11 +16,23 @@ export interface InstructedVector {
   heading: number;
 }
 
+export type ApplyInstructedVectorHandler = (
+  callsign: string,
+  instructedVector: InstructedVector
+) => void;
+
 export interface SelectedAircraftContextType {
   callsign: string | null;
   setCallsign: (callsign: string | null) => void;
   instructedVector: InstructedVector;
   setInstructedVector: React.Dispatch<React.SetStateAction<InstructedVector>>;
+  applyInstructedVectorToRadar: (
+    callsign: string,
+    instructedVector: InstructedVector
+  ) => void;
+  registerApplyInstructedVectorHandler: (
+    handler: ApplyInstructedVectorHandler
+  ) => () => void;
 }
 
 const DEFAULT_INSTRUCTED_VECTOR: InstructedVector = {
@@ -39,14 +53,40 @@ export const SelectedAircraftProvider: React.FC<{ children: ReactNode }> = ({
     DEFAULT_INSTRUCTED_VECTOR
   );
 
+  const applyHandlerRef = useRef<ApplyInstructedVectorHandler | null>(null);
+
+  const applyInstructedVectorToRadar = useCallback(
+    (c: string, v: InstructedVector) => {
+      applyHandlerRef.current?.(c, v);
+    },
+    []
+  );
+
+  const registerApplyInstructedVectorHandler = useCallback(
+    (handler: ApplyInstructedVectorHandler) => {
+      applyHandlerRef.current = handler;
+      return () => {
+        applyHandlerRef.current = null;
+      };
+    },
+    []
+  );
+
   const value = useMemo(
     () => ({
       callsign,
       setCallsign,
       instructedVector,
       setInstructedVector,
+      applyInstructedVectorToRadar,
+      registerApplyInstructedVectorHandler,
     }),
-    [callsign, instructedVector]
+    [
+      callsign,
+      instructedVector,
+      applyInstructedVectorToRadar,
+      registerApplyInstructedVectorHandler,
+    ]
   );
 
   return (
