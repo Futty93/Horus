@@ -245,9 +245,9 @@ jp.ac.tohoku.qse.takahashi.AtcSimulator/
 ### ドキュメント構成
 
 - **設計ドキュメント** (`docs/design/`): 機能の仕様・アーキテクチャを定義
-- **実装計画** (`docs/implementation-plans/`): 設計に基づくタスク分解と進捗管理
+- **実装計画** (`spec/`): 設計に基づくタスク分解と進捗管理（各計画は `spec/{feature}/spec.md`）
 
-**完了済み**: `backend-redesign.md`（クリーンアーキテクチャ再設計、Phase 1〜7 完了）。新機能の実装時は `docs/implementation-plans/README.md` を参照。
+**完了済み**: [backend-redesign](../spec/backend-redesign/spec.md)（クリーンアーキテクチャ再設計、Phase 1〜7 完了）。新機能の実装時は [spec/](../spec/) を参照。
 
 ## 主要コンポーネント
 

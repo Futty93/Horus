@@ -30,7 +30,7 @@
 
 ## 関連 issue / 実装計画
 
-<!-- 関連する issue 番号や `docs/implementation-plans/` のドキュメント -->
+<!-- 関連する issue 番号や spec のドキュメントを記載。例: spec [flight-plan](spec/flight-plan/spec.md) -->
 
 - 
 
