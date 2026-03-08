@@ -1,30 +1,35 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.api;
 
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalVariables;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalVariables;
 
 @RestController
 @RequestMapping("/simulation")
 @Validated
 public class SimulationService {
 
-    // シミュレーションを開始する
+    private static final Logger logger = LoggerFactory.getLogger(SimulationService.class);
+
     @PostMapping("/start")
     public ResponseEntity<Void> start() {
         GlobalVariables.isSimulationRunning = true;
-        return ResponseEntity.ok().build();  // 成功した場合は200 OKを返す
+        logger.info("Simulation started");
+        return ResponseEntity.ok().build();
     }
 
-    // シミュレーションを一時停止する
     @PostMapping("/pause")
     public ResponseEntity<Void> pause() {
         GlobalVariables.isSimulationRunning = false;
-        return ResponseEntity.ok().build();  // 成功した場合は200 OKを返す
+        logger.info("Simulation paused");
+        return ResponseEntity.ok().build();
     }
 
     // シミュレーションの状態を取得する

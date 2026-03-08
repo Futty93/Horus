@@ -3,6 +3,7 @@ plugins {
 	id 'org.springframework.boot' version '3.3.5'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id "org.springdoc.openapi-gradle-plugin" version "1.8.0"
+	id 'com.diffplug.spotless' version '6.25.0'
 }
 
 group = 'jp.ac.tohoku.qse.takahashi'
@@ -31,4 +32,19 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+bootRun {
+	if (project.hasProperty('wpDebug')) {
+		jvmArgs = ['-Dflightplan.wp.debug=true']
+	}
+}
+
+spotless {
+	java {
+		removeUnusedImports()
+		importOrder('java', 'javax', 'org', 'com', 'jp', '')
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
 }

@@ -1,19 +1,19 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.types.commercial;
 
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.*;
+
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftBase;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.behavior.FixedWingFlightBehavior;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.characteristics.AircraftCharacteristics;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.NavigationMode;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.GeodeticUtils;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.MathUtils;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.PerformanceUtils;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.PositionUtils;
-
-import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.*;
 
 /**
  * 商用旅客機クラス（最適化版）
@@ -154,14 +154,13 @@ public class CommercialAircraft extends AircraftBase {
      */
     @Override
     public void calculateNextAircraftVector() {
-        long currentTime = System.currentTimeMillis();
+        applyWaypointPassCheck();
 
-        // ベクトル更新の必要性をチェック
+        long currentTime = System.currentTimeMillis();
         if (!shouldUpdateVector()) {
             return;
         }
 
-        // 既存の計算ロジックを呼び出し（FlightBehaviorに委譲）
         super.calculateNextAircraftVector();
 
         // 変化量をチェックして更新
@@ -221,7 +220,13 @@ public class CommercialAircraft extends AircraftBase {
      * 高度同期問題を解決するため、航空機ベクトルの垂直速度を基準に判定
      */
     private boolean shouldUpdateVector() {
-        // 指示ベクトルとの差がしきい値以下の場合は更新をスキップ
+        if (navigationMode == NavigationMode.DIRECT_TO && directToTarget != null) {
+            return true;
+        }
+        if (navigationMode == NavigationMode.FLIGHT_PLAN && flightPlan != null
+                && flightPlan.getNextWaypoint(currentWaypointIndex).isPresent()) {
+            return true;
+        }
         double headingDiff = Math.abs(aircraftVector.heading.toDouble() - instructedVector.instructedHeading.toDouble());
         double speedDiff = Math.abs(aircraftVector.groundSpeed.toDouble() - instructedVector.instructedGroundSpeed.toDouble());
 
@@ -257,15 +262,19 @@ public class CommercialAircraft extends AircraftBase {
     }
 
     /**
-     * 位置の有意な変化をチェック
+     * 位置の有意な変化をチェック。
+     * approximateHorizontalDistance は海里を返す。250kt×1秒≒0.07NM のため、
+     * 閾値は 0.001 NM（約1.85m）未満に設定して典型的な1ティック分の移動を検出する。
      */
+    private static final double POSITION_CHANGE_THRESHOLD_NM = 0.001;
+
     private boolean isSignificantPositionChange(AircraftPosition newPosition) {
         if (lastCachedPosition == null) {
             return true;
         }
 
-        double distance = GeodeticUtils.approximateHorizontalDistance(lastCachedPosition, newPosition);
-        return distance > POSITION_UPDATE_THRESHOLD;
+        double distanceNm = GeodeticUtils.approximateHorizontalDistance(lastCachedPosition, newPosition);
+        return distanceNm > POSITION_CHANGE_THRESHOLD_NM;
     }
 
     /**

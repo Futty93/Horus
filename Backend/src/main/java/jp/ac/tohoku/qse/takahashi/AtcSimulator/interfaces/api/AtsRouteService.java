@@ -1,9 +1,10 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.api;
 
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.fix.AtsRouteFixPositionRepository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.fix.AtsRouteFixPositionRepository;
 
 @RestController
 @RequestMapping("/ats")

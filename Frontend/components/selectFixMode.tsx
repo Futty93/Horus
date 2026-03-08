@@ -73,14 +73,22 @@ const SelectFixMode = () => {
 
               const callsign = callsignElement.innerText;
               const selectedFixName = selectedFixNameElement.innerText;
+              if (!selectedFixName || selectedFixName === "No fixes selected") {
+                console.error("No fix selected");
+                return;
+              }
               try {
                 const response = await fetch(
-                  `http://${serverIp}:${serverPort}/api/aircraft/control/${callsign}/direct/${selectedFixName}`,
+                  `http://${serverIp}:${serverPort}/api/aircraft/${callsign}/direct-to`,
                   {
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",
                     },
+                    body: JSON.stringify({
+                      fixName: selectedFixName,
+                      resumeFlightPlan: false,
+                    }),
                   }
                 );
 

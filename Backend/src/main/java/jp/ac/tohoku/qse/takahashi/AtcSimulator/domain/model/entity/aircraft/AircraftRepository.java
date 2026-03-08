@@ -1,8 +1,8 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft;
 
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
-
 import java.util.List;
+
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 
 public interface AircraftRepository {
     boolean isAircraftExist(Callsign callsign);
@@ -13,5 +13,5 @@ public interface AircraftRepository {
     List<Aircraft> findAll();
 
     void nextStep();
-    
+
 }

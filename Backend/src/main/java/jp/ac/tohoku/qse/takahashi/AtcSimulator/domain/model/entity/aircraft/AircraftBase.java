@@ -1,16 +1,23 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft;
 
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.REFRESH_RATE;
+
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.behavior.FlightBehavior;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.characteristics.AircraftCharacteristics;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlan;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlanWaypoint;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.NavigationMode;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.GroundSpeed;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Heading;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.InstructedVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.GeodeticUtils;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.StringUtils;
-
-import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.REFRESH_RATE;
 
 /**
  * 航空機の基底クラス
@@ -29,6 +36,21 @@ public abstract class AircraftBase implements Aircraft {
     // 航空機の物理的特性
     protected final AircraftCharacteristics characteristics;
 
+    protected FlightPlan flightPlan;
+    protected int currentWaypointIndex;
+    protected NavigationMode navigationMode;
+    protected double previousDistanceToWaypoint;
+    protected FixPosition directToTarget;
+    protected String directToFixName;
+    protected boolean resumeFlightPlanAfterDirectTo;
+    protected boolean markedForRemoval;
+
+    private static final double WAYPOINT_PASS_THRESHOLD_MIN_NM = 1.5;
+    private static final double WAYPOINT_PASS_THRESHOLD_MAX_NM = 5.0;
+    private static final double WAYPOINT_PASS_SECONDS = 5.0;
+
+    private static final boolean WP_DEBUG = "true".equalsIgnoreCase(System.getProperty("flightplan.wp.debug"));
+
     public AircraftBase(Callsign callsign, AircraftType aircraftType, AircraftPosition aircraftPosition,
                        AircraftVector aircraftVector, FlightBehavior flightBehavior,
                        AircraftCharacteristics characteristics) {
@@ -39,6 +61,14 @@ public abstract class AircraftBase implements Aircraft {
         this.flightBehavior = flightBehavior;
         this.characteristics = characteristics;
         this.instructedVector = new InstructedVector(aircraftVector.heading, aircraftPosition.altitude, aircraftVector.groundSpeed);
+        this.flightPlan = null;
+        this.currentWaypointIndex = 0;
+        this.navigationMode = NavigationMode.HEADING;
+        this.previousDistanceToWaypoint = Double.MAX_VALUE;
+        this.directToTarget = null;
+        this.directToFixName = null;
+        this.resumeFlightPlanAfterDirectTo = false;
+        this.markedForRemoval = false;
     }
 
     @Override
@@ -52,21 +82,20 @@ public abstract class AircraftBase implements Aircraft {
 
     @Override
     public void calculateNextAircraftVector() {
-        // 次のヘディングを計算
+        updateInstructedVectorFromNavigation();
+
         var nextHeading = flightBehavior.calculateNextHeading(
             this.aircraftVector.heading.toDouble(),
             this.instructedVector.instructedHeading.toDouble(),
             this.characteristics.getMaxTurnRate()
         );
 
-        // 次の地上速度を計算
         var nextGroundSpeed = flightBehavior.calculateNextGroundSpeed(
             this.aircraftVector.groundSpeed.toDouble(),
             this.instructedVector.instructedGroundSpeed.toDouble(),
             this.characteristics.getMaxAcceleration()
         );
 
-        // 次の垂直速度を計算
         var nextVerticalSpeed = flightBehavior.calculateNextVerticalSpeed(
             this.aircraftPosition.altitude.toDouble(),
             this.instructedVector.instructedAltitude.toDouble(),
@@ -74,25 +103,144 @@ public abstract class AircraftBase implements Aircraft {
             REFRESH_RATE
         );
 
-        // 新しいAircraftVectorを設定
         this.aircraftVector = new AircraftVector(nextHeading, nextGroundSpeed, nextVerticalSpeed);
 
-        // 高度同期処理：目標高度に非常に近い場合は指示高度を現在高度に同期
         double currentAltitude = this.aircraftPosition.altitude.toDouble();
         double targetAltitude = this.instructedVector.instructedAltitude.toDouble();
         double altitudeDifference = Math.abs(currentAltitude - targetAltitude);
 
-        // 5フィート以内かつ垂直速度がほぼ0の場合、高度を完全に同期
         if (altitudeDifference <= 5.0 && Math.abs(nextVerticalSpeed.toDouble()) <= 50.0) {
-            // 高度を目標値に固定して、指示高度も現在高度に合わせる
             this.aircraftPosition = new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition(
                 this.aircraftPosition.latitude,
                 this.aircraftPosition.longitude,
                 this.instructedVector.instructedAltitude
             );
-            // 垂直速度を0に設定
             this.aircraftVector = new AircraftVector(nextHeading, nextGroundSpeed, new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.VerticalSpeed(0.0));
         }
+    }
+
+    private void updateInstructedVectorFromNavigation() {
+        if (navigationMode == NavigationMode.HEADING) {
+            return;
+        }
+        FixPosition target = resolveNavigationTarget();
+        if (target == null) {
+            return;
+        }
+        double bearing = flightBehavior.calculateTurnAngle(aircraftPosition, aircraftVector.heading.toDouble(), target);
+        Altitude targetAltitude = resolveTargetAltitude();
+        GroundSpeed targetSpeed = resolveTargetSpeed();
+        this.instructedVector = new InstructedVector(new Heading(bearing), targetAltitude, targetSpeed);
+    }
+
+    private FixPosition resolveNavigationTarget() {
+        if (navigationMode == NavigationMode.DIRECT_TO && directToTarget != null) {
+            return directToTarget;
+        }
+        if (navigationMode == NavigationMode.FLIGHT_PLAN && flightPlan != null) {
+            return flightPlan.getNextWaypoint(currentWaypointIndex)
+                    .map(FlightPlanWaypoint::getPosition)
+                    .orElse(null);
+        }
+        return null;
+    }
+
+    private Altitude resolveTargetAltitude() {
+        if (navigationMode == NavigationMode.DIRECT_TO || flightPlan == null) {
+            return instructedVector.instructedAltitude;
+        }
+        return flightPlan.getNextWaypoint(currentWaypointIndex)
+                .map(wp -> wp.getTargetAltitude() != null ? wp.getTargetAltitude() : flightPlan.getCruiseAltitude())
+                .orElse(instructedVector.instructedAltitude);
+    }
+
+    private GroundSpeed resolveTargetSpeed() {
+        if (navigationMode == NavigationMode.DIRECT_TO || flightPlan == null) {
+            return instructedVector.instructedGroundSpeed;
+        }
+        return flightPlan.getNextWaypoint(currentWaypointIndex)
+                .map(wp -> wp.getTargetSpeed() != null ? wp.getTargetSpeed() : flightPlan.getCruiseSpeed())
+                .orElse(instructedVector.instructedGroundSpeed);
+    }
+
+    protected void applyWaypointPassCheck() {
+        FixPosition target = resolveNavigationTarget();
+        if (target == null) {
+            return;
+        }
+        double currentDistance = GeodeticUtils.distanceToFix(aircraftPosition, target);
+        double threshold = calculateDynamicThreshold();
+
+        boolean withinThreshold = currentDistance < threshold;
+        boolean movingAway = currentDistance > previousDistanceToWaypoint;
+        boolean passed = withinThreshold && movingAway;
+        previousDistanceToWaypoint = currentDistance;
+
+        if (WP_DEBUG && currentDistance < threshold * 2
+                && (navigationMode == NavigationMode.FLIGHT_PLAN || navigationMode == NavigationMode.DIRECT_TO)) {
+            String targetName = navigationMode == NavigationMode.DIRECT_TO ? directToFixName : flightPlan.getNextWaypoint(currentWaypointIndex).map(w -> w.getFixName()).orElse("?");
+            System.out.printf("[WP_DEBUG] %s %s dist=%.4f NM thresh=%.4f NM within=%s movingAway=%s passed=%s%n",
+                    callsign, targetName, currentDistance, threshold, withinThreshold, movingAway, passed);
+        }
+
+        if (!withinThreshold || !movingAway) {
+            return;
+        }
+
+        if (WP_DEBUG) {
+            System.out.printf("[WP_DEBUG] %s *** WAYPOINT PASSED ***%n", callsign);
+        }
+
+        if (navigationMode == NavigationMode.DIRECT_TO) {
+            onDirectToTargetReached();
+            return;
+        }
+
+        if (navigationMode == NavigationMode.FLIGHT_PLAN && flightPlan != null) {
+            flightPlan.getNextWaypoint(currentWaypointIndex).ifPresent(this::onWaypointPassed);
+        }
+    }
+
+    private void onDirectToTargetReached() {
+        directToTarget = null;
+        previousDistanceToWaypoint = Double.MAX_VALUE;
+        if (resumeFlightPlanAfterDirectTo && flightPlan != null && directToFixName != null) {
+            int idx = flightPlan.findWaypointIndex(directToFixName);
+            if (idx >= 0) {
+                currentWaypointIndex = idx;
+                navigationMode = NavigationMode.FLIGHT_PLAN;
+            } else {
+                navigationMode = NavigationMode.HEADING;
+            }
+            resumeFlightPlanAfterDirectTo = false;
+        } else {
+            navigationMode = NavigationMode.HEADING;
+        }
+        directToFixName = null;
+    }
+
+    private void onWaypointPassed(FlightPlanWaypoint wp) {
+        if (wp.shouldRemoveAircraft()) {
+            markedForRemoval = true;
+            return;
+        }
+        currentWaypointIndex++;
+        previousDistanceToWaypoint = Double.MAX_VALUE;
+        if (currentWaypointIndex >= flightPlan.getWaypoints().size()) {
+            navigationMode = NavigationMode.HEADING;
+        }
+    }
+
+    private double calculateDynamicThreshold() {
+        double groundSpeedKnots = aircraftVector.groundSpeed.toDouble();
+        double groundSpeedNmPerSec = groundSpeedKnots / 3600.0;
+        double threshold = groundSpeedNmPerSec * WAYPOINT_PASS_SECONDS;
+        return Math.max(WAYPOINT_PASS_THRESHOLD_MIN_NM, Math.min(threshold, WAYPOINT_PASS_THRESHOLD_MAX_NM));
+    }
+
+    @Override
+    public boolean shouldBeRemovedFromSimulation() {
+        return markedForRemoval;
     }
 
     @Override
@@ -154,6 +302,51 @@ public abstract class AircraftBase implements Aircraft {
 
     public void setInstructedVector(final InstructedVector newInstructedVector) {
         this.instructedVector = newInstructedVector;
+    }
+
+    public void setFlightPlan(FlightPlan flightPlan) {
+        this.flightPlan = flightPlan;
+        this.currentWaypointIndex = 0;
+        this.navigationMode = flightPlan != null ? NavigationMode.FLIGHT_PLAN : NavigationMode.HEADING;
+        this.previousDistanceToWaypoint = Double.MAX_VALUE;
+    }
+
+    public void setDirectTo(FixPosition target, String fixName, boolean resumeFlightPlan) {
+        this.directToTarget = target;
+        this.directToFixName = fixName;
+        this.resumeFlightPlanAfterDirectTo = resumeFlightPlan;
+        this.navigationMode = NavigationMode.DIRECT_TO;
+        this.previousDistanceToWaypoint = Double.MAX_VALUE;
+    }
+
+    public void setResumeNavigation() {
+        if (flightPlan != null) {
+            this.navigationMode = NavigationMode.FLIGHT_PLAN;
+            this.directToTarget = null;
+            this.directToFixName = null;
+            this.resumeFlightPlanAfterDirectTo = false;
+        }
+    }
+
+    public void setNavigationMode(NavigationMode mode) {
+        this.navigationMode = mode;
+    }
+
+    public FlightPlan getFlightPlan() {
+        return flightPlan;
+    }
+
+    public NavigationMode getNavigationMode() {
+        return navigationMode;
+    }
+
+    public int getCurrentWaypointIndex() {
+        return currentWaypointIndex;
+    }
+
+    public void setCurrentWaypointIndex(int index) {
+        this.currentWaypointIndex = index;
+        this.previousDistanceToWaypoint = Double.MAX_VALUE;
     }
 
     /**

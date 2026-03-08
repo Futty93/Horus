@@ -1,9 +1,10 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.config;
 
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.PerformanceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
+
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.PerformanceUtils;
 
 import jakarta.annotation.PostConstruct;
 

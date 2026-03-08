@@ -43,14 +43,14 @@ public enum NavigationMode {
      * - 高度・速度制約を自動適用
      */
     FLIGHT_PLAN,
-    
+
     /**
      * 管制官からのヘディング指示に従う
      * - フライトプランから離脱した状態
      * - 次の管制指示を待つ
      */
     HEADING,
-    
+
     /**
      * 指定されたFixへ直行
      * - フライトプラン上のFixなら、到達後フライトプラン再開
@@ -114,30 +114,30 @@ public enum NavigationMode {
 ```java
 /**
  * ウェイポイント通過判定
- * 
+ *
  * 条件1: ウェイポイントまでの距離がしきい値以下
  * 条件2: 前回の距離より現在の距離が大きい（通り過ぎた）
- * 
+ *
  * 両方の条件を満たした場合に「通過」と判定
  */
 public boolean hasPassedWaypoint(FixPosition waypoint) {
     double currentDistance = calculateDistanceTo(waypoint);
     double threshold = calculateDynamicThreshold();
-    
+
     boolean withinThreshold = currentDistance < threshold;
     boolean movingAway = currentDistance > previousDistanceToWaypoint;
-    
+
     previousDistanceToWaypoint = currentDistance;
-    
+
     return withinThreshold && movingAway;
 }
 
 /**
  * 動的しきい値の計算
- * 
+ *
  * 高速飛行時は早めに次のウェイポイントへ切り替える必要がある
  * （旋回に時間がかかるため）
- * 
+ *
  * 基準: 対地速度 × 5秒 の距離（約1-2NM）
  * 最小値: 0.5NM（低速時でも最低限の余裕を確保）
  * 最大値: 3.0NM（高速時でも過度に早い切り替えを防止）
@@ -146,7 +146,7 @@ private double calculateDynamicThreshold() {
     double groundSpeedKnots = aircraftVector.groundSpeed.toDouble();
     double groundSpeedNmPerSec = groundSpeedKnots / 3600.0;
     double threshold = groundSpeedNmPerSec * 5.0; // 5秒分の距離
-    
+
     return Math.max(0.5, Math.min(threshold, 3.0)); // 0.5NM ~ 3.0NM
 }
 ```
@@ -196,13 +196,13 @@ public enum WaypointAction {
      * 通過後、次のウェイポイントへ
      */
     CONTINUE,
-    
+
     /**
      * 航空機を削除（タワー移管を想定）
      * このウェイポイント通過後、シミュレーションから削除
      */
     REMOVE_AIRCRAFT,
-    
+
     /**
      * 管制移管ポイント（将来の拡張用）
      * セクター間の移管を表現
@@ -217,7 +217,7 @@ public enum WaypointAction {
 羽田 → 伊丹 のフライトプラン例:
 
 [SID部分]
-RJTT (羽田) → SPENS → KAIHO → 
+RJTT (羽田) → SPENS → KAIHO →
 [エンルート部分]
 MAIKO → KOHWA → AWAJI →
 [STAR部分]
@@ -303,7 +303,7 @@ public abstract class AircraftBase implements Aircraft {
     protected final AircraftType aircraftType;
     protected final FlightBehavior flightBehavior;
     protected final AircraftCharacteristics characteristics;
-    
+
     // 新規追加フィールド
     protected FlightPlan flightPlan;                    // フライトプラン（nullable）
     protected int currentWaypointIndex;                 // 現在目指しているWPのインデックス
@@ -322,7 +322,7 @@ public abstract class AircraftBase implements Aircraft {
 
 ```json
 {
-  "callsign": "JAL123",
+  "callsign": "JAL512",
   "aircraftType": "B738",
   "departure": {
     "icao": "RJTT",
@@ -427,7 +427,7 @@ Request Body: FlightPlanファイルの内容
 Response:
 {
   "success": true,
-  "callsign": "JAL123",
+  "callsign": "JAL512",
   "message": "Aircraft spawned with flight plan"
 }
 ```
@@ -443,7 +443,7 @@ Request Body: FlightPlanファイルの内容（initialPosition除く）
 Response:
 {
   "success": true,
-  "callsign": "JAL123",
+  "callsign": "JAL512",
   "message": "Flight plan assigned"
 }
 ```
@@ -463,7 +463,7 @@ Request Body:
 Response:
 {
   "success": true,
-  "callsign": "JAL123",
+  "callsign": "JAL512",
   "targetFix": "MAIKO",
   "navigationMode": "DIRECT_TO"
 }
@@ -477,7 +477,7 @@ POST /api/aircraft/{callsign}/resume-navigation
 Response:
 {
   "success": true,
-  "callsign": "JAL123",
+  "callsign": "JAL512",
   "navigationMode": "FLIGHT_PLAN",
   "nextWaypoint": "KOHWA"
 }
@@ -490,7 +490,7 @@ GET /api/aircraft/{callsign}/flightplan
 
 Response:
 {
-  "callsign": "JAL123",
+  "callsign": "JAL512",
   "navigationMode": "FLIGHT_PLAN",
   "currentWaypointIndex": 3,
   "currentWaypoint": "KOHWA",

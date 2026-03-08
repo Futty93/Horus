@@ -71,6 +71,128 @@ paths:
                 items:
                   $ref: "#/components/schemas/AircraftLocation"
 
+  "/api/aircraft/spawn-with-flightplan":
+    post:
+      tags: ["aircraft"]
+      summary: "Spawn aircraft with flight plan"
+      description: "Creates a new aircraft with an initial position and flight plan for automatic navigation."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpawnWithFlightPlan"
+      responses:
+        "200":
+          description: Aircraft spawned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  callsign:
+                    type: string
+                  message:
+                    type: string
+        "400":
+          description: Bad request (e.g. aircraft already exists)
+
+  "/api/aircraft/{callsign}/flightplan":
+    get:
+      tags: ["aircraft"]
+      summary: "Get aircraft flight plan status"
+      description: "Returns the current flight plan status including navigation mode and remaining waypoints."
+      parameters:
+        - name: callsign
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Flight plan status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  callsign:
+                    type: string
+                  navigationMode:
+                    type: string
+                  currentWaypointIndex:
+                    type: integer
+                  currentWaypoint:
+                    type: string
+                  remainingWaypoints:
+                    type: array
+                    items:
+                      type: string
+    post:
+      tags: ["aircraft"]
+      summary: "Assign flight plan to aircraft"
+      description: "Assigns a flight plan to an existing aircraft."
+      parameters:
+        - name: callsign
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlightPlanDto"
+      responses:
+        "200":
+          description: Flight plan assigned
+
+  "/api/aircraft/{callsign}/direct-to":
+    post:
+      tags: ["aircraft"]
+      summary: "Direct aircraft to fix"
+      description: "Instructs the aircraft to fly direct to the specified fix. Optionally resume flight plan after reaching the fix."
+      parameters:
+        - name: callsign
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fixName]
+              properties:
+                fixName:
+                  type: string
+                resumeFlightPlan:
+                  type: boolean
+                  default: false
+      responses:
+        "200":
+          description: Direct to instruction applied
+
+  "/api/aircraft/{callsign}/resume-navigation":
+    post:
+      tags: ["aircraft"]
+      summary: "Resume own navigation"
+      description: "Instructs the aircraft to resume flight plan navigation (resume own navigation)."
+      parameters:
+        - name: callsign
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Resume navigation applied
+
   "/aircraft/location":
     get:
       tags: ["aircraft"]
@@ -84,7 +206,7 @@ paths:
           schema:
             type: string
           description: "The callsign of the aircraft to retrieve"
-          example: "JAL123"
+          example: "JAL512"
       responses:
         "200":
           description: "Aircraft location data retrieved successfully"
@@ -98,7 +220,7 @@ paths:
             text/plain:
               schema:
                 type: string
-                example: "Aircraft with callsign JAL123 does not exist."
+                example: "Aircraft with callsign JAL512 does not exist."
 
   "/inGame":
     get:
@@ -321,4 +443,68 @@ components:
           type: string
           nullable: true
           description: Estimated time of arrival (ISO 8601 date format)
+
+    SpawnWithFlightPlan:
+      type: object
+      required: [flightPlan, initialPosition]
+      properties:
+        flightPlan:
+          $ref: "#/components/schemas/FlightPlanDto"
+        initialPosition:
+          $ref: "#/components/schemas/InitialPositionDto"
+
+    FlightPlanDto:
+      type: object
+      required: [callsign, cruiseAltitude, cruiseSpeed]
+      properties:
+        callsign:
+          type: string
+        aircraftType:
+          type: string
+        departureAirport:
+          type: string
+        arrivalAirport:
+          type: string
+        cruiseAltitude:
+          type: integer
+        cruiseSpeed:
+          type: integer
+        route:
+          type: array
+          items:
+            $ref: "#/components/schemas/FlightPlanWaypointDto"
+
+    FlightPlanWaypointDto:
+      type: object
+      required: [fix]
+      properties:
+        fix:
+          type: string
+        altitude:
+          type: integer
+        constraint:
+          type: string
+          enum: [AT, AT_OR_ABOVE, AT_OR_BELOW, BETWEEN, NONE]
+        speed:
+          type: integer
+        action:
+          type: string
+          enum: [CONTINUE, REMOVE_AIRCRAFT, HANDOFF]
+
+    InitialPositionDto:
+      type: object
+      required: [latitude, longitude, altitude, heading, groundSpeed, verticalSpeed]
+      properties:
+        latitude:
+          type: number
+        longitude:
+          type: number
+        altitude:
+          type: integer
+        heading:
+          type: integer
+        groundSpeed:
+          type: integer
+        verticalSpeed:
+          type: integer
 

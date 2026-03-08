@@ -1,5 +1,13 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.service.conflict;
 
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.*;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.ConflictDetectionException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.InvalidParameterException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
@@ -9,14 +17,6 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.GeodeticUtils;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
-import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.*;
 
 /**
  * 航空機間のコンフリクト検出を行うドメインサービス

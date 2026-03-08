@@ -1,13 +1,13 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.application;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.service.conflict.ConflictDetector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.AlertLevel;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.RiskAssessment;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * コンフリクトアラート機能のアプリケーションサービス

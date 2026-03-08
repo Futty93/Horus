@@ -1,8 +1,8 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix;
 
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
-
 import java.util.Optional;
+
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
 
 /**
  * Repository for looking up fix positions by name.

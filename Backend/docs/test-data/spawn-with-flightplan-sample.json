@@ -1,0 +1,23 @@
+{
+  "flightPlan": {
+    "callsign": "JAL512",
+    "aircraftType": "B738",
+    "departureAirport": "RJTT",
+    "arrivalAirport": "RJAA",
+    "cruiseAltitude": 10000,
+    "cruiseSpeed": 250,
+    "route": [
+      { "fix": "KOITO", "action": "CONTINUE" },
+      { "fix": "BOKJO", "action": "CONTINUE" },
+      { "fix": "AOIKU", "action": "CONTINUE" }
+    ]
+  },
+  "initialPosition": {
+    "latitude": 34.41,
+    "longitude": 138.60,
+    "altitude": 3000,
+    "heading": 270,
+    "groundSpeed": 250,
+    "verticalSpeed": 500
+  }
+}

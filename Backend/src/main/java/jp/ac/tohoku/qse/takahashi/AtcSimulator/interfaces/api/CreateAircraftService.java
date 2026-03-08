@@ -1,19 +1,21 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.api;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.AircraftFactory;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ScenarioService;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.CreateAircraftDto;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.AircraftFactory;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ScenarioService;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.CreateAircraftDto;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/aircraft")
@@ -44,7 +46,7 @@ public class CreateAircraftService {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Aircraft created successfully",
-                            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "[\"Aircraft created: SKY514\", \"Aircraft created: JAL123\"]"))
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "[\"Aircraft created: SKY514\", \"Aircraft created: JAL512\"]"))
                     ),
                     @ApiResponse(
                             responseCode = "400",

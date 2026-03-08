@@ -198,7 +198,7 @@ Map<String, RiskAssessment> conflicts = detector.calculateAllConflicts(aircraftL
 
 // 結果の処理
 for (Map.Entry<String, RiskAssessment> entry : conflicts.entrySet()) {
-    String pairId = entry.getKey();           // 航空機ペアID（例："JAL123-ANA456"）
+    String pairId = entry.getKey();           // 航空機ペアID（例："JAL512-ANA456"）
     RiskAssessment risk = entry.getValue();   // リスク評価結果
 
     if (risk.getAlertLevel() == AlertLevel.RED_CONFLICT) {

@@ -83,7 +83,7 @@ curl http://localhost:8080/api/conflict/statistics
 
 ```json
 {
-  "JAL123-ANA456": {
+  "JAL512-ANA456": {
     "riskLevel": 75.2,
     "timeToClosest": 45.5,
     "closestHorizontalDistance": 3.2,
@@ -183,6 +183,10 @@ npm run dev
 2. フロントエンドを起動（`npm run dev`）
 3. ブラウザで http://localhost:3333 を開く
 4. シミュレーション開始 → 航空機作成 → レーダー表示・管制指示が動作することを確認
+
+### フライトプラン機能のマニュアルテスト
+
+Swagger を用いた詳細な手順は [docs/test-data/MANUAL_TEST.md](docs/test-data/MANUAL_TEST.md) を参照してください。
 
 ## プロジェクト構造
 
@@ -358,6 +362,13 @@ RESTful APIを提供しており、詳細なAPI仕様は`UranosAPI.yml`ファイ
    - リスコフの置換原則
    - インターフェース分離の原則
    - 依存性逆転の原則
+
+### コードフォーマット (Spotless)
+
+- **Spotless** で未使用 import の削除、import 順序、末尾空白・改行を統一
+- `./gradlew spotlessApply` … 自動整形
+- `./gradlew spotlessCheck` … CI で実行（違反があれば fail）
+- **pre-commit フック**: ルートで `npm install` 実行後、`.java` を commit すると自動で `spotlessApply` が走る
 
 ### テスト
 
