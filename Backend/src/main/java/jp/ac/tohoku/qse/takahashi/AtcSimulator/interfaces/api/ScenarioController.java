@@ -19,6 +19,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Airc
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftBase;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlan;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.fix.AtsRouteFixPositionRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.CreateAircraftDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.FlightPlanDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.InitialPositionDto;
@@ -36,12 +37,14 @@ public class ScenarioController {
     private final ScenarioService scenarioService;
     private final AircraftRepository aircraftRepository;
     private final FlightPlanFromDtoConverter flightPlanConverter;
+    private final AtsRouteFixPositionRepository airportRepository;
 
     public ScenarioController(ScenarioService scenarioService, AircraftRepository aircraftRepository,
-            FlightPlanFromDtoConverter flightPlanConverter) {
+            FlightPlanFromDtoConverter flightPlanConverter, AtsRouteFixPositionRepository airportRepository) {
         this.scenarioService = scenarioService;
         this.aircraftRepository = aircraftRepository;
         this.flightPlanConverter = flightPlanConverter;
+        this.airportRepository = airportRepository;
     }
 
     @PostMapping(path = "/load", consumes = "application/json")
@@ -80,8 +83,8 @@ public class ScenarioController {
     private Aircraft createAircraftFromSpawn(FlightPlanDto fpDto, InitialPositionDto pos) {
         String dep = fpDto.departureAirport() != null ? fpDto.departureAirport() : "RJTT";
         String arr = fpDto.arrivalAirport() != null ? fpDto.arrivalAirport() : "RJAA";
-        String originIata = dep.length() >= 3 ? dep.substring(0, 3) : dep;
-        String destIata = arr.length() >= 3 ? arr.substring(0, 3) : arr;
+        String originIata = airportRepository.findIataByIcao(dep);
+        String destIata = airportRepository.findIataByIcao(arr);
         return AircraftFactory.createCommercialAircraft(
                 new CreateAircraftDto(
                         fpDto.callsign(),

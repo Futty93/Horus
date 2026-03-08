@@ -30,6 +30,7 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
     private final List<Route> atsLowerRoutes;
     private final List<Route> rnavRoutes;
     private final Map<String, double[]> airportPositions;
+    private final Map<String, String> icaoToIata;
 
     public AtsRouteFixPositionRepository() {
         try {
@@ -37,7 +38,9 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
             this.radioNavigationAids = loadRadioNavigationAids();
             this.atsLowerRoutes = loadAtsLowerRoutes();
             this.rnavRoutes = loadRnavRoutes();
-            this.airportPositions = loadAirports();
+            var airportData = loadAirportData();
+            this.airportPositions = airportData.positions();
+            this.icaoToIata = airportData.icaoToIata();
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load fix data from classpath", e);
         }
@@ -78,21 +81,39 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
         return pos != null ? Optional.of(pos.clone()) : Optional.empty();
     }
 
-    private Map<String, double[]> loadAirports() throws IOException {
+    /**
+     * Resolves IATA code from ICAO. Falls back to ICAO when not in airports.json or iataCode is null.
+     */
+    public String findIataByIcao(String icaoCode) {
+        if (icaoCode == null || icaoCode.isBlank()) {
+            return icaoCode != null ? icaoCode : "";
+        }
+        String key = icaoCode.toUpperCase().trim();
+        return icaoToIata.getOrDefault(key, key);
+    }
+
+    private record AirportData(Map<String, double[]> positions, Map<String, String> icaoToIata) {
+    }
+
+    private AirportData loadAirportData() throws IOException {
         try (InputStream is = new ClassPathResource("fix/airports.json").getInputStream()) {
             JsonNode root = OBJECT_MAPPER.readTree(is);
             JsonNode airportsNode = root.get("airports");
-            if (airportsNode == null || !airportsNode.isArray()) {
-                return new HashMap<>();
+            Map<String, double[]> positions = new HashMap<>();
+            Map<String, String> icaoToIata = new HashMap<>();
+            if (airportsNode != null && airportsNode.isArray()) {
+                for (JsonNode a : airportsNode) {
+                    String icao = a.get("icaoCode").asText().toUpperCase();
+                    double lat = a.get("latitude").asDouble();
+                    double lon = a.get("longitude").asDouble();
+                    positions.put(icao, new double[] { lat, lon });
+                    JsonNode iataNode = a.get("iataCode");
+                    if (iataNode != null && !iataNode.isNull() && !iataNode.asText().isBlank()) {
+                        icaoToIata.put(icao, iataNode.asText().toUpperCase());
+                    }
+                }
             }
-            Map<String, double[]> result = new HashMap<>();
-            for (JsonNode a : airportsNode) {
-                String icao = a.get("icaoCode").asText().toUpperCase();
-                double lat = a.get("latitude").asDouble();
-                double lon = a.get("longitude").asDouble();
-                result.put(icao, new double[] { lat, lon });
-            }
-            return result;
+            return new AirportData(positions, icaoToIata);
         }
     }
 
