@@ -1,5 +1,7 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.api;
 
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.DEFAULT_SIMULATION_ETA;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -229,7 +231,7 @@ public class FlightPlanController {
                         dep,
                         airportRepository.findIataByIcao(arr),
                         arr,
-                        "2024-12-13T14:30:00Z"
+                        DEFAULT_SIMULATION_ETA.toString()
                 )
         );
     }

@@ -1,4 +1,6 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.api;
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.DEFAULT_SIMULATION_ETA;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -182,7 +184,7 @@ public class CreateAircraftService {
                 data[9],                                    // originIcao
                 data[10],                                   // destinationIata
                 data[11],                                   // destinationIcao
-                "2024-12-13T14:30:00Z"                     // eta
+                DEFAULT_SIMULATION_ETA.toString()
             );
 
             aircraftList.add(dto);
