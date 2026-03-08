@@ -1,21 +1,25 @@
 "use client";
 import { useSelectFixMode } from "@/context/selectFixModeContext";
+import { useSelectedAircraft } from "@/context/selectedAircraftContext";
 import React from "react";
 
 const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
 const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
 
 const SelectFixMode = () => {
-  const { isSelectFixMode, setIsSelectFixMode } = useSelectFixMode();
+  const { isSelectFixMode, setIsSelectFixMode, selectedFixName, setSelectedFixName } =
+    useSelectFixMode();
+  const { callsign } = useSelectedAircraft();
 
   return (
     <div className="bg-control-gradient border border-matrix-accent rounded-cyber-lg p-4 backdrop-blur-sm mt-4">
       <div className="text-center mb-4">
         <div className="relative inline-block">
-          <p id="selectedFixName"
-             className="text-lg font-bold text-radar-primary font-mono tracking-wider
-                        transition-all duration-300 hover:text-neon-blue hover:drop-shadow-lg">
-            No fixes selected
+          <p
+            className="text-lg font-bold text-radar-primary font-mono tracking-wider
+                        transition-all duration-300 hover:text-neon-blue hover:drop-shadow-lg"
+          >
+            {selectedFixName}
           </p>
           <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-radar-primary to-transparent
                           opacity-50 animate-pulse-slow"></div>
@@ -32,14 +36,11 @@ const SelectFixMode = () => {
                      focus:outline-none focus:ring-2 focus:ring-cyber-500 focus:ring-offset-2 focus:ring-offset-matrix-dark
                      relative overflow-hidden group"
           onClick={() => {
-            console.log("Direct to Fix 押されたよ");
-            const callsignElement = document.getElementById("callsign") as HTMLParagraphElement;
-            const selectedFixNameElement = document.getElementById("selectedFixName") as HTMLParagraphElement;
-            if (callsignElement.innerText.length <= 1) {
-              console.error("Callsign is empty");
-              selectedFixNameElement.innerText = "Select aircraft first";
+            if (!callsign || callsign.length < 2) {
+              setSelectedFixName("Select aircraft first");
               return;
             }
+            setSelectedFixName("No fixes selected");
             setIsSelectFixMode({ selectFixMode: true });
           }}
         >
@@ -58,23 +59,8 @@ const SelectFixMode = () => {
                        focus:outline-none focus:ring-2 focus:ring-radar-primary focus:ring-offset-2 focus:ring-offset-matrix-dark
                        relative overflow-hidden group animate-glow"
             onClick={async () => {
-              console.log("Confirm 押されたよ");
-              const callsignElement = document.getElementById("callsign") as HTMLParagraphElement;
-              const selectedFixNameElement = document.getElementById("selectedFixName") as HTMLParagraphElement;
-
-              if (callsignElement.innerText.length <= 1) {
-                console.error("Callsign is empty");
-              } else if (callsignElement) {
-                const callsign = callsignElement.innerText;
-                console.log("Callsign:", callsign);
-              } else {
-                console.error("Callsign element not found");
-              }
-
-              const callsign = callsignElement.innerText;
-              const selectedFixName = selectedFixNameElement.innerText;
+              if (!callsign || callsign.length < 2) return;
               if (!selectedFixName || selectedFixName === "No fixes selected") {
-                console.error("No fix selected");
                 return;
               }
               try {
@@ -89,19 +75,22 @@ const SelectFixMode = () => {
                       fixName: selectedFixName,
                       resumeFlightPlan: false,
                     }),
-                  }
+                  },
                 );
 
                 if (response.ok) {
                   console.log(`Aircraft ${callsign} controlled successfully.`);
                 } else {
-                  console.error(`Failed to control aircraft ${callsign}. Status:`, response.status);
+                  console.error(
+                    `Failed to control aircraft ${callsign}. Status:`,
+                    response.status,
+                  );
                 }
               } catch (error) {
                 console.error("Error occurred while controlling aircraft:", error);
               }
 
-              selectedFixNameElement.innerText = "No fixes selected";
+              setSelectedFixName("No fixes selected");
               setIsSelectFixMode({ selectFixMode: false });
             }}
           >
@@ -119,10 +108,7 @@ const SelectFixMode = () => {
                        focus:outline-none focus:ring-2 focus:ring-neon-pink focus:ring-offset-2 focus:ring-offset-matrix-dark
                        relative overflow-hidden group"
             onClick={() => {
-              console.log("Cancel 押されたよ");
-              const selectedFixNameElement = document.getElementById("selectedFixName") as HTMLParagraphElement;
-
-              selectedFixNameElement.innerText = "No fixes selected";
+              setSelectedFixName("No fixes selected");
               setIsSelectFixMode({ selectFixMode: false });
             }}
           >

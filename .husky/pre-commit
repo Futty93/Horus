@@ -1,6 +1,3 @@
 #!/bin/sh
-# Run Spotless (remove unused imports, format) on staged Java files
-if git diff --cached --name-only | grep -q '\.java$'; then
-  (cd Backend && ./gradlew spotlessApply)
-  git add Backend/
-fi
+# Run lint-staged: Backend (Spotless), Frontend (ESLint --fix, Prettier)
+npx lint-staged

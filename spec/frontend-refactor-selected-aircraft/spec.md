@@ -131,12 +131,13 @@ interface SelectedAircraftContextType {
 
 ---
 
-### Phase 2（将来）: 管制指示入力の Context 化
+### Phase 2: 管制指示入力の Context 化 ✅ 実装済み
 
 - `instructedVector`（altitude, speed, heading）も Context で保持
-- `ControlAircraft` / `InputAircraftInfo` を制御コンポーネント化
+- `ControlAircraft` / `InputAircraftInfo` を制御コンポーネント化（value/onChange で Context と双方向バインディング）
 - `changeDisplayAircraftInfo` の DOM 直接操作を廃止
-- `selectedFixName` の DOM 依存を SelectFixModeContext 等で整理
+- `selectedFixName` の DOM 依存を SelectFixModeContext で整理
+- `radarCanvas` の confirmButton イベントリスナーを削除（InputAircraftInfo が API を直接呼び出すように変更）
 
 ---
 
@@ -159,10 +160,41 @@ interface SelectedAircraftContextType {
 
 ## 検証
 
-1. **Operator 画面**: レーダーで航空機クリック → callsign 表示・ControlAircraft・SelectFixMode が正しく動作
-2. **Controller 画面**: 同様に FlightPlanDisplay・FlightPlanControl・InputAircraftInfo が正しく動作
-3. **ポーリング削除**: 開発者ツールで `getElementById` の呼び出しが無くなることを確認
-4. **既存テスト**: `npm run build` が通ること
+### 自動テスト
+
+- `npm run test` — Context および関連コンポーネントのユニットテスト
+- `npm run build` — ビルドが通ること
+
+### 手動テスト（UI 動作確認）
+
+前提: バックエンド `./gradlew bootRun`、フロントエンド `npm run dev` 起動済み。シミュレーション開始・航空機表示済み。
+
+#### Operator 画面 (`http://localhost:3333/operator`)
+
+| # | 確認項目 | 手順 | 期待結果 |
+|---|----------|------|----------|
+| 1 | callsign 表示 | レーダー上で航空機をクリック | コントロールパネル上部に callsign が表示される |
+| 2 | 管制指示入力 | クリック後、Altitude / Speed / Heading に数値が入る | 選択航空機の instructedVector が反映される |
+| 3 | 管制指示の実行 | 数値を編集して **EXECUTE COMMAND** をクリック | バックエンド API が呼ばれ、制御が反映される |
+| 4 | Direct to Fix | **DIRECT TO FIX** → レーダー上で Fix をクリック → **✓ CONFIRM** | direct-to API が呼ばれ、航空機がその Fix に直行する |
+| 5 | 未選択時 | 航空機未選択で **DIRECT TO FIX** をクリック | 「Select aircraft first」と表示される |
+
+#### Controller 画面 (`http://localhost:3333/controller`)
+
+| # | 確認項目 | 手順 | 期待結果 |
+|---|----------|------|----------|
+| 1 | callsign 表示 | レーダー上で航空機をクリック | 画面上部に callsign が表示される |
+| 2 | 管制指示入力 | クリック後、Altitude / Speed / Heading に数値が入る | 選択航空機の instructedVector が反映される |
+| 3 | Confirm ボタン | 数値を編集して **Confirm** をクリック | 航空機制御 API が呼ばれ、制御が反映される |
+| 4 | FlightPlanDisplay | 航空機選択後 | フライトプラン（ウェイポイント等）が表示される |
+| 5 | FlightPlanControl | Fix 名入力 → **DIRECT TO** または **RESUME OWN NAVIGATION** | 各 API が呼ばれ、挙動が期待通りになる |
+
+#### 追加確認（任意）
+
+| # | 確認項目 | 手順 | 期待結果 |
+|---|----------|------|----------|
+| 1 | DOM 依存の廃止 | DevTools Console で `document.getElementById("callsign")` を実行 | `null`（要素が存在しない） |
+| 2 | ビルド | `npm run build` | エラーなく完了する |
 
 ---
 

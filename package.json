@@ -4,6 +4,15 @@
   },
   "devDependencies": {
     "esbuild": "0.23.0",
-    "husky": "^9.0.0"
+    "husky": "^9.0.0",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.3.3"
+  },
+  "lint-staged": {
+    "Backend/**/*.java": "cd Backend && ./gradlew spotlessApply --no-daemon",
+    "Frontend/**/*.{ts,tsx,js,jsx,json,md}": [
+      "bash -c 'npm run lint --prefix Frontend -- --fix'",
+      "npx prettier --write"
+    ]
   }
 }

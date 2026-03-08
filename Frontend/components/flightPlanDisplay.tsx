@@ -1,30 +1,16 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useSelectedAircraft } from "@/context/selectedAircraftContext";
 import {
   fetchFlightPlan,
   type FlightPlanStatus,
 } from "@/utility/api/flightPlan";
 
 const FlightPlanDisplay: React.FC = () => {
+  const { callsign } = useSelectedAircraft();
   const [status, setStatus] = useState<FlightPlanStatus | null>(null);
-  const [callsign, setCallsign] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const checkCallsign = () => {
-      const el = document.getElementById("callsign") as HTMLParagraphElement | null;
-      const text = el?.textContent?.trim() ?? "";
-      const current = text.length >= 2 ? text : null;
-      if (current !== callsign) {
-        setCallsign(current);
-        setStatus(null);
-      }
-    };
-    checkCallsign();
-    const interval = setInterval(checkCallsign, 500);
-    return () => clearInterval(interval);
-  }, [callsign]);
 
   const refresh = React.useCallback(() => {
     if (!callsign) return;
@@ -36,6 +22,7 @@ const FlightPlanDisplay: React.FC = () => {
       setStatus(null);
       return;
     }
+    setStatus(null);
     let cancelled = false;
     setLoading(true);
     fetchFlightPlan(callsign)
@@ -59,7 +46,9 @@ const FlightPlanDisplay: React.FC = () => {
   if (!callsign) {
     return (
       <div className="bg-control-gradient border border-matrix-accent rounded-cyber-lg p-4 backdrop-blur-sm mt-4">
-        <p className="text-sm text-gray-500">Select aircraft to view flight plan</p>
+        <p className="text-sm text-gray-500">
+          Select aircraft to view flight plan
+        </p>
       </div>
     );
   }
@@ -91,7 +80,8 @@ const FlightPlanDisplay: React.FC = () => {
           )}
           {status.currentWaypoint && (
             <p className="text-xs text-neon-blue mb-1">
-              Current: <span className="font-mono">{status.currentWaypoint}</span>
+              Current:{" "}
+              <span className="font-mono">{status.currentWaypoint}</span>
             </p>
           )}
           {waypoints.length > 0 && (

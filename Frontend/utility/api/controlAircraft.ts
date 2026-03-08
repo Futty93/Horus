@@ -1,44 +1,54 @@
+import type { InstructedVector } from "@/context/selectedAircraftContext";
+
 const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
 const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
 
-export async function controlAircraft(callsign: string): Promise<void> {
-  const inputAltitude: HTMLInputElement = document.getElementById('altitude') as HTMLInputElement;
-  const inputHeading: HTMLInputElement = document.getElementById('heading') as HTMLInputElement;
-  const inputGroundSpeed: HTMLInputElement = document.getElementById('groundSpeed') as HTMLInputElement;
+export interface ControlAircraftDto {
+  instructedAltitude: number;
+  instructedGroundSpeed: number;
+  instructedHeading: number;
+}
 
-  // Get the input values from the form
-  const instructedAltitude = Number(inputAltitude.value);
-  const instructedGroundSpeed = Number(inputGroundSpeed.value);
-  const instructedHeading = Number(inputHeading.value);
-
-  // Create the DTO object
-  const controlAircraftDto = {
-    instructedAltitude,
-    instructedGroundSpeed,
-    instructedHeading,
+function toDto(vector: InstructedVector): ControlAircraftDto {
+  return {
+    instructedAltitude: vector.altitude,
+    instructedGroundSpeed: vector.groundSpeed,
+    instructedHeading: vector.heading,
   };
+}
+
+export async function controlAircraft(
+  callsign: string,
+  instructedVector: InstructedVector
+): Promise<boolean> {
+  if (!callsign || callsign.length < 2) {
+    console.error("No aircraft selected");
+    return false;
+  }
+
+  const dto = toDto(instructedVector);
 
   try {
     const response = await fetch(
       `http://${serverIp}:${serverPort}/api/aircraft/control/${callsign}`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(controlAircraftDto),
-      },
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dto),
+      }
     );
 
     if (response.ok) {
       console.log(`Aircraft ${callsign} controlled successfully.`);
-    } else {
-      console.error(
-        `Failed to control aircraft ${callsign}. Status:`,
-        response.status,
-      );
+      return true;
     }
+    console.error(
+      `Failed to control aircraft ${callsign}. Status:`,
+      response.status
+    );
+    return false;
   } catch (error) {
     console.error("Error occurred while controlling aircraft:", error);
+    return false;
   }
 }
