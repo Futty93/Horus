@@ -28,30 +28,32 @@ export default function OperatorPage() {
               <div className="flex h-screen w-full overflow-hidden">
                 <div className="flex w-full h-full">
                   <RadarCanvas />
-                  <div className="controlPanel bg-cyber-gradient border-l border-matrix-accent
+                  <div
+                    className="controlPanel bg-cyber-gradient border-l border-matrix-accent
                                   text-white p-3 flex flex-col min-w-80 max-w-80
                                   h-full overflow-y-auto overflow-x-hidden
-                                  scrollbar-thin scrollbar-track-matrix-dark scrollbar-thumb-radar-primary">
+                                  scrollbar-thin scrollbar-track-matrix-dark scrollbar-thumb-radar-primary"
+                  >
                     <SelectedCallsignDisplay variant="operator" />
 
                     {/* Scrollable Content */}
-                  <div className="flex-1 space-y-4 min-h-0">
-                    <ControlAircraft />
-                    <SelectFixMode />
+                    <div className="flex-1 space-y-4 min-h-0">
+                      <ControlAircraft />
+                      <SelectFixMode />
 
-                    {/* Settings Area */}
-                    <div className="space-y-3">
-                      <RouteInfoDisplaySetting />
-                      <SectorSelector />
-                      <DisplayRangeSetting />
+                      {/* Settings Area */}
+                      <div className="space-y-3">
+                        <RouteInfoDisplaySetting />
+                        <SectorSelector />
+                        <DisplayRangeSetting />
 
-                      {/* Control Buttons */}
-                      <SimulationControlButtons />
+                        {/* Control Buttons */}
+                        <SimulationControlButtons />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
             </SelectedAircraftProvider>
           </SelectFixModeProvider>
         </DisplayRangeProvider>
