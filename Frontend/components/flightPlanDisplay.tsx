@@ -22,6 +22,7 @@ const FlightPlanDisplay: React.FC = () => {
       setStatus(null);
       return;
     }
+    setStatus(null);
     let cancelled = false;
     setLoading(true);
     fetchFlightPlan(callsign)
@@ -45,7 +46,9 @@ const FlightPlanDisplay: React.FC = () => {
   if (!callsign) {
     return (
       <div className="bg-control-gradient border border-matrix-accent rounded-cyber-lg p-4 backdrop-blur-sm mt-4">
-        <p className="text-sm text-gray-500">Select aircraft to view flight plan</p>
+        <p className="text-sm text-gray-500">
+          Select aircraft to view flight plan
+        </p>
       </div>
     );
   }
@@ -77,7 +80,8 @@ const FlightPlanDisplay: React.FC = () => {
           )}
           {status.currentWaypoint && (
             <p className="text-xs text-neon-blue mb-1">
-              Current: <span className="font-mono">{status.currentWaypoint}</span>
+              Current:{" "}
+              <span className="font-mono">{status.currentWaypoint}</span>
             </p>
           )}
           {waypoints.length > 0 && (

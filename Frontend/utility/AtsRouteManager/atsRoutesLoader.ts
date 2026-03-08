@@ -1,13 +1,38 @@
-import { Waypoint} from "./RouteInterfaces/Waypoint";
+import { Waypoint } from "./RouteInterfaces/Waypoint";
 import { Route } from "./RouteInterfaces/Route";
-import { RoutePoint } from "./RouteInterfaces/RoutePoint";
 import { RadioNavigationAid } from "./RouteInterfaces/RadioNavigationAid";
-
-// import dotenv from 'dotenv';
-// dotenv.config({ path: '.env.local' });
 
 const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
 const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
+
+interface RawWaypoint {
+  name: string;
+  latitude: string | number;
+  longitude: string | number;
+  type: string;
+}
+
+interface RawRoutePoint {
+  name: string;
+  latitude: string | number;
+  longitude: string | number;
+  type: string;
+}
+
+interface RawRoute {
+  name: string;
+  description: string;
+  points: RawRoutePoint[];
+}
+
+interface RawRadioNavigationAid {
+  name: string;
+  id: string;
+  type: string;
+  latitude: string | number;
+  longitude: string | number;
+  frequency: string;
+}
 
 // データを取得し、パースする関数
 async function loadAtsRoutes(): Promise<{
@@ -17,7 +42,9 @@ async function loadAtsRoutes(): Promise<{
   rnavRoutes: Route[];
 }> {
   try {
-    const response = await fetch(`http://${serverIp}:${serverPort}/ats/route/all`);
+    const response = await fetch(
+      `http://${serverIp}:${serverPort}/ats/route/all`
+    );
 
     // レスポンスのステータスコードをチェック
     if (!response.ok) {
@@ -25,57 +52,70 @@ async function loadAtsRoutes(): Promise<{
       throw new Error(`API request failed with status ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log('Response data:', data);  // デバッグ用
+    const data = (await response.json()) as {
+      waypoints: RawWaypoint[];
+      radioNavigationAids: RawRadioNavigationAid[];
+      atsLowerRoutes: RawRoute[];
+      rnavRoutes: RawRoute[];
+    };
 
-    // データの整合性を確認
-    if (!data.waypoints || !data.radioNavigationAids || !data.atsLowerRoutes || !data.rnavRoutes) {
-      console.error('Invalid data structure:', data);
-      throw new Error('Invalid data structure');
+    if (
+      !data.waypoints ||
+      !data.radioNavigationAids ||
+      !data.atsLowerRoutes ||
+      !data.rnavRoutes
+    ) {
+      console.error("Invalid data structure:", data);
+      throw new Error("Invalid data structure");
     }
 
-    // データをパース
-    const waypoints: Waypoint[] = data.waypoints.map((wp: any) => ({
+    const toWaypoint = (wp: RawWaypoint): Waypoint => ({
       name: wp.name,
-      latitude: parseFloat(wp.latitude),
-      longitude: parseFloat(wp.longitude),
+      latitude: parseFloat(String(wp.latitude)),
+      longitude: parseFloat(String(wp.longitude)),
       type: wp.type,
-    }));
+    });
 
-    const radioNavigationAids: RadioNavigationAid[] = data.radioNavigationAids.map((aid: any) => ({
+    const toRadioNavAid = (aid: RawRadioNavigationAid): RadioNavigationAid => ({
       name: aid.name,
       id: aid.id,
       type: aid.type,
-      latitude: aid.latitude,
-      longitude: aid.longitude,
+      latitude:
+        typeof aid.latitude === "number"
+          ? aid.latitude
+          : parseFloat(aid.latitude),
+      longitude:
+        typeof aid.longitude === "number"
+          ? aid.longitude
+          : parseFloat(aid.longitude),
       frequency: aid.frequency,
-    }));
+    });
 
-    const atsLowerRoutes: Route[] = data.atsLowerRoutes.map((route: any) => ({
+    const toRoutePoint = (p: RawRoutePoint) => ({
+      name: p.name,
+      latitude:
+        typeof p.latitude === "number" ? p.latitude : parseFloat(p.latitude),
+      longitude:
+        typeof p.longitude === "number" ? p.longitude : parseFloat(p.longitude),
+      type: p.type,
+    });
+
+    const waypoints = data.waypoints.map(toWaypoint);
+    const radioNavigationAids = data.radioNavigationAids.map(toRadioNavAid);
+    const atsLowerRoutes: Route[] = data.atsLowerRoutes.map((route) => ({
       name: route.name,
       description: route.description,
-      points: route.points.map((point: any) => ({
-        name: point.name,
-        latitude: point.latitude,
-        longitude: point.longitude,
-        type: point.type,
-      })),
+      points: route.points.map(toRoutePoint),
     }));
-
-    const rnavRoutes: Route[] = data.rnavRoutes.map((route: any) => ({
+    const rnavRoutes: Route[] = data.rnavRoutes.map((route) => ({
       name: route.name,
       description: route.description,
-      points: route.points.map((point: any) => ({
-        name: point.name,
-        latitude: point.latitude,
-        longitude: point.longitude,
-        type: point.type,
-      })),
+      points: route.points.map(toRoutePoint),
     }));
 
     return { waypoints, radioNavigationAids, atsLowerRoutes, rnavRoutes };
   } catch (error) {
-    console.error('Failed to load ATS routes:', error);
+    console.error("Failed to load ATS routes:", error);
     throw error;
   }
 }

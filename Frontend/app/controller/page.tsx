@@ -21,7 +21,6 @@ export const metadata: Metadata = {
 };
 
 export default function ControllerPage() {
-
   return (
     <RouteInfoDisplaySettingProvider>
       <CenterCoordinateProvider>
@@ -34,20 +33,20 @@ export default function ControllerPage() {
                   <div className="controlPanel bg-zinc-900 text-white p-5 flex flex-col justify-between min-w-80">
                     <SelectedCallsignDisplay variant="controller" />
                     <InputAircraftInfo />
-                  <FlightPlanDisplay />
-                  <FlightPlanControl />
-                  {/* <SelectFixMode /> */}
-                  <div id="settingArea" className="mt-auto">
-                    <SimulationControlButtons />
-                    <RouteInfoDisplaySetting />
-                    <div className="flex flex-col">
-                      <SectorSelector />
-                      <DisplayRangeSetting />
+                    <FlightPlanDisplay />
+                    <FlightPlanControl />
+                    {/* <SelectFixMode /> */}
+                    <div id="settingArea" className="mt-auto">
+                      <SimulationControlButtons />
+                      <RouteInfoDisplaySetting />
+                      <div className="flex flex-col">
+                        <SectorSelector />
+                        <DisplayRangeSetting />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
             </SelectedAircraftProvider>
           </SelectFixModeProvider>
         </DisplayRangeProvider>

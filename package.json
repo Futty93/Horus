@@ -9,7 +9,7 @@
     "prettier": "^3.3.3"
   },
   "lint-staged": {
-    "Backend/**/*.java": "cd Backend && ./gradlew spotlessApply --no-daemon && cd .. && git add Backend/",
+    "Backend/**/*.java": "cd Backend && ./gradlew spotlessApply --no-daemon",
     "Frontend/**/*.{ts,tsx,js,jsx,json,md}": [
       "bash -c 'npm run lint --prefix Frontend -- --fix'",
       "npx prettier --write"

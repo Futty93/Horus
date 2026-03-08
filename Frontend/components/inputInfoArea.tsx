@@ -1,48 +1,14 @@
 "use client";
 import React from "react";
 import { useSelectedAircraft } from "@/context/selectedAircraftContext";
-
-const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
-const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
+import { controlAircraft as sendControlAircraft } from "@/utility/api/controlAircraft";
 
 const InputAircraftInfo = () => {
   const { callsign, instructedVector, setInstructedVector } =
     useSelectedAircraft();
 
-  const controlAircraft = async () => {
-    if (!callsign || callsign.length < 2) {
-      console.error("No aircraft selected");
-      return;
-    }
-
-    const controlAircraftDto = {
-      instructedAltitude: instructedVector.altitude,
-      instructedGroundSpeed: instructedVector.groundSpeed,
-      instructedHeading: instructedVector.heading,
-    };
-
-    try {
-      const response = await fetch(
-        `http://${serverIp}:${serverPort}/api/aircraft/control/${callsign}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(controlAircraftDto),
-        },
-      );
-
-      if (response.ok) {
-        console.log(`Aircraft ${callsign} controlled successfully.`);
-      } else {
-        console.error(
-          `Failed to control aircraft ${callsign}. Status:`,
-          response.status,
-        );
-      }
-    } catch (error) {
-      console.error("Error occurred while controlling aircraft:", error);
-    }
-  };
+  const handleExecute = () =>
+    sendControlAircraft(callsign ?? "", instructedVector);
 
   const fields = [
     { key: "altitude" as const, label: "Altitude" },
@@ -77,7 +43,7 @@ const InputAircraftInfo = () => {
       ))}
       <button
         type="button"
-        onClick={controlAircraft}
+        onClick={handleExecute}
         className="bg-green-400 text-gray-900 border-none px-4 py-2 text-lg font-bold cursor-pointer transition-all duration-300 ease-in-out rounded-md hover:bg-green-500 hover:shadow-lg-no-offset hover:shadow-green-400/70"
       >
         Confirm

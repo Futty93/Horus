@@ -1,5 +1,12 @@
 "use client";
-import React, { createContext, useContext, useState, type ReactNode } from "react";
+
+import React, {
+  createContext,
+  useMemo,
+  useContext,
+  useState,
+  type ReactNode,
+} from "react";
 
 export interface isSelectFixMode {
   selectFixMode: boolean;
@@ -12,8 +19,9 @@ export interface SelectFixModeContextType {
   setSelectedFixName: (name: string) => void;
 }
 
-export const SelectFixModeContext =
-  createContext<SelectFixModeContextType | undefined>(undefined);
+export const SelectFixModeContext = createContext<
+  SelectFixModeContextType | undefined
+>(undefined);
 
 const DEFAULT_FIX_NAME = "No fixes selected";
 
@@ -25,15 +33,18 @@ export const SelectFixModeProvider: React.FC<{ children: ReactNode }> = ({
   });
   const [selectedFixName, setSelectedFixName] = useState(DEFAULT_FIX_NAME);
 
+  const value = useMemo(
+    () => ({
+      isSelectFixMode,
+      setIsSelectFixMode,
+      selectedFixName,
+      setSelectedFixName,
+    }),
+    [isSelectFixMode, selectedFixName]
+  );
+
   return (
-    <SelectFixModeContext.Provider
-      value={{
-        isSelectFixMode,
-        setIsSelectFixMode,
-        selectedFixName,
-        setSelectedFixName,
-      }}
-    >
+    <SelectFixModeContext.Provider value={value}>
       {children}
     </SelectFixModeContext.Provider>
   );
@@ -42,7 +53,9 @@ export const SelectFixModeProvider: React.FC<{ children: ReactNode }> = ({
 export const useSelectFixMode = () => {
   const context = useContext(SelectFixModeContext);
   if (!context) {
-    throw new Error('useSelectFixMode must be used within a SelectFixModeProvider');
+    throw new Error(
+      "useSelectFixMode must be used within a SelectFixModeProvider"
+    );
   }
   return context;
 };
