@@ -1,5 +1,7 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.api;
 
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.DEFAULT_SIMULATION_ETA;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,9 +19,11 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.AircraftNotFound
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftBase;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.types.commercial.CommercialAircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlan;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlanWaypoint;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.fix.AtsRouteFixPositionRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.DirectToRequestDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.FlightPlanDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.InitialPositionDto;
@@ -39,12 +43,14 @@ public class FlightPlanController {
     private final ScenarioService scenarioService;
     private final AircraftRepository aircraftRepository;
     private final FlightPlanFromDtoConverter flightPlanConverter;
+    private final AtsRouteFixPositionRepository airportRepository;
 
     public FlightPlanController(ScenarioService scenarioService, AircraftRepository aircraftRepository,
-                               FlightPlanFromDtoConverter flightPlanConverter) {
+            FlightPlanFromDtoConverter flightPlanConverter, AtsRouteFixPositionRepository airportRepository) {
         this.scenarioService = scenarioService;
         this.aircraftRepository = aircraftRepository;
         this.flightPlanConverter = flightPlanConverter;
+        this.airportRepository = airportRepository;
     }
 
     @Operation(
@@ -72,8 +78,8 @@ public class FlightPlanController {
         }
 
         FlightPlan flightPlan = flightPlanConverter.toDomain(dto.flightPlan());
-        Aircraft aircraft = createAircraftWithInitialPosition(dto.flightPlan(), dto.initialPosition());
-        ((AircraftBase) aircraft).setFlightPlan(flightPlan);
+        CommercialAircraft aircraft = createAircraftWithInitialPosition(dto.flightPlan(), dto.initialPosition());
+        aircraft.setFlightPlan(flightPlan);
 
         scenarioService.spawnAircraft(aircraft);
 
@@ -208,7 +214,9 @@ public class FlightPlanController {
         return ResponseEntity.ok(body);
     }
 
-    private Aircraft createAircraftWithInitialPosition(FlightPlanDto fpDto, InitialPositionDto pos) {
+    private CommercialAircraft createAircraftWithInitialPosition(FlightPlanDto fpDto, InitialPositionDto pos) {
+        String dep = fpDto.departureAirport() != null ? fpDto.departureAirport() : "RJTT";
+        String arr = fpDto.arrivalAirport() != null ? fpDto.arrivalAirport() : "RJAA";
         return jp.ac.tohoku.qse.takahashi.AtcSimulator.application.AircraftFactory.createCommercialAircraft(
                 new jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.CreateAircraftDto(
                         fpDto.callsign(),
@@ -219,11 +227,11 @@ public class FlightPlanController {
                         pos.verticalSpeed(),
                         pos.heading(),
                         fpDto.aircraftType() != null ? fpDto.aircraftType() : "B738",
-                        fpDto.departureAirport() != null && fpDto.departureAirport().length() >= 3 ? fpDto.departureAirport().substring(0, 3) : (fpDto.departureAirport() != null ? fpDto.departureAirport() : "HND"),
-                        fpDto.departureAirport() != null ? fpDto.departureAirport() : "RJTT",
-                        fpDto.arrivalAirport() != null && fpDto.arrivalAirport().length() >= 3 ? fpDto.arrivalAirport().substring(0, 3) : (fpDto.arrivalAirport() != null ? fpDto.arrivalAirport() : "ITM"),
-                        fpDto.arrivalAirport() != null ? fpDto.arrivalAirport() : "RJOO",
-                        "2024-12-13T14:30:00Z"
+                        airportRepository.findIataByIcao(dep),
+                        dep,
+                        airportRepository.findIataByIcao(arr),
+                        arr,
+                        DEFAULT_SIMULATION_ETA.toString()
                 )
         );
     }

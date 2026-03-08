@@ -1,5 +1,7 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants;
 
+import java.time.Instant;
+
 /**
  * ATC simulation domain constants.
  * Placed in shared package so domain and infrastructure can use without depending on config.
@@ -8,6 +10,12 @@ public final class AtcSimulatorConstants {
 
     private AtcSimulatorConstants() {
     }
+
+    /**
+     * Default ETA (Estimated Time of Arrival) for spawned aircraft when not provided.
+     * Used as simulation reference time. ISO 8601 UTC.
+     */
+    public static final Instant DEFAULT_SIMULATION_ETA = Instant.parse("2024-12-13T14:30:00Z");
 
     public static final int REFRESH_RATE = 1;
 

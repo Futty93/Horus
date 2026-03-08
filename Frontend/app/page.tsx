@@ -15,11 +15,6 @@ export default function Home() {
           </p>
         </header>
 
-        <p className="text-center text-xs text-atc-text-muted font-mono tracking-wide">
-          Flight plan creation and aircraft spawn: use Swagger (
-          <code className="text-atc-text-muted opacity-80">/docs.html</code>).
-        </p>
-
         <nav className="grid gap-4 sm:grid-cols-2">
           <Link
             href="/controller"
@@ -56,6 +51,25 @@ export default function Home() {
             </p>
             <span className="inline-block mt-3 text-xs font-mono text-atc-accent group-hover:text-atc-accent-hover transition-colors">
               Go to Operator →
+            </span>
+          </Link>
+
+          <Link
+            href="/flight-plan-setup"
+            className="group block rounded-lg p-6 bg-atc-surface border border-atc-border
+                       transition-colors duration-200 animate-fade-in
+                       hover:border-atc-accent focus:outline-none focus:ring-2 focus:ring-atc-accent focus:ring-offset-2 focus:ring-offset-atc-bg sm:col-span-2"
+            style={{ animationDelay: "300ms" }}
+          >
+            <h2 className="font-mono text-lg font-bold tracking-wider text-atc-text mb-2">
+              FLIGHT PLAN SETUP
+            </h2>
+            <p className="text-sm text-atc-text-muted leading-relaxed">
+              Create Haneda samples, define routes by O/D pair, assign flight
+              plans to multiple aircraft in bulk.
+            </p>
+            <span className="inline-block mt-3 text-xs font-mono text-atc-accent group-hover:text-atc-accent-hover transition-colors">
+              Go to Flight Plan Setup →
             </span>
           </Link>
         </nav>

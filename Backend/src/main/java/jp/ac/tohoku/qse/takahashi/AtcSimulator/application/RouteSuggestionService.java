@@ -19,7 +19,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.PositionUtils;
 
 public class RouteSuggestionService {
 
-    private static final double MAX_NEAREST_FIX_DISTANCE_KM = 500.0;
+    private static final double MAX_NEAREST_FIX_DISTANCE_KM = 800.0;
 
     private final AtsRouteFixPositionRepository repository;
     private final Map<String, double[]> fixPositions;
@@ -31,29 +31,47 @@ public class RouteSuggestionService {
         this.graph = buildGraph();
     }
 
-    public List<String> suggestRoute(String originIcao, String destinationIcao) {
+    public static final String REASON_REJECT = "REJECT";
+    public static final String REASON_NO_AIRPORT = "NO_AIRPORT";
+    public static final String REASON_NO_NEAREST_FIX = "NO_NEAREST_FIX";
+    public static final String REASON_SAME_FIX = "SAME_FIX";
+    public static final String REASON_OK_ASTAR = "OK_ASTAR";
+    public static final String REASON_FALLBACK = "FALLBACK_NO_PATH";
+
+    public SuggestResult suggestRouteWithReason(String originIcao, String destinationIcao) {
         if (originIcao == null || originIcao.isBlank() || destinationIcao == null || destinationIcao.isBlank()) {
-            return List.of();
+            return new SuggestResult(List.of(), REASON_REJECT);
         }
 
         Optional<double[]> originPos = repository.findAirportPositionByIcao(originIcao);
         Optional<double[]> destPos = repository.findAirportPositionByIcao(destinationIcao);
         if (originPos.isEmpty() || destPos.isEmpty()) {
-            return List.of();
+            return new SuggestResult(List.of(), REASON_NO_AIRPORT);
         }
 
-        Optional<String> startFix = findNearestFix(originPos.get()[0], originPos.get()[1]);
-        Optional<String> goalFix = findNearestFix(destPos.get()[0], destPos.get()[1]);
+        double[] o = originPos.get();
+        double[] d = destPos.get();
+        Optional<String> startFix = findNearestFix(o[0], o[1]);
+        Optional<String> goalFix = findNearestFix(d[0], d[1]);
         if (startFix.isEmpty() || goalFix.isEmpty()) {
-            return List.of();
+            return new SuggestResult(List.of(), REASON_NO_NEAREST_FIX);
         }
         if (startFix.get().equals(goalFix.get())) {
-            return List.of(startFix.get());
+            return new SuggestResult(List.of(startFix.get()), REASON_SAME_FIX);
         }
 
         List<String> path = aStar(startFix.get(), goalFix.get());
-        return path != null ? path : List.of();
+        if (path != null && !path.isEmpty()) {
+            return new SuggestResult(path, REASON_OK_ASTAR);
+        }
+        return new SuggestResult(List.of(startFix.get(), goalFix.get()), REASON_FALLBACK);
     }
+
+    public List<String> suggestRoute(String originIcao, String destinationIcao) {
+        return suggestRouteWithReason(originIcao, destinationIcao).waypoints();
+    }
+
+    public record SuggestResult(List<String> waypoints, String reason) {}
 
     private Map<String, double[]> buildFixPositions() {
         Map<String, double[]> result = new HashMap<>();

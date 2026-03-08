@@ -14,4 +14,5 @@ public interface AircraftRepository {
 
     void nextStep();
 
+    void clear();
 }

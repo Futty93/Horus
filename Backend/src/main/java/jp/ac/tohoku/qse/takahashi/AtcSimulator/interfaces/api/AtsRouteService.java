@@ -1,9 +1,11 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.api;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,6 +28,11 @@ public class AtsRouteService {
         this.routeSuggestionService = routeSuggestionService;
     }
 
+    @RequestMapping(path = "/airports", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Map<String, Object>> getAirports() {
+        return atsRouteFixPositionRepository.getAirportsForApi();
+    }
+
     @RequestMapping(path = "/route/all", method = RequestMethod.GET)
     public String getAtsRouteInfo() {
         return atsRouteFixPositionRepository.getRouteInfo();
@@ -41,7 +48,12 @@ public class AtsRouteService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     Map.of("error", "origin and destination are required"));
         }
-        List<String> waypoints = routeSuggestionService.suggestRoute(origin, destination);
-        return ResponseEntity.ok(Map.of("waypoints", waypoints));
+        var result = routeSuggestionService.suggestRouteWithReason(origin, destination);
+        Map<String, Object> body = new HashMap<>();
+        body.put("waypoints", result.waypoints());
+        if (result.waypoints().isEmpty()) {
+            body.put("reason", result.reason());
+        }
+        return ResponseEntity.ok(body);
     }
 }

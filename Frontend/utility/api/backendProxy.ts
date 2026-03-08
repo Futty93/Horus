@@ -10,5 +10,8 @@ export async function proxyToBackend(
 ): Promise<Response> {
   const base = getBackendBaseUrl();
   const url = `${base}${path}`;
-  return fetch(url, init);
+  return fetch(url, {
+    cache: "no-store",
+    ...init,
+  });
 }
