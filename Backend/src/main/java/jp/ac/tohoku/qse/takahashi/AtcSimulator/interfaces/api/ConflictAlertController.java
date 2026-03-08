@@ -1,18 +1,17 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.api;
 
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ConflictAlertService;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.ConflictDetectionException;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.InvalidParameterException;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.AlertLevel;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.RiskAssessment;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ConflictAlertService;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.InvalidParameterException;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.AlertLevel;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.RiskAssessment;
 
 /**
  * コンフリクトアラート機能のREST APIコントローラー

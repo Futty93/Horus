@@ -1,21 +1,22 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.config;
 
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.TICK_INTERVAL_MS;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ConflictAlertService;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.GetAllAircraftLocationsWithRiskUseCase;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ScenarioService;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ScenarioServiceImpl;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalVariables;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aggregate.airspace.AirspaceManagement;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aggregate.airspace.AirspaceManagementImpl;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.FixPositionRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.fix.AtsRouteFixPositionRepository;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ConflictAlertService;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.GetAllAircraftLocationsWithRiskUseCase;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ScenarioService;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ScenarioServiceImpl;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-
-import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.TICK_INTERVAL_MS;
 
 /**
  * Domain and application layer bean configuration.

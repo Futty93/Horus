@@ -1,6 +1,7 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 

@@ -1,9 +1,9 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position;
 
+import java.util.Objects;
+
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Latitude;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Longitude;
-
-import java.util.Objects;
 
 public class FixPosition {
     public final Latitude latitude;

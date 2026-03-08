@@ -1,11 +1,11 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.airport;
 
+import java.util.List;
+
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Latitude;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Longitude;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.Runway;
-
-import java.util.List;
 
 public class Airport {
     private final String name;

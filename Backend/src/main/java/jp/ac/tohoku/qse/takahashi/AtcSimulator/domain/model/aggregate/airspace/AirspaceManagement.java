@@ -1,10 +1,10 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aggregate.airspace;
 
+import java.util.Optional;
+
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
-
-import java.util.Optional;
 
 /**
  * 空域の操作を表すインターフェース

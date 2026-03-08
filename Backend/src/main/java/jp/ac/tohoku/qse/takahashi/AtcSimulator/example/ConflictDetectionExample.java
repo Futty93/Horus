@@ -1,8 +1,9 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.example;
 
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ConflictAlertService;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.types.commercial.CommercialAircraft;
+import java.util.*;
+
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.types.commercial.CommercialAircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.service.conflict.ConflictDetector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.*;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
@@ -11,8 +12,6 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
-
-import java.util.*;
 
 /**
  * コンフリクト検出機能の使用例とパフォーマンス特性デモ

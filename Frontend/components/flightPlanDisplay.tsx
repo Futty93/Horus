@@ -26,6 +26,11 @@ const FlightPlanDisplay: React.FC = () => {
     return () => clearInterval(interval);
   }, [callsign]);
 
+  const refresh = React.useCallback(() => {
+    if (!callsign) return;
+    fetchFlightPlan(callsign).then(setStatus);
+  }, [callsign]);
+
   useEffect(() => {
     if (!callsign) {
       setStatus(null);
@@ -44,6 +49,12 @@ const FlightPlanDisplay: React.FC = () => {
       cancelled = true;
     };
   }, [callsign]);
+
+  useEffect(() => {
+    if (!callsign) return;
+    const interval = setInterval(refresh, 5000);
+    return () => clearInterval(interval);
+  }, [callsign, refresh]);
 
   if (!callsign) {
     return (

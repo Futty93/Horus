@@ -1,11 +1,11 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.config;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ConflictAlertService;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.service.conflict.ConflictDetector;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * コンフリクト検出機能のSpring Bean設定

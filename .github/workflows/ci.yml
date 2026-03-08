@@ -23,6 +23,9 @@ jobs:
           distribution: "temurin"
           cache: "gradle"
 
+      - name: Spotless check (format, unused imports)
+        run: ./gradlew spotlessCheck --no-daemon
+
       - name: Run tests
         run: ./gradlew test --no-daemon
 

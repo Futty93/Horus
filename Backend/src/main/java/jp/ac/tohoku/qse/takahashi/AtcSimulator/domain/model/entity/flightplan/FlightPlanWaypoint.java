@@ -1,10 +1,10 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan;
 
+import java.util.Objects;
+
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.GroundSpeed;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
-
-import java.util.Objects;
 
 /**
  * フライトプラン上の1つのウェイポイント。

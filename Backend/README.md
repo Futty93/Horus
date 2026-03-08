@@ -363,6 +363,13 @@ RESTful APIを提供しており、詳細なAPI仕様は`UranosAPI.yml`ファイ
    - インターフェース分離の原則
    - 依存性逆転の原則
 
+### コードフォーマット (Spotless)
+
+- **Spotless** で未使用 import の削除、import 順序、末尾空白・改行を統一
+- `./gradlew spotlessApply` … 自動整形
+- `./gradlew spotlessCheck` … CI で実行（違反があれば fail）
+- **pre-commit フック**: ルートで `npm install` 実行後、`.java` を commit すると自動で `spotlessApply` が走る
+
 ### テスト
 
 1. ユニットテスト

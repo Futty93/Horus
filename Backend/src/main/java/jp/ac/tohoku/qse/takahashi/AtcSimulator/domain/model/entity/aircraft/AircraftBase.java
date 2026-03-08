@@ -1,11 +1,12 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft;
 
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.REFRESH_RATE;
+
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.behavior.FlightBehavior;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.characteristics.AircraftCharacteristics;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlan;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlanWaypoint;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.NavigationMode;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.WaypointAction;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.GroundSpeed;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Heading;
@@ -16,10 +17,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.InstructedVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.GeodeticUtils;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.PositionUtils;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.StringUtils;
-
-import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.REFRESH_RATE;
 
 /**
  * 航空機の基底クラス
@@ -210,8 +208,10 @@ public abstract class AircraftBase implements Aircraft {
             int idx = flightPlan.findWaypointIndex(directToFixName);
             if (idx >= 0) {
                 currentWaypointIndex = idx;
+                navigationMode = NavigationMode.FLIGHT_PLAN;
+            } else {
+                navigationMode = NavigationMode.HEADING;
             }
-            navigationMode = NavigationMode.FLIGHT_PLAN;
             resumeFlightPlanAfterDirectTo = false;
         } else {
             navigationMode = NavigationMode.HEADING;

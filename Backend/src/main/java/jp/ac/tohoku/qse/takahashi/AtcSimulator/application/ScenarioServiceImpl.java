@@ -1,5 +1,8 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.application;
 
+import java.util.Optional;
+
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.FixNotFoundException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aggregate.airspace.AirspaceManagement;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftBase;
@@ -7,8 +10,6 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.Na
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.InstructedVector;
-
-import java.util.Optional;
 
 public class ScenarioServiceImpl implements ScenarioService {
 
@@ -41,7 +42,7 @@ public class ScenarioServiceImpl implements ScenarioService {
         Aircraft aircraft = airspaceManagement.findAircraftByCallsign(callsign);
         Optional<FixPosition> fixPosition = airspaceManagement.getFixPosition(fixName);
         if (fixPosition.isEmpty()) {
-            return;
+            throw new FixNotFoundException(fixName);
         }
         ((AircraftBase) aircraft).setDirectTo(fixPosition.get(), fixName, resumeFlightPlan);
     }
