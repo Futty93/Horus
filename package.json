@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "spec:new": "bash scripts/new-spec.sh"
   },
   "devDependencies": {
     "esbuild": "0.23.0",

@@ -15,7 +15,7 @@
 システムは以下の2つの主要コンポーネントで構成されています：
 
 1. **ウラノス (Uranus)** - バックエンド
-   - Java 22 + Spring Boot 3.3.2で実装
+   - Java 21 + Spring Boot 3.3.5で実装
    - クリーンアーキテクチャに基づく設計
    - 主要コンポーネント：
      - Domain Layer: 航空機、空域、経路などのドメインモデル
@@ -25,7 +25,7 @@
    - 詳細は `Backend/README.md` を参照
 
 2. **オモテノス (Omotenus)** - フロントエンド
-   - TypeScript + Next.js 14.2.15で実装
+   - TypeScript + Next.js 14.2.15で実装（BFF として Java バックエンドへプロキシ）
    - Tailwind CSSによるモダンなUI
    - 主要コンポーネント：
      - レーダー表示画面（RadarCanvas）
@@ -52,13 +52,17 @@
 
 各コンポーネントの詳細なセットアップ手順は、それぞれのディレクトリのREADMEを参照してください。
 
+## 開発方針
+
+新機能・リファクタリングを実施する際は **必ず spec を作成**してください。形式は `spec/YYYYMMDD-xxxxxx/spec.md`。テンプレートから作成するには `npm run spec:new <スラッグ>` を実行。詳細は [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) を参照。
+
 ## ライセンス
 
 このプロジェクトはオープンソースとして公開されており、研究・教育目的で自由に利用できます。
 
 ## ブラウザからフロントエンドにアクセス
 
-[オモテノス](http://localhost:4507/Frontend/index.html)
+開発サーバー起動後、[オモテノス](http://localhost:3333) にアクセス。Operator 画面は `/operator`、Controller 画面は `/controller`。
 
 # Java環境のセットアップの実行手順
 
