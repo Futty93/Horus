@@ -15,10 +15,13 @@ const InputAircraftInfo = () => {
       console.error("Input elements not found");
       return;
     }
-    void callsignElement.innerText;
-    void parseInt(inputAltitude.value, 10);
-    void parseInt(inputSpeed.value, 10);
-    void parseInt(inputHeading.value, 10);
+    // TODO: send instruction to API
+    /* eslint-disable @typescript-eslint/no-unused-vars -- used when API is implemented */
+    const callsign = callsignElement.innerText;
+    const instructedAltitude = parseInt(inputAltitude.value, 10);
+    const instructedGroundSpeed = parseInt(inputSpeed.value, 10);
+    const instructedHeading = parseInt(inputHeading.value, 10);
+    /* eslint-enable @typescript-eslint/no-unused-vars */
   };
 
 
