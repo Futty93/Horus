@@ -206,6 +206,13 @@ jp.ac.tohoku.qse.takahashi.AtcSimulator/
     └── ConflictDetectionExample.java
 ```
 
+### ドキュメント構成
+
+- **設計ドキュメント** (`docs/design/`): 機能の仕様・アーキテクチャを定義
+- **実装計画** (`docs/implementation-plans/`): 設計に基づくタスク分解と進捗管理
+
+新機能の実装を開始する場合は、`docs/implementation-plans/README.md` を参照のこと。
+
 ## 主要コンポーネント
 
 ### 1. ドメインモデル
