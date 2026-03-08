@@ -7,7 +7,6 @@ import { GLOBAL_CONSTANTS } from "@/utility/globals/constants";
 import { GLOBAL_SETTINGS } from "@/utility/globals/settings";
 import { fetchAircraftLocation } from "@/utility/api/location";
 import { DrawAircraft } from "@/utility/aircraft/drawAircraft";
-import { SimulationManager } from "@/utility/api/simulation";
 import { useRouteInfoDisplaySetting } from '@/context/routeInfoDisplaySettingContext';
 import { useCenterCoordinate } from "@/context/centerCoordinateContext";
 import { useDisplayRange } from "@/context/displayRangeContext";
@@ -21,7 +20,7 @@ const RadarCanvas: React.FC = () => {
   const controllingAircraftsRef = useRef<Aircraft[]>(controllingAircrafts);
   const [selectedAircraft, setSelectedAircraft] = useState<Aircraft | null>(null);
   const selectedAircraftRef = useRef(selectedAircraft);
-  const [atsRouteData, setAtsRouteData] = useState<any>(null);
+  const [atsRouteData, setAtsRouteData] = useState<Awaited<ReturnType<typeof loadAtsRoutes>> | null>(null);
   const [bg, setBg] = useState(0);
   const draggingLabelIndexRef = useRef(-1);
   const offsetXRef = useRef(0);
@@ -59,8 +58,6 @@ const RadarCanvas: React.FC = () => {
     // Load ATS route data and initialize event listeners
     initializeAtsRouteData();
 
-    const simulationManager = new SimulationManager();
-
     const handleMouseEvents = (canvas: HTMLCanvasElement) => {
       canvas.addEventListener("mousedown", onMouseDown);
       canvas.addEventListener("mousemove", onMouseMove);
@@ -84,15 +81,17 @@ const RadarCanvas: React.FC = () => {
         if (canvas) removeMouseEvents(canvas);
       });
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- setup on mount only; canvasRefs/onMouseDown are refs/stable
   }, []);
 
   useEffect(() => {
     if (atsRouteData) {
-      updateCanvas();  // atsRouteDataが設定されてからキャンバス更新を行う
+      updateCanvas();
       startUpdatingAircraftLocations();
       startRenderingLoop();
     }
-  }, [atsRouteData]);  // atsRouteDataの変更を監視
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: run when atsRouteData is set; functions are stable
+  }, [atsRouteData]);
 
   const initializeAtsRouteData = async () => {
     try {
@@ -160,6 +159,7 @@ const RadarCanvas: React.FC = () => {
   };
 
   const renderMapOnCanvas = (ctx: CanvasRenderingContext2D) => {
+    if (!atsRouteData) return;
     renderMap(
       atsRouteData.waypoints, atsRouteData.radioNavigationAids,
       atsRouteData.atsLowerRoutes, atsRouteData.rnavRoutes,

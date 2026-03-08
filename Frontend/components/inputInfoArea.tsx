@@ -2,16 +2,12 @@
 import React from 'react';
 
 const InputAircraftInfo = () => {
-  let callsign: string = "";
-
   const controlAircraft = async () => {
     const callsignElement = document.getElementById("callsign") as HTMLParagraphElement;
     const inputAltitude = document.getElementById("altitude") as HTMLInputElement;
     const inputSpeed = document.getElementById("speed") as HTMLInputElement;
     const inputHeading = document.getElementById("heading") as HTMLInputElement;
-    if (callsignElement.innerText.length >= 2) {
-      callsign = callsignElement.innerText;
-    } else {
+    if (!callsignElement || callsignElement.innerText.length < 2) {
       console.error("Callsign element not found");
       return;
     }
@@ -19,9 +15,10 @@ const InputAircraftInfo = () => {
       console.error("Input elements not found");
       return;
     }
-    const instructedAltitude = parseInt(inputAltitude.value);
-    const instructedGroundSpeed = parseInt(inputSpeed.value);
-    const instructedHeading = parseInt(inputHeading.value);
+    void callsignElement.innerText;
+    void parseInt(inputAltitude.value, 10);
+    void parseInt(inputSpeed.value, 10);
+    void parseInt(inputHeading.value, 10);
   };
 
 
