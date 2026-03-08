@@ -7,7 +7,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.MathUtils;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.PositionUtils;
 
-import static jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalConstants.*;
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.*;
 
 /**
  * 固定翼機の飛行動作実装

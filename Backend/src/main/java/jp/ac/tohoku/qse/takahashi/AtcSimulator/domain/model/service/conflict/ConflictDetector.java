@@ -11,13 +11,12 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.GeodeticUtils;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import static jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalConstants.*;
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.*;
 
 /**
  * 航空機間のコンフリクト検出を行うドメインサービス
@@ -29,7 +28,6 @@ import static jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalConst
  * - アラートレベルの判定
  * - パフォーマンス最適化（最大200機対応）
  */
-@Service
 public class ConflictDetector {
 
     private static final Logger logger = LoggerFactory.getLogger(ConflictDetector.class);

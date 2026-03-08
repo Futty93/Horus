@@ -1,4 +1,4 @@
-package jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.persistance.inMemory;
+package jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.persistence.inMemory;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.AircraftConflictException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.AircraftNotFoundException;
@@ -28,7 +28,6 @@ public class AircraftRepositoryInMemoryTest {
     void setUp() {
         repository = new AircraftRepositoryInMemory();
 
-        // Add test aircraft to repository
         Aircraft aircraft1 = createTestAircraft("JAL001", 35.0, 139.0, 35000, 90, 450, 0);
         Aircraft aircraft2 = createTestAircraft("ANA002", 36.0, 140.0, 36000, 180, 500, 0);
         Aircraft aircraft3 = createTestAircraft("UAL003", 37.0, 141.0, 37000, 270, 400, 0);
@@ -123,7 +122,6 @@ public class AircraftRepositoryInMemoryTest {
         AtomicInteger successCount = new AtomicInteger(0);
         AtomicInteger failureCount = new AtomicInteger(0);
 
-        // 複数スレッドで同時に航空機を追加
         for (int t = 0; t < numberOfThreads; t++) {
             final int threadId = t;
             executor.submit(() -> {
@@ -145,7 +143,6 @@ public class AircraftRepositoryInMemoryTest {
         assertTrue(latch.await(30, TimeUnit.SECONDS), "Test should complete within 30 seconds");
         executor.shutdown();
 
-        // 全ての航空機が正しく追加されていることを確認
         assertEquals(numberOfThreads * aircraftPerThread, successCount.get());
         assertEquals(0, failureCount.get());
         assertEquals(numberOfThreads * aircraftPerThread, repository.findAll().size());
@@ -153,10 +150,8 @@ public class AircraftRepositoryInMemoryTest {
 
     @Test
     void shouldPerformFastSearchOperations() {
-        // 大量のデータでのパフォーマンステスト
         repository.clear();
 
-        // 1000機の航空機を追加
         int aircraftCount = 1000;
         for (int i = 0; i < aircraftCount; i++) {
             String callsign = String.format("PERF%04d", i);
@@ -164,7 +159,6 @@ public class AircraftRepositoryInMemoryTest {
             repository.add(aircraft);
         }
 
-        // 検索パフォーマンステスト
         long startTime = System.nanoTime();
         for (int i = 0; i < aircraftCount; i++) {
             String callsign = String.format("PERF%04d", i);
@@ -172,7 +166,6 @@ public class AircraftRepositoryInMemoryTest {
         }
         long endTime = System.nanoTime();
 
-        // 1000回の検索が100ms以内に完了することを確認（O(1)検索の恩恵）
         long duration = endTime - startTime;
         long durationMs = duration / 1_000_000;
         assertTrue(durationMs < 100, "1000 searches should complete within 100ms, actual: " + durationMs + "ms");
@@ -180,7 +173,6 @@ public class AircraftRepositoryInMemoryTest {
 
     @Test
     void shouldExecuteNextStepSafely() throws InterruptedException {
-        // NextStepの並行実行テスト
         int numberOfThreads = 5;
         ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
         CountDownLatch latch = new CountDownLatch(numberOfThreads);
@@ -188,17 +180,16 @@ public class AircraftRepositoryInMemoryTest {
         for (int i = 0; i < numberOfThreads; i++) {
             executor.submit(() -> {
                 try {
-                    repository.NextStep();
+                    repository.nextStep();
                 } finally {
                     latch.countDown();
                 }
             });
         }
 
-        assertTrue(latch.await(10, TimeUnit.SECONDS), "NextStep should complete within 10 seconds");
+        assertTrue(latch.await(10, TimeUnit.SECONDS), "nextStep should complete within 10 seconds");
         executor.shutdown();
 
-        // データの整合性を確認
         assertEquals(3, repository.findAll().size());
     }
 

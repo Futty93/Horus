@@ -1,35 +1,31 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aggregate.airspace;
 
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalVariables;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.AtsRouteRepository;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.FixPositionRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
-import static jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalConstants.REFRESH_RATE;
-
 // TODO: Airspaceを複数にする
-@Configuration
-@EnableScheduling
 public class AirspaceManagementImpl implements AirspaceManagement {
-    AircraftRepository aircraftRepository;
-    AtsRouteRepository atsRouteRepository;
 
-    private int step = 0;
-    public AirspaceManagementImpl(AircraftRepository aircraftRepository, AtsRouteRepository atsRouteRepository) {
+    private static final Logger logger = LoggerFactory.getLogger(AirspaceManagementImpl.class);
+
+    private final AircraftRepository aircraftRepository;
+    private final FixPositionRepository fixPositionRepository;
+
+    public AirspaceManagementImpl(AircraftRepository aircraftRepository, FixPositionRepository fixPositionRepository) {
         this.aircraftRepository = aircraftRepository;
-        this.atsRouteRepository = atsRouteRepository;
+        this.fixPositionRepository = fixPositionRepository;
     }
 
     @Override
     public void addAircraft(Aircraft aircraft) {
-        System.out.println("Aircraft added");
+        logger.debug("Aircraft added");
         aircraftRepository.add(aircraft);
     }
 
@@ -45,15 +41,11 @@ public class AirspaceManagementImpl implements AirspaceManagement {
 
     @Override
     public Optional<FixPosition> getFixPosition(String fixName) {
-        return atsRouteRepository.findFixPositionByName(fixName);
+        return fixPositionRepository.findFixPositionByName(fixName);
     }
 
-    @Scheduled(fixedRate = 1000 / REFRESH_RATE)
-    public void NextStep() {
-        if (!GlobalVariables.isSimulationRunning) {
-            return;
-        }
-        System.out.println("Next step called  " + step++ + " times at AirspaceManagementImpl");
-        aircraftRepository.NextStep();
+    @Override
+    public void nextStep() {
+        aircraftRepository.nextStep();
     }
 }

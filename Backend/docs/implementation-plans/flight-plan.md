@@ -126,11 +126,11 @@
 ## 依存関係・注意事項
 
 1. **AtsRouteRepository**: Fix 位置の取得に使用。`findFixPositionByName` の動作確認が必要
-2. **既存 ScenarioService の設計**: 現状 `domain/model/service` にあるが、再設計提案では `application` 層への移動が検討されている。Phase 3 で拡張する際は配置を再確認する
+2. **既存 ScenarioService の設計**: `application` パッケージに配置済み（backend-redesign Phase 3 完了）
 3. **フロントエンド互換性**: 位置情報 API のレスポンス形式が変更される場合は、フロントエンド側の対応が必要
 
 ## 変更履歴
 
 | 日付 | 変更内容 |
 |------|----------|
-| 2025-03-08 | 初版作成（実装計画ディレクトリ構築に伴い） |
+| 2026-03-08 | 初版作成（実装計画ディレクトリ構築に伴い） |

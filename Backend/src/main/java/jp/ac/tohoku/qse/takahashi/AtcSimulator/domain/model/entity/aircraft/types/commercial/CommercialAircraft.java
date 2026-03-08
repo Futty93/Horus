@@ -13,7 +13,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.MathUtils;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.PerformanceUtils;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.PositionUtils;
 
-import static jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalConstants.*;
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.*;
 
 /**
  * 商用旅客機クラス（最適化版）

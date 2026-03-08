@@ -38,3 +38,4 @@ implementation-plans/
 | 機能 | 設計ドキュメント | 実装計画 | ステータス |
 |------|------------------|----------|------------|
 | フライトプラン | [flight-plan-implementation.md](../design/flight-plan-implementation.md) | [flight-plan.md](./flight-plan.md) | 計画中 |
+| バックエンド再設計 | [README 実装の改善点](../../README.md#-継続的な改善項目優先順位付き) | [backend-redesign.md](./backend-redesign.md) | 完了 |

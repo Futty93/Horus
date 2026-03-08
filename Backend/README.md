@@ -2,12 +2,12 @@
 
 ## 概要
 
-ウラノスは、ATCレーダーシミュレーションシステム「Horus」のバックエンドコンポーネントです。クリーンアーキテクチャに基づいて設計されており、Java 21とSpring Boot 3.3.2を使用して実装されています。航空機の位置情報管理、管制指示の処理、シナリオファイルの読み込みと実行、**コンフリクトアラート機能**などの機能を提供します。
+ウラノスは、ATCレーダーシミュレーションシステム「Horus」のバックエンドコンポーネントです。クリーンアーキテクチャに基づいて設計されており、Java 21とSpring Boot 3.3.5を使用して実装されています。航空機の位置情報管理、管制指示の処理、シナリオファイルの読み込みと実行、**コンフリクトアラート機能**などの機能を提供します。
 
 ## 技術スタック
 
 - **言語**: Java 21
-- **フレームワーク**: Spring Boot 3.3.2
+- **フレームワーク**: Spring Boot 3.3.5
 - **API仕様**: OpenAPI 3.0.2
 - **ビルドツール**: Gradle 8.8
 - **アーキテクチャ**: クリーンアーキテクチャ + Strategy パターン + Composition
@@ -151,6 +151,39 @@ http://localhost:8080/docs.html
 ./gradlew test --tests "*AircraftRepositoryInMemoryTest"
 ```
 
+## 動作確認
+
+### バックエンドの実行
+
+```bash
+cd Backend
+./gradlew bootRun
+```
+
+- 起動後、API ドキュメント: http://localhost:8080/docs.html
+- デフォルトポート: **8080**
+
+### フロントエンドの実行
+
+別ターミナルで以下を実行：
+
+```bash
+cd Frontend
+npm install
+cp .env.sample .env.local   # 初回のみ。必要に応じて NEXT_PUBLIC_SERVER_IP / PORT を編集
+npm run dev
+```
+
+- ブラウザ: http://localhost:3333
+- バックエンド接続先: `NEXT_PUBLIC_SERVER_IP=localhost`, `NEXT_PUBLIC_SERVER_PORT=8080`（`.env.local` で変更可）
+
+### 連携確認の手順
+
+1. バックエンドを起動（`./gradlew bootRun`）
+2. フロントエンドを起動（`npm run dev`）
+3. ブラウザで http://localhost:3333 を開く
+4. シミュレーション開始 → 航空機作成 → レーダー表示・管制指示が動作することを確認
+
 ## プロジェクト構造
 
 プロジェクトはクリーンアーキテクチャに基づき、以下のレイヤーで構成されています：
@@ -158,51 +191,50 @@ http://localhost:8080/docs.html
 ```
 jp.ac.tohoku.qse.takahashi.AtcSimulator/
 ├── application/                # アプリケーションレイヤー
-│   ├── AircraftRadarService.java     # 航空機レーダーサービスインターフェース
-│   ├── ConflictAlertService.java     # ★ コンフリクトアラートサービス
-│   └── aircraft/               # 航空機関連のアプリケーションサービス
+│   ├── AircraftFactory.java         # DTO→ドメイン変換
+│   ├── AircraftRadarService.java
+│   ├── ConflictAlertService.java    # ★ コンフリクトアラートサービス
+│   ├── GetAllAircraftLocationsWithRiskUseCase.java  # 位置情報 JSON 取得ユースケース
+│   ├── ScenarioService.java         # シナリオ実行インターフェース
+│   ├── ScenarioServiceImpl.java    # シナリオ実行実装
+│   └── aircraft/
 │       └── AircraftRadarServiceImpl.java
-├── config/                    # 設定クラス
-│   ├── globals/               # グローバル定数・変数
+├── config/
+│   ├── globals/
 │   ├── AtcSimulatorApplicationConfig.java
-│   ├── ConflictDetectionConfig.java  # ★ コンフリクト検出設定
+│   ├── AtcSimulatorDomainConfig.java  # ドメイン Bean・スケジューラ設定
+│   ├── ConflictDetectionConfig.java
 │   └── WebConfig.java
-├── domain/                    # ドメインレイヤー
-│   └── model/
-│       ├── aggregate/         # 集約
-│       │   └── airspace/      # 空域関連の集約
-│       ├── entity/            # エンティティ
-│       │   └── aircraft/      # 航空機関連のエンティティ
-│       ├── service/           # ドメインサービス
-│       │   ├── scenario/      # シナリオ関連のサービス
-│       │   └── conflict/      # ★ コンフリクト検出サービス
-│       │       ├── ConflictDetector.java
-│       │       └── GeodeticUtils.java
-│       └── valueObject/       # 値オブジェクト
-│           ├── AircraftAttributes/ # 航空機属性の値オブジェクト
-│           ├── Callsign/      # コールサイン関連の値オブジェクト
-│           ├── Conflict/      # ★ コンフリクト関連の値オブジェクト
-│           │   ├── AlertLevel.java
-│           │   ├── RiskAssessment.java
-│           │   └── README.md  # コンフリクトアラートの危険度計算の実装についての説明
-│           ├── Position/      # 位置関連の値オブジェクト
-│           └── Type/          # 航空機タイプの値オブジェクト
-├── infrastructure/            # インフラストラクチャレイヤー
-│   └── persistance/           # 永続化関連
-│       └── inMemory/          # インメモリ実装
-│           └── AircraftRepositoryInMemory.java  # ★ 最適化済み
-├── interfaces/                # インターフェースレイヤー
-│   ├── api/                   # REST API
+├── domain/model/
+│   ├── aggregate/airspace/          # AirspaceManagement（シナリオ駆動）
+│   ├── entity/
+│   │   ├── aircraft/
+│   │   └── fix/
+│   │       └── FixPositionRepository.java  # Fix 位置取得インターフェース
+│   ├── service/conflict/
+│   │   └── ConflictDetector.java
+│   └── valueObject/
+├── infrastructure/
+│   ├── fix/
+│   │   └── AtsRouteFixPositionRepository.java  # Fix・ATS 経路データ
+│   └── persistence/inMemory/
+│       └── AircraftRepositoryInMemory.java
+├── interfaces/
+│   ├── api/
 │   │   ├── AtsRouteService.java
-│   │   ├── ConflictAlertController.java  # ★ コンフリクトアラートAPI
+│   │   ├── ConflictAlertController.java
 │   │   ├── ControlAircraftService.java
 │   │   ├── CreateAircraftService.java
 │   │   ├── LocationService.java
 │   │   └── SimulationService.java
-│   └── dto/                   # データ転送オブジェクト
+│   └── dto/
+│       ├── AircraftLocationDto.java  # 位置情報 JSON レスポンス用
 │       ├── ControlAircraftDto.java
 │       └── CreateAircraftDto.java
-└── example/                   # ★ 使用例
+├── shared/
+│   ├── constants/AtcSimulatorConstants.java
+│   └── utility/GeodeticUtils.java
+└── example/
     └── ConflictDetectionExample.java
 ```
 
@@ -211,7 +243,7 @@ jp.ac.tohoku.qse.takahashi.AtcSimulator/
 - **設計ドキュメント** (`docs/design/`): 機能の仕様・アーキテクチャを定義
 - **実装計画** (`docs/implementation-plans/`): 設計に基づくタスク分解と進捗管理
 
-新機能の実装を開始する場合は、`docs/implementation-plans/README.md` を参照のこと。
+**完了済み**: `backend-redesign.md`（クリーンアーキテクチャ再設計、Phase 1〜7 完了）。新機能の実装時は `docs/implementation-plans/README.md` を参照。
 
 ## 主要コンポーネント
 
@@ -250,13 +282,16 @@ jp.ac.tohoku.qse.takahashi.AtcSimulator/
 
 **主要クラス**:
 - `AircraftRadarService.java` - 航空機の位置情報取得サービス
-- `ScenarioService.java` - シナリオ実行サービス
+- `ScenarioService.java` / `ScenarioServiceImpl.java` - シナリオ実行サービス（`application` 層に配置）
+- `AircraftFactory.java` - DTO からドメインオブジェクトへの変換
+- `GetAllAircraftLocationsWithRiskUseCase.java` - レーダー表示用の位置情報（JSON）取得ユースケース
 - **★ `ConflictAlertService.java` - コンフリクトアラート管理サービス**
 
 ### 3. ドメインサービス
 
-**新規追加**:
-- **★ `ConflictDetector.java` - コンフリクト検出メインロジック**
+- **★ `ConflictDetector.java` - コンフリクト検出メインロジック** (`domain/model/service/conflict/`)
+
+**共有ユーティリティ** (`shared/utility/`):
 - **★ `GeodeticUtils.java` - 測地計算ユーティリティ**
 
 ### 4. インフラストラクチャ
@@ -264,7 +299,8 @@ jp.ac.tohoku.qse.takahashi.AtcSimulator/
 データの永続化とシステムリソースへのアクセスを提供します。
 
 **主要クラス**:
-- **★ `AircraftRepositoryInMemory.java` - 最適化済みインメモリ航空機リポジトリ実装**
+- **★ `AircraftRepositoryInMemory.java`** - インメモリ航空機リポジトリ (`infrastructure/persistence/inMemory/`)
+- **`AtsRouteFixPositionRepository.java`** - Fix 位置・ATS 経路データ (`infrastructure/fix/`)
 
 ### 5. インターフェース
 
@@ -287,8 +323,9 @@ RESTful APIを提供しており、詳細なAPI仕様は`UranosAPI.yml`ファイ
    - `POST /api/aircraft/control/{callsign}` - 特定の航空機に管制指示を与える
    - `POST /api/aircraft/control/{callsign}/direct/{fixName}` - 特定の航空機を特定のFIXに直行させる
 
-2. **位置情報取得**
-   - `GET /inGame` - 全航空機の現在位置を取得
+2. **位置情報取得**（JSON 形式）
+   - `GET /aircraft/location/all` - 全航空機の現在位置を取得
+   - `GET /aircraft/location?callsign={callsign}` - 特定航空機の位置を取得
 
 3. **シミュレーション制御**
    - `POST /simulation/start` - シミュレーションを開始
@@ -419,7 +456,7 @@ config/                             # 例外ハンドラ設定
 interfaces/dto/                     # エラーレスポンスDTO
 └── ErrorResponse.java              # RFC 7807準拠エラーレスポンス ✅
 
-infrastructure/persistance/         # リポジトリ実装
+infrastructure/persistence/         # リポジトリ実装
 └── inMemory/AircraftRepositoryInMemory.java  # カスタム例外対応 ✅
 ```
 
@@ -561,7 +598,7 @@ config/                             # パフォーマンス設定
 
 test/java/                          # テストコード全体
 ├── domain/model/service/conflict/  # コンフリクト検出テスト（既存）
-├── infrastructure/persistence/     # リポジトリテスト（既存）
+├── infrastructure/persistence/inMemory/  # リポジトリテスト（既存）
 └── interfaces/api/                 # APIテスト（拡張予定）
 
 config/                             # テスト設定
