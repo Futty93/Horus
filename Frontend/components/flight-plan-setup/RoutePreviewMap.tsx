@@ -40,7 +40,7 @@ function buildFixLookup(
     });
   }
   if (airportPositions) {
-    for (const [icao, pos] of airportPositions) {
+    for (const [icao, pos] of Array.from(airportPositions)) {
       m.set(icao.toUpperCase(), pos);
     }
   }

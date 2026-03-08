@@ -1,7 +1,7 @@
 export async function suggestRoute(
   origin: string,
   destination: string
-): Promise<{ waypoints: string[] } | { error: string }> {
+): Promise<{ waypoints: string[]; reason?: string } | { error: string }> {
   const o = origin.trim();
   const d = destination.trim();
   const params = new URLSearchParams({ origin: o, destination: d });
@@ -10,7 +10,7 @@ export async function suggestRoute(
     headers: { Accept: "application/json" },
   });
   const data = (await response.json()) as
-    | { waypoints: string[] }
+    | { waypoints: string[]; reason?: string }
     | { error: string };
 
   if (!response.ok) {
