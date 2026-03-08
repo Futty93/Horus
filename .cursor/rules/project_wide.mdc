@@ -23,6 +23,7 @@ alwaysApply: true
     * Strictly follow any overarching coding standards, architectural patterns (Clean Architecture, DDD, SOLID, as mentioned in context-specific READMEs), and development guidelines.
     * **Critical Java Version Constraint**: For any Java-related development (primarily Backend), use **Java 21 or Java 22 ONLY**. **DO NOT USE Java 24** due to compatibility issues. Ensure `JAVA_HOME` is correctly set. This is a non-negotiable project-wide constraint related to the backend.
     * **Gradle Version**: Use Gradle 8.8 or higher (8.8 recommended with Java 22) for Java projects.
+    * **Spec Requirement**: New features, refactoring, or design changes **must** have a spec. Create under `spec/YYYYMMDD-xxxxxx/spec.md`. Use `npm run spec:new <slug>` to copy from template. See [docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md).
 
 ## 🌳 Root Directory (`./`) Specific Rules
 * **Primary Document**: `./README.md`
@@ -31,7 +32,7 @@ alwaysApply: true
     * Changes to the overall system components or their high-level interaction.
     * Modifications to the global Java development setup instructions ("Java環境のセットアップの実行手順").
     * Updates to project-wide licensing.
-    * Changes to the primary frontend access URL mentioned ("ブラウザからフロントエンドにアクセス": `http://localhost:4507/Frontend/index.html`).
+    * Changes to the primary frontend access URL mentioned ("ブラウザからフロントエンドにアクセス": `http://localhost:3333`).
 
 ## 🔄 README Update Protocol (General)
 

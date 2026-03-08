@@ -170,12 +170,12 @@ cd Backend
 ```bash
 cd Frontend
 npm install
-cp .env.sample .env.local   # 初回のみ。必要に応じて NEXT_PUBLIC_SERVER_IP / PORT を編集
+cp .env.sample .env.local   # 初回のみ。BACKEND_SERVER_IP / PORT を編集
 npm run dev
 ```
 
 - ブラウザ: http://localhost:3333
-- バックエンド接続先: `NEXT_PUBLIC_SERVER_IP=localhost`, `NEXT_PUBLIC_SERVER_PORT=8080`（`.env.local` で変更可）
+- フロントエンドは Next.js BFF 経由で API を呼び出す。BFF が `BACKEND_SERVER_IP` / `BACKEND_SERVER_PORT` で本バックエンドに接続する（`.env.local` で変更可）
 
 ### 連携確認の手順
 
