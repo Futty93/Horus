@@ -4,7 +4,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Aircraft
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
 
-import static jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalConstants.*;
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.*;
 
 /**
  * 航空機のコンフリクト検出と位置計算に必要な測地計算ユーティリティクラス

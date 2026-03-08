@@ -12,6 +12,6 @@ public interface AircraftRepository {
     Aircraft findByCallsign(Callsign callsign);
     List<Aircraft> findAll();
 
-    void NextStep();
+    void nextStep();
     
 }

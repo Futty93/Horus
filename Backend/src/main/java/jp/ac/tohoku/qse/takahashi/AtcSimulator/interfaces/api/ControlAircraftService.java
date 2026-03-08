@@ -2,8 +2,12 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.api;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.AircraftNotFoundException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.service.scenario.ScenarioService;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ScenarioService;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.GroundSpeed;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Heading;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.InstructedVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ControlAircraftDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +55,12 @@ public class ControlAircraftService {
             throw new AircraftNotFoundException(callsign);
         }
 
-        scenarioService.instructAircraft(aircraftCallsign, controlAircraftDto);
+        InstructedVector instructedVector = new InstructedVector(
+                new Heading(controlAircraftDto.instructedHeading()),
+                new Altitude(controlAircraftDto.instructedAltitude()),
+                new GroundSpeed(controlAircraftDto.instructedGroundSpeed())
+        );
+        scenarioService.instructAircraft(aircraftCallsign, instructedVector);
 
         logger.info("航空機制御完了: {}", callsign);
         return ResponseEntity.ok("Aircraft controlled: " + callsign);

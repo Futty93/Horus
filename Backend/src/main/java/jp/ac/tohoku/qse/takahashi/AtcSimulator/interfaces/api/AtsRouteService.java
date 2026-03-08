@@ -1,6 +1,6 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.api;
 
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.AtsRouteRepository;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.fix.AtsRouteFixPositionRepository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/ats")
 public class AtsRouteService {
-    private final AtsRouteRepository atsRouteRepository;
+    private final AtsRouteFixPositionRepository atsRouteFixPositionRepository;
 
-    public AtsRouteService(AtsRouteRepository atsRouteRepository) {
-        this.atsRouteRepository = atsRouteRepository;
+    public AtsRouteService(AtsRouteFixPositionRepository atsRouteFixPositionRepository) {
+        this.atsRouteFixPositionRepository = atsRouteFixPositionRepository;
     }
 
     @RequestMapping(path = "/route/all", method = RequestMethod.GET)
     public String getAtsRouteInfo() {
-        return atsRouteRepository.toString();
+        return atsRouteFixPositionRepository.getRouteInfo();
     }
 }

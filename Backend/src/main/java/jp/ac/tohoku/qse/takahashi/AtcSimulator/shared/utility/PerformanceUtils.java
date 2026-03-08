@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.Map;
 
-import static jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalConstants.*;
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.*;
 
 /**
  * パフォーマンス最適化のためのユーティリティクラス

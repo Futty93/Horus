@@ -1,6 +1,8 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.config;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.PerformanceUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 
 import jakarta.annotation.PostConstruct;
@@ -12,21 +14,17 @@ import jakarta.annotation.PostConstruct;
 @Configuration
 public class AtcSimulatorApplicationConfig {
 
-    /**
-     * アプリケーション起動時の初期化処理
-     * パフォーマンス最適化機能を有効化
-     */
+    private static final Logger logger = LoggerFactory.getLogger(AtcSimulatorApplicationConfig.class);
+
     @PostConstruct
     public void initializeOptimizations() {
-        // PerformanceUtilsの初期化
         PerformanceUtils.initialize();
 
-        // 開発環境でのベンチマーク実行（本番では無効化可能）
         if (isDebugMode()) {
             PerformanceUtils.runOptimizationBenchmark();
         }
 
-        System.out.println("AtcSimulator optimization initialized successfully.");
+        logger.info("AtcSimulator optimization initialized successfully.");
     }
 
     /**

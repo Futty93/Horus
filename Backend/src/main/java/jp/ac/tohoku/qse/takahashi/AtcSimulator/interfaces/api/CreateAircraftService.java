@@ -4,9 +4,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aggregate.airspace.AirspaceManagement;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.AircraftFactory;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.service.scenario.ScenarioService;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ScenarioService;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.CreateAircraftDto;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +60,7 @@ public class CreateAircraftService {
 
         for (CreateAircraftDto dto : createAircraftDtos) {
             if (!aircraftRepository.isAircraftExist(new Callsign(dto.callsign))) {
-                scenarioService.spawnAircraft(dto);
+                scenarioService.spawnAircraft(AircraftFactory.createCommercialAircraft(dto));
                 createdAircrafts.add("Aircraft created: " + dto.callsign);
             } else {
                 existingAircrafts.add("Aircraft already exists: " + dto.callsign);
@@ -96,7 +96,7 @@ public class CreateAircraftService {
 
         for (CreateAircraftDto dto : sampleAircraft) {
             if (!aircraftRepository.isAircraftExist(new Callsign(dto.callsign))) {
-                scenarioService.spawnAircraft(dto);
+                scenarioService.spawnAircraft(AircraftFactory.createCommercialAircraft(dto));
                 createdCount++;
             } else {
                 existingCount++;

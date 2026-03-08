@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalConstants.*;
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.*;
 
 /**
  * ConflictDetectorの包括的なテストクラス
