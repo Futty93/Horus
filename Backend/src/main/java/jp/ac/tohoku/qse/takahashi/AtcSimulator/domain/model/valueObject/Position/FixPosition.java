@@ -3,6 +3,8 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Positio
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Latitude;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Longitude;
 
+import java.util.Objects;
+
 public class FixPosition {
     public final Latitude latitude;
     public final Longitude longitude;
@@ -10,6 +12,20 @@ public class FixPosition {
     public FixPosition(Latitude latitude, Longitude longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        FixPosition that = (FixPosition) obj;
+        return Double.compare(that.latitude.toDouble(), latitude.toDouble()) == 0
+                && Double.compare(that.longitude.toDouble(), longitude.toDouble()) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(latitude.toDouble(), longitude.toDouble());
     }
 
     @Override

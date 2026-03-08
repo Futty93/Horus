@@ -32,3 +32,9 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+bootRun {
+	if (project.hasProperty('wpDebug')) {
+		jvmArgs = ['-Dflightplan.wp.debug=true']
+	}
+}

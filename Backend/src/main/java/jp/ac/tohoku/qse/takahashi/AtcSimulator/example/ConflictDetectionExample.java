@@ -57,18 +57,18 @@ public class ConflictDetectionExample {
         ConflictDetector detector = new ConflictDetector();
 
         // 航空機のサンプル作成
-        Aircraft jal123 = createSampleAircraft("JAL123", 35.6762, 139.6503, 35000, 90, 450, 0);
+        Aircraft JAL512 = createSampleAircraft("JAL512", 35.6762, 139.6503, 35000, 90, 450, 0);
         Aircraft ana456 = createSampleAircraft("ANA456", 35.7000, 139.6503, 35000, 90, 450, 0);
         Aircraft ual789 = createSampleAircraft("UAL789", 35.6762, 139.7000, 36000, 270, 400, -500);
 
         System.out.println("作成した航空機:");
         System.out.printf("- %s: 位置(%.4f, %.4f), 高度%.0fft, 針路%.0f°, 速度%.0fkt\n",
-            jal123.getCallsign(),
-            jal123.getAircraftPosition().latitude.toDouble(),
-            jal123.getAircraftPosition().longitude.toDouble(),
-            jal123.getAircraftPosition().altitude.toDouble(),
-            jal123.getAircraftVector().heading.toDouble(),
-            jal123.getAircraftVector().groundSpeed.toDouble());
+            JAL512.getCallsign(),
+            JAL512.getAircraftPosition().latitude.toDouble(),
+            JAL512.getAircraftPosition().longitude.toDouble(),
+            JAL512.getAircraftPosition().altitude.toDouble(),
+            JAL512.getAircraftVector().heading.toDouble(),
+            JAL512.getAircraftVector().groundSpeed.toDouble());
 
         System.out.printf("- %s: 位置(%.4f, %.4f), 高度%.0fft, 針路%.0f°, 速度%.0fkt\n",
             ana456.getCallsign(),
@@ -79,7 +79,7 @@ public class ConflictDetectionExample {
             ana456.getAircraftVector().groundSpeed.toDouble());
 
         // 2機間リスク計算
-        RiskAssessment risk = detector.calculateConflictRisk(jal123, ana456);
+        RiskAssessment risk = detector.calculateConflictRisk(JAL512, ana456);
         System.out.println("\n2機間リスク評価結果:");
         System.out.printf("- 危険度: %.2f/100\n", risk.getRiskLevel());
         System.out.printf("- アラートレベル: %s\n", risk.getAlertLevel());
@@ -89,7 +89,7 @@ public class ConflictDetectionExample {
         System.out.printf("- 管制間隔欠如予測: %s\n", risk.isConflictPredicted() ? "あり" : "なし");
 
         // 全ペア計算
-        List<Aircraft> aircraftList = Arrays.asList(jal123, ana456, ual789);
+        List<Aircraft> aircraftList = Arrays.asList(JAL512, ana456, ual789);
         Map<String, RiskAssessment> allConflicts = detector.calculateAllConflicts(aircraftList);
 
         System.out.println("\n全航空機ペアの評価:");

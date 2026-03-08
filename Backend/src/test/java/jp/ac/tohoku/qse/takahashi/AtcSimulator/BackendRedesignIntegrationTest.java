@@ -119,6 +119,17 @@ class BackendRedesignIntegrationTest {
     }
 
     @Test
+    @DisplayName("Simulation API: pause returns 200")
+    void simulationApi_pause_returns200() {
+        restTemplate.postForEntity("http://localhost:" + port + "/simulation/start", null, Void.class);
+
+        ResponseEntity<Void> response = restTemplate.postForEntity(
+                "http://localhost:" + port + "/simulation/pause", null, Void.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
     @DisplayName("FixPositionRepository: findFixPositionByName and Direct To work")
     void fixPositionRepository_directTo_works() {
         CreateAircraftDto dto = new CreateAircraftDto(

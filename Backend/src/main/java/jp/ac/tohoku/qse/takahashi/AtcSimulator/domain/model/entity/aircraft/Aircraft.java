@@ -8,24 +8,26 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
 
 public interface Aircraft {
-    // aircraftVector から 航空機の次の位置を計算する
-    public void calculateNextAircraftPosition();
+    void calculateNextAircraftPosition();
 
-    // instructedVector から 航空機の次のaircraftVectorを計算する
-    public void calculateNextAircraftVector();
+    void calculateNextAircraftVector();
 
-    public double calculateTurnAngle(FixPosition fixPosition);
+    double calculateTurnAngle(FixPosition fixPosition);
 
-    public boolean isEqualCallsign(Callsign callsign);
+    boolean isEqualCallsign(Callsign callsign);
 
-    // ゲッターメソッド（コンフリクト検出機能で必要）
-    public Callsign getCallsign();
+    Callsign getCallsign();
 
-    public AircraftPosition getAircraftPosition();
+    AircraftPosition getAircraftPosition();
 
-    public AircraftVector getAircraftVector();
+    AircraftVector getAircraftVector();
 
-    public InstructedVector getInstructedVector();
+    InstructedVector getInstructedVector();
 
-    public AircraftType getAircraftType();
+    AircraftType getAircraftType();
+
+    /** Returns true when the aircraft has passed a REMOVE_AIRCRAFT waypoint and should be removed from simulation. */
+    default boolean shouldBeRemovedFromSimulation() {
+        return false;
+    }
 }

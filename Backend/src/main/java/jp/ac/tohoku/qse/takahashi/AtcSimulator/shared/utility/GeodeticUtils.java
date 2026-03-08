@@ -3,6 +3,7 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.*;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
 
 import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.*;
 
@@ -209,6 +210,17 @@ public final class GeodeticUtils {
         );
 
         // キロメートルから海里に変換
+        return distanceKm / NAUTICAL_MILES_TO_KM;
+    }
+
+    /**
+     * 航空機位置から Fix までの水平距離を計算（海里）。
+     */
+    public static double distanceToFix(AircraftPosition aircraftPosition, FixPosition fix) {
+        double distanceKm = PositionUtils.calculateApproximateDistance(
+                aircraftPosition.latitude.toDouble(), aircraftPosition.longitude.toDouble(),
+                fix.latitude.toDouble(), fix.longitude.toDouble()
+        );
         return distanceKm / NAUTICAL_MILES_TO_KM;
     }
 

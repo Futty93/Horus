@@ -9,6 +9,9 @@ import DisplayRangeSetting from "@/components/displayRangeSetting";
 import { SelectFixModeProvider } from "@/context/selectFixModeContext";
 // import SelectFixMode from "@/components/selectFixMode";
 import InputAircraftInfo from "@/components/inputInfoArea";
+import FlightPlanDisplay from "@/components/flightPlanDisplay";
+import FlightPlanControl from "@/components/flightPlanControl";
+import SimulationControlButtons from "@/components/simulationControlButtons";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -30,8 +33,11 @@ export default function ControllerPage() {
                     <p id="callsign" className="text-2xl font-bold text-green-400">&nbsp;</p>
                   </div>
                   <InputAircraftInfo />
+                  <FlightPlanDisplay />
+                  <FlightPlanControl />
                   {/* <SelectFixMode /> */}
                   <div id="settingArea" className="mt-auto">
+                    <SimulationControlButtons />
                     <RouteInfoDisplaySetting />
                     <div className="flex flex-col">
                       <SectorSelector />

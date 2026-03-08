@@ -109,15 +109,22 @@ public class AircraftRepositoryInMemory implements AircraftRepository {
             logger.debug("全航空機の次ステップ計算開始: {}機", aircraftMap.size());
 
             int processedCount = 0;
+            List<Aircraft> toRemove = new ArrayList<>();
             for (Aircraft aircraft : aircraftMap.values()) {
                 try {
                     aircraft.calculateNextAircraftVector();
                     aircraft.calculateNextAircraftPosition();
                     processedCount++;
+                    if (aircraft.shouldBeRemovedFromSimulation()) {
+                        toRemove.add(aircraft);
+                    }
                 } catch (Exception e) {
                     logger.error("航空機 '{}' の次ステップ計算でエラー: {}",
                                aircraft.getCallsign().toString(), e.getMessage(), e);
                 }
+            }
+            for (Aircraft aircraft : toRemove) {
+                remove(aircraft);
             }
 
             logger.debug("全航空機の次ステップ計算完了: {}/{}機処理", processedCount, aircraftMap.size());

@@ -8,4 +8,8 @@ public interface ScenarioService {
     void spawnAircraft(Aircraft aircraft);
     void instructAircraft(Callsign callsign, InstructedVector instructedVector);
     void directFixAircraft(Callsign callsign, String fixName);
+
+    void directToFix(Callsign callsign, String fixName, boolean resumeFlightPlan);
+
+    void resumeNavigation(Callsign callsign);
 }

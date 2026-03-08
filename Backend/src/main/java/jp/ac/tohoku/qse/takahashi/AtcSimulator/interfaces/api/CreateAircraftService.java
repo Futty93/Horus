@@ -44,7 +44,7 @@ public class CreateAircraftService {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Aircraft created successfully",
-                            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "[\"Aircraft created: SKY514\", \"Aircraft created: JAL123\"]"))
+                            content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "[\"Aircraft created: SKY514\", \"Aircraft created: JAL512\"]"))
                     ),
                     @ApiResponse(
                             responseCode = "400",
