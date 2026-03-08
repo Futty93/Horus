@@ -8,5 +8,6 @@ export async function GET(request: Request) {
     headers: {
       Accept: request.headers.get("Accept") ?? "application/json",
     },
+    cache: "no-store",
   });
 }

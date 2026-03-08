@@ -31,6 +31,7 @@ export const fetchAircraftLocation = async (
       headers: {
         Accept: "application/json",
       },
+      cache: "no-store",
     });
 
     if (response.ok) {
