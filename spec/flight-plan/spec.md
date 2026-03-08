@@ -4,7 +4,7 @@
 
 航空機がフライトプランに従って自動飛行し、管制官が Direct To・Resume Navigation 等の指示を出せるようにする機能の実装計画。
 
-**設計ドキュメント**: [flight-plan-implementation.md](../design/flight-plan-implementation.md)
+**設計ドキュメント**: [flight-plan-implementation.md](../../Backend/docs/design/flight-plan-implementation.md)
 
 ## 前提条件
 
@@ -166,7 +166,7 @@
 ## 依存関係・注意事項
 
 1. **FixPositionRepository**: Fix 位置の取得に使用。`AirspaceManagement.getFixPosition` が `findFixPositionByName` を呼び出し。waypoints.json に WP 名が存在することを前提
-2. **既存 ScenarioService の設計**: `application` パッケージに配置済み（backend-redesign Phase 3 完了）
+2. **既存 ScenarioService の設計**: `application` パッケージに配置済み（[backend-redesign](../backend-redesign/spec.md) Phase 3 完了）
 3. **フロントエンド互換性**: 位置情報 API のレスポンス形式が変更される場合は、フロントエンド側の対応が必要
 4. **FlightPlan 構築時の Fix 解決**: `FlightPlan` / `FlightPlanWaypoint` 作成時に `FixPositionRepository` で position を解決する必要あり。`AircraftFactory` 等の application 層で変換する想定
 

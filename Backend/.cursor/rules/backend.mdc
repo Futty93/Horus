@@ -17,9 +17,9 @@ These rules are specific to the **Uranus (Backend)** component (`./Backend/`) an
 * **README**: `./Backend/README.md` - Architecture, API specs, implementation status
 * **Design Docs**: `./Backend/docs/design/` - Feature design documents
   * `flight-plan-implementation.md` - Flight plan feature design
-* **Implementation Plans**: `./Backend/docs/implementation-plans/` - Task breakdown and progress tracking
-  * `flight-plan.md` - Flight plan feature implementation plan
-  * `backend-redesign.md` - Clean architecture refactoring implementation plan
+* **Implementation Plans**: `./spec/` - Task breakdown and progress tracking
+  * `spec/flight-plan/spec.md` - Flight plan feature implementation plan
+  * `spec/backend-redesign/spec.md` - Clean architecture refactoring implementation plan
 
 ## 🛠️ Technology Stack
 
