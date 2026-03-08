@@ -1,8 +1,3 @@
-const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
-const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
-
-const baseUrl = () => `http://${serverIp}:${serverPort}`;
-
 export interface FlightPlanStatus {
   callsign: string;
   navigationMode: string;
@@ -14,9 +9,11 @@ export interface FlightPlanStatus {
   hasFlightPlan?: boolean;
 }
 
-export async function fetchFlightPlan(callsign: string): Promise<FlightPlanStatus | null> {
+export async function fetchFlightPlan(
+  callsign: string
+): Promise<FlightPlanStatus | null> {
   try {
-    const response = await fetch(`${baseUrl()}/api/aircraft/${callsign}/flightplan`, {
+    const response = await fetch(`/api/aircraft/${callsign}/flightplan`, {
       method: "GET",
       headers: { Accept: "application/json" },
     });
@@ -34,7 +31,7 @@ export async function directToFix(
   resumeFlightPlan: boolean
 ): Promise<boolean> {
   try {
-    const response = await fetch(`${baseUrl()}/api/aircraft/${callsign}/direct-to`, {
+    const response = await fetch(`/api/aircraft/${callsign}/direct-to`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ fixName, resumeFlightPlan }),
@@ -48,10 +45,13 @@ export async function directToFix(
 
 export async function resumeNavigation(callsign: string): Promise<boolean> {
   try {
-    const response = await fetch(`${baseUrl()}/api/aircraft/${callsign}/resume-navigation`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    });
+    const response = await fetch(
+      `/api/aircraft/${callsign}/resume-navigation`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
     return response.ok;
   } catch (error) {
     console.error("Error resuming navigation:", error);

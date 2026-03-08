@@ -8,8 +8,8 @@ export interface GeoCoordinate {
 
 export function findNearestFixName(
   clickedGeo: GeoCoordinate,
-  waypoints: Waypoint[],
-  radioNavAids: RadioNavigationAid[]
+  waypoints: readonly Waypoint[],
+  radioNavAids: readonly RadioNavigationAid[]
 ): string {
   const allFixes = [...waypoints, ...radioNavAids];
 
