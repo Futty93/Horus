@@ -160,6 +160,46 @@ class RouteSuggestionServiceTest {
         }
 
         @Test
+        @DisplayName("returns empty when nearest fix exceeds 500km threshold")
+        void returnsEmptyWhenNearestFixTooFar() {
+            Waypoint a = wp("A", 35.0, 139.0);
+            when(repository.getWaypoints()).thenReturn(List.of(a));
+            when(repository.getRadioNavigationAids()).thenReturn(List.<RadioNavigationAid>of());
+            when(repository.getAtsLowerRoutes()).thenReturn(List.of());
+            when(repository.getRnavRoutes()).thenReturn(List.<Route>of());
+            when(repository.findAirportPositionByIcao("FAR"))
+                    .thenReturn(Optional.of(new double[] { 20.0, 139.0 }));
+            when(repository.findAirportPositionByIcao("NEAR"))
+                    .thenReturn(Optional.of(new double[] { 35.0, 139.0 }));
+
+            RouteSuggestionService service = new RouteSuggestionService(repository);
+            assertThat(service.suggestRoute("FAR", "NEAR")).isEmpty();
+        }
+
+        @Test
+        @DisplayName("returns empty when start and goal are in disconnected subgraphs")
+        void returnsEmptyForDisconnectedGraph() {
+            Waypoint a = wp("A", 35.0, 139.0);
+            Waypoint b = wp("B", 35.5, 139.0);
+            Waypoint c = wp("C", 36.0, 140.0);
+            Waypoint d = wp("D", 36.5, 140.0);
+
+            when(repository.getWaypoints()).thenReturn(List.of(a, b, c, d));
+            when(repository.getRadioNavigationAids()).thenReturn(List.<RadioNavigationAid>of());
+            when(repository.getAtsLowerRoutes()).thenReturn(List.of(
+                    route("R1", rp("A", 35.0, 139.0), rp("B", 35.5, 139.0)),
+                    route("R2", rp("C", 36.0, 140.0), rp("D", 36.5, 140.0))));
+            when(repository.getRnavRoutes()).thenReturn(List.<Route>of());
+            when(repository.findAirportPositionByIcao("ORIG"))
+                    .thenReturn(Optional.of(new double[] { 35.0, 139.0 }));
+            when(repository.findAirportPositionByIcao("DEST"))
+                    .thenReturn(Optional.of(new double[] { 36.5, 140.0 }));
+
+            RouteSuggestionService service = new RouteSuggestionService(repository);
+            assertThat(service.suggestRoute("ORIG", "DEST")).isEmpty();
+        }
+
+        @Test
         @DisplayName("skips route points not in waypoints/radioNavAids")
         void skipsOrphanRoutePoints() {
             Waypoint a = wp("A", 35.0, 139.0);
