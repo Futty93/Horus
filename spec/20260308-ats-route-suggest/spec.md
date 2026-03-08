@@ -2,9 +2,9 @@
 
 ## メタデータ
 
-- **Status**: In Progress
+- **Status**: Completed
 - **Date**: 2026-03-08
-- **Updated**: 2026-03-08 — Phase 1–2 バックエンド実装完了
+- **Updated**: 2026-03-08 — Phase 1–3 完了、フロント連携・GET /ats/airports 追加
 
 ## 概要
 
@@ -108,7 +108,7 @@
 }
 ```
 
-- **初期範囲**: Haneda テンプレートで使用する空港（RJTT, RJAA, RJBB, RJOO, RJFK, RJSM, RJOM, RJSA, RJFF, RJGG, RJFM, RJOA, RJBE, ROAH, RJEC, RJAG, ROMD, RJSN 等）を段階的に追加
+- **初期範囲**: Haneda テンプレートで使用する空港（RJTT, RJAA, RJBB, RJOO, RJFK, RJSM, RJOM, RJSA, RJFF, RJGG, RJFM, RJOA, RJBE, ROAH, RJEC, RORA, ROMD, RJSN 等）を段階的に追加（粟国空港は RORA）
 
 ### API レスポンス
 
@@ -124,9 +124,12 @@
 
 ```json
 {
-  "waypoints": []
+  "waypoints": [],
+  "reason": "NO_AIRPORT"
 }
 ```
+
+`reason`: `NO_AIRPORT` | `NO_NEAREST_FIX` | `REJECT`（空配列時のみ付与）。グラフ非連結時は `[startFix, goalFix]` の 2 点を返す（FALLBACK）。
 
 **パラメータ不正（400）**
 
@@ -168,10 +171,11 @@
 6. `AtsRouteService` に `GET /ats/route/suggest?origin=&destination=` を追加
 7. Frontend BFF: `app/api/ats/route/suggest/route.ts` を追加
 
-### Phase 3: フロント連携（Should-have）
+### Phase 3: フロント連携（Should-have）— **完了**
 
-8. フロントエンドの O/D グループで「デフォルトルート取得」ボタンまたは自動取得を実装
-9. 取得した waypoints をルート入力欄に反映
+8. フロントエンドの O/D グループで「Suggest route」ボタン + 「Load & Suggest Routes」を実装
+9. 取得した waypoints をルート入力欄に反映し、自動 Apply
+10. `GET /ats/airports` で空港座標を取得、Route Preview の Origin/Dest 表示に使用
 
 ### Phase 4: テスト・最適化（Could-have）
 

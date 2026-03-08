@@ -59,6 +59,17 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
         return Collections.unmodifiableList(rnavRoutes);
     }
 
+    public List<Map<String, Object>> getAirportsForApi() {
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Map.Entry<String, double[]> e : airportPositions.entrySet()) {
+            result.add(Map.of(
+                    "icaoCode", e.getKey(),
+                    "latitude", e.getValue()[0],
+                    "longitude", e.getValue()[1]));
+        }
+        return result;
+    }
+
     public Optional<double[]> findAirportPositionByIcao(String icaoCode) {
         if (icaoCode == null || icaoCode.isBlank()) {
             return Optional.empty();

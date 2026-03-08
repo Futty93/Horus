@@ -177,8 +177,8 @@ class RouteSuggestionServiceTest {
         }
 
         @Test
-        @DisplayName("returns empty when start and goal are in disconnected subgraphs")
-        void returnsEmptyForDisconnectedGraph() {
+        @DisplayName("returns start and goal fixes as fallback when graph is disconnected")
+        void returnsFallbackForDisconnectedGraph() {
             Waypoint a = wp("A", 35.0, 139.0);
             Waypoint b = wp("B", 35.5, 139.0);
             Waypoint c = wp("C", 36.0, 140.0);
@@ -196,11 +196,11 @@ class RouteSuggestionServiceTest {
                     .thenReturn(Optional.of(new double[] { 36.5, 140.0 }));
 
             RouteSuggestionService service = new RouteSuggestionService(repository);
-            assertThat(service.suggestRoute("ORIG", "DEST")).isEmpty();
+            assertThat(service.suggestRoute("ORIG", "DEST")).containsExactly("A", "D");
         }
 
         @Test
-        @DisplayName("skips route points not in waypoints/radioNavAids")
+        @DisplayName("skips route points not in waypoints/radioNavAids, returns fallback when no path")
         void skipsOrphanRoutePoints() {
             Waypoint a = wp("A", 35.0, 139.0);
             Waypoint c = wp("C", 36.0, 139.0);
@@ -216,7 +216,7 @@ class RouteSuggestionServiceTest {
             RouteSuggestionService service = new RouteSuggestionService(repository);
             List<String> result = service.suggestRoute("ORIG", "DEST");
 
-            assertThat(result).isEmpty();
+            assertThat(result).containsExactly("A", "C");
         }
     }
 }
