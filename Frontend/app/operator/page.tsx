@@ -11,6 +11,7 @@ import { SelectFixModeProvider } from "@/context/selectFixModeContext";
 import { SelectedAircraftProvider } from "@/context/selectedAircraftContext";
 import SelectFixMode from "@/components/selectFixMode";
 import SelectedCallsignDisplay from "@/components/selectedCallsignDisplay";
+import FlightPlanControl from "@/components/flightPlanControl";
 import SimulationControlButtons from "@/components/simulationControlButtons";
 import { Metadata } from "next";
 
@@ -29,10 +30,10 @@ export default function OperatorPage() {
                 <div className="flex w-full h-full">
                   <RadarCanvas />
                   <div
-                    className="controlPanel bg-cyber-gradient border-l border-matrix-accent
-                                  text-white p-3 flex flex-col min-w-80 max-w-80
+                    className="controlPanel bg-atc-bg border-l border-atc-border text-atc-text
+                                  p-3 flex flex-col min-w-80 max-w-80
                                   h-full overflow-y-auto overflow-x-hidden
-                                  scrollbar-thin scrollbar-track-matrix-dark scrollbar-thumb-radar-primary"
+                                  scrollbar-thin scrollbar-track-atc scrollbar-thumb-atc"
                   >
                     <SelectedCallsignDisplay variant="operator" />
 
@@ -40,6 +41,7 @@ export default function OperatorPage() {
                     <div className="flex-1 space-y-4 min-h-0">
                       <ControlAircraft />
                       <SelectFixMode />
+                      <FlightPlanControl />
 
                       {/* Settings Area */}
                       <div className="space-y-3">

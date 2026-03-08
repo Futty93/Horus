@@ -17,7 +17,7 @@ const SelectedCallsignDisplay: React.FC<SelectedCallsignDisplayProps> = ({
   if (variant === "controller") {
     return (
       <div className="text-center mb-5">
-        <p className="text-2xl font-bold text-green-400 font-mono tracking-wider">
+        <p className="text-2xl font-bold text-atc-text font-mono tracking-wider">
           {callsign ?? "\u00a0"}
         </p>
       </div>
@@ -27,11 +27,11 @@ const SelectedCallsignDisplay: React.FC<SelectedCallsignDisplayProps> = ({
   return (
     <div className="flex-shrink-0 mb-4">
       <div className="text-center">
-        <div className="bg-control-gradient border border-matrix-accent rounded-cyber p-3 backdrop-blur-sm">
-          <p className="text-xl font-bold text-radar-primary font-mono tracking-wider">
+        <div className="bg-atc-surface border border-atc-border rounded p-3">
+          <p className="text-xl font-bold text-atc-text font-mono tracking-wider">
             {callsign ?? "\u00a0"}
           </p>
-          <div className="mt-1 h-0.5 bg-gradient-to-r from-transparent via-radar-primary to-transparent opacity-50"></div>
+          <div className="mt-1 h-px bg-atc-border" />
         </div>
       </div>
     </div>

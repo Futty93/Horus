@@ -49,7 +49,7 @@ describe("applyInstructedVectorToRadar on control API success", () => {
     [
       "InputAircraftInfo",
       InputAircraftInfo,
-      "Confirm",
+      /CONFIRM/i,
       "JAL123",
       { altitude: 35000, groundSpeed: 250, heading: 90 },
     ],
@@ -92,7 +92,7 @@ describe("applyInstructedVectorToRadar on control API success", () => {
   );
 
   it.each([
-    ["InputAircraftInfo", InputAircraftInfo, "Confirm"],
+    ["InputAircraftInfo", InputAircraftInfo, /CONFIRM/i],
     ["ControlAircraft", ControlAircraft, /EXECUTE COMMAND/i],
   ] as const)(
     "%s does not call applyInstructedVectorToRadar when API fails",

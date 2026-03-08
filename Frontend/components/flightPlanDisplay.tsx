@@ -45,8 +45,8 @@ const FlightPlanDisplay: React.FC = () => {
 
   if (!callsign) {
     return (
-      <div className="bg-control-gradient border border-matrix-accent rounded-cyber-lg p-4 backdrop-blur-sm mt-4">
-        <p className="text-sm text-gray-500">
+      <div className="bg-atc-surface border border-atc-border rounded-lg p-4 mt-4">
+        <p className="text-sm text-atc-text-muted">
           Select aircraft to view flight plan
         </p>
       </div>
@@ -55,8 +55,8 @@ const FlightPlanDisplay: React.FC = () => {
 
   if (loading || !status) {
     return (
-      <div className="bg-control-gradient border border-matrix-accent rounded-cyber-lg p-4 backdrop-blur-sm mt-4">
-        <p className="text-sm text-gray-500">
+      <div className="bg-atc-surface border border-atc-border rounded-lg p-4 mt-4">
+        <p className="text-sm text-atc-text-muted">
           {loading ? "Loading..." : "No flight plan"}
         </p>
       </div>
@@ -67,28 +67,28 @@ const FlightPlanDisplay: React.FC = () => {
   const hasPlan = status.hasFlightPlan !== false && waypoints.length > 0;
 
   return (
-    <div className="bg-control-gradient border border-matrix-accent rounded-cyber-lg p-4 backdrop-blur-sm mt-4">
-      <div className="text-xs font-semibold text-radar-primary mb-2">
+    <div className="bg-atc-surface border border-atc-border rounded-lg p-4 mt-4">
+      <div className="text-xs font-semibold text-atc-text mb-2">
         FLIGHT PLAN — {status.navigationMode}
       </div>
       {hasPlan ? (
         <>
           {(status.departureAirport || status.arrivalAirport) && (
-            <p className="text-xs text-gray-400 mb-2">
+            <p className="text-xs text-atc-text-muted mb-2">
               {status.departureAirport} → {status.arrivalAirport}
             </p>
           )}
           {status.currentWaypoint && (
-            <p className="text-xs text-neon-blue mb-1">
+            <p className="text-xs text-atc-accent mb-1">
               Current:{" "}
               <span className="font-mono">{status.currentWaypoint}</span>
             </p>
           )}
           {waypoints.length > 0 && (
-            <div className="text-xs font-mono text-gray-300 space-y-0.5 max-h-24 overflow-y-auto">
+            <div className="text-xs font-mono text-atc-text space-y-0.5 max-h-24 overflow-y-auto">
               {waypoints.map((wp, i) => (
                 <div key={`${wp}-${i}`} className="flex items-center gap-2">
-                  <span className="text-radar-primary">{i + 1}.</span>
+                  <span className="text-atc-text-muted">{i + 1}.</span>
                   <span>{wp}</span>
                 </div>
               ))}
@@ -96,7 +96,7 @@ const FlightPlanDisplay: React.FC = () => {
           )}
         </>
       ) : (
-        <p className="text-xs text-gray-500">No active flight plan</p>
+        <p className="text-xs text-atc-text-muted">No active flight plan</p>
       )}
     </div>
   );

@@ -19,43 +19,61 @@ const InputAircraftInfo = () => {
   };
 
   const fields = [
-    { key: "altitude" as const, label: "Altitude" },
-    { key: "groundSpeed" as const, label: "Speed" },
-    { key: "heading" as const, label: "Heading" },
+    { key: "altitude" as const, label: "Altitude", unit: "ft" },
+    { key: "groundSpeed" as const, label: "Speed", unit: "kts" },
+    { key: "heading" as const, label: "Heading", unit: "°" },
   ] as const;
 
   return (
-    <div className="flex flex-col">
-      {fields.map(({ key, label }) => (
-        <div
-          className="group mb-5 transition-transform duration-300 ease"
-          key={key}
-        >
-          <div className="text-green-400 font-bold mb-1 group-focus-within:scale-105 transition-transform duration-300 ease">
-            {label}
+    <div className="bg-atc-surface border border-atc-border rounded-lg p-4">
+      <h3 className="text-sm font-bold text-atc-text font-mono tracking-wider mb-3">
+        INSTRUCTION
+      </h3>
+      <div className="space-y-4">
+        {fields.map(({ key, label, unit }) => (
+          <div key={key} className="group relative">
+            <label
+              htmlFor={key}
+              className="block text-xs font-semibold text-atc-text-muted mb-1"
+            >
+              {label}
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                id={key}
+                placeholder="0"
+                value={instructedVector[key]}
+                onChange={(e) =>
+                  setInstructedVector((prev) => ({
+                    ...prev,
+                    [key]: parseInt(e.target.value, 10) || 0,
+                  }))
+                }
+                className="w-full px-3 py-2 bg-atc-surface-elevated border border-atc-border rounded
+                           text-atc-text text-sm font-mono placeholder-atc-text-muted
+                           focus:outline-none focus:border-atc-accent
+                           hover:border-atc-text-muted"
+              />
+              <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-atc-text-muted font-mono">
+                {unit}
+              </span>
+            </div>
           </div>
-          <input
-            type="number"
-            id={key}
-            placeholder="0"
-            value={instructedVector[key]}
-            onChange={(e) =>
-              setInstructedVector((prev) => ({
-                ...prev,
-                [key]: parseInt(e.target.value, 10) || 0,
-              }))
-            }
-            className="group/item w-4/5 p-2 rounded-md border border-green-400 bg-gray-800 text-white mb-4 transition-all duration-300 ease focus:outline-none focus:border-green-400 focus:ring focus:ring-green-400/70 focus:shadow-lg-no-offset focus:shadow-green-400/70"
-          />
-        </div>
-      ))}
-      <button
-        type="button"
-        onClick={handleExecute}
-        className="bg-green-400 text-gray-900 border-none px-4 py-2 text-lg font-bold cursor-pointer transition-all duration-300 ease-in-out rounded-md hover:bg-green-500 hover:shadow-lg-no-offset hover:shadow-green-400/70"
-      >
-        Confirm
-      </button>
+        ))}
+
+        <button
+          type="button"
+          onClick={handleExecute}
+          className="w-full mt-4 px-4 py-3 bg-atc-accent text-white font-bold text-sm
+                     rounded-lg border border-transparent
+                     transition-colors duration-200
+                     hover:bg-atc-accent-hover
+                     focus:outline-none focus:ring-2 focus:ring-atc-accent focus:ring-offset-2 focus:ring-offset-atc-bg"
+        >
+          CONFIRM
+        </button>
+      </div>
     </div>
   );
 };

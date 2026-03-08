@@ -25,14 +25,13 @@ const ControlAircraft = () => {
   ] as const;
 
   return (
-    <div className="bg-control-gradient border border-matrix-accent rounded-cyber-lg p-4 backdrop-blur-sm">
+    <div className="bg-atc-surface border border-atc-border rounded-lg p-4">
       <div className="space-y-4">
         {fields.map(({ key, label, unit }) => (
           <div key={key} className="group relative">
             <label
               htmlFor={key}
-              className="block text-xs font-semibold text-radar-primary mb-1 transition-all duration-300
-                         group-focus-within:text-neon-blue group-focus-within:drop-shadow-lg"
+              className="block text-xs font-semibold text-atc-text-muted mb-1"
             >
               {label}
             </label>
@@ -48,40 +47,27 @@ const ControlAircraft = () => {
                     [key]: parseInt(e.target.value, 10) || 0,
                   }))
                 }
-                className="w-full px-3 py-2 bg-matrix-dark border border-matrix-accent rounded-cyber
-                           text-white text-sm font-mono placeholder-gray-500
-                           transition-all duration-300 ease-out
-                           focus:outline-none focus:border-radar-primary focus:shadow-cyber focus:scale-[1.02]
-                           hover:border-radar-secondary hover:shadow-neon
-                           backdrop-blur-sm"
+                className="w-full px-3 py-2 bg-atc-surface-elevated border border-atc-border rounded
+                           text-atc-text text-sm font-mono placeholder-atc-text-muted
+                           focus:outline-none focus:border-atc-accent
+                           hover:border-atc-text-muted"
               />
-              <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-400 font-mono">
+              <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-atc-text-muted font-mono">
                 {unit}
               </span>
-              <div
-                className="absolute inset-0 rounded-cyber opacity-0 group-focus-within:opacity-100
-                              transition-opacity duration-300 pointer-events-none
-                              bg-gradient-to-r from-transparent via-radar-primary/5 to-transparent"
-              ></div>
             </div>
           </div>
         ))}
 
         <button
           onClick={handleExecute}
-          className="w-full mt-4 px-4 py-3 bg-button-gradient text-matrix-dark font-bold text-sm
-                     rounded-cyber-lg border border-transparent
-                     transition-all duration-300 ease-out transform
-                     hover:bg-button-hover-gradient hover:scale-105 hover:shadow-cyber-lg
-                     active:scale-95 active:shadow-inset-cyber
-                     focus:outline-none focus:ring-2 focus:ring-radar-primary focus:ring-offset-2 focus:ring-offset-matrix-dark
-                     animate-glow"
+          className="w-full mt-4 px-4 py-3 bg-atc-accent text-white font-bold text-sm
+                     rounded-lg border border-transparent
+                     transition-colors duration-200
+                     hover:bg-atc-accent-hover
+                     focus:outline-none focus:ring-2 focus:ring-atc-accent focus:ring-offset-2 focus:ring-offset-atc-bg"
         >
-          <span className="relative z-10">EXECUTE COMMAND</span>
-          <div
-            className="absolute inset-0 rounded-cyber-lg bg-gradient-to-r from-transparent via-white/10 to-transparent
-                          transform translate-x-[-100%] hover:animate-scan transition-transform duration-500"
-          ></div>
+          EXECUTE COMMAND
         </button>
       </div>
     </div>
