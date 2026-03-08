@@ -142,7 +142,7 @@ public class RouteSuggestionService {
                 if (tentativeG < gScore.getOrDefault(neighbor, Double.POSITIVE_INFINITY)) {
                     cameFrom.put(neighbor, current.name);
                     gScore.put(neighbor, tentativeG);
-                    open.offer(new AStarNode(neighbor, tentativeG, tentativeG + heuristic(neighbor, goal)));
+                    open.offer(new AStarNode(neighbor, tentativeG, heuristic(neighbor, goal)));
                 }
             }
         }

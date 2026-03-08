@@ -3,6 +3,7 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.fix;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,19 +44,19 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
     }
 
     public List<Waypoint> getWaypoints() {
-        return waypoints;
+        return Collections.unmodifiableList(waypoints);
     }
 
     public List<RadioNavigationAid> getRadioNavigationAids() {
-        return radioNavigationAids;
+        return Collections.unmodifiableList(radioNavigationAids);
     }
 
     public List<Route> getAtsLowerRoutes() {
-        return atsLowerRoutes;
+        return Collections.unmodifiableList(atsLowerRoutes);
     }
 
     public List<Route> getRnavRoutes() {
-        return rnavRoutes;
+        return Collections.unmodifiableList(rnavRoutes);
     }
 
     public Optional<double[]> findAirportPositionByIcao(String icaoCode) {
