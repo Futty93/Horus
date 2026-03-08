@@ -1,8 +1,5 @@
 import type { InstructedVector } from "@/context/selectedAircraftContext";
 
-const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
-const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
-
 export interface ControlAircraftDto {
   instructedAltitude: number;
   instructedGroundSpeed: number;
@@ -29,14 +26,11 @@ export async function controlAircraft(
   const dto = toDto(instructedVector);
 
   try {
-    const response = await fetch(
-      `http://${serverIp}:${serverPort}/api/aircraft/control/${callsign}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dto),
-      }
-    );
+    const response = await fetch(`/api/aircraft/control/${callsign}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dto),
+    });
 
     if (response.ok) {
       console.log(`Aircraft ${callsign} controlled successfully.`);

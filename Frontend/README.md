@@ -124,9 +124,11 @@ cp .env.sample .env.local
 `.env.local`ファイルを開き、以下の環境変数を設定してください：
 
 ```
-NEXT_PUBLIC_SERVER_IP=localhost  # バックエンドサーバーのIPアドレス
-NEXT_PUBLIC_SERVER_PORT=8080     # バックエンドサーバーのポート番号
+BACKEND_SERVER_IP=localhost   # Java バックエンドのホスト（サーバー側のみ、クライアントに公開されない）
+BACKEND_SERVER_PORT=8080      # Java バックエンドのポート
 ```
+
+フロントエンドは同一オリジン（`/api/*`）経由で API を呼び出し、Next.js BFF が Java バックエンドへプロキシします。既存の `NEXT_PUBLIC_SERVER_*` は Phase 1 完了後は不要です。
 
 4. 開発サーバーの起動
 
@@ -151,6 +153,7 @@ npm test
 ```
 Frontend/
 ├── app/                    # Next.jsのアプリケーションルート
+│   ├── api/               # BFF Route Handlers（Java バックエンドへのプロキシ）
 │   ├── controller/        # コントローラー画面
 │   ├── operator/          # オペレーター画面
 │   └── layout.tsx         # 共通レイアウト

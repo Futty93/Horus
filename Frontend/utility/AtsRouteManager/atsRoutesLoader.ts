@@ -2,9 +2,6 @@ import { Waypoint } from "./RouteInterfaces/Waypoint";
 import { Route } from "./RouteInterfaces/Route";
 import { RadioNavigationAid } from "./RouteInterfaces/RadioNavigationAid";
 
-const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
-const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
-
 interface RawWaypoint {
   name: string;
   latitude: string | number;
@@ -42,9 +39,7 @@ async function loadAtsRoutes(): Promise<{
   rnavRoutes: Route[];
 }> {
   try {
-    const response = await fetch(
-      `http://${serverIp}:${serverPort}/ats/route/all`
-    );
+    const response = await fetch("/api/ats/route/all");
 
     // レスポンスのステータスコードをチェック
     if (!response.ok) {

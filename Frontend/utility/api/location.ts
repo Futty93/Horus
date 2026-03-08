@@ -3,9 +3,6 @@ import { Aircraft } from "../aircraft/aircraftClass";
 import { CoordinateManager } from "../coordinateManager/CoordinateManager";
 import { DisplayRange } from "@/context/displayRangeContext";
 
-const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
-const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
-
 export interface AircraftLocationDto {
   callsign: string;
   position: { latitude: number; longitude: number; altitude: number };
@@ -29,15 +26,12 @@ export const fetchAircraftLocation = async (
 ) => {
   let updatedControllingAircraft: Aircraft[] = [];
   try {
-    const response = await fetch(
-      `http://${serverIp}:${serverPort}/aircraft/location/all`,
-      {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-        },
-      }
-    );
+    const response = await fetch("/api/aircraft/location/all", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    });
 
     if (response.ok) {
       const data: AircraftLocationDto[] = await response.json();

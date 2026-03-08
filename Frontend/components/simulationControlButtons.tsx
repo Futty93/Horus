@@ -2,13 +2,11 @@
 
 import React, { useCallback } from "react";
 
-const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
-const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
-
-async function handleSimulationAction(action: "start" | "pause"): Promise<void> {
-  const url = `http://${serverIp}:${serverPort}/simulation/${action}`;
+async function handleSimulationAction(
+  action: "start" | "pause"
+): Promise<void> {
   try {
-    const response = await fetch(url, {
+    const response = await fetch(`/api/simulation/${action}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     });
@@ -18,7 +16,10 @@ async function handleSimulationAction(action: "start" | "pause"): Promise<void> 
       console.error(`Failed to ${action} simulation. Status:`, response.status);
     }
   } catch (error) {
-    console.error(`Error occurred while trying to ${action} simulation:`, error);
+    console.error(
+      `Error occurred while trying to ${action} simulation:`,
+      error
+    );
   }
 }
 

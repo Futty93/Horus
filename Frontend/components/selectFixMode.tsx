@@ -1,14 +1,16 @@
 "use client";
 import { useSelectFixMode } from "@/context/selectFixModeContext";
 import { useSelectedAircraft } from "@/context/selectedAircraftContext";
+import { directToFix } from "@/utility/api/flightPlan";
 import React from "react";
 
-const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
-const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
-
 const SelectFixMode = () => {
-  const { isSelectFixMode, setIsSelectFixMode, selectedFixName, setSelectedFixName } =
-    useSelectFixMode();
+  const {
+    isSelectFixMode,
+    setIsSelectFixMode,
+    selectedFixName,
+    setSelectedFixName,
+  } = useSelectFixMode();
   const { callsign } = useSelectedAircraft();
 
   return (
@@ -21,8 +23,10 @@ const SelectFixMode = () => {
           >
             {selectedFixName}
           </p>
-          <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-radar-primary to-transparent
-                          opacity-50 animate-pulse-slow"></div>
+          <div
+            className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-radar-primary to-transparent
+                          opacity-50 animate-pulse-slow"
+          ></div>
         </div>
       </div>
 
@@ -44,9 +48,13 @@ const SelectFixMode = () => {
             setIsSelectFixMode({ selectFixMode: true });
           }}
         >
-          <span className="relative z-10 font-mono tracking-wider">DIRECT TO FIX</span>
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
-                          transform translate-x-[-100%] group-hover:animate-scan transition-transform duration-500"></div>
+          <span className="relative z-10 font-mono tracking-wider">
+            DIRECT TO FIX
+          </span>
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
+                          transform translate-x-[-100%] group-hover:animate-scan transition-transform duration-500"
+          ></div>
         </button>
       ) : (
         <div className="flex flex-col space-y-3">
@@ -64,39 +72,32 @@ const SelectFixMode = () => {
                 return;
               }
               try {
-                const response = await fetch(
-                  `http://${serverIp}:${serverPort}/api/aircraft/${callsign}/direct-to`,
-                  {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                      fixName: selectedFixName,
-                      resumeFlightPlan: false,
-                    }),
-                  },
-                );
-
-                if (response.ok) {
+                const ok = await directToFix(callsign, selectedFixName, false);
+                if (ok) {
                   console.log(`Aircraft ${callsign} controlled successfully.`);
                 } else {
                   console.error(
-                    `Failed to control aircraft ${callsign}. Status:`,
-                    response.status,
+                    `Failed to control aircraft ${callsign}. Status:`
                   );
                 }
               } catch (error) {
-                console.error("Error occurred while controlling aircraft:", error);
+                console.error(
+                  "Error occurred while controlling aircraft:",
+                  error
+                );
               }
 
               setSelectedFixName("No fixes selected");
               setIsSelectFixMode({ selectFixMode: false });
             }}
           >
-            <span className="relative z-10 font-mono tracking-wider">✓ CONFIRM</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
-                            transform translate-x-[-100%] group-hover:animate-scan transition-transform duration-500"></div>
+            <span className="relative z-10 font-mono tracking-wider">
+              ✓ CONFIRM
+            </span>
+            <div
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
+                            transform translate-x-[-100%] group-hover:animate-scan transition-transform duration-500"
+            ></div>
           </button>
 
           <button
@@ -112,9 +113,13 @@ const SelectFixMode = () => {
               setIsSelectFixMode({ selectFixMode: false });
             }}
           >
-            <span className="relative z-10 font-mono tracking-wider">✕ CANCEL</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
-                            transform translate-x-[-100%] group-hover:animate-scan transition-transform duration-500"></div>
+            <span className="relative z-10 font-mono tracking-wider">
+              ✕ CANCEL
+            </span>
+            <div
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent
+                            transform translate-x-[-100%] group-hover:animate-scan transition-transform duration-500"
+            ></div>
           </button>
         </div>
       )}

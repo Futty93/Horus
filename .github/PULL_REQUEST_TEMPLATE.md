@@ -6,7 +6,7 @@
 
 <!-- なぜこの変更が必要か。解決する課題、設計上の狙い、他案との比較など -->
 
-- 
+-
 
 ## 変更種別
 
@@ -30,9 +30,9 @@
 
 ## 関連 issue / 実装計画
 
-<!-- 関連する issue 番号や spec のドキュメントを記載。例: spec [flight-plan](spec/flight-plan/spec.md) -->
+<!-- 関連する issue 番号や spec のドキュメントを記載。例: spec [flight-plan](spec/YYYYMMDD-flight-plan/spec.md) -->
 
-- 
+-
 
 ## 動作確認
 
