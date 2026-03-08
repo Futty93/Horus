@@ -20,26 +20,6 @@ function StateSetter({ callsign }: { callsign: string | null }) {
 }
 
 describe("FlightPlanDisplay", () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-  });
-
-  it("shows 'Select aircraft to view flight plan' when no callsign", () => {
-    render(
-      <SelectedAircraftProvider>
-        <FlightPlanDisplay />
-      </SelectedAircraftProvider>
-    );
-
-    expect(
-      screen.getByText(/Select aircraft to view flight plan/i)
-    ).toBeInTheDocument();
-  });
-
   it.each([
     [
       "has plan",

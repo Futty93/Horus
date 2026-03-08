@@ -4,7 +4,10 @@ import React, { useEffect } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import SelectFixMode from "./selectFixMode";
-import { SelectFixModeProvider } from "@/context/selectFixModeContext";
+import {
+  SelectFixModeProvider,
+  useSelectFixMode,
+} from "@/context/selectFixModeContext";
 import {
   SelectedAircraftProvider,
   useSelectedAircraft,
@@ -15,6 +18,15 @@ function StateSetter({ callsign }: { callsign: string | null }) {
   useEffect(() => {
     setCallsign(callsign);
   }, [callsign, setCallsign]);
+  return null;
+}
+
+function FixModeActivator({ fixName }: { fixName: string }) {
+  const { setSelectedFixName, setIsSelectFixMode } = useSelectFixMode();
+  useEffect(() => {
+    setSelectedFixName(fixName);
+    setIsSelectFixMode({ selectFixMode: true });
+  }, [fixName, setSelectedFixName, setIsSelectFixMode]);
   return null;
 }
 
@@ -99,6 +111,41 @@ describe("SelectFixMode", () => {
         screen.getByRole("button", { name: /DIRECT TO FIX/i })
       ).toBeInTheDocument();
       expect(screen.getByText(/No fixes selected/i)).toBeInTheDocument();
+    });
+  });
+
+  it("CONFIRM calls fetch with correct URL and body when fix is selected", async () => {
+    const user = userEvent.setup();
+    const mockFetch = jest.fn().mockResolvedValue({ ok: true });
+    global.fetch = mockFetch;
+
+    render(
+      <SelectedAircraftProvider>
+        <SelectFixModeProvider>
+          <StateSetter callsign="JAL123" />
+          <FixModeActivator fixName="ABENO" />
+          <SelectFixMode />
+        </SelectFixModeProvider>
+      </SelectedAircraftProvider>
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /CONFIRM/i })
+      ).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole("button", { name: /CONFIRM/i }));
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.stringContaining("/api/aircraft/JAL123/direct-to"),
+        expect.objectContaining({
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fixName: "ABENO", resumeFlightPlan: false }),
+        })
+      );
     });
   });
 });

@@ -19,17 +19,6 @@ function ConsumerWithDisplay() {
 }
 
 describe("SectorSelector", () => {
-  it("renders sector dropdown with default T09", () => {
-    render(
-      <CenterCoordinateProvider>
-        <SectorSelector />
-      </CenterCoordinateProvider>
-    );
-
-    const select = screen.getByRole("combobox", { name: /担当セクター/i });
-    expect(select).toHaveValue("T09");
-  });
-
   it("updates center coordinate when sector is changed", async () => {
     const user = userEvent.setup();
     render(

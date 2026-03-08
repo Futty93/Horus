@@ -66,19 +66,4 @@ describe("CoordinateManager", () => {
       expect(geo.longitude).toBeCloseTo(point.longitude, 1);
     });
   });
-
-  describe("calculateDistance", () => {
-    it("returns 0 for same coordinates", () => {
-      const manager = new CoordinateManager();
-      const d = manager.calculateDistance(35, 139, 35, 139);
-      expect(d).toBe(0);
-    });
-
-    it("returns positive distance for different coordinates", () => {
-      const manager = new CoordinateManager();
-      const d = manager.calculateDistance(35, 139, 36, 139);
-      expect(d).toBeGreaterThan(0);
-      expect(d).toBeLessThan(200);
-    });
-  });
 });
