@@ -64,7 +64,7 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
             return Optional.empty();
         }
         double[] pos = airportPositions.get(icaoCode.toUpperCase().trim());
-        return pos != null ? Optional.of(pos) : Optional.empty();
+        return pos != null ? Optional.of(pos.clone()) : Optional.empty();
     }
 
     private Map<String, double[]> loadAirports() throws IOException {

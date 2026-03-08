@@ -35,6 +35,8 @@ public class AtsRouteService {
     public ResponseEntity<Object> suggestRoute(
             @RequestParam(name = "origin") String origin,
             @RequestParam(name = "destination") String destination) {
+        // Defensive check: @RequestParam(required=true) makes Spring return 400 before this is
+        // reached when params are missing. Kept for safety if the API contract changes.
         if (origin == null || origin.isBlank() || destination == null || destination.isBlank()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     Map.of("error", "origin and destination are required"));
