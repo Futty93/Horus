@@ -39,7 +39,7 @@ describe("SelectedCallsignDisplay", () => {
 
   it("displays non-breaking space when callsign is null (operator variant)", () => {
     renderWithProvider(<SelectedCallsignDisplay variant="operator" />, null);
-    const el = document.querySelector(".text-radar-primary");
+    const el = document.querySelector(".text-atc-text");
     expect(el).toBeInTheDocument();
     expect(el?.textContent).toBe("\u00a0");
   });
@@ -54,7 +54,7 @@ describe("SelectedCallsignDisplay", () => {
 
   it("displays non-breaking space when callsign is null (controller variant)", () => {
     renderWithProvider(<SelectedCallsignDisplay variant="controller" />, null);
-    const el = document.querySelector(".text-green-400");
+    const el = document.querySelector(".text-atc-text");
     expect(el).toBeInTheDocument();
     expect(el?.textContent).toBe("\u00a0");
   });

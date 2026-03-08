@@ -9,11 +9,9 @@ import DisplayRangeSetting from "@/components/displayRangeSetting";
 import { SelectFixModeProvider } from "@/context/selectFixModeContext";
 import { SelectedAircraftProvider } from "@/context/selectedAircraftContext";
 // import SelectFixMode from "@/components/selectFixMode";
-import InputAircraftInfo from "@/components/inputInfoArea";
 import SelectedCallsignDisplay from "@/components/selectedCallsignDisplay";
 import FlightPlanDisplay from "@/components/flightPlanDisplay";
-import FlightPlanControl from "@/components/flightPlanControl";
-import SimulationControlButtons from "@/components/simulationControlButtons";
+import InstructionMemo from "@/components/instructionMemo";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -30,16 +28,20 @@ export default function ControllerPage() {
               <div className="flex h-screen w-full">
                 <div className="flex w-full">
                   <RadarCanvas />
-                  <div className="controlPanel bg-zinc-900 text-white p-5 flex flex-col justify-between min-w-80">
-                    <SelectedCallsignDisplay variant="controller" />
-                    <InputAircraftInfo />
-                    <FlightPlanDisplay />
-                    <FlightPlanControl />
-                    {/* <SelectFixMode /> */}
-                    <div id="settingArea" className="mt-auto">
-                      <SimulationControlButtons />
+                  <div
+                    className="controlPanel bg-atc-bg border-l border-atc-border text-atc-text
+                              p-4 flex flex-col justify-between min-w-80 max-w-80
+                              h-full overflow-y-auto overflow-x-hidden
+                              scrollbar-thin scrollbar-track-atc scrollbar-thumb-atc"
+                  >
+                    <div className="flex-1 space-y-4 min-h-0">
+                      <SelectedCallsignDisplay variant="controller" />
+                      <FlightPlanDisplay />
+                      <InstructionMemo />
+                    </div>
+                    <div id="settingArea" className="mt-4 space-y-4">
                       <RouteInfoDisplaySetting />
-                      <div className="flex flex-col">
+                      <div className="flex flex-col space-y-3">
                         <SectorSelector />
                         <DisplayRangeSetting />
                       </div>

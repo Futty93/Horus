@@ -2,94 +2,43 @@
 
 ## 概要
 
-オモテノスは、ATCレーダーシミュレーションシステム「Horus」のフロントエンドコンポーネントです。Next.js 14.2.15とTypeScriptを使用して実装されており、未来的なサイバーパンクテーマのUIとリアルタイムな航空機情報の表示を提供します。
+オモテノスは、ATCレーダーシミュレーションシステム「Horus」のフロントエンドコンポーネントです。Next.js 14.2.15とTypeScriptを使用して実装されており、航空管制レーダーとして洗練された UI とリアルタイムな航空機情報の表示を提供します。
+
+### 想定ワークフロー（訓練シミュレーション）
+
+| 画面           | 役割         | 操作                                                                                                                        |
+| -------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| **Controller** | 管制官役     | レーダーを見ながら音声で指示を出す。発出した指示をメモとして入力・反映する。航空機の直接操作（API 送信）は行わない。        |
+| **Operator**   | パイロット役 | 管制官の音声指示を復唱しながら入力し、バックエンドへ送信。航空機の実際の操作（高度・速度・針路、Direct To、Resume）を行う。 |
+
+フライトプラン作成・航空機 spawn は現状 Swagger（`http://localhost:8080/docs.html`）で行う。
 
 ## 技術スタック
 
 - **フレームワーク**: Next.js 14.2.15
 - **言語**: TypeScript
-- **スタイリング**: Tailwind CSS with Custom Cyber Theme
+- **スタイリング**: Tailwind CSS with ATC Theme（Industrial / Utilitarian）
 - **状態管理**: React Context API
 - **ビルドツール**: esbuild
 
 ## 🎨 デザインシステム
 
-### フューチャリスティック・サイバーテーマ
+### ATC テーマ（Industrial / Utilitarian）
 
-本プロジェクトでは、ATCレーダーシステムにふさわしい未来的でプロフェッショナルなデザインシステムを採用しています。
+航空管制レーダーとして洗練された見た目を目指し、ネオンやグローを廃止。本物の ATC コンソールに近い控えめなパレットを採用しています。
 
-#### カラーパレット
+#### カラーパレット（atc-\*）
 
-**Cyber Colors:**
-
-- Primary: `#0ea5e9` (電子ブルー)
-- Secondary: `#0284c7` (深海ブルー)
-- Accent: `#075985` (ダークブルー)
-
-**Neon Colors:**
-
-- Green: `#00ff88` (レーダープライマリー)
-- Blue: `#00d4ff` (ネオンブルー)
-- Purple: `#b347d9` (サイバーパープル)
-- Pink: `#ff1cf7` (デンジャーピンク)
-- Orange: `#ff6b35` (ワーニングオレンジ)
-
-**Matrix Colors:**
-
-- Dark: `#0d1117` (背景ダーク)
-- Medium: `#161b22` (中間トーン)
-- Light: `#21262d` (ライトトーン)
-- Accent: `#30363d` (アクセント)
-
-#### グラデーション
-
-```css
-/* 背景グラデーション */
-cyber-gradient: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%)
-neon-gradient: linear-gradient(45deg, #00ff88 0%, #00d4ff 50%, #b347d9 100%)
-
-/* コントロール要素 */
-control-gradient: linear-gradient(135deg, rgba(0,255,136,0.05) 0%, rgba(0,212,255,0.05) 100%)
-button-gradient: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%)
-button-hover-gradient: linear-gradient(135deg, #00d4ff 0%, #b347d9 100%)
-
-/* 状態別グラデーション */
-danger-gradient: linear-gradient(135deg, #ff1cf7 0%, #ff6b35 100%)
-warning-gradient: linear-gradient(135deg, #ff6b35 0%, #ffeb3b 100%)
-```
-
-#### シャドウエフェクト
-
-```css
-/* ネオングロー */
-cyber: 0 0 20px rgba(0, 255, 136, 0.3)
-cyber-lg: 0 0 30px rgba(0, 255, 136, 0.4)
-neon: 0 0 20px rgba(0, 212, 255, 0.3)
-neon-lg: 0 0 30px rgba(0, 212, 255, 0.4)
-
-/* インセットエフェクト */
-inset-cyber: inset 0 0 10px rgba(0, 255, 136, 0.2)
-inset-neon: inset 0 0 10px rgba(0, 212, 255, 0.2)
-```
-
-#### 角丸とアニメーション
-
-```css
-/* 角丸 */
-cyber: 0.5rem
-cyber-lg: 1rem
-cyber-xl: 1.5rem
-
-/* カスタムアニメーション */
-glow: 発光効果のパルス
-scan: スキャンライン効果
-pulse-slow: ゆっくりとしたパルス
-```
+- **背景**: `atc-bg` #0d1117, `atc-surface` #161b22, `atc-surface-elevated` #21262d
+- **ボーダー**: `atc-border` #30363d
+- **テキスト**: `atc-text` #c9d1d9, `atc-text-muted` #8b949e
+- **アクセント**: `atc-accent` #238636, `atc-accent-hover` #2ea043
+- **警告・危険**: `atc-warning` #9e6a03, `atc-danger` #cf2222
 
 ### コンポーネント設計原則
 
-1. **統一されたテーマ**: 全コンポーネントで一貫したサイバーテーマを使用
-2. **インタラクティブフィードバック**: ホバー、フォーカス、アクティブ状態での視覚的フィードバック
+1. **統一されたテーマ**: 全コンポーネントで一貫した ATC テーマ（atc-\* パレット）を使用
+2. **インタラクティブフィードバック**: ホバー・フォーカス時は `transition-colors` による控えめな反応
 3. **アクセシビリティ**: キーボードナビゲーションとスクリーンリーダー対応
 4. **パフォーマンス**: CSS-in-JSではなくTailwindによる最適化されたスタイリング
 
@@ -159,19 +108,31 @@ Frontend/
 │   └── layout.tsx         # 共通レイアウト
 ├── components/            # 再利用可能なコンポーネント
 │   ├── radarCanvas.tsx    # レーダー表示キャンバス
-│   ├── controlAircraft.tsx # 航空機制御パネル（フューチャリスティックデザイン）
-│   ├── selectFixMode.tsx  # Fix選択モード（サイバーテーマ）
+│   ├── controlAircraft.tsx # 航空機制御パネル（Operator 専用）
+│   ├── instructionMemo.tsx # 指示メモ（Controller 専用）
+│   ├── selectFixMode.tsx  # Fix選択モード
 │   ├── routeInfoDisplaySetting.tsx # 経路情報表示設定（カスタムチェックボックス）
-│   ├── sectorSelector.tsx # セクター選択（ネオンドロップダウン）
+│   ├── sectorSelector.tsx # セクター選択
 │   ├── displayRangeSetting.tsx # 表示範囲設定（ビジュアルレンジバー）
 │   └── ...
 ├── context/              # React Context定義
 ├── utility/             # ユーティリティ関数
-├── tailwind.config.ts   # フューチャリスティックテーマ設定
+├── tailwind.config.ts   # ATC テーマ設定
 └── public/             # 静的ファイル
 ```
 
 ## 主要コンポーネント
+
+### 0. トップページ (Home)
+
+初回訪問ユーザー向けのオンボーディングハブ。システムの概要、Controller（管制官役）/ Operator（パイロット役）の役割説明を提示。
+
+**デザイン特徴**:
+
+- HORUS ロゴ＋1文のシステム説明
+- Operator / Controller の2カード（役割説明付きリンク）
+- ATC テーマに統一したカード型レイアウト
+- staggered フェードインアニメーション
 
 ### 1. レーダー表示画面 (RadarCanvas)
 
@@ -184,38 +145,34 @@ Frontend/
 - マウスインタラクション
 - ズーム/パン機能
 
-### 2. 航空機制御パネル (ControlAircraft) 🆕
+### 2. 航空機制御パネル (ControlAircraft)
 
-未来的なサイバーテーマで設計された航空機制御インターフェース。
-
-**デザイン特徴**:
-
-- グラデーション背景とネオンボーダー
-- ホバー時のスケーリングとグローエフェクト
-- スキャンライン動画効果
-- 単位表示付きの入力フィールド
-
-### 3. Fix選択モード (SelectFixMode) 🆕
-
-航空機の直行指示を行うためのインターフェース。
+Operator 専用。管制官の音声指示を復唱した内容をバックエンドへ送信し、実際の航空機操作を行う。
 
 **デザイン特徴**:
 
-- 状態別のボタンデザイン（確認/キャンセル）
-- アニメーションとトランジション効果
-- フォントファミリーによる統一感
+- `atc-surface` 背景と `atc-border` ボーダー
+- 単位表示付きの入力フィールド（Altitude / Speed / Heading）
+- ホバー・フォーカス時のスケーリングとグローエフェクト
+- `button-gradient` による実行ボタン
 
-### 4. 経路情報表示設定 (RouteInfoDisplaySetting) 🆕
+### 3. 指示メモ (InstructionMemo)
 
-カスタムデザインのチェックボックスを使用した設定パネル。
+Controller 専用。管制官が発出した指示をメモとして入力・反映する。バックエンドへは送信せず、ローカル表示のみ。航空機の直接操作は行わない。
 
-**デザイン特徴**:
+### 4. Fix選択モード (SelectFixMode)
 
-- カスタムチェックボックスアニメーション
-- グループ化されたセクション
-- ホバー時のグローエフェクト
+Operator 専用。航空機の直行指示（Direct To）をレーダー上の Fix 選択で行う。
 
-### 5. セクター選択 (SectorSelector) 🆕
+### 5. フライトプラン制御 (FlightPlanControl)
+
+Operator 専用。Direct To（Fix 名入力）、Resume Navigation をバックエンドへ送信。
+
+### 6. 経路情報表示設定 (RouteInfoDisplaySetting)
+
+カスタムデザインのチェックボックスを使用した設定パネル。経路表示のオン/オフを切替。
+
+### 7. セクター選択 (SectorSelector)
 
 カスタムドロップダウンデザインによるセクター選択。
 
@@ -223,9 +180,9 @@ Frontend/
 
 - カスタム矢印アイコン
 - ホバー時のネオンエフェクト
-- フォーカス時のグラデーション背景
+- フォーカス時のボーダー強調
 
-### 6. 表示範囲設定 (DisplayRangeSetting) 🆕
+### 8. 表示範囲設定 (DisplayRangeSetting)
 
 ビジュアルインジケーター付きの数値入力。
 
@@ -262,10 +219,8 @@ React Context APIを使用して、以下の状態を管理しています：
 
 ### デザインシステムの使用
 
-1. **カラー**: `tailwind.config.ts`で定義されたカラーパレットを使用
-2. **グラデーション**: 定義済みの背景グラデーションを活用
-3. **シャドウ**: ネオンエフェクトとサイバーグローを適切に使用
-4. **アニメーション**: カスタムアニメーションで動的な体験を提供
+1. **カラー**: `tailwind.config.ts` の atc パレットを使用
+2. **アニメーション**: 最小限（fade-in のみ）。glow / scan は使用しない
 
 ### スタイリング規則
 
@@ -305,18 +260,15 @@ npm start
 ### 実装済み改善 ✅
 
 1. **デザインシステムの統一**
-   - [x] フューチャリスティック・サイバーテーマの導入
-   - [x] 統一されたカラーパレットとグラデーション
-   - [x] カスタムシャドウとネオンエフェクト
-   - [x] 一貫したアニメーションシステム
+   - [x] ATC テーマ（Industrial / Utilitarian）への移行
+   - [x] atc パレットによる統一（cyber / neon 廃止）
+   - [x] 控えめなアクセントと高い可読性
 
 2. **コンポーネントの視覚的向上**
-   - [x] ControlAircraft: グラデーションとスキャンエフェクト
+   - [x] ControlAircraft / InstructionMemo: atc テーマ
    - [x] SelectFixMode: 状態別ボタンデザイン
    - [x] RouteInfoDisplaySetting: カスタムチェックボックス
-   - [x] SectorSelector: ネオンドロップダウン
-   - [x] DisplayRangeSetting: ビジュアルレンジバー
-   - [x] オペレーターボタン: 統一されたサイバーテーマ
+   - [x] SectorSelector / DisplayRangeSetting: atc テーマ
 
 ### TODO: 実装の改善点
 
