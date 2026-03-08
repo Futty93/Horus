@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ConflictAlertService;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.GetAllAircraftLocationsWithRiskUseCase;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.RouteSuggestionService;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ScenarioService;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ScenarioServiceImpl;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalVariables;
@@ -36,6 +37,12 @@ public class AtcSimulatorDomainConfig {
     @Bean
     public AtsRouteFixPositionRepository atsRouteFixPositionRepository() {
         return new AtsRouteFixPositionRepository();
+    }
+
+    @Bean
+    public RouteSuggestionService routeSuggestionService(
+            AtsRouteFixPositionRepository atsRouteFixPositionRepository) {
+        return new RouteSuggestionService(atsRouteFixPositionRepository);
     }
 
     @Bean

@@ -3,7 +3,10 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.fix;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.core.io.ClassPathResource;
@@ -26,6 +29,7 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
     private final List<RadioNavigationAid> radioNavigationAids;
     private final List<Route> atsLowerRoutes;
     private final List<Route> rnavRoutes;
+    private final Map<String, double[]> airportPositions;
 
     public AtsRouteFixPositionRepository() {
         try {
@@ -33,8 +37,51 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
             this.radioNavigationAids = loadRadioNavigationAids();
             this.atsLowerRoutes = loadAtsLowerRoutes();
             this.rnavRoutes = loadRnavRoutes();
+            this.airportPositions = loadAirports();
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load fix data from classpath", e);
+        }
+    }
+
+    public List<Waypoint> getWaypoints() {
+        return Collections.unmodifiableList(waypoints);
+    }
+
+    public List<RadioNavigationAid> getRadioNavigationAids() {
+        return Collections.unmodifiableList(radioNavigationAids);
+    }
+
+    public List<Route> getAtsLowerRoutes() {
+        return Collections.unmodifiableList(atsLowerRoutes);
+    }
+
+    public List<Route> getRnavRoutes() {
+        return Collections.unmodifiableList(rnavRoutes);
+    }
+
+    public Optional<double[]> findAirportPositionByIcao(String icaoCode) {
+        if (icaoCode == null || icaoCode.isBlank()) {
+            return Optional.empty();
+        }
+        double[] pos = airportPositions.get(icaoCode.toUpperCase().trim());
+        return pos != null ? Optional.of(pos.clone()) : Optional.empty();
+    }
+
+    private Map<String, double[]> loadAirports() throws IOException {
+        try (InputStream is = new ClassPathResource("fix/airports.json").getInputStream()) {
+            JsonNode root = OBJECT_MAPPER.readTree(is);
+            JsonNode airportsNode = root.get("airports");
+            if (airportsNode == null || !airportsNode.isArray()) {
+                return new HashMap<>();
+            }
+            Map<String, double[]> result = new HashMap<>();
+            for (JsonNode a : airportsNode) {
+                String icao = a.get("icaoCode").asText().toUpperCase();
+                double lat = a.get("latitude").asDouble();
+                double lon = a.get("longitude").asDouble();
+                result.put(icao, new double[] { lat, lon });
+            }
+            return result;
         }
     }
 

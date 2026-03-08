@@ -1,5 +1,6 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.util;
 
+import java.util.Collections;
 import java.util.List;
 
 public class Route {
@@ -11,6 +12,10 @@ public class Route {
         this.name = name;
         this.description = description;
         this.points = points;
+    }
+
+    public List<RoutePoint> getPoints() {
+        return Collections.unmodifiableList(points);
     }
 
     @Override

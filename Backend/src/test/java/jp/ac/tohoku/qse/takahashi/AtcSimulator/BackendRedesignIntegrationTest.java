@@ -150,4 +150,23 @@ class BackendRedesignIntegrationTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).contains("waypoints");
     }
+
+    @Test
+    @DisplayName("ATS route suggest API: returns waypoints for known O/D")
+    void atsRouteSuggest_returnsWaypoints() {
+        ResponseEntity<String> response = restTemplate.getForEntity(
+                "http://localhost:" + port + "/ats/route/suggest?origin=RJTT&destination=RJAA",
+                String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).contains("waypoints");
+    }
+
+    @Test
+    @DisplayName("ATS route suggest API: returns 400 when params missing")
+    void atsRouteSuggest_returns400WhenParamsMissing() {
+        ResponseEntity<String> response = restTemplate.getForEntity(
+                "http://localhost:" + port + "/ats/route/suggest?origin=RJTT",
+                String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
 }
