@@ -218,7 +218,7 @@ React Context APIを使用して、以下の状態を管理しています：
 2. **表示範囲** (DisplayRangeContext)
 3. **経路情報表示設定** (RouteInfoDisplaySettingContext)
 4. **Fix選択モード** (SelectFixModeContext)
-5. **選択航空機** (SelectedAircraftContext)
+5. **選択航空機** (SelectedAircraftContext) — callsign と instructedVector（altitude, groundSpeed, heading）
 
 ## API通信
 

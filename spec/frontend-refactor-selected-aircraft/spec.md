@@ -131,12 +131,13 @@ interface SelectedAircraftContextType {
 
 ---
 
-### Phase 2（将来）: 管制指示入力の Context 化
+### Phase 2: 管制指示入力の Context 化 ✅ 実装済み
 
 - `instructedVector`（altitude, speed, heading）も Context で保持
-- `ControlAircraft` / `InputAircraftInfo` を制御コンポーネント化
+- `ControlAircraft` / `InputAircraftInfo` を制御コンポーネント化（value/onChange で Context と双方向バインディング）
 - `changeDisplayAircraftInfo` の DOM 直接操作を廃止
-- `selectedFixName` の DOM 依存を SelectFixModeContext 等で整理
+- `selectedFixName` の DOM 依存を SelectFixModeContext で整理
+- `radarCanvas` の confirmButton イベントリスナーを削除（InputAircraftInfo が API を直接呼び出すように変更）
 
 ---
 

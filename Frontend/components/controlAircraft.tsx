@@ -6,28 +6,19 @@ const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
 const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
 
 const ControlAircraft = () => {
-  const { callsign } = useSelectedAircraft();
+  const { callsign, instructedVector, setInstructedVector } =
+    useSelectedAircraft();
 
   const controlAircraft = async () => {
     if (!callsign || callsign.length < 2) {
       console.error("No aircraft selected");
       return;
     }
-    const inputAltitude = document.getElementById("altitude") as HTMLInputElement;
-    const inputSpeed = document.getElementById("speed") as HTMLInputElement;
-    const inputHeading = document.getElementById("heading") as HTMLInputElement;
-    if (!inputAltitude || !inputSpeed || !inputHeading) {
-      console.error("Input elements not found");
-      return;
-    }
-    const instructedAltitude = parseInt(inputAltitude.value);
-    const instructedGroundSpeed = parseInt(inputSpeed.value);
-    const instructedHeading = parseInt(inputHeading.value);
 
     const controlAircraftDto = {
-      instructedAltitude,
-      instructedGroundSpeed,
-      instructedHeading,
+      instructedAltitude: instructedVector.altitude,
+      instructedGroundSpeed: instructedVector.groundSpeed,
+      instructedHeading: instructedVector.heading,
     };
 
     try {
@@ -52,17 +43,19 @@ const ControlAircraft = () => {
     }
   };
 
+  const fields = [
+    { key: "altitude" as const, label: "Altitude", unit: "ft" },
+    { key: "groundSpeed" as const, label: "Speed", unit: "kts" },
+    { key: "heading" as const, label: "Heading", unit: "°" },
+  ] as const;
+
   return (
     <div className="bg-control-gradient border border-matrix-accent rounded-cyber-lg p-4 backdrop-blur-sm">
       <div className="space-y-4">
-        {[
-          { label: 'Altitude', id: 'altitude', unit: 'ft' },
-          { label: 'Speed', id: 'speed', unit: 'kts' },
-          { label: 'Heading', id: 'heading', unit: '°' }
-        ].map(({ label, id, unit }) => (
-          <div key={label} className="group relative">
+        {fields.map(({ key, label, unit }) => (
+          <div key={key} className="group relative">
             <label
-              htmlFor={id}
+              htmlFor={key}
               className="block text-xs font-semibold text-radar-primary mb-1 transition-all duration-300
                          group-focus-within:text-neon-blue group-focus-within:drop-shadow-lg"
             >
@@ -71,8 +64,15 @@ const ControlAircraft = () => {
             <div className="relative">
               <input
                 type="number"
-                id={id}
+                id={key}
                 placeholder="0"
+                value={instructedVector[key]}
+                onChange={(e) =>
+                  setInstructedVector((prev) => ({
+                    ...prev,
+                    [key]: parseInt(e.target.value, 10) || 0,
+                  }))
+                }
                 className="w-full px-3 py-2 bg-matrix-dark border border-matrix-accent rounded-cyber
                            text-white text-sm font-mono placeholder-gray-500
                            transition-all duration-300 ease-out

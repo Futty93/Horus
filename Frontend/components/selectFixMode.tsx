@@ -7,17 +7,19 @@ const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
 const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
 
 const SelectFixMode = () => {
-  const { isSelectFixMode, setIsSelectFixMode } = useSelectFixMode();
+  const { isSelectFixMode, setIsSelectFixMode, selectedFixName, setSelectedFixName } =
+    useSelectFixMode();
   const { callsign } = useSelectedAircraft();
 
   return (
     <div className="bg-control-gradient border border-matrix-accent rounded-cyber-lg p-4 backdrop-blur-sm mt-4">
       <div className="text-center mb-4">
         <div className="relative inline-block">
-          <p id="selectedFixName"
-             className="text-lg font-bold text-radar-primary font-mono tracking-wider
-                        transition-all duration-300 hover:text-neon-blue hover:drop-shadow-lg">
-            No fixes selected
+          <p
+            className="text-lg font-bold text-radar-primary font-mono tracking-wider
+                        transition-all duration-300 hover:text-neon-blue hover:drop-shadow-lg"
+          >
+            {selectedFixName}
           </p>
           <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-radar-primary to-transparent
                           opacity-50 animate-pulse-slow"></div>
@@ -34,11 +36,11 @@ const SelectFixMode = () => {
                      focus:outline-none focus:ring-2 focus:ring-cyber-500 focus:ring-offset-2 focus:ring-offset-matrix-dark
                      relative overflow-hidden group"
           onClick={() => {
-            const selectedFixNameElement = document.getElementById("selectedFixName") as HTMLParagraphElement;
             if (!callsign || callsign.length < 2) {
-              if (selectedFixNameElement) selectedFixNameElement.innerText = "Select aircraft first";
+              setSelectedFixName("Select aircraft first");
               return;
             }
+            setSelectedFixName("No fixes selected");
             setIsSelectFixMode({ selectFixMode: true });
           }}
         >
@@ -57,12 +59,8 @@ const SelectFixMode = () => {
                        focus:outline-none focus:ring-2 focus:ring-radar-primary focus:ring-offset-2 focus:ring-offset-matrix-dark
                        relative overflow-hidden group animate-glow"
             onClick={async () => {
-              const selectedFixNameElement = document.getElementById("selectedFixName") as HTMLParagraphElement;
-              const selectedFixName = selectedFixNameElement?.innerText ?? "";
-
               if (!callsign || callsign.length < 2) return;
               if (!selectedFixName || selectedFixName === "No fixes selected") {
-                console.error("No fix selected");
                 return;
               }
               try {
@@ -77,19 +75,22 @@ const SelectFixMode = () => {
                       fixName: selectedFixName,
                       resumeFlightPlan: false,
                     }),
-                  }
+                  },
                 );
 
                 if (response.ok) {
                   console.log(`Aircraft ${callsign} controlled successfully.`);
                 } else {
-                  console.error(`Failed to control aircraft ${callsign}. Status:`, response.status);
+                  console.error(
+                    `Failed to control aircraft ${callsign}. Status:`,
+                    response.status,
+                  );
                 }
               } catch (error) {
                 console.error("Error occurred while controlling aircraft:", error);
               }
 
-              selectedFixNameElement.innerText = "No fixes selected";
+              setSelectedFixName("No fixes selected");
               setIsSelectFixMode({ selectFixMode: false });
             }}
           >
@@ -107,10 +108,7 @@ const SelectFixMode = () => {
                        focus:outline-none focus:ring-2 focus:ring-neon-pink focus:ring-offset-2 focus:ring-offset-matrix-dark
                        relative overflow-hidden group"
             onClick={() => {
-              console.log("Cancel 押されたよ");
-              const selectedFixNameElement = document.getElementById("selectedFixName") as HTMLParagraphElement;
-
-              selectedFixNameElement.innerText = "No fixes selected";
+              setSelectedFixName("No fixes selected");
               setIsSelectFixMode({ selectFixMode: false });
             }}
           >

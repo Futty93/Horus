@@ -32,8 +32,8 @@ const RadarCanvas: React.FC = () => {
   const centerCoordinateRef = useRef(centerCoordinate);
   const { displayRange } = useDisplayRange();
   const displayRangeRef = useRef(displayRange);
-  const { isSelectFixMode } = useSelectFixMode();
-  const { setCallsign } = useSelectedAircraft();
+  const { isSelectFixMode, setSelectedFixName } = useSelectFixMode();
+  const { setCallsign, setInstructedVector } = useSelectedAircraft();
   const isSelectFixModeRef = useRef(isSelectFixMode);
   const atsRouteDataRef = useRef(atsRouteData);
   const pathname = usePathname();
@@ -213,11 +213,9 @@ const RadarCanvas: React.FC = () => {
         console.error("atsRouteData is not available");
         return;
       }
-      const selectedFixName: string = searchFixName(atsRouteData.waypoints, atsRouteData.radioNavigationAids, {x, y}, centerCoordinateRef.current, displayRangeRef.current);
-      if (selectedFixName) {
-        console.log("Selected fix:", selectedFixName);
-        const selectedFixNameElement = document.getElementById("selectedFixName") as HTMLParagraphElement;
-        selectedFixNameElement.textContent = selectedFixName;
+      const fixName = searchFixName(atsRouteData.waypoints, atsRouteData.radioNavigationAids, { x, y }, centerCoordinateRef.current, displayRangeRef.current);
+      if (fixName) {
+        setSelectedFixName(fixName);
       }
       return;
     }
@@ -289,18 +287,11 @@ const RadarCanvas: React.FC = () => {
 
   const changeDisplayAircraftInfo = (aircraft: Aircraft) => {
     setCallsign(aircraft.callsign);
-    const inputAltitude = document.getElementById("altitude") as HTMLInputElement;
-    const inputSpeed = document.getElementById("speed") as HTMLInputElement;
-    const inputHeading = document.getElementById("heading") as HTMLInputElement;
-    if (inputAltitude) {
-      inputAltitude.value = Math.round(aircraft.instructedVector.altitude).toString();
-    }
-    if (inputSpeed) {
-      inputSpeed.value = Math.round(aircraft.instructedVector.groundSpeed).toString();
-    }
-    if (inputHeading) {
-      inputHeading.value = Math.round(aircraft.instructedVector.heading).toString();
-    }
+    setInstructedVector({
+      altitude: Math.round(aircraft.instructedVector.altitude),
+      groundSpeed: Math.round(aircraft.instructedVector.groundSpeed),
+      heading: Math.round(aircraft.instructedVector.heading),
+    });
   };
 
   const startUpdatingAircraftLocations = () => {
@@ -321,41 +312,6 @@ const RadarCanvas: React.FC = () => {
 
     return () => clearInterval(fetchLocationInterval);
   };
-
-// コントローラー画面における航空機情報の変更
-  useEffect(() => {
-    const confirmButton = document.getElementById("confirmButton") as HTMLButtonElement;
-    const handleClick = () => {
-      const inputAltitude = document.getElementById("altitude") as HTMLInputElement;
-      const inputSpeed = document.getElementById("speed") as HTMLInputElement;
-      const inputHeading = document.getElementById("heading") as HTMLInputElement;
-      console.log("confirmButton clicked");
-
-      if (!inputAltitude || !inputSpeed || !inputHeading) {
-        console.error("Input elements not found");
-        return;
-      }
-
-      console.log("Input elements found");
-      console.log(selectedAircraftRef.current);
-
-      if (selectedAircraftRef.current) {
-        console.log("Selected aircraft:", selectedAircraftRef.current.callsign);
-        selectedAircraftRef.current.instructedVector = {
-          heading: parseInt(inputHeading.value),
-          groundSpeed: parseInt(inputSpeed.value),
-          altitude: parseInt(inputAltitude.value)
-        };
-      }
-    };
-
-    confirmButton?.addEventListener("click", handleClick);
-
-    return () => {
-      confirmButton?.removeEventListener("click", handleClick);
-    };
-  }, []);
-
 
   return (
     <div className="radarArea relative w-full">
