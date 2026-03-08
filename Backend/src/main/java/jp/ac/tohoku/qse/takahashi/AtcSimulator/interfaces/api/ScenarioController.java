@@ -15,9 +15,8 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.AircraftFactory;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.FlightPlanFromDtoConverter;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ScenarioService;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalVariables;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftBase;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.types.commercial.CommercialAircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlan;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.fix.AtsRouteFixPositionRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.CreateAircraftDto;
@@ -55,8 +54,8 @@ public class ScenarioController {
                     .body(Map.of("success", false, "message", "aircraft array is required and must not be empty"));
         }
 
+        GlobalVariables.isSimulationRunning = false;
         aircraftRepository.clear();
-        GlobalVariables.isSimulationRunning = true;
 
         int count = 0;
         for (SpawnWithFlightPlanDto ac : dto.aircraft()) {
@@ -65,11 +64,13 @@ public class ScenarioController {
                 continue;
             }
             FlightPlan fp = flightPlanConverter.toDomain(ac.flightPlan());
-            Aircraft aircraft = createAircraftFromSpawn(ac.flightPlan(), ac.initialPosition());
-            ((AircraftBase) aircraft).setFlightPlan(fp);
+            var aircraft = createAircraftFromSpawn(ac.flightPlan(), ac.initialPosition());
+            aircraft.setFlightPlan(fp);
             scenarioService.spawnAircraft(aircraft);
             count++;
         }
+
+        GlobalVariables.isSimulationRunning = true;
 
         logger.info("Scenario loaded: {} aircraft, scenarioName={}", count, dto.scenarioName());
         Map<String, Object> body = new HashMap<>();
@@ -80,7 +81,7 @@ public class ScenarioController {
         return ResponseEntity.ok(body);
     }
 
-    private Aircraft createAircraftFromSpawn(FlightPlanDto fpDto, InitialPositionDto pos) {
+    private CommercialAircraft createAircraftFromSpawn(FlightPlanDto fpDto, InitialPositionDto pos) {
         String dep = fpDto.departureAirport() != null ? fpDto.departureAirport() : "RJTT";
         String arr = fpDto.arrivalAirport() != null ? fpDto.arrivalAirport() : "RJAA";
         String originIata = airportRepository.findIataByIcao(dep);

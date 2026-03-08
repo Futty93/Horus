@@ -17,6 +17,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.AircraftNotFound
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftBase;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.types.commercial.CommercialAircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlan;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlanWaypoint;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
@@ -75,8 +76,8 @@ public class FlightPlanController {
         }
 
         FlightPlan flightPlan = flightPlanConverter.toDomain(dto.flightPlan());
-        Aircraft aircraft = createAircraftWithInitialPosition(dto.flightPlan(), dto.initialPosition());
-        ((AircraftBase) aircraft).setFlightPlan(flightPlan);
+        CommercialAircraft aircraft = createAircraftWithInitialPosition(dto.flightPlan(), dto.initialPosition());
+        aircraft.setFlightPlan(flightPlan);
 
         scenarioService.spawnAircraft(aircraft);
 
@@ -211,7 +212,7 @@ public class FlightPlanController {
         return ResponseEntity.ok(body);
     }
 
-    private Aircraft createAircraftWithInitialPosition(FlightPlanDto fpDto, InitialPositionDto pos) {
+    private CommercialAircraft createAircraftWithInitialPosition(FlightPlanDto fpDto, InitialPositionDto pos) {
         String dep = fpDto.departureAirport() != null ? fpDto.departureAirport() : "RJTT";
         String arr = fpDto.arrivalAirport() != null ? fpDto.arrivalAirport() : "RJAA";
         return jp.ac.tohoku.qse.takahashi.AtcSimulator.application.AircraftFactory.createCommercialAircraft(
