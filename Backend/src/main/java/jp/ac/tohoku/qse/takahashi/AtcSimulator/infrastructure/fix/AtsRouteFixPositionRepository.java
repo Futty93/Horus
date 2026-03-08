@@ -18,6 +18,8 @@ import java.util.Optional;
 
 public class AtsRouteFixPositionRepository implements FixPositionRepository {
 
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     private final List<Waypoint> waypoints;
     private final List<RadioNavigationAid> radioNavigationAids;
     private final List<Route> atsLowerRoutes;
@@ -39,9 +41,8 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
     }
 
     private List<Waypoint> loadWaypointsFromResource(String resourcePath) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
         try (InputStream is = new ClassPathResource(resourcePath).getInputStream()) {
-            JsonNode waypointNode = mapper.readTree(is);
+            JsonNode waypointNode = OBJECT_MAPPER.readTree(is);
             List<Waypoint> result = new ArrayList<>();
             for (JsonNode pointNode : waypointNode) {
                 String pointName = pointNode.get("name").asText();
@@ -55,9 +56,8 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
     }
 
     private List<RadioNavigationAid> loadRadioNavigationAids() throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
         try (InputStream is = new ClassPathResource("fix/radio_navigation_aids.json").getInputStream()) {
-            JsonNode aidNode = mapper.readTree(is);
+            JsonNode aidNode = OBJECT_MAPPER.readTree(is);
             List<RadioNavigationAid> result = new ArrayList<>();
             for (JsonNode pointNode : aidNode) {
                 String name = pointNode.get("name").asText();
@@ -81,9 +81,8 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
     }
 
     private List<Route> loadRoutesFromResource(String resourcePath) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
         try (InputStream is = new ClassPathResource(resourcePath).getInputStream()) {
-            JsonNode routesNode = mapper.readTree(is).get("routes");
+            JsonNode routesNode = OBJECT_MAPPER.readTree(is).get("routes");
             List<Route> result = new ArrayList<>();
             for (JsonNode routeNode : routesNode) {
                 String routeName = routeNode.get("name").asText();

@@ -11,6 +11,9 @@ public final class AtcSimulatorConstants {
 
     public static final int REFRESH_RATE = 1;
 
+    /** Tick interval in milliseconds for simulation (1000 / REFRESH_RATE). Defined explicitly to avoid implicit integer division at call sites. */
+    public static final int TICK_INTERVAL_MS = 1000 / REFRESH_RATE;
+
     public static final double EARTH_RADIUS = 6378.1;
     public static final double KNOTS_TO_KM_PER_HOUR = 1.852;
     public static final double NAUTICAL_MILES_TO_KM = 1.852;

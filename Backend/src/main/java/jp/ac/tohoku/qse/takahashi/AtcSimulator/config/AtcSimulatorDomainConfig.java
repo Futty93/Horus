@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.REFRESH_RATE;
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.TICK_INTERVAL_MS;
 
 /**
  * Domain and application layer bean configuration.
@@ -65,7 +65,7 @@ public class AtcSimulatorDomainConfig {
             this.airspaceManagement = airspaceManagement;
         }
 
-        @Scheduled(fixedRate = 1000 / REFRESH_RATE)
+        @Scheduled(fixedRate = TICK_INTERVAL_MS)
         public void tick() {
             if (!GlobalVariables.isSimulationRunning) {
                 return;

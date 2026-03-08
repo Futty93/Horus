@@ -1,8 +1,10 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.application;
 
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.AircraftNotFoundException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftBase;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.types.commercial.CommercialAircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.RiskAssessment;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.AircraftLocationDto;
@@ -35,10 +37,13 @@ public class GetAllAircraftLocationsWithRiskUseCase {
     }
 
     public AircraftLocationDto execute(String callsign) {
+        if (!aircraftRepository.isAircraftExist(new Callsign(callsign))) {
+            throw new AircraftNotFoundException(callsign);
+        }
         return execute().stream()
                 .filter(dto -> dto.callsign().equals(callsign))
                 .findFirst()
-                .orElse(null);
+                .orElseThrow();
     }
 
     private AircraftLocationDto toDto(Aircraft aircraft, Map<String, RiskAssessment> allConflicts,

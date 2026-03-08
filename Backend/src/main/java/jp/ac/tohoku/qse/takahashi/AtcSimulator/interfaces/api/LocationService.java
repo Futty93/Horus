@@ -1,9 +1,6 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.api;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.GetAllAircraftLocationsWithRiskUseCase;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.AircraftNotFoundException;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.AircraftLocationDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,12 +24,9 @@ public class LocationService {
     private static final Logger logger = LoggerFactory.getLogger(LocationService.class);
 
     private final GetAllAircraftLocationsWithRiskUseCase getAllAircraftLocationsWithRiskUseCase;
-    private final AircraftRepository aircraftRepository;
 
-    public LocationService(GetAllAircraftLocationsWithRiskUseCase getAllAircraftLocationsWithRiskUseCase,
-                           AircraftRepository aircraftRepository) {
+    public LocationService(GetAllAircraftLocationsWithRiskUseCase getAllAircraftLocationsWithRiskUseCase) {
         this.getAllAircraftLocationsWithRiskUseCase = getAllAircraftLocationsWithRiskUseCase;
-        this.aircraftRepository = aircraftRepository;
     }
 
     @GetMapping(path = "/location/all", produces = "application/json")
@@ -45,12 +39,6 @@ public class LocationService {
     @GetMapping(path = "/location", produces = "application/json")
     public ResponseEntity<AircraftLocationDto> getAircraftLocation(@RequestParam String callsign) {
         logger.debug("航空機位置情報取得要求: {}", callsign);
-
-        Callsign aircraftCallsign = new Callsign(callsign);
-        if (!aircraftRepository.isAircraftExist(aircraftCallsign)) {
-            throw new AircraftNotFoundException(callsign);
-        }
-
         AircraftLocationDto dto = getAllAircraftLocationsWithRiskUseCase.execute(callsign);
         return ResponseEntity.ok(dto);
     }
