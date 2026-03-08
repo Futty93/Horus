@@ -7,8 +7,10 @@ import { CenterCoordinateProvider } from "@/context/centerCoordinateContext";
 import { DisplayRangeProvider } from "@/context/displayRangeContext";
 import DisplayRangeSetting from "@/components/displayRangeSetting";
 import { SelectFixModeProvider } from "@/context/selectFixModeContext";
+import { SelectedAircraftProvider } from "@/context/selectedAircraftContext";
 // import SelectFixMode from "@/components/selectFixMode";
 import InputAircraftInfo from "@/components/inputInfoArea";
+import SelectedCallsignDisplay from "@/components/selectedCallsignDisplay";
 import FlightPlanDisplay from "@/components/flightPlanDisplay";
 import FlightPlanControl from "@/components/flightPlanControl";
 import SimulationControlButtons from "@/components/simulationControlButtons";
@@ -25,14 +27,13 @@ export default function ControllerPage() {
       <CenterCoordinateProvider>
         <DisplayRangeProvider>
           <SelectFixModeProvider>
-            <div className="flex h-screen w-full">
-              <div className="flex w-full">
-                <RadarCanvas />
-                <div className="controlPanel bg-zinc-900 text-white p-5 flex flex-col justify-between min-w-80">
-                  <div id="callsignDisplay" className="text-center mb-5">
-                    <p id="callsign" className="text-2xl font-bold text-green-400">&nbsp;</p>
-                  </div>
-                  <InputAircraftInfo />
+            <SelectedAircraftProvider>
+              <div className="flex h-screen w-full">
+                <div className="flex w-full">
+                  <RadarCanvas />
+                  <div className="controlPanel bg-zinc-900 text-white p-5 flex flex-col justify-between min-w-80">
+                    <SelectedCallsignDisplay variant="controller" />
+                    <InputAircraftInfo />
                   <FlightPlanDisplay />
                   <FlightPlanControl />
                   {/* <SelectFixMode /> */}
@@ -47,6 +48,7 @@ export default function ControllerPage() {
                 </div>
               </div>
             </div>
+            </SelectedAircraftProvider>
           </SelectFixModeProvider>
         </DisplayRangeProvider>
       </CenterCoordinateProvider>

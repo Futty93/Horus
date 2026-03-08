@@ -1,30 +1,16 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useSelectedAircraft } from "@/context/selectedAircraftContext";
 import {
   fetchFlightPlan,
   type FlightPlanStatus,
 } from "@/utility/api/flightPlan";
 
 const FlightPlanDisplay: React.FC = () => {
+  const { callsign } = useSelectedAircraft();
   const [status, setStatus] = useState<FlightPlanStatus | null>(null);
-  const [callsign, setCallsign] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const checkCallsign = () => {
-      const el = document.getElementById("callsign") as HTMLParagraphElement | null;
-      const text = el?.textContent?.trim() ?? "";
-      const current = text.length >= 2 ? text : null;
-      if (current !== callsign) {
-        setCallsign(current);
-        setStatus(null);
-      }
-    };
-    checkCallsign();
-    const interval = setInterval(checkCallsign, 500);
-    return () => clearInterval(interval);
-  }, [callsign]);
 
   const refresh = React.useCallback(() => {
     if (!callsign) return;

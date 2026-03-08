@@ -1,5 +1,6 @@
 "use client";
 import { useSelectFixMode } from "@/context/selectFixModeContext";
+import { useSelectedAircraft } from "@/context/selectedAircraftContext";
 import React from "react";
 
 const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
@@ -7,6 +8,7 @@ const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
 
 const SelectFixMode = () => {
   const { isSelectFixMode, setIsSelectFixMode } = useSelectFixMode();
+  const { callsign } = useSelectedAircraft();
 
   return (
     <div className="bg-control-gradient border border-matrix-accent rounded-cyber-lg p-4 backdrop-blur-sm mt-4">
@@ -32,12 +34,9 @@ const SelectFixMode = () => {
                      focus:outline-none focus:ring-2 focus:ring-cyber-500 focus:ring-offset-2 focus:ring-offset-matrix-dark
                      relative overflow-hidden group"
           onClick={() => {
-            console.log("Direct to Fix 押されたよ");
-            const callsignElement = document.getElementById("callsign") as HTMLParagraphElement;
             const selectedFixNameElement = document.getElementById("selectedFixName") as HTMLParagraphElement;
-            if (callsignElement.innerText.length <= 1) {
-              console.error("Callsign is empty");
-              selectedFixNameElement.innerText = "Select aircraft first";
+            if (!callsign || callsign.length < 2) {
+              if (selectedFixNameElement) selectedFixNameElement.innerText = "Select aircraft first";
               return;
             }
             setIsSelectFixMode({ selectFixMode: true });
@@ -58,21 +57,10 @@ const SelectFixMode = () => {
                        focus:outline-none focus:ring-2 focus:ring-radar-primary focus:ring-offset-2 focus:ring-offset-matrix-dark
                        relative overflow-hidden group animate-glow"
             onClick={async () => {
-              console.log("Confirm 押されたよ");
-              const callsignElement = document.getElementById("callsign") as HTMLParagraphElement;
               const selectedFixNameElement = document.getElementById("selectedFixName") as HTMLParagraphElement;
+              const selectedFixName = selectedFixNameElement?.innerText ?? "";
 
-              if (callsignElement.innerText.length <= 1) {
-                console.error("Callsign is empty");
-              } else if (callsignElement) {
-                const callsign = callsignElement.innerText;
-                console.log("Callsign:", callsign);
-              } else {
-                console.error("Callsign element not found");
-              }
-
-              const callsign = callsignElement.innerText;
-              const selectedFixName = selectedFixNameElement.innerText;
+              if (!callsign || callsign.length < 2) return;
               if (!selectedFixName || selectedFixName === "No fixes selected") {
                 console.error("No fix selected");
                 return;

@@ -1,23 +1,21 @@
 "use client";
-import React from 'react';
+import React from "react";
+import { useSelectedAircraft } from "@/context/selectedAircraftContext";
 
 const serverIp = process.env.NEXT_PUBLIC_SERVER_IP;
 const serverPort = process.env.NEXT_PUBLIC_SERVER_PORT;
 
 const ControlAircraft = () => {
-  let callsign: string = "";
+  const { callsign } = useSelectedAircraft();
 
   const controlAircraft = async () => {
-    const callsignElement = document.getElementById("callsign") as HTMLParagraphElement;
+    if (!callsign || callsign.length < 2) {
+      console.error("No aircraft selected");
+      return;
+    }
     const inputAltitude = document.getElementById("altitude") as HTMLInputElement;
     const inputSpeed = document.getElementById("speed") as HTMLInputElement;
     const inputHeading = document.getElementById("heading") as HTMLInputElement;
-    if (callsignElement.innerText.length >= 2) {
-      callsign = callsignElement.innerText;
-    } else {
-      console.error("Callsign element not found");
-      return;
-    }
     if (!inputAltitude || !inputSpeed || !inputHeading) {
       console.error("Input elements not found");
       return;

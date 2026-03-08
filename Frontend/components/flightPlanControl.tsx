@@ -1,25 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useSelectedAircraft } from "@/context/selectedAircraftContext";
 import { directToFix, resumeNavigation } from "@/utility/api/flightPlan";
 
 const FlightPlanControl: React.FC = () => {
-  const [callsign, setCallsign] = useState<string | null>(null);
+  const { callsign } = useSelectedAircraft();
   const [fixName, setFixName] = useState("");
   const [resumeAfterDirect, setResumeAfterDirect] = useState(false);
   const [directResult, setDirectResult] = useState<"idle" | "success" | "error">("idle");
   const [resumeResult, setResumeResult] = useState<"idle" | "success" | "error">("idle");
-
-  useEffect(() => {
-    const check = () => {
-      const el = document.getElementById("callsign") as HTMLParagraphElement | null;
-      const text = el?.textContent?.trim() ?? "";
-      setCallsign(text.length >= 2 ? text : null);
-    };
-    check();
-    const interval = setInterval(check, 500);
-    return () => clearInterval(interval);
-  }, []);
 
   const handleDirectTo = async () => {
     if (!callsign || !fixName.trim()) return;

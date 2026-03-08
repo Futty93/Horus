@@ -11,6 +11,7 @@ import { useRouteInfoDisplaySetting } from '@/context/routeInfoDisplaySettingCon
 import { useCenterCoordinate } from "@/context/centerCoordinateContext";
 import { useDisplayRange } from "@/context/displayRangeContext";
 import { useSelectFixMode } from "@/context/selectFixModeContext";
+import { useSelectedAircraft } from "@/context/selectedAircraftContext";
 import { searchFixName } from "@/utility/AtsRouteManager/FixNameSearch";
 import { usePathname } from "next/navigation";
 
@@ -32,6 +33,7 @@ const RadarCanvas: React.FC = () => {
   const { displayRange } = useDisplayRange();
   const displayRangeRef = useRef(displayRange);
   const { isSelectFixMode } = useSelectFixMode();
+  const { setCallsign } = useSelectedAircraft();
   const isSelectFixModeRef = useRef(isSelectFixMode);
   const atsRouteDataRef = useRef(atsRouteData);
   const pathname = usePathname();
@@ -286,13 +288,10 @@ const RadarCanvas: React.FC = () => {
   };
 
   const changeDisplayAircraftInfo = (aircraft: Aircraft) => {
-    const fontElement = document.getElementById("callsign") as HTMLParagraphElement;
+    setCallsign(aircraft.callsign);
     const inputAltitude = document.getElementById("altitude") as HTMLInputElement;
     const inputSpeed = document.getElementById("speed") as HTMLInputElement;
     const inputHeading = document.getElementById("heading") as HTMLInputElement;
-    if (fontElement) {
-      fontElement.textContent = aircraft.callsign;
-    }
     if (inputAltitude) {
       inputAltitude.value = Math.round(aircraft.instructedVector.altitude).toString();
     }

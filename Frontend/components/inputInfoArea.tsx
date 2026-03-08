@@ -1,23 +1,23 @@
 "use client";
-import React from 'react';
+import React from "react";
+import { useSelectedAircraft } from "@/context/selectedAircraftContext";
 
 const InputAircraftInfo = () => {
+  const { callsign } = useSelectedAircraft();
+
   const controlAircraft = async () => {
-    const callsignElement = document.getElementById("callsign") as HTMLParagraphElement;
+    if (!callsign || callsign.length < 2) {
+      console.error("No aircraft selected");
+      return;
+    }
     const inputAltitude = document.getElementById("altitude") as HTMLInputElement;
     const inputSpeed = document.getElementById("speed") as HTMLInputElement;
     const inputHeading = document.getElementById("heading") as HTMLInputElement;
-    if (!callsignElement || callsignElement.innerText.length < 2) {
-      console.error("Callsign element not found");
-      return;
-    }
     if (!inputAltitude || !inputSpeed || !inputHeading) {
       console.error("Input elements not found");
       return;
     }
-    // TODO: send instruction to API
-    /* eslint-disable @typescript-eslint/no-unused-vars -- used when API is implemented */
-    const callsign = callsignElement.innerText;
+    /* eslint-disable @typescript-eslint/no-unused-vars -- TODO: send instruction to API */
     const instructedAltitude = parseInt(inputAltitude.value, 10);
     const instructedGroundSpeed = parseInt(inputSpeed.value, 10);
     const instructedHeading = parseInt(inputHeading.value, 10);
