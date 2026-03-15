@@ -23,7 +23,6 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.persistence.inMemory.AircraftRepositoryInMemory;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ConflictAlertDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ConflictStatisticsDto;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.CreateAircraftDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.RiskAssessmentDto;
 
 /**
@@ -67,17 +66,6 @@ class ConflictAlertServiceTest {
                 50.0, 120.0, 3.0, 800.0, false);
         when(conflictDetector.calculateAllConflicts(anyList()))
                 .thenReturn(Map.of("CF1-CF2", assessment));
-
-        CreateAircraftDto dto1 = new CreateAircraftDto(
-                "CF1", 35.0, 139.0, 35000, 450, 0, 90,
-                "B738", "HND", "RJTT", "NRT", "RJAA", "2024-12-13T14:30:00Z"
-        );
-        CreateAircraftDto dto2 = new CreateAircraftDto(
-                "CF2", 35.001, 139.001, 35000, 450, 0, 270,
-                "B738", "HND", "RJTT", "NRT", "RJAA", "2024-12-13T14:30:00Z"
-        );
-        aircraftRepository.add(AircraftFactory.createCommercialAircraft(dto1));
-        aircraftRepository.add(AircraftFactory.createCommercialAircraft(dto2));
 
         List<ConflictAlertDto> results = conflictAlertService.getAircraftConflicts("CF1");
 

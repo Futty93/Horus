@@ -55,7 +55,7 @@ public class ConflictAlertController {
      *
      * @param level 最小アラートレベル (SAFE, WHITE_CONFLICT, RED_CONFLICT)
      * @return フィルタされたコンフリクト評価結果
-     * @throws InvalidParameterException 無効なアラートレベルが指定された場合
+     * @throws InvalidParameterException 無効なアラートレベルが指定された場合（Service から伝播）
      */
     @GetMapping("/filtered")
     public ResponseEntity<Map<String, RiskAssessmentDto>> getFilteredConflicts(
