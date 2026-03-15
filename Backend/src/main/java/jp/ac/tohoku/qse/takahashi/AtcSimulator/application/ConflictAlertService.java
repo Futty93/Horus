@@ -10,6 +10,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.RiskAssessment;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ConflictAlertDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ConflictStatisticsDto;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.RiskAssessmentDto;
 
 /**
  * コンフリクトアラート機能のアプリケーションサービス
@@ -58,6 +59,39 @@ public class ConflictAlertService {
                 Map.Entry::getKey,
                 Map.Entry::getValue
             ));
+    }
+
+    /**
+     * 全てのコンフリクトアラートを DTO 形式で取得（API 用）
+     */
+    public Map<String, RiskAssessmentDto> getAllConflictAlertsAsDto() {
+        return toDtoMap(getAllConflictAlerts());
+    }
+
+    /**
+     * フィルタされたコンフリクトアラートを DTO 形式で取得（API 用）
+     */
+    public Map<String, RiskAssessmentDto> getFilteredConflictAlertsAsDto(AlertLevel minimumAlertLevel) {
+        return toDtoMap(getFilteredConflictAlerts(minimumAlertLevel));
+    }
+
+    private static Map<String, RiskAssessmentDto> toDtoMap(Map<String, RiskAssessment> conflicts) {
+        return conflicts.entrySet().stream()
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> toRiskAssessmentDto(entry.getValue())
+            ));
+    }
+
+    private static RiskAssessmentDto toRiskAssessmentDto(RiskAssessment assessment) {
+        return new RiskAssessmentDto(
+            assessment.getRiskLevel(),
+            assessment.getAlertLevel().name(),
+            assessment.getTimeToClosest(),
+            assessment.getClosestHorizontalDistance(),
+            assessment.getClosestVerticalDistance(),
+            assessment.isConflictPredicted()
+        );
     }
 
     /**
@@ -114,32 +148,34 @@ public class ConflictAlertService {
     public ConflictStatisticsDto getConflictStatistics() {
         Map<String, RiskAssessment> allConflicts = getAllConflictAlerts();
 
-        long totalConflicts = allConflicts.size();
-        long safeCount = allConflicts.values().stream()
-            .mapToLong(assessment -> assessment.getAlertLevel() == AlertLevel.SAFE ? 1 : 0)
-            .sum();
-        long whiteConflictCount = allConflicts.values().stream()
-            .mapToLong(assessment -> assessment.getAlertLevel() == AlertLevel.WHITE_CONFLICT ? 1 : 0)
-            .sum();
-        long redConflictCount = allConflicts.values().stream()
-            .mapToLong(assessment -> assessment.getAlertLevel() == AlertLevel.RED_CONFLICT ? 1 : 0)
-            .sum();
-        long separationViolationCount = allConflicts.values().stream()
-            .mapToLong(assessment -> assessment.isConflictPredicted() ? 1 : 0)
-            .sum();
+        long safeCount = 0;
+        long whiteConflictCount = 0;
+        long redConflictCount = 0;
+        long separationViolationCount = 0;
+        double maxRiskLevel = 0.0;
+        double sumRiskLevel = 0.0;
 
-        double maxRiskLevel = allConflicts.values().stream()
-            .mapToDouble(RiskAssessment::getRiskLevel)
-            .max()
-            .orElse(0.0);
+        for (RiskAssessment a : allConflicts.values()) {
+            if (a.getAlertLevel() == AlertLevel.SAFE) {
+                safeCount++;
+            } else if (a.getAlertLevel() == AlertLevel.WHITE_CONFLICT) {
+                whiteConflictCount++;
+            } else if (a.getAlertLevel() == AlertLevel.RED_CONFLICT) {
+                redConflictCount++;
+            }
+            if (a.isConflictPredicted()) {
+                separationViolationCount++;
+            }
+            double r = a.getRiskLevel();
+            maxRiskLevel = Math.max(maxRiskLevel, r);
+            sumRiskLevel += r;
+        }
 
-        double avgRiskLevel = allConflicts.values().stream()
-            .mapToDouble(RiskAssessment::getRiskLevel)
-            .average()
-            .orElse(0.0);
+        int n = allConflicts.size();
+        double avgRiskLevel = n > 0 ? sumRiskLevel / n : 0.0;
 
         return new ConflictStatisticsDto(
-            totalConflicts, safeCount, whiteConflictCount, redConflictCount,
+            n, safeCount, whiteConflictCount, redConflictCount,
             separationViolationCount, maxRiskLevel, avgRiskLevel
         );
     }

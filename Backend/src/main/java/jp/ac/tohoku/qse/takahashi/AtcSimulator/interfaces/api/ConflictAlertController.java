@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ConflictAlertService;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.InvalidParameterException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.AlertLevel;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.RiskAssessment;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ConflictAlertDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ConflictStatisticsDto;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.RiskAssessmentDto;
 
 /**
  * コンフリクトアラート機能のREST APIコントローラー
@@ -43,10 +43,10 @@ public class ConflictAlertController {
      * @return 全コンフリクト評価結果
      */
     @GetMapping("/all")
-    public ResponseEntity<Map<String, RiskAssessment>> getAllConflicts() {
+    public ResponseEntity<Map<String, RiskAssessmentDto>> getAllConflicts() {
         logger.debug("全コンフリクトアラート取得要求");
 
-        Map<String, RiskAssessment> conflicts = conflictAlertService.getAllConflictAlerts();
+        Map<String, RiskAssessmentDto> conflicts = conflictAlertService.getAllConflictAlertsAsDto();
 
         logger.debug("全コンフリクトアラート取得完了: {}件", conflicts.size());
         return ResponseEntity.ok(conflicts);
@@ -60,13 +60,13 @@ public class ConflictAlertController {
      * @throws InvalidParameterException 無効なアラートレベルが指定された場合
      */
     @GetMapping("/filtered")
-    public ResponseEntity<Map<String, RiskAssessment>> getFilteredConflicts(
+    public ResponseEntity<Map<String, RiskAssessmentDto>> getFilteredConflicts(
             @RequestParam(defaultValue = "WHITE_CONFLICT") String level) {
         logger.debug("フィルタされたコンフリクト取得要求: レベル={}", level);
 
         try {
             AlertLevel alertLevel = AlertLevel.valueOf(level.toUpperCase());
-            Map<String, RiskAssessment> conflicts = conflictAlertService.getFilteredConflictAlerts(alertLevel);
+            Map<String, RiskAssessmentDto> conflicts = conflictAlertService.getFilteredConflictAlertsAsDto(alertLevel);
 
             logger.debug("フィルタされたコンフリクト取得完了: {}件", conflicts.size());
             return ResponseEntity.ok(conflicts);
