@@ -9,8 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ConflictAlertService;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.InvalidParameterException;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.AlertLevel;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ConflictAlertDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ConflictStatisticsDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.RiskAssessmentDto;
@@ -64,15 +62,10 @@ public class ConflictAlertController {
             @RequestParam(defaultValue = "WHITE_CONFLICT") String level) {
         logger.debug("フィルタされたコンフリクト取得要求: レベル={}", level);
 
-        try {
-            AlertLevel alertLevel = AlertLevel.valueOf(level.toUpperCase());
-            Map<String, RiskAssessmentDto> conflicts = conflictAlertService.getFilteredConflictAlertsAsDto(alertLevel);
+        Map<String, RiskAssessmentDto> conflicts = conflictAlertService.getFilteredConflictAlertsAsDto(level);
 
-            logger.debug("フィルタされたコンフリクト取得完了: {}件", conflicts.size());
-            return ResponseEntity.ok(conflicts);
-        } catch (IllegalArgumentException e) {
-            throw new InvalidParameterException("level", level, "有効な値: SAFE, WHITE_CONFLICT, RED_CONFLICT");
-        }
+        logger.debug("フィルタされたコンフリクト取得完了: {}件", conflicts.size());
+        return ResponseEntity.ok(conflicts);
     }
 
     /**

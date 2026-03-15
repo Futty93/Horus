@@ -3,6 +3,7 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator.application;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.InvalidParameterException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.service.conflict.ConflictDetector;
@@ -70,9 +71,17 @@ public class ConflictAlertService {
 
     /**
      * フィルタされたコンフリクトアラートを DTO 形式で取得（API 用）
+     *
+     * @param level 最小アラートレベル文字列 (SAFE, WHITE_CONFLICT, RED_CONFLICT)
+     * @throws InvalidParameterException 無効な level が指定された場合
      */
-    public Map<String, RiskAssessmentDto> getFilteredConflictAlertsAsDto(AlertLevel minimumAlertLevel) {
-        return toDtoMap(getFilteredConflictAlerts(minimumAlertLevel));
+    public Map<String, RiskAssessmentDto> getFilteredConflictAlertsAsDto(String level) {
+        try {
+            AlertLevel alertLevel = AlertLevel.valueOf(level.toUpperCase());
+            return toDtoMap(getFilteredConflictAlerts(alertLevel));
+        } catch (IllegalArgumentException e) {
+            throw new InvalidParameterException("level", level, "有効な値: SAFE, WHITE_CONFLICT, RED_CONFLICT");
+        }
     }
 
     private static Map<String, RiskAssessmentDto> toDtoMap(Map<String, RiskAssessment> conflicts) {
@@ -171,7 +180,7 @@ public class ConflictAlertService {
             sumRiskLevel += r;
         }
 
-        int n = allConflicts.size();
+        long n = allConflicts.size();
         double avgRiskLevel = n > 0 ? sumRiskLevel / n : 0.0;
 
         return new ConflictStatisticsDto(
@@ -181,14 +190,15 @@ public class ConflictAlertService {
     }
 
     private static ConflictAlertDto toDto(String pairId, RiskAssessment assessment) {
+        RiskAssessmentDto r = toRiskAssessmentDto(assessment);
         return new ConflictAlertDto(
             pairId,
-            assessment.getRiskLevel(),
-            assessment.getAlertLevel().name(),
-            assessment.getTimeToClosest(),
-            assessment.getClosestHorizontalDistance(),
-            assessment.getClosestVerticalDistance(),
-            assessment.isConflictPredicted()
+            r.riskLevel(),
+            r.alertLevel(),
+            r.timeToClosest(),
+            r.closestHorizontalDistance(),
+            r.closestVerticalDistance(),
+            r.conflictPredicted()
         );
     }
 }
