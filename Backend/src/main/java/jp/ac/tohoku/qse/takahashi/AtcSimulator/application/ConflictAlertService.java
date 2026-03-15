@@ -3,11 +3,15 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator.application;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.InvalidParameterException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.service.conflict.ConflictDetector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.AlertLevel;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.RiskAssessment;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ConflictAlertDto;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ConflictStatisticsDto;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.RiskAssessmentDto;
 
 /**
  * コンフリクトアラート機能のアプリケーションサービス
@@ -59,17 +63,58 @@ public class ConflictAlertService {
     }
 
     /**
+     * 全てのコンフリクトアラートを DTO 形式で取得（API 用）
+     */
+    public Map<String, RiskAssessmentDto> getAllConflictAlertsAsDto() {
+        return toDtoMap(getAllConflictAlerts());
+    }
+
+    /**
+     * フィルタされたコンフリクトアラートを DTO 形式で取得（API 用）
+     *
+     * @param level 最小アラートレベル文字列 (SAFE, WHITE_CONFLICT, RED_CONFLICT)
+     * @throws InvalidParameterException 無効な level が指定された場合
+     */
+    public Map<String, RiskAssessmentDto> getFilteredConflictAlertsAsDto(String level) {
+        try {
+            AlertLevel alertLevel = AlertLevel.valueOf(level.toUpperCase());
+            return toDtoMap(getFilteredConflictAlerts(alertLevel));
+        } catch (IllegalArgumentException e) {
+            throw new InvalidParameterException("level", level, "有効な値: SAFE, WHITE_CONFLICT, RED_CONFLICT");
+        }
+    }
+
+    private static Map<String, RiskAssessmentDto> toDtoMap(Map<String, RiskAssessment> conflicts) {
+        return conflicts.entrySet().stream()
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> toRiskAssessmentDto(entry.getValue())
+            ));
+    }
+
+    private static RiskAssessmentDto toRiskAssessmentDto(RiskAssessment assessment) {
+        return new RiskAssessmentDto(
+            assessment.getRiskLevel(),
+            assessment.getAlertLevel().name(),
+            assessment.getTimeToClosest(),
+            assessment.getClosestHorizontalDistance(),
+            assessment.getClosestVerticalDistance(),
+            assessment.isConflictPredicted()
+        );
+    }
+
+    /**
      * 緊急度の高いコンフリクトアラート（赤コンフリクト）のみを取得
      *
      * @return 赤コンフリクトのリスト
      */
-    public List<ConflictAlert> getCriticalAlerts() {
+    public List<ConflictAlertDto> getCriticalAlerts() {
         Map<String, RiskAssessment> allConflicts = getAllConflictAlerts();
 
         return allConflicts.entrySet().stream()
             .filter(entry -> entry.getValue().getAlertLevel() == AlertLevel.RED_CONFLICT)
-            .map(entry -> new ConflictAlert(entry.getKey(), entry.getValue()))
-            .sorted(Comparator.comparing(alert -> alert.getRiskAssessment().getTimeToClosest()))
+            .map(entry -> toDto(entry.getKey(), entry.getValue()))
+            .sorted(Comparator.comparing(ConflictAlertDto::timeToClosest))
             .collect(Collectors.toList());
     }
 
@@ -78,13 +123,13 @@ public class ConflictAlertService {
      *
      * @return 管制間隔欠如予測のあるコンフリクトのリスト
      */
-    public List<ConflictAlert> getSeparationViolationAlerts() {
+    public List<ConflictAlertDto> getSeparationViolationAlerts() {
         Map<String, RiskAssessment> allConflicts = getAllConflictAlerts();
 
         return allConflicts.entrySet().stream()
             .filter(entry -> entry.getValue().isConflictPredicted())
-            .map(entry -> new ConflictAlert(entry.getKey(), entry.getValue()))
-            .sorted(Comparator.comparing(alert -> alert.getRiskAssessment().getTimeToClosest()))
+            .map(entry -> toDto(entry.getKey(), entry.getValue()))
+            .sorted(Comparator.comparing(ConflictAlertDto::timeToClosest))
             .collect(Collectors.toList());
     }
 
@@ -94,13 +139,13 @@ public class ConflictAlertService {
      * @param callsign 対象航空機のコールサイン
      * @return 指定航空機に関連するコンフリクトのリスト
      */
-    public List<ConflictAlert> getAircraftConflicts(String callsign) {
+    public List<ConflictAlertDto> getAircraftConflicts(String callsign) {
         Map<String, RiskAssessment> allConflicts = getAllConflictAlerts();
 
         return allConflicts.entrySet().stream()
             .filter(entry -> entry.getKey().contains(callsign))
-            .map(entry -> new ConflictAlert(entry.getKey(), entry.getValue()))
-            .sorted(Comparator.comparing(alert -> -alert.getRiskAssessment().getRiskLevel())) // 危険度降順
+            .map(entry -> toDto(entry.getKey(), entry.getValue()))
+            .sorted(Comparator.comparing(ConflictAlertDto::riskLevel).reversed())
             .collect(Collectors.toList());
     }
 
@@ -109,111 +154,51 @@ public class ConflictAlertService {
      *
      * @return アラート統計情報
      */
-    public ConflictStatistics getConflictStatistics() {
+    public ConflictStatisticsDto getConflictStatistics() {
         Map<String, RiskAssessment> allConflicts = getAllConflictAlerts();
 
-        long totalConflicts = allConflicts.size();
-        long safeCount = allConflicts.values().stream()
-            .mapToLong(assessment -> assessment.getAlertLevel() == AlertLevel.SAFE ? 1 : 0)
-            .sum();
-        long whiteConflictCount = allConflicts.values().stream()
-            .mapToLong(assessment -> assessment.getAlertLevel() == AlertLevel.WHITE_CONFLICT ? 1 : 0)
-            .sum();
-        long redConflictCount = allConflicts.values().stream()
-            .mapToLong(assessment -> assessment.getAlertLevel() == AlertLevel.RED_CONFLICT ? 1 : 0)
-            .sum();
-        long separationViolationCount = allConflicts.values().stream()
-            .mapToLong(assessment -> assessment.isConflictPredicted() ? 1 : 0)
-            .sum();
+        long safeCount = 0;
+        long whiteConflictCount = 0;
+        long redConflictCount = 0;
+        long separationViolationCount = 0;
+        double maxRiskLevel = 0.0;
+        double sumRiskLevel = 0.0;
 
-        double maxRiskLevel = allConflicts.values().stream()
-            .mapToDouble(RiskAssessment::getRiskLevel)
-            .max()
-            .orElse(0.0);
+        for (RiskAssessment a : allConflicts.values()) {
+            if (a.getAlertLevel() == AlertLevel.SAFE) {
+                safeCount++;
+            } else if (a.getAlertLevel() == AlertLevel.WHITE_CONFLICT) {
+                whiteConflictCount++;
+            } else if (a.getAlertLevel() == AlertLevel.RED_CONFLICT) {
+                redConflictCount++;
+            }
+            if (a.isConflictPredicted()) {
+                separationViolationCount++;
+            }
+            double r = a.getRiskLevel();
+            maxRiskLevel = Math.max(maxRiskLevel, r);
+            sumRiskLevel += r;
+        }
 
-        double avgRiskLevel = allConflicts.values().stream()
-            .mapToDouble(RiskAssessment::getRiskLevel)
-            .average()
-            .orElse(0.0);
+        long n = allConflicts.size();
+        double avgRiskLevel = n > 0 ? sumRiskLevel / n : 0.0;
 
-        return new ConflictStatistics(
-            totalConflicts, safeCount, whiteConflictCount, redConflictCount,
+        return new ConflictStatisticsDto(
+            n, safeCount, whiteConflictCount, redConflictCount,
             separationViolationCount, maxRiskLevel, avgRiskLevel
         );
     }
 
-    /**
-     * コンフリクトアラート情報を表すデータクラス
-     */
-    public static class ConflictAlert {
-        private final String pairId;
-        private final RiskAssessment riskAssessment;
-
-        public ConflictAlert(String pairId, RiskAssessment riskAssessment) {
-            this.pairId = pairId;
-            this.riskAssessment = riskAssessment;
-        }
-
-        public String getPairId() {
-            return pairId;
-        }
-
-        public RiskAssessment getRiskAssessment() {
-            return riskAssessment;
-        }
-
-        public String[] getCallsigns() {
-            return pairId.split("-");
-        }
-
-        @Override
-        public String toString() {
-            return String.format("ConflictAlert{pairId='%s', riskLevel=%.2f, alertLevel=%s, timeToClosest=%.1fs}",
-                pairId, riskAssessment.getRiskLevel(), riskAssessment.getAlertLevel(),
-                riskAssessment.getTimeToClosest());
-        }
-    }
-
-    /**
-     * コンフリクト統計情報を表すデータクラス
-     */
-    public static class ConflictStatistics {
-        private final long totalConflicts;
-        private final long safeCount;
-        private final long whiteConflictCount;
-        private final long redConflictCount;
-        private final long separationViolationCount;
-        private final double maxRiskLevel;
-        private final double avgRiskLevel;
-
-        public ConflictStatistics(long totalConflicts, long safeCount, long whiteConflictCount,
-                                long redConflictCount, long separationViolationCount,
-                                double maxRiskLevel, double avgRiskLevel) {
-            this.totalConflicts = totalConflicts;
-            this.safeCount = safeCount;
-            this.whiteConflictCount = whiteConflictCount;
-            this.redConflictCount = redConflictCount;
-            this.separationViolationCount = separationViolationCount;
-            this.maxRiskLevel = maxRiskLevel;
-            this.avgRiskLevel = avgRiskLevel;
-        }
-
-        // Getters
-        public long getTotalConflicts() { return totalConflicts; }
-        public long getSafeCount() { return safeCount; }
-        public long getWhiteConflictCount() { return whiteConflictCount; }
-        public long getRedConflictCount() { return redConflictCount; }
-        public long getSeparationViolationCount() { return separationViolationCount; }
-        public double getMaxRiskLevel() { return maxRiskLevel; }
-        public double getAvgRiskLevel() { return avgRiskLevel; }
-
-        @Override
-        public String toString() {
-            return String.format(
-                "ConflictStatistics{total=%d, safe=%d, white=%d, red=%d, violations=%d, maxRisk=%.2f, avgRisk=%.2f}",
-                totalConflicts, safeCount, whiteConflictCount, redConflictCount,
-                separationViolationCount, maxRiskLevel, avgRiskLevel
-            );
-        }
+    private static ConflictAlertDto toDto(String pairId, RiskAssessment assessment) {
+        RiskAssessmentDto r = toRiskAssessmentDto(assessment);
+        return new ConflictAlertDto(
+            pairId,
+            r.riskLevel(),
+            r.alertLevel(),
+            r.timeToClosest(),
+            r.closestHorizontalDistance(),
+            r.closestVerticalDistance(),
+            r.conflictPredicted()
+        );
     }
 }
