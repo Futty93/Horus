@@ -169,4 +169,5 @@ class BackendRedesignIntegrationTest {
                 String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
+
 }

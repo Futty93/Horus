@@ -107,11 +107,11 @@
 
 ## 技術的負債（並行して対応）
 
-| # | タスク | 優先度 | 難易度 | Issue | 備考 |
-|---|--------|--------|--------|-------|------|
-| T-1 | `ConflictAlertService` の DTO 化（backend-redesign 6.6 未着手） | 🟡 | ★☆☆ | [#74](https://github.com/Futty93/Horus/issues/74) | 小さいが残タスク |
-| T-2 | API クラス名統一（`*Service` → `*Controller`）（backend-redesign 7.3 保留） | 🟢 | ★★☆ | [#75](https://github.com/Futty93/Horus/issues/75) | 影響範囲大のため慎重に |
-| T-3 | テスト網羅（単体・統合）— flight-plan spec 6.1〜6.3 未着手 | 🟡 | ★★☆ | [#76](https://github.com/Futty93/Horus/issues/76) | サンプルシナリオ JSON 作成も含む |
+| # | タスク | 優先度 | 難易度 | Issue | 状態 | 備考 |
+|---|--------|--------|--------|-------|------|------|
+| T-1 | `ConflictAlertService` の DTO 化（backend-redesign 6.6 未着手） | 🟡 | ★☆☆ | [#74](https://github.com/Futty93/Horus/issues/74) | ✅ 完了 | ConflictAlertDto, ConflictStatisticsDto を interfaces/dto に切り出し |
+| T-2 | API クラス名統一（`*Service` → `*Controller`）（backend-redesign 7.3 保留） | 🟢 | ★★☆ | [#75](https://github.com/Futty93/Horus/issues/75) | - | 影響範囲大のため慎重に |
+| T-3 | テスト網羅（単体・統合）— flight-plan spec 6.1〜6.3 未着手 | 🟡 | ★★☆ | [#76](https://github.com/Futty93/Horus/issues/76) | - | サンプルシナリオ JSON 作成も含む |
 
 ---
 

@@ -12,6 +12,8 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ConflictAlertService;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.InvalidParameterException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.AlertLevel;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.RiskAssessment;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ConflictAlertDto;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ConflictStatisticsDto;
 
 /**
  * コンフリクトアラート機能のREST APIコントローラー
@@ -79,10 +81,10 @@ public class ConflictAlertController {
      * @return 赤コンフリクトのリスト（時間順）
      */
     @GetMapping("/critical")
-    public ResponseEntity<List<ConflictAlertService.ConflictAlert>> getCriticalAlerts() {
+    public ResponseEntity<List<ConflictAlertDto>> getCriticalAlerts() {
         logger.debug("緊急コンフリクトアラート取得要求");
 
-        List<ConflictAlertService.ConflictAlert> criticalAlerts = conflictAlertService.getCriticalAlerts();
+        List<ConflictAlertDto> criticalAlerts = conflictAlertService.getCriticalAlerts();
 
         logger.debug("緊急コンフリクトアラート取得完了: {}件", criticalAlerts.size());
         return ResponseEntity.ok(criticalAlerts);
@@ -94,10 +96,10 @@ public class ConflictAlertController {
      * @return 管制間隔欠如予測のあるコンフリクトのリスト
      */
     @GetMapping("/violations")
-    public ResponseEntity<List<ConflictAlertService.ConflictAlert>> getSeparationViolations() {
+    public ResponseEntity<List<ConflictAlertDto>> getSeparationViolations() {
         logger.debug("管制間隔欠如予測取得要求");
 
-        List<ConflictAlertService.ConflictAlert> violations = conflictAlertService.getSeparationViolationAlerts();
+        List<ConflictAlertDto> violations = conflictAlertService.getSeparationViolationAlerts();
 
         logger.debug("管制間隔欠如予測取得完了: {}件", violations.size());
         return ResponseEntity.ok(violations);
@@ -110,12 +112,11 @@ public class ConflictAlertController {
      * @return 指定航空機に関連するコンフリクトのリスト
      */
     @GetMapping("/aircraft/{callsign}")
-    public ResponseEntity<List<ConflictAlertService.ConflictAlert>> getAircraftConflicts(
+    public ResponseEntity<List<ConflictAlertDto>> getAircraftConflicts(
             @PathVariable String callsign) {
         logger.debug("航空機固有コンフリクト取得要求: {}", callsign);
 
-        List<ConflictAlertService.ConflictAlert> aircraftConflicts =
-            conflictAlertService.getAircraftConflicts(callsign);
+        List<ConflictAlertDto> aircraftConflicts = conflictAlertService.getAircraftConflicts(callsign);
 
         logger.debug("航空機固有コンフリクト取得完了: {} - {}件", callsign, aircraftConflicts.size());
         return ResponseEntity.ok(aircraftConflicts);
@@ -127,10 +128,10 @@ public class ConflictAlertController {
      * @return アラート統計情報
      */
     @GetMapping("/statistics")
-    public ResponseEntity<ConflictAlertService.ConflictStatistics> getConflictStatistics() {
+    public ResponseEntity<ConflictStatisticsDto> getConflictStatistics() {
         logger.debug("コンフリクト統計情報取得要求");
 
-        ConflictAlertService.ConflictStatistics statistics = conflictAlertService.getConflictStatistics();
+        ConflictStatisticsDto statistics = conflictAlertService.getConflictStatistics();
 
         logger.debug("コンフリクト統計情報取得完了");
         return ResponseEntity.ok(statistics);
@@ -145,12 +146,12 @@ public class ConflictAlertController {
     public ResponseEntity<HealthStatus> getHealthStatus() {
         logger.debug("ヘルスチェック要求");
 
-        ConflictAlertService.ConflictStatistics statistics = conflictAlertService.getConflictStatistics();
+        ConflictStatisticsDto statistics = conflictAlertService.getConflictStatistics();
         HealthStatus status = new HealthStatus(
             "OK",
             System.currentTimeMillis(),
-            statistics.getTotalConflicts(),
-            statistics.getRedConflictCount()
+            statistics.totalConflicts(),
+            statistics.redConflictCount()
         );
 
         logger.debug("ヘルスチェック完了: ステータス={}", status.getStatus());

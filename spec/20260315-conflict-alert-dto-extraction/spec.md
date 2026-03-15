@@ -2,7 +2,7 @@
 
 ## メタデータ
 
-- **Status**: Draft
+- **Status**: Done
 - **Date**: 2026-03-15
 - **関連 Issue**: [#74](https://github.com/Futty93/Horus/issues/74)（spec 技術的負債 T-1）
 - **親 spec**: [backend-redesign Phase 6.6](../../spec/20260308-backend-redesign/spec.md)
