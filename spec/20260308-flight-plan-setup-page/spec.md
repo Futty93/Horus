@@ -180,7 +180,7 @@
 
 | # | タスク | 備考 |
 |---|--------|------|
-| 3.1 | Backend: シナリオロード API | `POST /api/scenario/load` または `POST /simulation/start-with-scenario` を新規実装。シナリオ JSON を受け取り、各機を `spawn-with-flightplan` 相当で登録し、シミュレーション開始 |
+| 3.1 | Backend: シナリオロード API | `POST /api/scenario/load` 実装済み。シナリオ JSON を受け取り、空域クリア後各機を spawn-with-flightplan 相当で登録し、シミュレーション開始 |
 | 3.2 | Frontend: 「これで始める」ボタン | シナリオを API に送信 → 成功時は Controller へ遷移 |
 | 3.3 | エラーハンドリング | バックエンドエラー、ネットワークエラーの表示 |
 
@@ -240,7 +240,7 @@
 
 ## 未解決事項（Unresolved Questions）
 
-- バックエンドのシナリオロード API の詳細仕様（`/api/scenario/load` と `/simulation/start` の関係、空域クリアの有無）
+- ~~バックエンドのシナリオロード API の詳細仕様~~ → spec 20260315-scenario-load-api で定義済み。空域クリア・複数機一括スポーンを実装
 - トップページでの「JSON アップロードして開始」をどこに配置するか（トップのカード、モーダル、専用画面）
 - Haneda テンプレートの初期位置データを create-haneda-samples のロジックから取得するか、フロントエンドにハードコードするか
 
