@@ -44,11 +44,7 @@ class FlightPlanApiIntegrationTest {
     @AfterEach
     void tearDown() {
         GlobalVariables.isSimulationRunning = false;
-        try {
-            var a = aircraftRepository.findByCallsign(new Callsign("FPAPI01"));
-            aircraftRepository.remove(a);
-        } catch (Exception ignored) {
-        }
+        aircraftRepository.clear();
     }
 
     @Test
@@ -262,6 +258,7 @@ class FlightPlanApiIntegrationTest {
                         "heading", 90, "groundSpeed", 250, "verticalSpeed", 0
                 )
         );
+        // Map.of() rejects null; HashMap is required for initialPosition: null
         var acNoPos = new HashMap<String, Object>();
         acNoPos.put("flightPlan", Map.of(
                 "callsign", "SKIPNULL",

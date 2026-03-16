@@ -67,6 +67,7 @@ public class ScenarioController {
             }
         }
 
+        // Validate FlightPlan of aircraft that will be spawned; skip those without initialPosition
         for (SpawnWithFlightPlanDto ac : dto.aircraft()) {
             if (ac.initialPosition() == null) continue;
             try {
