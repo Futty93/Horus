@@ -1,4 +1,4 @@
-import type { ScenarioAircraft } from "@/utility/api/scenario";
+import type { ScenarioAircraft } from "@/types/scenario";
 
 interface AircraftTableProps {
   aircraft: ScenarioAircraft[];

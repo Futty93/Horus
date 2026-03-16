@@ -1,5 +1,5 @@
 import { OdGroupSection } from "./OdGroupSection";
-import type { ScenarioAircraft } from "@/utility/api/scenario";
+import type { ScenarioAircraft } from "@/types/scenario";
 import type { Route } from "@/utility/AtsRouteManager/RouteInterfaces/Route";
 
 type RouteDef = {

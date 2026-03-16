@@ -2,13 +2,12 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import type { ScenarioJson, ScenarioAircraft } from "@/types/scenario";
 import {
   getHanedaTemplate,
   exportScenario,
   parseScenarioJson,
   loadScenarioAndStart,
-  type ScenarioJson,
-  type ScenarioAircraft,
 } from "@/utility/api/scenario";
 import { suggestRoute } from "@/utility/api/ats";
 import loadAtsRoutes from "@/utility/AtsRouteManager/atsRoutesLoader";

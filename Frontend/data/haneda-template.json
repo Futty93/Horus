@@ -1,0 +1,539 @@
+{
+  "scenarioName": "Haneda Samples (T09)",
+  "description": "T09 sector conflict test scenario",
+  "createdAt": "2026-03-08",
+  "aircraft": [
+    {
+      "flightPlan": {
+        "callsign": "JAL101",
+        "aircraftType": "B777",
+        "departureAirport": "RJBB",
+        "arrivalAirport": "RJAA",
+        "cruiseAltitude": 31000,
+        "cruiseSpeed": 450,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 34.482,
+        "longitude": 136.614,
+        "altitude": 31000,
+        "heading": 90,
+        "groundSpeed": 450,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "ANA102",
+        "aircraftType": "B787",
+        "departureAirport": "RJAA",
+        "arrivalAirport": "RJBB",
+        "cruiseAltitude": 31000,
+        "cruiseSpeed": 460,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 34.482,
+        "longitude": 140.614,
+        "altitude": 31000,
+        "heading": 270,
+        "groundSpeed": 460,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "SKY103",
+        "aircraftType": "B737",
+        "departureAirport": "RJOO",
+        "arrivalAirport": "RJTT",
+        "cruiseAltitude": 31000,
+        "cruiseSpeed": 440,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 34.532,
+        "longitude": 136.814,
+        "altitude": 31000,
+        "heading": 85,
+        "groundSpeed": 440,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "JAL104",
+        "aircraftType": "B777",
+        "departureAirport": "RJTT",
+        "arrivalAirport": "RJOO",
+        "cruiseAltitude": 31000,
+        "cruiseSpeed": 470,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 34.432,
+        "longitude": 140.414,
+        "altitude": 31000,
+        "heading": 275,
+        "groundSpeed": 470,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "ANA201",
+        "aircraftType": "A320",
+        "departureAirport": "RJFK",
+        "arrivalAirport": "RJSM",
+        "cruiseAltitude": 32000,
+        "cruiseSpeed": 420,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 32.482,
+        "longitude": 138.614,
+        "altitude": 32000,
+        "heading": 0,
+        "groundSpeed": 420,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "SKY202",
+        "aircraftType": "B738",
+        "departureAirport": "RJSM",
+        "arrivalAirport": "RJFK",
+        "cruiseAltitude": 32000,
+        "cruiseSpeed": 430,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 36.482,
+        "longitude": 138.614,
+        "altitude": 32000,
+        "heading": 180,
+        "groundSpeed": 430,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "JAL203",
+        "aircraftType": "B787",
+        "departureAirport": "RJOM",
+        "arrivalAirport": "RJSA",
+        "cruiseAltitude": 32000,
+        "cruiseSpeed": 410,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 32.682,
+        "longitude": 138.414,
+        "altitude": 32000,
+        "heading": 10,
+        "groundSpeed": 410,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "ANA204",
+        "aircraftType": "A321",
+        "departureAirport": "RJSA",
+        "arrivalAirport": "RJOM",
+        "cruiseAltitude": 32000,
+        "cruiseSpeed": 440,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 36.282,
+        "longitude": 138.814,
+        "altitude": 32000,
+        "heading": 190,
+        "groundSpeed": 440,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "SKY301",
+        "aircraftType": "B737",
+        "departureAirport": "RJFF",
+        "arrivalAirport": "RJAA",
+        "cruiseAltitude": 30000,
+        "cruiseSpeed": 380,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 33.482,
+        "longitude": 137.614,
+        "altitude": 30000,
+        "heading": 45,
+        "groundSpeed": 380,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "JAL302",
+        "aircraftType": "B777",
+        "departureAirport": "RJAA",
+        "arrivalAirport": "RJFF",
+        "cruiseAltitude": 30000,
+        "cruiseSpeed": 390,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 35.482,
+        "longitude": 139.614,
+        "altitude": 30000,
+        "heading": 225,
+        "groundSpeed": 390,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "ANA303",
+        "aircraftType": "A320",
+        "departureAirport": "RJGG",
+        "arrivalAirport": "RJOO",
+        "cruiseAltitude": 30000,
+        "cruiseSpeed": 400,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 33.482,
+        "longitude": 139.614,
+        "altitude": 30000,
+        "heading": 315,
+        "groundSpeed": 400,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "SKY304",
+        "aircraftType": "B738",
+        "departureAirport": "RJOO",
+        "arrivalAirport": "RJGG",
+        "cruiseAltitude": 30000,
+        "cruiseSpeed": 410,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 35.482,
+        "longitude": 137.614,
+        "altitude": 30000,
+        "heading": 135,
+        "groundSpeed": 410,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "JAL305",
+        "aircraftType": "B787",
+        "departureAirport": "RJFM",
+        "arrivalAirport": "RJTT",
+        "cruiseAltitude": 30000,
+        "cruiseSpeed": 420,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 34.982,
+        "longitude": 138.114,
+        "altitude": 30000,
+        "heading": 135,
+        "groundSpeed": 420,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "ANA306",
+        "aircraftType": "A321",
+        "departureAirport": "RJTT",
+        "arrivalAirport": "RJFM",
+        "cruiseAltitude": 30000,
+        "cruiseSpeed": 430,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 33.982,
+        "longitude": 139.114,
+        "altitude": 30000,
+        "heading": 315,
+        "groundSpeed": 430,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "SKY401",
+        "aircraftType": "B737",
+        "departureAirport": "RJOA",
+        "arrivalAirport": "RJAA",
+        "cruiseAltitude": 33000,
+        "cruiseSpeed": 380,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 34.482,
+        "longitude": 137.114,
+        "altitude": 33000,
+        "heading": 90,
+        "groundSpeed": 380,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "JAL402",
+        "aircraftType": "B777",
+        "departureAirport": "RJFF",
+        "arrivalAirport": "RJAA",
+        "cruiseAltitude": 33000,
+        "cruiseSpeed": 480,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 34.482,
+        "longitude": 136.614,
+        "altitude": 33000,
+        "heading": 90,
+        "groundSpeed": 480,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "ANA403",
+        "aircraftType": "A320",
+        "departureAirport": "RJFK",
+        "arrivalAirport": "RJGG",
+        "cruiseAltitude": 33000,
+        "cruiseSpeed": 390,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 34.232,
+        "longitude": 137.314,
+        "altitude": 33000,
+        "heading": 75,
+        "groundSpeed": 390,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "SKY404",
+        "aircraftType": "B738",
+        "departureAirport": "RJOM",
+        "arrivalAirport": "RJGG",
+        "cruiseAltitude": 33000,
+        "cruiseSpeed": 470,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 34.132,
+        "longitude": 136.814,
+        "altitude": 33000,
+        "heading": 75,
+        "groundSpeed": 470,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "JAL501",
+        "aircraftType": "B777",
+        "departureAirport": "RJSM",
+        "arrivalAirport": "RJFF",
+        "cruiseAltitude": 29000,
+        "cruiseSpeed": 420,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 34.782,
+        "longitude": 138.314,
+        "altitude": 29000,
+        "heading": 180,
+        "groundSpeed": 420,
+        "verticalSpeed": 1000
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "ANA502",
+        "aircraftType": "B787",
+        "departureAirport": "RJFF",
+        "arrivalAirport": "RJSM",
+        "cruiseAltitude": 34000,
+        "cruiseSpeed": 430,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 34.182,
+        "longitude": 138.914,
+        "altitude": 34000,
+        "heading": 0,
+        "groundSpeed": 430,
+        "verticalSpeed": -1000
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "SKY503",
+        "aircraftType": "B737",
+        "departureAirport": "RJBE",
+        "arrivalAirport": "ROAH",
+        "cruiseAltitude": 31000,
+        "cruiseSpeed": 410,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 34.682,
+        "longitude": 138.814,
+        "altitude": 31000,
+        "heading": 200,
+        "groundSpeed": 410,
+        "verticalSpeed": 800
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "JAL504",
+        "aircraftType": "B777",
+        "departureAirport": "ROAH",
+        "arrivalAirport": "RJBE",
+        "cruiseAltitude": 35000,
+        "cruiseSpeed": 440,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 34.282,
+        "longitude": 138.414,
+        "altitude": 35000,
+        "heading": 20,
+        "groundSpeed": 440,
+        "verticalSpeed": -800
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "ANA601",
+        "aircraftType": "A320",
+        "departureAirport": "RJEC",
+        "arrivalAirport": "RORA",
+        "cruiseAltitude": 28000,
+        "cruiseSpeed": 450,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 33.282,
+        "longitude": 137.414,
+        "altitude": 28000,
+        "heading": 60,
+        "groundSpeed": 450,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "SKY602",
+        "aircraftType": "B738",
+        "departureAirport": "RORA",
+        "arrivalAirport": "RJEC",
+        "cruiseAltitude": 28000,
+        "cruiseSpeed": 460,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 35.682,
+        "longitude": 139.814,
+        "altitude": 28000,
+        "heading": 240,
+        "groundSpeed": 460,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "JAL603",
+        "aircraftType": "B787",
+        "departureAirport": "ROMD",
+        "arrivalAirport": "RJSN",
+        "cruiseAltitude": 28000,
+        "cruiseSpeed": 440,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 33.282,
+        "longitude": 139.814,
+        "altitude": 28000,
+        "heading": 300,
+        "groundSpeed": 440,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "ANA604",
+        "aircraftType": "A321",
+        "departureAirport": "RJSN",
+        "arrivalAirport": "ROMD",
+        "cruiseAltitude": 28000,
+        "cruiseSpeed": 470,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 35.682,
+        "longitude": 137.414,
+        "altitude": 28000,
+        "heading": 120,
+        "groundSpeed": 470,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "SKY605",
+        "aircraftType": "B737",
+        "departureAirport": "RJGG",
+        "arrivalAirport": "RJTT",
+        "cruiseAltitude": 28000,
+        "cruiseSpeed": 430,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 34.082,
+        "longitude": 137.814,
+        "altitude": 28000,
+        "heading": 45,
+        "groundSpeed": 430,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "JAL606",
+        "aircraftType": "B777",
+        "departureAirport": "RJTT",
+        "arrivalAirport": "RJGG",
+        "cruiseAltitude": 28000,
+        "cruiseSpeed": 420,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 34.882,
+        "longitude": 139.414,
+        "altitude": 28000,
+        "heading": 225,
+        "groundSpeed": 420,
+        "verticalSpeed": 0
+      }
+    }
+  ]
+}
