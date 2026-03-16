@@ -3,7 +3,7 @@ import {
   parseScenarioJson,
   toScenarioJsonString,
   getExportFilename,
-  getHanedaTemplate,
+  hanedaTemplate,
 } from "./scenario";
 
 const validAircraft: ScenarioAircraft = {
@@ -158,12 +158,11 @@ describe("toScenarioJsonString", () => {
   });
 });
 
-describe("getHanedaTemplate", () => {
-  it("returns valid ScenarioJson with 28 aircraft", () => {
-    const scenario = getHanedaTemplate();
-    expect(scenario.aircraft).toHaveLength(28);
-    expect(scenario.scenarioName).toBe("Haneda Samples (T09)");
-    for (const ac of scenario.aircraft) {
+describe("hanedaTemplate", () => {
+  it("is valid ScenarioJson with 28 aircraft", () => {
+    expect(hanedaTemplate.aircraft).toHaveLength(28);
+    expect(hanedaTemplate.scenarioName).toBe("Haneda Samples (T09)");
+    for (const ac of hanedaTemplate.aircraft) {
       expect(ac.flightPlan).toBeDefined();
       expect(ac.flightPlan.callsign).toBeDefined();
       expect(ac.initialPosition).toBeDefined();
@@ -173,11 +172,11 @@ describe("getHanedaTemplate", () => {
   });
 
   it("round-trips through parseScenarioJson", () => {
-    const scenario = getHanedaTemplate();
-    const json = toScenarioJsonString(scenario);
+    const json = toScenarioJsonString(hanedaTemplate);
     const parsed = parseScenarioJson(json);
-    expect(parsed.aircraft).toHaveLength(scenario.aircraft.length);
-    expect(parsed.scenarioName).toBe(scenario.scenarioName);
+    expect(parsed.aircraft).toHaveLength(hanedaTemplate.aircraft.length);
+    expect(parsed.scenarioName).toBe(hanedaTemplate.scenarioName);
+    expect(parsed.createdAt).toBe(hanedaTemplate.createdAt);
   });
 });
 

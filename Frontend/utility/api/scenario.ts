@@ -1,13 +1,7 @@
 import type { ScenarioJson } from "@/types/scenario";
 import hanedaTemplateJson from "@/data/haneda-template.json";
 
-export function getHanedaTemplate(): ScenarioJson {
-  const template = hanedaTemplateJson as ScenarioJson;
-  return {
-    ...template,
-    createdAt: new Date().toISOString().slice(0, 10),
-  };
-}
+export const hanedaTemplate: ScenarioJson = hanedaTemplateJson as ScenarioJson;
 
 export function toScenarioJsonString(
   scenario: ScenarioJson,
