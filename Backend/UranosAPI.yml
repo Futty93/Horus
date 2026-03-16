@@ -14,6 +14,8 @@ tags:
     description: "End a game."
   - name: "aircraft"
     description: "Aircraft location and status information."
+  - name: "scenario"
+    description: "Scenario load and management."
 paths:
   "/startGame":
     post:
@@ -192,6 +194,36 @@ paths:
       responses:
         "200":
           description: Resume navigation applied
+
+  "/api/scenario/load":
+    post:
+      tags: ["scenario"]
+      summary: "Load scenario"
+      description: "Loads a scenario with multiple aircraft. Clears the current airspace and spawns all aircraft with their flight plans. Duplicate callsigns or invalid fixes in routes return 400."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScenarioLoad"
+      responses:
+        "200":
+          description: Scenario loaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  scenarioName:
+                    type: string
+                  aircraftCount:
+                    type: integer
+                  message:
+                    type: string
+        "400":
+          description: Bad request (empty aircraft, duplicate callsign, fix not found)
 
   "/aircraft/location":
     get:
@@ -452,6 +484,25 @@ components:
           $ref: "#/components/schemas/FlightPlanDto"
         initialPosition:
           $ref: "#/components/schemas/InitialPositionDto"
+        spawnTime:
+          type: integer
+          nullable: true
+          description: "Relative seconds from simulation start. null or 0 = immediate spawn. Reserved for future delayed spawn support."
+
+    ScenarioLoad:
+      type: object
+      required: [aircraft]
+      properties:
+        scenarioName:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+        aircraft:
+          type: array
+          items:
+            $ref: "#/components/schemas/SpawnWithFlightPlan"
 
     FlightPlanDto:
       type: object

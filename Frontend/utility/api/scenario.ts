@@ -28,6 +28,8 @@ export interface InitialPositionDto {
 export interface ScenarioAircraft {
   flightPlan: FlightPlanDto;
   initialPosition: InitialPositionDto;
+  /** Relative seconds from simulation start. null/0 = immediate spawn. Reserved for future delayed spawn. */
+  spawnTime?: number;
 }
 
 export interface ScenarioJson {
