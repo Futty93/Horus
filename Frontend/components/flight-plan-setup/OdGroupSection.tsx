@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { AtsRouteSearch } from "./AtsRouteSearch";
 import { suggestRoute } from "@/utility/api/ats";
-import type { ScenarioAircraft } from "@/utility/api/scenario";
+import type { ScenarioAircraft } from "@/types/scenario";
 import type { Route } from "@/utility/AtsRouteManager/RouteInterfaces/Route";
 
 interface OdGroupSectionProps {

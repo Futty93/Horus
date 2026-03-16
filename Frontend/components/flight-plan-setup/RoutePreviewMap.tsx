@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import type { ScenarioAircraft } from "@/utility/api/scenario";
+import type { ScenarioAircraft } from "@/types/scenario";
 import type { Waypoint } from "@/utility/AtsRouteManager/RouteInterfaces/Waypoint";
 import type { RadioNavigationAid } from "@/utility/AtsRouteManager/RouteInterfaces/RadioNavigationAid";
 import { CoordinateManager } from "@/utility/coordinateManager/CoordinateManager";

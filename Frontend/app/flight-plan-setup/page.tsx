@@ -2,13 +2,12 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import type { ScenarioJson, ScenarioAircraft } from "@/types/scenario";
 import {
-  getHanedaTemplate,
+  hanedaTemplate,
   exportScenario,
   parseScenarioJson,
   loadScenarioAndStart,
-  type ScenarioJson,
-  type ScenarioAircraft,
 } from "@/utility/api/scenario";
 import { suggestRoute } from "@/utility/api/ats";
 import loadAtsRoutes from "@/utility/AtsRouteManager/atsRoutesLoader";
@@ -120,13 +119,13 @@ export default function FlightPlanSetupPage() {
   }, []);
 
   const handleLoadTemplate = useCallback(() => {
-    setScenario(getHanedaTemplate());
+    setScenario(hanedaTemplate);
     setSelectedAircraft(null);
     setStatus("Loaded Haneda template (28 aircraft)");
   }, []);
 
   const handleLoadTemplateAndSuggest = useCallback(async () => {
-    const template = getHanedaTemplate();
+    const template = hanedaTemplate;
     const odPairs = groupByOd(template.aircraft);
     setLoadingSuggest(true);
     setStatus("Loading template and suggesting routes...");

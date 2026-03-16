@@ -1,0 +1,74 @@
+{
+  "scenarioName": "Tokyo Approach Training",
+  "description": "羽田・成田進入路を想定したリアル空域シナリオ。KOITO/BOKJO/AOIKU等の実在FIXを使用。",
+  "createdAt": "2026-03-08",
+  "aircraft": [
+    {
+      "flightPlan": {
+        "callsign": "JAL512",
+        "aircraftType": "B738",
+        "departureAirport": "RJTT",
+        "arrivalAirport": "RJAA",
+        "cruiseAltitude": 35000,
+        "cruiseSpeed": 450,
+        "route": [
+          { "fix": "KOITO", "action": "CONTINUE" },
+          { "fix": "BOKJO", "action": "CONTINUE" },
+          { "fix": "AOIKU", "action": "CONTINUE" }
+        ]
+      },
+      "initialPosition": {
+        "latitude": 34.4,
+        "longitude": 138.54,
+        "altitude": 31000,
+        "heading": 45,
+        "groundSpeed": 450,
+        "verticalSpeed": -1000
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "ANA101",
+        "aircraftType": "B787",
+        "departureAirport": "RJBB",
+        "arrivalAirport": "RJTT",
+        "cruiseAltitude": 37000,
+        "cruiseSpeed": 460,
+        "route": [
+          { "fix": "ABENO", "action": "CONTINUE" },
+          { "fix": "ACTOR", "action": "CONTINUE" }
+        ]
+      },
+      "initialPosition": {
+        "latitude": 34.59,
+        "longitude": 135.7,
+        "altitude": 37000,
+        "heading": 90,
+        "groundSpeed": 460,
+        "verticalSpeed": 0
+      }
+    },
+    {
+      "flightPlan": {
+        "callsign": "JAL201",
+        "aircraftType": "B777",
+        "departureAirport": "RJAA",
+        "arrivalAirport": "RJBB",
+        "cruiseAltitude": 36000,
+        "cruiseSpeed": 450,
+        "route": [
+          { "fix": "CHESS", "action": "CONTINUE" },
+          { "fix": "SAMON", "action": "CONTINUE" }
+        ]
+      },
+      "initialPosition": {
+        "latitude": 35.76,
+        "longitude": 140.38,
+        "altitude": 36000,
+        "heading": 270,
+        "groundSpeed": 450,
+        "verticalSpeed": 0
+      }
+    }
+  ]
+}
