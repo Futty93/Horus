@@ -12,12 +12,17 @@ export class Aircraft {
   eta: string; // You may want to change this to a Date object if needed
   label: { x: number; y: number };
   riskLevel: number; // 危険度（0-100）
+  positionHistory: { x: number; y: number; altitude: number }[]; // 軌跡
 
   constructor(
     callsign: string,
     position: { x: number; y: number; altitude: number },
     vector: { heading: number; groundSpeed: number; verticalSpeed: number },
-    instructedVector: { heading: number; groundSpeed: number; altitude: number },
+    instructedVector: {
+      heading: number;
+      groundSpeed: number;
+      altitude: number;
+    },
     type: string,
     model: string,
     originIata: string,
@@ -42,10 +47,18 @@ export class Aircraft {
     this.eta = eta;
     this.label = { x: labelX, y: labelY }; // Default label position at (50, 50)
     this.riskLevel = riskLevel;
+    this.positionHistory = [
+      { x: position.x, y: position.y, altitude: position.altitude },
+    ];
   }
 
   public updateAircraftInfo(newAircraft: Aircraft) {
     this.position = newAircraft.position;
+    this.positionHistory.push({
+      x: this.position.x,
+      y: this.position.y,
+      altitude: this.position.altitude,
+    }); //　store current locaiton in history with each update
     this.vector = newAircraft.vector;
     this.instructedVector = newAircraft.instructedVector;
     this.eta = newAircraft.eta;
@@ -54,6 +67,11 @@ export class Aircraft {
 
   public updateAircraftLocationInfo(newAircraft: Aircraft) {
     this.position = newAircraft.position;
+    this.positionHistory.push({
+      x: this.position.x,
+      y: this.position.y,
+      altitude: this.position.altitude,
+    });
     this.vector = newAircraft.vector;
     this.eta = newAircraft.eta;
     this.riskLevel = newAircraft.riskLevel;
