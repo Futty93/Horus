@@ -79,6 +79,8 @@ export function drawRangeRings(
 ): void {
   if (!settings.enabled) return;
 
+  ctx.save();
+
   const centerX = GLOBAL_SETTINGS.canvasWidth / 2;
   const centerY = GLOBAL_SETTINGS.canvasHeight / 2;
   const rangeKm = displayRange.range;
@@ -87,7 +89,6 @@ export function drawRangeRings(
   const maxRadiusKm = rangeKm / 2;
   const maxRadiusNm = maxRadiusKm / NM_TO_KM;
 
-  const prevAlpha = ctx.globalAlpha;
   ctx.strokeStyle = "#30363d";
   ctx.globalAlpha = 0.6;
   ctx.lineWidth = 1;
@@ -116,7 +117,7 @@ export function drawRangeRings(
     ctx.fillText(`${rNm} NM`, centerX + radiusPx + 4, centerY + 4);
   }
 
-  ctx.globalAlpha = prevAlpha;
+  ctx.restore();
 }
 
 function drawPoint(

@@ -110,8 +110,9 @@ const RadarCanvas: React.FC = () => {
   useEffect(() => {
     if (atsRouteData) {
       updateCanvas();
-      startUpdatingAircraftLocations();
+      const stopUpdating = startUpdatingAircraftLocations();
       startRenderingLoop();
+      return stopUpdating;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: run when atsRouteData is set; functions are stable
   }, [atsRouteData]);
