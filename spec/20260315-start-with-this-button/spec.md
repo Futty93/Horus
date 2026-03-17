@@ -108,17 +108,17 @@
 
 ### Must-have
 
-- [ ] `loadScenarioAndStart` が 4xx/5xx 時にレスポンス JSON の `message` を抽出して返却する（存在する場合）
-- [ ] バックエンドが 400 で `{ message: "..." }` を返したとき、status に生 JSON ではなく `message` の内容が表示される
+- [x] `loadScenarioAndStart` が 4xx/5xx 時にレスポンス JSON の `message` を抽出して返却する（存在する場合）
+- [x] バックエンドが 400 で `{ message: "..." }` を返したとき、status に生 JSON ではなく `message` の内容が表示される
 
 ### Should-have
 
-- [ ] `loadScenarioAndStart` のユニットテストが存在し、以下をカバーする
+- [x] `loadScenarioAndStart` のユニットテストが存在し、以下をカバーする
   - 200 時: `{ ok: true }` を返す
   - 400 時（JSON body に `message` あり）: `{ ok: false, message: "..." }` で `message` が抽出される
   - 400 時（JSON body に `message` なし）: `{ ok: false, message: responseText }`
   - ネットワークエラー（fetch throw）: `{ ok: false, message: String(e) }`
-- [ ] 検証チェックリストに「これで始める」→ Operator 遷移の手動確認が含まれる
+- [x] 検証チェックリストに「これで始める」→ Operator 遷移の手動確認が含まれる
 
 ### Optional
 
@@ -161,9 +161,9 @@
 
 ## 検証
 
-- [ ] フロントエンドのビルドが通る（`npm run build`）
-- [ ] Lint が通る（`npm run lint`）
-- [ ] 単体テストが通る（`npm test`）
+- [x] フロントエンドのビルドが通る（`npm run build`）
+- [x] Lint が通る（`npm run lint`）
+- [x] 単体テストが通る（`npm test`）
 - [ ] 手動: テンプレート読み込み → 「これで始める」→ Operator 遷移後、航空機がレーダーに表示・飛行する
 - [ ] 手動: 不正シナリオ（例: 重複コールサイン）で「これで始める」→ status に `message` の内容（生 JSON でない）が表示される
 
