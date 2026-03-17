@@ -2,7 +2,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Aircraft } from "@/utility/aircraft/aircraftClass";
 import loadAtsRoutes from "@/utility/AtsRouteManager/atsRoutesLoader";
-import { renderMap } from "@/utility/AtsRouteManager/routeRenderer";
+import {
+  renderMap,
+  drawRangeRings,
+} from "@/utility/AtsRouteManager/routeRenderer";
 import { GLOBAL_CONSTANTS } from "@/utility/globals/constants";
 import { GLOBAL_SETTINGS } from "@/utility/globals/settings";
 import { fetchAircraftLocation } from "@/utility/api/location";
@@ -10,6 +13,7 @@ import { DrawAircraft } from "@/utility/aircraft/drawAircraft";
 import { useRouteInfoDisplaySetting } from "@/context/routeInfoDisplaySettingContext";
 import { useCenterCoordinate } from "@/context/centerCoordinateContext";
 import { useDisplayRange } from "@/context/displayRangeContext";
+import { useRangeRingsSetting } from "@/context/rangeRingsSettingContext";
 import { useSelectFixMode } from "@/context/selectFixModeContext";
 import { useSelectedAircraft } from "@/context/selectedAircraftContext";
 import { searchFixName } from "@/utility/AtsRouteManager/FixNameSearch";
@@ -41,6 +45,8 @@ const RadarCanvas: React.FC = () => {
   const centerCoordinateRef = useRef(centerCoordinate);
   const { displayRange } = useDisplayRange();
   const displayRangeRef = useRef(displayRange);
+  const { rangeRingsSetting } = useRangeRingsSetting();
+  const rangeRingsSettingRef = useRef(rangeRingsSetting);
   const { isSelectFixMode, setSelectedFixName } = useSelectFixMode();
   const {
     setCallsign,
@@ -149,6 +155,10 @@ const RadarCanvas: React.FC = () => {
   }, [displayRange]);
 
   useEffect(() => {
+    rangeRingsSettingRef.current = rangeRingsSetting;
+  }, [rangeRingsSetting]);
+
+  useEffect(() => {
     isSelectFixModeRef.current = isSelectFixMode;
   }, [isSelectFixMode]);
 
@@ -213,6 +223,7 @@ const RadarCanvas: React.FC = () => {
       centerCoordinateRef.current,
       displayRangeRef.current
     );
+    drawRangeRings(ctx, displayRangeRef.current, rangeRingsSettingRef.current);
   };
 
   const renderAircraftsOnCanvas = (ctx: CanvasRenderingContext2D) => {
