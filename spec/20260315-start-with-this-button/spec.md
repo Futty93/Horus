@@ -9,7 +9,7 @@
 
 ## 概要
 
-フライトプラン設定ページ（`/flight-plan-setup`）の「これで始める」ボタンにより、編集中のシナリオをバックエンドに送信し、シミュレーションを開始したうえで Operator 画面へ遷移する一連のフローを対象とする。空域設定は Operator が行う場面が多く、遷移先は Operator としている。調査の結果、**基本実装は既に存在し動作している**。本 spec では現状の整理、修正・改善箇所の特定、および実装方針を定義する。
+フライトプラン設定ページ（`/flight-plan-setup`）の「これで始める」ボタンにより、編集中のシナリオをバックエンドに送信し、空域に反映したうえで Operator 画面へ遷移する一連のフローを対象とする。シミュレーション開始は Operator 画面で START SIMULATION ボタンを押すまで行われない。空域設定は Operator が行う場面が多く、遷移先は Operator としている。調査の結果、**基本実装は既に存在し動作している**。本 spec では現状の整理、修正・改善箇所の特定、および実装方針を定義する。
 
 ---
 
@@ -46,7 +46,7 @@
     [バックエンド] ScenarioController.loadScenario
         → 空配列チェック、コールサイン重複チェック、Fix 存在チェック（400 返却）
         → aircraftRepository.clear(), GlobalVariables.isSimulationRunning = false
-        → 各機スポーン、GlobalVariables.isSimulationRunning = true
+        → 各機スポーン（シミュレーションは開始しない。ユーザーが Operator で START SIMULATION を押すまで待機）
         → 200 { success, scenarioName, aircraftCount, message }
     [フロント] 200 時: setStatus("Scenario loaded. Redirecting..."), router.push("/operator")
     [フロント] 非 200 時: setStatus(`Error: ${result.message}`)
@@ -164,7 +164,7 @@
 - [x] フロントエンドのビルドが通る（`npm run build`）
 - [x] Lint が通る（`npm run lint`）
 - [x] 単体テストが通る（`npm test`）
-- [ ] 手動: テンプレート読み込み → 「これで始める」→ Operator 遷移後、航空機がレーダーに表示・飛行する
+- [ ] 手動: テンプレート読み込み → 「これで始める」→ Operator 遷移後、航空機がレーダーに表示される。START SIMULATION を押すまで飛行しない
 - [ ] 手動: 不正シナリオ（例: 重複コールサイン）で「これで始める」→ status に `message` の内容（生 JSON でない）が表示される
 
 ---

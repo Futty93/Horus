@@ -334,7 +334,7 @@ RESTful APIを提供しており、詳細なAPI仕様は`UranosAPI.yml`ファイ
    - `GET /aircraft/location?callsign={callsign}` - 特定航空機の位置を取得
 
 3. **シミュレーション・シナリオ**
-   - `POST /api/scenario/load` - シナリオ一括ロード（空域クリア＋複数機スポーン＋シミュレーション開始）✅
+   - `POST /api/scenario/load` - シナリオ一括ロード（空域クリア＋複数機スポーン）。シミュレーション開始は `POST /simulation/start` で行う ✅
    - `POST /simulation/start` - シミュレーションを開始
    - `POST /simulation/pause` - シミュレーションを一時停止
    - `GET /simulation/status` - シミュレーションの状態を取得

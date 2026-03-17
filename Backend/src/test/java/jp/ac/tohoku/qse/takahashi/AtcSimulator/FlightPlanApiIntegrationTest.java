@@ -191,6 +191,37 @@ class FlightPlanApiIntegrationTest {
     }
 
     @Test
+    @DisplayName("POST /api/scenario/load does not start simulation; isSimulationRunning remains false")
+    void loadScenario_doesNotStartSimulation() {
+        var ac = Map.of(
+                "flightPlan", Map.of(
+                        "callsign", "NOSIM01",
+                        "departureAirport", "RJTT",
+                        "arrivalAirport", "RJAA",
+                        "cruiseAltitude", 35000,
+                        "cruiseSpeed", 450,
+                        "route", List.<Map<String, Object>>of()
+                ),
+                "initialPosition", Map.of(
+                        "latitude", 35.0, "longitude", 139.0, "altitude", 5000,
+                        "heading", 90, "groundSpeed", 250, "verticalSpeed", 0
+                )
+        );
+        var scenario = Map.of(
+                "scenarioName", "No Auto-Start Test",
+                "aircraft", List.of(ac)
+        );
+
+        restTemplate.postForEntity(baseUrl() + "/api/scenario/load", scenario, Map.class);
+
+        ResponseEntity<Map> statusResponse = restTemplate.getForEntity(
+                baseUrl() + "/simulation/status", Map.class);
+
+        assertThat(statusResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(statusResponse.getBody()).containsEntry("isSimulationRunning", false);
+    }
+
+    @Test
     @DisplayName("POST /api/scenario/load returns 400 when aircraft array is empty")
     void loadScenario_returns400_whenAircraftEmpty() {
         var scenario = Map.of(
