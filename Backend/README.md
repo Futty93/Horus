@@ -306,6 +306,7 @@ jp.ac.tohoku.qse.takahashi.AtcSimulator/
 **主要クラス**:
 - **★ `AircraftRepositoryInMemory.java`** - インメモリ航空機リポジトリ (`infrastructure/persistence/inMemory/`)
 - **`AtsRouteFixPositionRepository.java`** - Fix 位置・ATS 経路データ (`infrastructure/fix/`)
+  - 読み込み元: `fix/waypoints.json`, `fix/radio_navigation_aids.json`, `fix/ats_lower_routes.json`, `fix/rnav_routes.json`, `fix/japan-outline.json`
 
 ### 5. インターフェース
 

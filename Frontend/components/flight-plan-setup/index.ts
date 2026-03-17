@@ -5,5 +5,7 @@ export { OdGroupList } from "./OdGroupList";
 export { OdGroupSection } from "./OdGroupSection";
 export { AtsRouteSearch } from "./AtsRouteSearch";
 export { AircraftTable } from "./AircraftTable";
+export { AddAircraftForm } from "./AddAircraftForm";
+export { InitialPositionEditor } from "./InitialPositionEditor";
 export { RoutePreviewMap } from "./RoutePreviewMap";
 export { AssignFlightPlansBar } from "./AssignFlightPlansBar";
