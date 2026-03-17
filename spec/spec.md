@@ -20,7 +20,7 @@
 |---|--------|--------|--------|-------|------|
 | 1-1 | `POST /api/scenario/load` バックエンド実装 | 🔴 | ★★☆ | [#44](https://github.com/Futty93/Horus/issues/44) | 複数機を一括スポーン。spec 20260308-flight-plan-setup-page で未着手 |
 | 1-2 | フライトプラン設定ページ — JSON エクスポート/インポート | 🔴 | ★☆☆ | [#45](https://github.com/Futty93/Horus/issues/45) | フロントのみ。ブラウザ download API |
-| 1-3 | フライトプラン設定ページ — 「これで始める」ボタン | 🔴 | ★★☆ | [#46](https://github.com/Futty93/Horus/issues/46) | 1-1 完了後。シナリオ送信 → シミュレーション開始 → Controller 遷移 |
+| 1-3 | フライトプラン設定ページ — 「これで始める」ボタン | 🔴 | ★★☆ | [#46](https://github.com/Futty93/Horus/issues/46) | 1-1 完了後。シナリオ送信 → 空域反映 → Operator 遷移。START SIMULATION で開始 |
 | 1-4 | フライトプラン設定ページ — 航空機テーブル編集（追加/削除/初期位置） | 🔴 | ★★☆ | [#47](https://github.com/Futty93/Horus/issues/47) | 現状 OdGroupList は表示のみ |
 | 1-5 | シミュレーション開始画面での JSON アップロード起動 | 🟡 | ★☆☆ | [#48](https://github.com/Futty93/Horus/issues/48) | トップページまたは別エントリ |
 

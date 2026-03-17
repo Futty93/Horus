@@ -94,8 +94,6 @@ public class ScenarioController {
             count++;
         }
 
-        GlobalVariables.isSimulationRunning = true;
-
         logger.info("Scenario loaded: {} aircraft, scenarioName={}", count, dto.scenarioName());
         Map<String, Object> body = new HashMap<>();
         body.put("success", true);

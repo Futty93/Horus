@@ -284,7 +284,7 @@ npm start
 
 3. **フライトプラン・シナリオ機能**
    - [x] シナリオ JSON エクスポート/インポート（spec 1-2）
-   - [x] 「これで始める」ボタン：シナリオ送信→シミュレーション開始→Operator 遷移（spec 1-3）
+   - [x] 「これで始める」ボタン：シナリオ送信→空域反映→Operator 遷移。シミュレーション開始は Operator の START SIMULATION で行う（spec 1-3）
    - [x] POST /api/scenario/load との連携（loadScenarioAndStart、エラー message 抽出）
    - [x] 航空機テーブル編集：追加・削除・初期位置編集（spec 1-4）
 
