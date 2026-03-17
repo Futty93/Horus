@@ -67,10 +67,32 @@ export async function loadScenarioAndStart(
     });
     if (!response.ok) {
       const text = await response.text();
-      return { ok: false, message: text || `HTTP ${response.status}` };
+      const parsed = parseJsonMessage(text);
+      return {
+        ok: false,
+        message: parsed ?? (text || `HTTP ${response.status}`),
+      };
     }
+    // 成功時の body（success, scenarioName, aircraftCount 等）は意図的に未解析。
+    // 将来的に scenarioName/aircraftCount を表示する場合は body を読むよう変更する。
     return { ok: true, message: "Scenario loaded" };
   } catch (e) {
     return { ok: false, message: String(e) };
   }
+}
+
+// 4xx/5xx レスポンス body から message を抽出。loadScenarioAndStart のテストで間接的にカバー。
+// 他箇所で再利用する場合は export を検討。
+function parseJsonMessage(text: string): string | null {
+  if (!text?.trim()) return null;
+  try {
+    const obj = JSON.parse(text) as unknown;
+    if (obj && typeof obj === "object" && "message" in obj) {
+      const m = (obj as { message: unknown }).message;
+      if (typeof m === "string") return m;
+    }
+  } catch {
+    /* ignore */
+  }
+  return null;
 }

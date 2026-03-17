@@ -56,7 +56,16 @@
 
 ## ブラウザからフロントエンドにアクセス
 
-開発サーバー起動後、[オモテノス](http://localhost:3333) にアクセス。Operator 画面は `/operator`、Controller 画面は `/controller`。
+フロントエンドの開発サーバー（`npm run dev`）起動後、ブラウザで [http://localhost:3333](http://localhost:3333) を開く。
+
+| 画面 | URL | 役割 |
+|------|-----|------|
+| トップ（オモテノス） | `/` | システム概要、各画面へのリンク |
+| フライトプラン設定 | `/flight-plan-setup` | シナリオ作成・編集・「これで始める」 |
+| Operator | `/operator` | 管制官指示の入力・航空機操作 |
+| Controller | `/controller` | レーダー表示・管制官役（指示メモ） |
+
+> シミュレーションを動作させるには、別途バックエンド（`./gradlew bootRun`）の起動が必要です。
 
 # Java環境のセットアップの実行手順
 

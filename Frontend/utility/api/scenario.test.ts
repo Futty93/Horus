@@ -4,6 +4,7 @@ import {
   toScenarioJsonString,
   getExportFilename,
   hanedaTemplate,
+  loadScenarioAndStart,
 } from "./scenario";
 
 const validAircraft: ScenarioAircraft = {
@@ -177,6 +178,75 @@ describe("hanedaTemplate", () => {
     expect(parsed.aircraft).toHaveLength(hanedaTemplate.aircraft.length);
     expect(parsed.scenarioName).toBe(hanedaTemplate.scenarioName);
     expect(parsed.createdAt).toBe(hanedaTemplate.createdAt);
+  });
+});
+
+describe("loadScenarioAndStart", () => {
+  const originalFetch = global.fetch;
+  afterEach(() => {
+    global.fetch = originalFetch;
+  });
+
+  it("returns ok: true on 200", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+    });
+    const result = await loadScenarioAndStart({ aircraft: [validAircraft] });
+    expect(result).toEqual({ ok: true, message: "Scenario loaded" });
+  });
+
+  it("extracts message from JSON body on 400", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      text: () =>
+        Promise.resolve(
+          JSON.stringify({
+            success: false,
+            message: "Duplicate callsign: JAL101",
+          })
+        ),
+    });
+    const result = await loadScenarioAndStart({ aircraft: [validAircraft] });
+    expect(result).toEqual({
+      ok: false,
+      message: "Duplicate callsign: JAL101",
+    });
+  });
+
+  it("falls back to response text when JSON has no message", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      text: () => Promise.resolve('{"error":"Unknown"}'),
+    });
+    const result = await loadScenarioAndStart({ aircraft: [validAircraft] });
+    expect(result.ok).toBe(false);
+    expect(result.message).toBe('{"error":"Unknown"}');
+  });
+
+  it("falls back to response text when body is not JSON", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      text: () => Promise.resolve("Plain text error"),
+    });
+    const result = await loadScenarioAndStart({ aircraft: [validAircraft] });
+    expect(result).toEqual({ ok: false, message: "Plain text error" });
+  });
+
+  it("returns HTTP status when body is empty", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 400,
+      text: () => Promise.resolve(""),
+    });
+    const result = await loadScenarioAndStart({ aircraft: [validAircraft] });
+    expect(result.ok).toBe(false);
+    expect(result.message).toBe("HTTP 400");
+  });
+
+  it("returns error string on fetch throw", async () => {
+    global.fetch = jest.fn().mockRejectedValue(new Error("Network error"));
+    const result = await loadScenarioAndStart({ aircraft: [validAircraft] });
+    expect(result).toEqual({ ok: false, message: "Error: Network error" });
   });
 });
 
