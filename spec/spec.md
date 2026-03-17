@@ -33,7 +33,7 @@
 | # | タスク | 優先度 | 難易度 | Issue | 備考 |
 |---|--------|--------|--------|-------|------|
 | 2-1 | 履歴ドット（過去位置の軌跡）表示 | 🔴 | ★☆☆ | [#49](https://github.com/Futty93/Horus/issues/49) | Canvas に過去 N 点を保持して描画 |
-| 2-2 | レンジリング（距離環）表示 | 🔴 | ★☆☆ | [#50](https://github.com/Futty93/Horus/issues/50) | 中心から同心円。表示 NM 数は設定可能に |
+| 2-2 | レンジリング（距離環）表示 | 🔴 | ★☆☆ | [#50](https://github.com/Futty93/Horus/issues/50) | 中心から同心円。表示 NM 数は設定可能に → [spec/20260318-range-rings-display](spec/20260318-range-rings-display/spec.md) |
 | 2-3 | データブロック（ラベル）に表示項目を追加 | 🟡 | ★☆☆ | [#51](https://github.com/Futty93/Horus/issues/51) | スクオーク・機種・ETA など選択式 |
 | 2-4 | 速度ベクトル線の長さ（時間）調整 | 🟡 | ★☆☆ | [#52](https://github.com/Futty93/Horus/issues/52) | 設定パネルに追加 |
 | 2-5 | セクター境界線の表示 | 🟡 | ★★☆ | [#53](https://github.com/Futty93/Horus/issues/53) | 担当空域を JSON で定義して描画 |
