@@ -50,6 +50,8 @@
 
 新機能・リファクタリングを実施する際は **必ず spec を作成**してください。形式は `spec/YYYYMMDD-xxxxxx/spec.md`。テンプレートから作成するには `npm run spec:new <スラッグ>` を実行。詳細は [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) を参照。
 
+実装計画・改善項目（フェーズ・技術的負債）の一覧は [spec/spec.md](spec/spec.md) を参照してください。
+
 ## ライセンス
 
 このプロジェクトは [MIT License](LICENSE) の下で公開されています。
