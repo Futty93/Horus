@@ -20,6 +20,11 @@ const DEFAULT_POSITION: InitialPositionDto = {
   verticalSpeed: 0,
 };
 
+function parseNum(value: string, fallback: number): number {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
+}
+
 export function AddAircraftForm({
   existingCallsigns,
   airportPositions,
@@ -84,13 +89,15 @@ export function AddAircraftForm({
           route: [],
         },
         initialPosition: {
-          latitude: Number(lat) || DEFAULT_POSITION.latitude,
-          longitude: Number(lon) || DEFAULT_POSITION.longitude,
-          altitude: Number(altitude) || DEFAULT_POSITION.altitude,
-          heading: Number(heading) || DEFAULT_POSITION.heading,
-          groundSpeed: Number(groundSpeed) || DEFAULT_POSITION.groundSpeed,
-          verticalSpeed:
-            Number(verticalSpeed) ?? DEFAULT_POSITION.verticalSpeed,
+          latitude: parseNum(lat, DEFAULT_POSITION.latitude),
+          longitude: parseNum(lon, DEFAULT_POSITION.longitude),
+          altitude: parseNum(altitude, DEFAULT_POSITION.altitude),
+          heading: parseNum(heading, DEFAULT_POSITION.heading),
+          groundSpeed: parseNum(groundSpeed, DEFAULT_POSITION.groundSpeed),
+          verticalSpeed: parseNum(
+            verticalSpeed,
+            DEFAULT_POSITION.verticalSpeed
+          ),
         },
       };
       onSubmit(aircraft);
