@@ -11,15 +11,19 @@ import {
 } from "@/utility/api/scenario";
 import { suggestRoute } from "@/utility/api/ats";
 import loadAtsRoutes from "@/utility/AtsRouteManager/atsRoutesLoader";
+import type { JapanOutline } from "@/utility/AtsRouteManager/atsRoutesLoader";
 import type { Route } from "@/utility/AtsRouteManager/RouteInterfaces/Route";
 import type { Waypoint } from "@/utility/AtsRouteManager/RouteInterfaces/Waypoint";
 import type { RadioNavigationAid } from "@/utility/AtsRouteManager/RouteInterfaces/RadioNavigationAid";
+import type { InitialPositionDto } from "@/types/scenario";
 import {
   FlightPlanSetupHeader,
   FlightPlanSetupActionBar,
   FlightPlanSetupNav,
   OdGroupList,
   AircraftTable,
+  AddAircraftForm,
+  InitialPositionEditor,
   RoutePreviewMap,
 } from "@/components/flight-plan-setup";
 
@@ -68,17 +72,20 @@ export default function FlightPlanSetupPage() {
     useState<ScenarioAircraft | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
   const [loadingSuggest, setLoadingSuggest] = useState(false);
   const [atsRoutes, setAtsRoutes] = useState<{
     waypoints: Waypoint[];
     radioNavigationAids: RadioNavigationAid[];
     atsLowerRoutes: Route[];
     rnavRoutes: Route[];
+    japanOutline: JapanOutline;
   }>({
     waypoints: [],
     radioNavigationAids: [],
     atsLowerRoutes: [],
     rnavRoutes: [],
+    japanOutline: [],
   });
   const [airportPositions, setAirportPositions] = useState<
     Map<string, { latitude: number; longitude: number }>
@@ -92,6 +99,7 @@ export default function FlightPlanSetupPage() {
           radioNavigationAids: data.radioNavigationAids,
           atsLowerRoutes: data.atsLowerRoutes,
           rnavRoutes: data.rnavRoutes,
+          japanOutline: data.japanOutline,
         })
       )
       .catch(() => {});
@@ -234,6 +242,50 @@ export default function FlightPlanSetupPage() {
     setSelectedAircraft(a);
   }, []);
 
+  const handleDeleteAircraft = useCallback((callsign: string) => {
+    if (!confirm(`Delete aircraft ${callsign}?`)) return;
+    setScenario((prev) => ({
+      ...prev,
+      aircraft: prev.aircraft.filter((a) => a.flightPlan.callsign !== callsign),
+    }));
+    setSelectedAircraft((prev) =>
+      prev?.flightPlan.callsign === callsign ? null : prev
+    );
+    setStatus(`Deleted ${callsign}`);
+  }, []);
+
+  const handleAddAircraft = useCallback((aircraft: ScenarioAircraft) => {
+    setScenario((prev) => ({
+      ...prev,
+      aircraft: [...prev.aircraft, aircraft],
+    }));
+    setSelectedAircraft(aircraft);
+    setShowAddForm(false);
+  }, []);
+
+  const handleUpdateAircraft = useCallback(
+    (callsign: string, pos: Partial<InitialPositionDto>) => {
+      setScenario((prev) => {
+        const updated = prev.aircraft.map((a) => {
+          if (a.flightPlan.callsign !== callsign) return a;
+          return {
+            ...a,
+            initialPosition: { ...a.initialPosition, ...pos },
+          };
+        });
+        return { ...prev, aircraft: updated };
+      });
+      setSelectedAircraft((prev) => {
+        if (!prev || prev.flightPlan.callsign !== callsign) return prev;
+        return {
+          ...prev,
+          initialPosition: { ...prev.initialPosition, ...pos },
+        };
+      });
+    },
+    []
+  );
+
   const odPairs = useMemo(
     () => groupByOd(scenario.aircraft),
     [scenario.aircraft]
@@ -246,9 +298,34 @@ export default function FlightPlanSetupPage() {
   const renderContent = () => {
     if (scenario.aircraft.length === 0) {
       return (
-        <p className="text-atc-text-muted">
-          Load Haneda Template or Import JSON to get started.
-        </p>
+        <div className="space-y-4">
+          <p className="text-atc-text-muted">
+            Load Haneda Template or Import JSON to get started.
+            {!showAddForm && (
+              <>
+                {" "}
+                Or{" "}
+                <button
+                  type="button"
+                  onClick={() => setShowAddForm(true)}
+                  className="font-bold text-atc-accent hover:underline"
+                >
+                  Add aircraft
+                </button>
+                .
+              </>
+            )}
+          </p>
+          {showAddForm && (
+            <AddAircraftForm
+              existingCallsigns={[]}
+              airportPositions={airportPositions}
+              onSubmit={handleAddAircraft}
+              onCancel={() => setShowAddForm(false)}
+              onStatus={setStatus}
+            />
+          )}
+        </div>
       );
     }
     return (
@@ -266,11 +343,37 @@ export default function FlightPlanSetupPage() {
           onRouteChange={handleRouteChange}
         />
         <section>
-          <h2 className="font-mono text-sm font-bold mb-3">Aircraft Table</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-mono text-sm font-bold">Aircraft Table</h2>
+            {!showAddForm ? (
+              <button
+                type="button"
+                onClick={() => setShowAddForm(true)}
+                className="px-3 py-1.5 text-xs font-bold bg-atc-surface border border-atc-border rounded
+                           text-atc-text hover:border-atc-accent"
+              >
+                Add aircraft
+              </button>
+            ) : null}
+          </div>
+          {showAddForm && (
+            <div className="mb-4">
+              <AddAircraftForm
+                existingCallsigns={scenario.aircraft.map(
+                  (a) => a.flightPlan.callsign
+                )}
+                airportPositions={airportPositions}
+                onSubmit={handleAddAircraft}
+                onCancel={() => setShowAddForm(false)}
+                onStatus={setStatus}
+              />
+            </div>
+          )}
           <AircraftTable
             aircraft={scenario.aircraft}
             selectedCallsign={selectedAircraft?.flightPlan.callsign ?? null}
             onSelectAircraft={handleSelectAircraft}
+            onDeleteAircraft={handleDeleteAircraft}
           />
         </section>
       </>
@@ -299,12 +402,17 @@ export default function FlightPlanSetupPage() {
           </div>
         </div>
         <aside className="w-[480px] flex-shrink-0 border-l border-atc-border p-4 overflow-y-auto bg-atc-surface/30">
-          <div className="sticky top-4">
+          <div className="sticky top-4 space-y-4">
             <RoutePreviewMap
               selectedAircraft={selectedAircraft}
               waypoints={atsRoutes.waypoints}
               radioNavAids={atsRoutes.radioNavigationAids}
               airportPositions={airportPositions}
+              japanOutline={atsRoutes.japanOutline}
+            />
+            <InitialPositionEditor
+              aircraft={selectedAircraft}
+              onUpdate={handleUpdateAircraft}
             />
           </div>
         </aside>

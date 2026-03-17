@@ -224,7 +224,7 @@ React Context APIを使用して、以下の状態を管理しています：
 - `POST /api/aircraft/{callsign}/resume-navigation` - ナビゲーション再開
 - `POST /api/simulation/start` - シミュレーション開始
 - `POST /api/simulation/pause` - シミュレーション一時停止
-- `GET /api/ats/route/all` - ATS 経路データ取得
+- `GET /api/ats/route/all` - ATS 経路・Fix・日本海岸線（japanOutline）取得
 - `GET /api/ats/route/suggest?origin=&destination=` - A\* による空港間経路提案
 
 ## 開発ガイドライン
@@ -286,6 +286,7 @@ npm start
    - [x] シナリオ JSON エクスポート/インポート（spec 1-2）
    - [x] 「これで始める」ボタン：シナリオ送信→シミュレーション開始→Operator 遷移（spec 1-3）
    - [x] POST /api/scenario/load との連携（loadScenarioAndStart、エラー message 抽出）
+   - [x] 航空機テーブル編集：追加・削除・初期位置編集（spec 1-4）
 
 ### TODO: 実装の改善点
 

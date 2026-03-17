@@ -4,12 +4,14 @@ interface AircraftTableProps {
   aircraft: ScenarioAircraft[];
   selectedCallsign: string | null;
   onSelectAircraft: (a: ScenarioAircraft) => void;
+  onDeleteAircraft?: (callsign: string) => void;
 }
 
 export function AircraftTable({
   aircraft,
   selectedCallsign,
   onSelectAircraft,
+  onDeleteAircraft,
 }: AircraftTableProps) {
   return (
     <div className="border border-atc-border rounded-lg overflow-x-auto">
@@ -22,6 +24,9 @@ export function AircraftTable({
             <th className="px-3 py-2 text-left">Route</th>
             <th className="px-3 py-2 text-left">Alt</th>
             <th className="px-3 py-2 text-left">Spd</th>
+            {onDeleteAircraft && (
+              <th className="px-2 py-2 text-right w-12">—</th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -49,6 +54,22 @@ export function AircraftTable({
                 </td>
                 <td className="px-3 py-2">{fp.cruiseAltitude}</td>
                 <td className="px-3 py-2">{fp.cruiseSpeed}</td>
+                {onDeleteAircraft && (
+                  <td
+                    className="px-2 py-2 text-right"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => onDeleteAircraft(fp.callsign)}
+                      className="px-2 py-1 text-xs font-bold text-atc-danger hover:bg-atc-danger/20 rounded
+                                 focus:outline-none focus:ring-1 focus:ring-atc-danger"
+                      title="Delete aircraft"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                )}
               </tr>
             );
           })}

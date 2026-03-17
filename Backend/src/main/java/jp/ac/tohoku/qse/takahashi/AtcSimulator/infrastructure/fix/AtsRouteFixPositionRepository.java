@@ -29,6 +29,7 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
     private final List<RadioNavigationAid> radioNavigationAids;
     private final List<Route> atsLowerRoutes;
     private final List<Route> rnavRoutes;
+    private final String japanOutlineJson;
     private final Map<String, double[]> airportPositions;
     private final Map<String, String> icaoToIata;
 
@@ -38,6 +39,7 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
             this.radioNavigationAids = loadRadioNavigationAids();
             this.atsLowerRoutes = loadAtsLowerRoutes();
             this.rnavRoutes = loadRnavRoutes();
+            this.japanOutlineJson = loadJapanOutline();
             var airportData = loadAirportData();
             this.airportPositions = airportData.positions();
             this.icaoToIata = airportData.icaoToIata();
@@ -161,6 +163,12 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
         return loadRoutesFromResource("fix/rnav_routes.json");
     }
 
+    private String loadJapanOutline() throws IOException {
+        try (InputStream is = new ClassPathResource("fix/japan-outline.json").getInputStream()) {
+            return OBJECT_MAPPER.readTree(is).toString();
+        }
+    }
+
     private List<Route> loadRoutesFromResource(String resourcePath) throws IOException {
         try (InputStream is = new ClassPathResource(resourcePath).getInputStream()) {
             JsonNode routesNode = OBJECT_MAPPER.readTree(is).get("routes");
@@ -199,7 +207,8 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
     }
 
     public String getRouteInfo() {
-        return String.format("{\"waypoints\":%s, \"radioNavigationAids\":%s, \"atsLowerRoutes\":%s, \"rnavRoutes\":%s}",
-                waypoints, radioNavigationAids, atsLowerRoutes, rnavRoutes);
+        return String.format(
+                "{\"waypoints\":%s, \"radioNavigationAids\":%s, \"atsLowerRoutes\":%s, \"rnavRoutes\":%s, \"japanOutline\":%s}",
+                waypoints, radioNavigationAids, atsLowerRoutes, rnavRoutes, japanOutlineJson);
     }
 }
