@@ -230,6 +230,7 @@ jp.ac.tohoku.qse.takahashi.AtcSimulator/
 │   │   ├── ControlAircraftService.java
 │   │   ├── CreateAircraftService.java
 │   │   ├── LocationService.java
+│   │   ├── ScenarioController.java      # シナリオ一括ロード API ✅
 │   │   └── SimulationService.java
 │   └── dto/
 │       ├── AircraftLocationDto.java  # 位置情報 JSON レスポンス用
@@ -331,7 +332,8 @@ RESTful APIを提供しており、詳細なAPI仕様は`UranosAPI.yml`ファイ
    - `GET /aircraft/location/all` - 全航空機の現在位置を取得
    - `GET /aircraft/location?callsign={callsign}` - 特定航空機の位置を取得
 
-3. **シミュレーション制御**
+3. **シミュレーション・シナリオ**
+   - `POST /api/scenario/load` - シナリオ一括ロード（空域クリア＋複数機スポーン＋シミュレーション開始）✅
    - `POST /simulation/start` - シミュレーションを開始
    - `POST /simulation/pause` - シミュレーションを一時停止
    - `GET /simulation/status` - シミュレーションの状態を取得
@@ -692,7 +694,7 @@ application/                        # アプリケーションサービス
 └── scenario/                       # 新規：シナリオ管理サービス
 
 interfaces/                         # インターフェース層
-├── api/ScenarioController.java     # 新規：シナリオAPI
+├── api/ScenarioController.java     # ✅ シナリオ一括ロード API（実装済み）
 ├── dto/scenario/                   # 新規：シナリオDTO
 └── dsl/                            # 新規：シナリオDSL
 
@@ -701,6 +703,7 @@ infrastructure/                     # インフラ層
 ```
 
 #### 実装内容
+- [x] ScenarioController と POST /api/scenario/load の実装（複数機一括スポーン、空域クリア、コールサイン重複・Fix 不存在時の 400 エラー）
 - [ ] シナリオDSLの設計
 - [ ] シナリオのバージョン管理
 - [ ] シナリオエディタ連携API

@@ -195,7 +195,7 @@ export default function FlightPlanSetupPage() {
     setStarting(false);
     if (result.ok) {
       setStatus("Scenario loaded. Redirecting...");
-      router.push("/controller");
+      router.push("/operator");
     } else {
       setStatus(`Error: ${result.message}`);
     }

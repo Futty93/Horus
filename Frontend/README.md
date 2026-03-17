@@ -216,6 +216,7 @@ React Context APIを使用して、以下の状態を管理しています：
 - `GET /api/aircraft/location/all` - 航空機位置一覧取得
 - `POST /api/aircraft/create-haneda-samples` - Haneda Samples（約28機）作成
 - `POST /api/aircraft/spawn-with-flightplan` - フライトプラン付き航空機スポーン
+- `POST /api/scenario/load` - シナリオ一括ロード（空域クリア＋複数機スポーン＋シミュレーション開始）
 - `POST /api/aircraft/control/{callsign}` - 管制指示の送信
 - `GET /api/aircraft/{callsign}/flightplan` - フライトプラン取得
 - `POST /api/aircraft/{callsign}/flightplan` - フライトプラン割り当て
@@ -280,6 +281,11 @@ npm start
    - [x] SelectFixMode: 状態別ボタンデザイン
    - [x] RouteInfoDisplaySetting: カスタムチェックボックス
    - [x] SectorSelector / DisplayRangeSetting: atc テーマ
+
+3. **フライトプラン・シナリオ機能**
+   - [x] シナリオ JSON エクスポート/インポート（spec 1-2）
+   - [x] 「これで始める」ボタン：シナリオ送信→シミュレーション開始→Operator 遷移（spec 1-3）
+   - [x] POST /api/scenario/load との連携（loadScenarioAndStart、エラー message 抽出）
 
 ### TODO: 実装の改善点
 

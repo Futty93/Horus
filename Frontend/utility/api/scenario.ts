@@ -67,10 +67,28 @@ export async function loadScenarioAndStart(
     });
     if (!response.ok) {
       const text = await response.text();
-      return { ok: false, message: text || `HTTP ${response.status}` };
+      const parsed = parseJsonMessage(text);
+      return {
+        ok: false,
+        message: parsed ?? (text || `HTTP ${response.status}`),
+      };
     }
     return { ok: true, message: "Scenario loaded" };
   } catch (e) {
     return { ok: false, message: String(e) };
   }
+}
+
+function parseJsonMessage(text: string): string | null {
+  if (!text?.trim()) return null;
+  try {
+    const obj = JSON.parse(text) as unknown;
+    if (obj && typeof obj === "object" && "message" in obj) {
+      const m = (obj as { message: unknown }).message;
+      if (typeof m === "string") return m;
+    }
+  } catch {
+    /* ignore */
+  }
+  return null;
 }
