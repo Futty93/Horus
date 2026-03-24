@@ -9,7 +9,8 @@ export class Aircraft {
   originIcao: string;
   destinationIata: string;
   destinationIcao: string;
-  eta: string; // You may want to change this to a Date object if needed
+  /** ISO 8601 instant from API; data block shows UTC HH:mm (see spec 20260318-data-block-display-items). */
+  eta: string;
   label: { x: number; y: number };
   riskLevel: number; // 危険度（0-100）
 
@@ -17,7 +18,11 @@ export class Aircraft {
     callsign: string,
     position: { x: number; y: number; altitude: number },
     vector: { heading: number; groundSpeed: number; verticalSpeed: number },
-    instructedVector: { heading: number; groundSpeed: number; altitude: number },
+    instructedVector: {
+      heading: number;
+      groundSpeed: number;
+      altitude: number;
+    },
     type: string,
     model: string,
     originIata: string,

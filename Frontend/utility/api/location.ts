@@ -14,6 +14,7 @@ export interface AircraftLocationDto {
   originIcao: string;
   destinationIata: string;
   destinationIcao: string;
+  /** ISO 8601 instant (e.g. …Z). Data block shows UTC HH:mm. */
   eta: string;
   riskLevel: number;
 }

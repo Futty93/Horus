@@ -148,6 +148,8 @@ Frontend/
 - マウスインタラクション
 - ズーム/パン機能
 
+**データブロック（ラベル）の ETA**: バックエンドの `eta` は ISO 8601（UTC インスタント）。ラベル上では **UTC（Zulu）の `HH:mm`** で表示し、ブラウザのローカルタイムゾーンには依存しない（詳細は [spec/20260318-data-block-display-items/spec.md](../spec/20260318-data-block-display-items/spec.md)）。**UTC / JST の切替**はデータブロック表示設定への項目追加で対応予定（[Issue #91](https://github.com/Futty93/Horus/issues/91)、`good first issue`）。
+
 ### 2. 航空機制御パネル (ControlAircraft)
 
 Operator 専用。管制官の音声指示を復唱した内容をバックエンドへ送信し、実際の航空機操作を行う。
@@ -206,8 +208,9 @@ React Context APIを使用して、以下の状態を管理しています：
 1. **中心座標** (CenterCoordinateContext)
 2. **表示範囲** (DisplayRangeContext)
 3. **経路情報表示設定** (RouteInfoDisplaySettingContext)
-4. **Fix選択モード** (SelectFixModeContext)
-5. **選択航空機** (SelectedAircraftContext) — callsign と instructedVector（altitude, groundSpeed, heading）
+4. **データブロック表示設定** (DataBlockDisplaySettingContext) — スクオーク・機種・ETA の表示 ON/OFF
+5. **Fix選択モード** (SelectFixModeContext)
+6. **選択航空機** (SelectedAircraftContext) — callsign と instructedVector（altitude, groundSpeed, heading）
 
 ## API通信
 

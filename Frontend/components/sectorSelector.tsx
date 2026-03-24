@@ -2,8 +2,7 @@
 import { useCenterCoordinate } from "@/context/centerCoordinateContext";
 import { useState } from "react";
 
-// Define the sector center coordinates in a separate constant
-const sectorCenterCoordinates: {
+export const sectorCenterCoordinates: {
   [key: string]: { latitude: number; longitude: number };
 } = {
   T09: { latitude: 34.482, longitude: 138.614 },
@@ -55,69 +54,91 @@ const sectorCenterCoordinates: {
   A05: { latitude: 24.915694444444444, longitude: 132.88125 },
 };
 
-const SectorSelector = () => {
-  const [selectedSector, setSelectedSector] = useState("T09"); // Default sector
+interface SectorSelectorProps {
+  embedded?: boolean;
+  value?: string;
+  onChange?: (sector: string) => void;
+}
+
+const SectorSelector = ({
+  embedded = false,
+  value,
+  onChange,
+}: SectorSelectorProps) => {
+  const [internalSector, setInternalSector] = useState("T09");
   const { setCenterCoordinate } = useCenterCoordinate();
 
-  // Update the selected sector and call the callback
+  const isControlled = value !== undefined && onChange !== undefined;
+  const selectedSector = isControlled ? value : internalSector;
+
   const handleSectorChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const sector = event.target.value;
-    setSelectedSector(sector);
+    if (isControlled) {
+      onChange(sector);
+    } else {
+      setInternalSector(sector);
+    }
     setCenterCoordinate({
       latitude: sectorCenterCoordinates[sector].latitude,
       longitude: sectorCenterCoordinates[sector].longitude,
     });
-    console.log("Selected sector:", sector, sectorCenterCoordinates[sector]);
   };
 
-  return (
-    <div className="bg-atc-surface border border-atc-border rounded-lg p-3 mb-3">
-      <div className="flex items-center justify-between">
-        <label
-          htmlFor="selectSector"
-          className="font-bold text-atc-text font-mono tracking-wider text-xs"
-        >
-          担当セクター:
-        </label>
-        <div className="relative">
-          <select
-            id="selectSector"
-            value={selectedSector}
-            onChange={handleSectorChange}
-            className="appearance-none bg-atc-surface-elevated border border-atc-border rounded
+  const content = (
+    <div className="flex items-center justify-between">
+      <label
+        htmlFor="selectSector"
+        className="font-bold text-atc-text font-mono tracking-wider text-xs"
+      >
+        担当セクター:
+      </label>
+      <div className="relative">
+        <select
+          id="selectSector"
+          value={selectedSector}
+          onChange={handleSectorChange}
+          className="appearance-none bg-atc-surface-elevated border border-atc-border rounded
                        px-3 py-1 pr-7 text-atc-text font-mono text-xs
                        focus:outline-none focus:border-atc-accent
                        hover:border-atc-text-muted cursor-pointer"
-          >
-            {Object.keys(sectorCenterCoordinates).map((sector) => (
-              <option
-                key={sector}
-                value={sector}
-                className="bg-atc-surface-elevated text-atc-text"
-              >
-                {sector}
-              </option>
-            ))}
-          </select>
-
-          {/* Custom dropdown arrow */}
-          <div className="absolute inset-y-0 right-0 flex items-center pr-1 pointer-events-none">
-            <svg
-              className="w-3 h-3 text-atc-text-muted"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        >
+          {Object.keys(sectorCenterCoordinates).map((sector) => (
+            <option
+              key={sector}
+              value={sector}
+              className="bg-atc-surface-elevated text-atc-text"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19 9l-7 7-7-7"
-              ></path>
-            </svg>
-          </div>
+              {sector}
+            </option>
+          ))}
+        </select>
+
+        {/* Custom dropdown arrow */}
+        <div className="absolute inset-y-0 right-0 flex items-center pr-1 pointer-events-none">
+          <svg
+            className="w-3 h-3 text-atc-text-muted"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M19 9l-7 7-7-7"
+            ></path>
+          </svg>
         </div>
       </div>
+    </div>
+  );
+
+  if (embedded) {
+    return content;
+  }
+  return (
+    <div className="bg-atc-surface border border-atc-border rounded-lg p-3 mb-3">
+      {content}
     </div>
   );
 };

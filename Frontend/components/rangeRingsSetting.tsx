@@ -5,11 +5,11 @@ import {
   RANGE_RINGS_INTERVAL_OPTIONS,
 } from "@/context/rangeRingsSettingContext";
 
-const RangeRingsSetting = () => {
+const RangeRingsSetting = ({ embedded = false }: { embedded?: boolean }) => {
   const { rangeRingsSetting, setRangeRingsSetting } = useRangeRingsSetting();
 
-  return (
-    <div className="bg-atc-surface border border-atc-border rounded-lg p-3 mb-3">
+  const content = (
+    <>
       <div className="flex items-center justify-between mb-2">
         <label className="font-bold text-atc-text font-mono tracking-wider text-xs">
           レンジリング:
@@ -58,6 +58,15 @@ const RangeRingsSetting = () => {
           </select>
         </div>
       )}
+    </>
+  );
+
+  if (embedded) {
+    return content;
+  }
+  return (
+    <div className="bg-atc-surface border border-atc-border rounded-lg p-3 mb-3">
+      {content}
     </div>
   );
 };

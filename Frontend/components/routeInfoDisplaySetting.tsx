@@ -1,12 +1,28 @@
 "use client";
+import React from "react";
+import CollapsiblePanel from "@/components/ui/collapsiblePanel";
 import {
   useRouteInfoDisplaySetting,
   DisplaySettings,
 } from "@/context/routeInfoDisplaySettingContext";
 
+const SETTING_LABELS: Record<keyof DisplaySettings, string> = {
+  waypointName: "Wpt Name",
+  waypointPoint: "Wpt Point",
+  radioNavigationAidsName: "Nav Name",
+  radioNavigationAidsPoint: "Nav Point",
+  atsLowerRoute: "ATS Lower",
+  rnavRoute: "RNAV",
+};
+
 const RouteInfoDisplaySetting = () => {
   const { isDisplaying, setRouteInfoDisplaySetting } =
     useRouteInfoDisplaySetting();
+
+  const activeItems = (Object.keys(isDisplaying) as (keyof DisplaySettings)[])
+    .filter((k) => isDisplaying[k])
+    .map((k) => SETTING_LABELS[k]);
+  const summary = activeItems.length > 0 ? activeItems.join(", ") : "なし";
 
   const handleCheckboxChange = (settingKey: keyof DisplaySettings) => {
     return (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,14 +92,11 @@ const RouteInfoDisplaySetting = () => {
   );
 
   return (
-    <div
+    <CollapsiblePanel
       id="routeInfoDisplaySetting"
-      className="bg-atc-surface border border-atc-border rounded-lg p-2.5 mb-3"
+      title="ROUTE DISPLAY SETTINGS"
+      summary={summary}
     >
-      <h3 className="text-xs font-bold text-atc-text font-mono tracking-wider mb-2 text-center">
-        ROUTE DISPLAY SETTINGS
-      </h3>
-
       <div className="space-y-2">
         {[
           {
@@ -143,7 +156,7 @@ const RouteInfoDisplaySetting = () => {
           />
         </div>
       </div>
-    </div>
+    </CollapsiblePanel>
   );
 };
 
