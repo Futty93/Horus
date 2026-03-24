@@ -14,6 +14,7 @@ import { useRouteInfoDisplaySetting } from "@/context/routeInfoDisplaySettingCon
 import { useCenterCoordinate } from "@/context/centerCoordinateContext";
 import { useDisplayRange } from "@/context/displayRangeContext";
 import { useRangeRingsSetting } from "@/context/rangeRingsSettingContext";
+import { useDataBlockDisplaySetting } from "@/context/dataBlockDisplaySettingContext";
 import { useSelectFixMode } from "@/context/selectFixModeContext";
 import { useSelectedAircraft } from "@/context/selectedAircraftContext";
 import { searchFixName } from "@/utility/AtsRouteManager/FixNameSearch";
@@ -47,6 +48,8 @@ const RadarCanvas: React.FC = () => {
   const displayRangeRef = useRef(displayRange);
   const { rangeRingsSetting } = useRangeRingsSetting();
   const rangeRingsSettingRef = useRef(rangeRingsSetting);
+  const { dataBlockDisplaySetting } = useDataBlockDisplaySetting();
+  const dataBlockDisplaySettingRef = useRef(dataBlockDisplaySetting);
   const { isSelectFixMode, setSelectedFixName } = useSelectFixMode();
   const {
     setCallsign,
@@ -160,6 +163,10 @@ const RadarCanvas: React.FC = () => {
   }, [rangeRingsSetting]);
 
   useEffect(() => {
+    dataBlockDisplaySettingRef.current = dataBlockDisplaySetting;
+  }, [dataBlockDisplaySetting]);
+
+  useEffect(() => {
     isSelectFixModeRef.current = isSelectFixMode;
   }, [isSelectFixMode]);
 
@@ -229,7 +236,12 @@ const RadarCanvas: React.FC = () => {
 
   const renderAircraftsOnCanvas = (ctx: CanvasRenderingContext2D) => {
     controllingAircraftsRef.current.forEach((aircraft) => {
-      DrawAircraft.drawAircraft(ctx, aircraft, displayRangeRef.current);
+      DrawAircraft.drawAircraft(
+        ctx,
+        aircraft,
+        displayRangeRef.current,
+        dataBlockDisplaySettingRef.current
+      );
     });
   };
 

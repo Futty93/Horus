@@ -45,11 +45,12 @@
 
 ### ラベル描画の現状レイアウト
 
+- 各項目は縦並び。**グランドスピード（G）と目的地は同一行で横並び**（labelX と labelX+40）。
+
 ```
-labelX, labelY+0   : callsign
+labelX, labelY+0    : callsign
 labelX, labelY+15   : altitudeLabel（指示高度 ↑/↓ 現在高度）
-labelX, labelY+30   : "G" + groundspeed/10
-labelX+40, labelY+30: destinationIcao 下3桁
+labelX, labelY+30   : "G" + groundspeed/10  |  labelX+40, labelY+30: destinationIcao 下3桁
 labelX, labelY+45   : "R" + riskLevel（色分け: 白/黄/赤）
 ```
 
@@ -90,7 +91,8 @@ labelX, labelY+45   : "R" + riskLevel（色分け: 白/黄/赤）
 
 3. **設定 UI**
    - チェックボックスで「スクオーク」「機種」「ETA」の ON/OFF
-   - DisplayRangeSetting や RangeRingsSetting と同様のパネルに配置（Operator / Controller）
+   - **コラプシブル**: 滅多に変更しないため、デフォルトは折りたたみでコンパクト表示（「データブロック」と現在有効な項目のサマリを表示）。クリックで展開し、チェックボックスで設定変更可能
+   - Operator / Controller の右パネルに配置（RangeRingsSetting 等と同列）
    - スクオークは「3-1 完了後に有効化」と明記するか、最初はグレーアウトでも可
 
 ### 検討した他案（Alternatives Considered）
@@ -144,8 +146,8 @@ labelX, labelY+45   : "R" + riskLevel（色分け: 白/黄/赤）
 
 3. **設定 UI**
    - チェックボックス 3 つ（スクオーク・機種・ETA）
-   - Operator / Controller の右パネルに配置
-   - RangeRingsSetting 付近または DisplayRangeSetting 付近
+   - コラプシブル表示（折りたたみ時にサマリ表示）
+   - Operator / Controller の右パネルに配置（RangeRingsSetting 付近）
 
 ### Phase 2: スクオーク表示対応（3-1 連携）
 
@@ -168,7 +170,6 @@ labelX, labelY+45   : "R" + riskLevel（色分け: 白/黄/赤）
 
 - ラベル行の最大数・レイアウト（機種名が長い場合の省略ルール）
 - ETA のフォーマット（`HH:mm` vs `HH:mm:ss` vs 日付を含めるか）
-- 設定 UI の配置（新規パネル vs 既存 DisplayRangeSetting への統合）
 
 ---
 

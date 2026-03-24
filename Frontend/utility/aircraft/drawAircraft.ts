@@ -1,10 +1,19 @@
-import { Display } from "next/dist/compiled/@next/font";
 import CoordinateManager from "../coordinateManager/CoordinateManager";
 import { GLOBAL_CONSTANTS } from "../globals/constants";
 import { GLOBAL_SETTINGS } from "../globals/settings";
 import { Aircraft } from "./aircraftClass";
 import { DisplayRange } from "@/context/displayRangeContext";
+import type { DataBlockDisplaySetting } from "@/context/dataBlockDisplaySettingContext";
 
+function formatEtaToHhMm(eta: string): string {
+  try {
+    const date = new Date(eta);
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toTimeString().slice(0, 5);
+  } catch {
+    return "";
+  }
+}
 
 /**
  * Class to draw aircraft on the canvas
@@ -18,37 +27,51 @@ import { DisplayRange } from "@/context/displayRangeContext";
  * @see CanvasRenderingContext2D
  */
 class DrawAircraft {
-  public static drawAircraft(ctx: CanvasRenderingContext2D, aircraft: Aircraft, displayRange: DisplayRange) {
+  public static drawAircraft(
+    ctx: CanvasRenderingContext2D,
+    aircraft: Aircraft,
+    displayRange: DisplayRange,
+    dataBlockDisplaySetting: DataBlockDisplaySetting
+  ) {
     this.drawAircraftMarker(ctx, aircraft.position);
-    this.drawHeadingLine(ctx, aircraft.position, aircraft.vector.groundSpeed, aircraft.vector.heading, displayRange);
+    this.drawHeadingLine(
+      ctx,
+      aircraft.position,
+      aircraft.vector.groundSpeed,
+      aircraft.vector.heading,
+      displayRange
+    );
     this.drawLabelLiine(ctx, aircraft.position, aircraft.label);
-    this.drawAircraftLabel(ctx, aircraft);
+    this.drawAircraftLabel(ctx, aircraft, dataBlockDisplaySetting);
   }
 
-  private static drawAircraftMarker(ctx: CanvasRenderingContext2D, position: { x: number; y: number }) {
+  private static drawAircraftMarker(
+    ctx: CanvasRenderingContext2D,
+    position: { x: number; y: number }
+  ) {
     const radius: number = 5;
 
     // Draw aircraft as a filled white circle
     ctx.beginPath();
-    ctx.arc(
-      position.x,
-      position.y,
-      radius,
-      0,
-      2 * Math.PI,
-    );
+    ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI);
     ctx.fillStyle = "white";
     ctx.fill();
   }
 
-  private static drawHeadingLine(ctx: CanvasRenderingContext2D, position: { x: number; y: number }, groundSpeed: number, heading: number, displayRange: DisplayRange) {
+  private static drawHeadingLine(
+    ctx: CanvasRenderingContext2D,
+    position: { x: number; y: number },
+    groundSpeed: number,
+    heading: number,
+    displayRange: DisplayRange
+  ) {
     const futurePosition = CoordinateManager.calculateFuturePositionOnCanvas(
       groundSpeed,
       heading,
       GLOBAL_SETTINGS.canvasWidth,
       GLOBAL_SETTINGS.canvasHeight,
       displayRange,
-      position,
+      position
     );
 
     // Draw a line from the current position to the future position
@@ -59,73 +82,109 @@ class DrawAircraft {
     ctx.stroke();
   }
 
-  private static drawAircraftLabel(ctx: CanvasRenderingContext2D, aircraft: Aircraft) {
+  private static drawAircraftLabel(
+    ctx: CanvasRenderingContext2D,
+    aircraft: Aircraft,
+    setting: DataBlockDisplaySetting
+  ) {
     const airplanePosition = aircraft.position;
     const instructedVector = aircraft.instructedVector;
     const labelX: number = airplanePosition.x + aircraft.label.x;
-    const labelY: number = airplanePosition.y - aircraft.label.y;
+    let lineY: number = airplanePosition.y - aircraft.label.y;
 
     let altitudeLabel: string = "";
-
     if (instructedVector.altitude > airplanePosition.altitude) {
-      altitudeLabel = Math.floor(instructedVector.altitude / 100).toString() + " ↑ " + Math.floor(airplanePosition.altitude / 100).toString();
+      altitudeLabel =
+        Math.floor(instructedVector.altitude / 100).toString() +
+        " ↑ " +
+        Math.floor(airplanePosition.altitude / 100).toString();
     } else if (instructedVector.altitude < airplanePosition.altitude) {
-      altitudeLabel = Math.floor(instructedVector.altitude / 100).toString() + " ↓ " + Math.floor(airplanePosition.altitude / 100).toString();
+      altitudeLabel =
+        Math.floor(instructedVector.altitude / 100).toString() +
+        " ↓ " +
+        Math.floor(airplanePosition.altitude / 100).toString();
     } else {
       altitudeLabel = Math.floor(airplanePosition.altitude / 100).toString();
     }
 
-    // 危険度情報を取得（デフォルトは0）
     const riskLevel = aircraft.riskLevel || 0;
-
-    // 危険度に基づく色の決定
-    let riskColor = "white"; // デフォルト（~30）
+    let riskColor = "white";
     if (riskLevel >= 70) {
-      riskColor = "red";     // 70以上は赤
+      riskColor = "red";
     } else if (riskLevel >= 30) {
-      riskColor = "yellow";  // 30-70は黄色
+      riskColor = "yellow";
     }
 
-    // Draw labels with airplane information
     ctx.fillStyle = "white";
     ctx.font = GLOBAL_CONSTANTS.FONT_STYLE_IN_CANVAS;
     ctx.textAlign = "left";
 
-    ctx.fillText(aircraft.callsign, labelX, labelY);
-    ctx.fillText(
-      altitudeLabel,
-      labelX,
-      labelY + 15,
-    );
-    ctx.fillText(
-      "G" + (Math.floor(aircraft.vector.groundSpeed / 10)).toString(),
-      labelX,
-      labelY + 30,
-    );
-    ctx.fillText(
-      aircraft.destinationIcao.length >= 4 ? aircraft.destinationIcao.slice(-3) : aircraft.destinationIcao,
-      labelX + 40,
-      labelY + 30,
-    );
+    const lineHeight = 15;
 
-    // 危険度を色分けして表示
-    ctx.fillStyle = riskColor;
+    ctx.fillText(aircraft.callsign, labelX, lineY);
+    lineY += lineHeight;
+
+    ctx.fillText(altitudeLabel, labelX, lineY);
+    lineY += lineHeight;
+
     ctx.fillText(
-      "R" + Math.floor(riskLevel).toString(),
+      "G" + Math.floor(aircraft.vector.groundSpeed / 10).toString(),
       labelX,
-      labelY + 45,
+      lineY
     );
+    ctx.fillText(
+      aircraft.destinationIcao.length >= 4
+        ? aircraft.destinationIcao.slice(-3)
+        : aircraft.destinationIcao,
+      labelX + 40,
+      lineY
+    );
+    lineY += lineHeight;
+
+    ctx.fillStyle = riskColor;
+    ctx.fillText("R" + Math.floor(riskLevel).toString(), labelX, lineY);
+    lineY += lineHeight;
+
+    if (setting.aircraftType && aircraft.model) {
+      ctx.fillStyle = "white";
+      const modelDisplay =
+        aircraft.model.length > 6 ? aircraft.model.slice(0, 6) : aircraft.model;
+      ctx.fillText(modelDisplay, labelX, lineY);
+      lineY += lineHeight;
+    }
+
+    if (setting.eta && aircraft.eta) {
+      const etaFormatted = formatEtaToHhMm(aircraft.eta);
+      if (etaFormatted) {
+        ctx.fillStyle = "white";
+        ctx.fillText(etaFormatted, labelX, lineY);
+        lineY += lineHeight;
+      }
+    }
+
+    if (setting.squawk) {
+      ctx.fillStyle = "white";
+      const squawkDisplay =
+        (aircraft as Aircraft & { squawk?: string }).squawk ?? "---";
+      ctx.fillText(squawkDisplay, labelX, lineY);
+    }
   }
 
-  private static drawLabelLiine(ctx: CanvasRenderingContext2D, aircraftPosition: { x: number; y: number }, labelPosition: { x: number; y: number }) {
+  private static drawLabelLiine(
+    ctx: CanvasRenderingContext2D,
+    aircraftPosition: { x: number; y: number },
+    labelPosition: { x: number; y: number }
+  ) {
     const labelX: number = aircraftPosition.x + labelPosition.x;
     const labelY: number = aircraftPosition.y - labelPosition.y;
-    const labelDistance: number = Math.sqrt(Math.pow(labelPosition.x, 2) + Math.pow(labelPosition.y, 2));
+    const labelDistance: number = Math.sqrt(
+      Math.pow(labelPosition.x, 2) + Math.pow(labelPosition.y, 2)
+    );
     const sin = labelPosition.y / labelDistance;
     const cos = labelPosition.x / labelDistance;
 
     ctx.beginPath();
-    ctx.moveTo(aircraftPosition.x + (10 * cos), aircraftPosition.y - (10 * sin));
+    ctx.moveTo(aircraftPosition.x + 10 * cos, aircraftPosition.y - 10 * sin);
     ctx.lineTo(labelX - 5, labelY + 15);
     ctx.strokeStyle = "white";
     ctx.stroke();
