@@ -4,16 +4,7 @@ import { GLOBAL_SETTINGS } from "../globals/settings";
 import { Aircraft } from "./aircraftClass";
 import { DisplayRange } from "@/context/displayRangeContext";
 import type { DataBlockDisplaySetting } from "@/context/dataBlockDisplaySettingContext";
-
-function formatEtaToHhMm(eta: string): string {
-  try {
-    const date = new Date(eta);
-    if (Number.isNaN(date.getTime())) return "";
-    return date.toTimeString().slice(0, 5);
-  } catch {
-    return "";
-  }
-}
+import { formatEtaToUtcHhMm } from "./formatEtaUtc";
 
 /**
  * Class to draw aircraft on the canvas
@@ -154,7 +145,7 @@ class DrawAircraft {
     }
 
     if (setting.eta && aircraft.eta) {
-      const etaFormatted = formatEtaToHhMm(aircraft.eta);
+      const etaFormatted = formatEtaToUtcHhMm(aircraft.eta);
       if (etaFormatted) {
         ctx.fillStyle = "white";
         ctx.fillText(etaFormatted, labelX, lineY);

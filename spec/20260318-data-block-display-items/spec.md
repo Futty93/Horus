@@ -59,7 +59,7 @@ labelX, labelY+45   : "R" + riskLevel（色分け: 白/黄/赤）
 | 表示候補 | Aircraft プロパティ | DTO フィールド | 備考 |
 |----------|---------------------|-----------------|------|
 | 機種 | `model` | `model` | B738, B777 等。Commercial 以外は type 由来 |
-| ETA | `eta` | `eta` | ISO 8601。Commercial のみ。空文字の場合あり |
+| ETA | `eta` | `eta` | ISO 8601（UTC インスタント、例 `...Z`）。Commercial のみ。空文字の場合あり |
 | スクオーク | 未存在 | 未存在 | 3-1 で追加予定。当面は "---" または非表示 |
 | コールサイン | `callsign` | `callsign` | 既存・常時表示を維持 |
 | 高度・速度・目的地・危険度 | 既存 | 既存 | 既存のまま。表示 ON/OFF を追加するかは別途検討 |
@@ -85,7 +85,7 @@ labelX, labelY+45   : "R" + riskLevel（色分け: 白/黄/赤）
 2. **描画ロジック**
    - `drawAircraftLabel` に `DataBlockDisplaySetting` を渡す
    - 各項目を設定に応じて描画。行の順序・レイアウトは既存に合わせて追加
-   - ETA: ISO 8601 を `HH:mm` 等にフォーマット。空の場合は表示しない
+   - ETA: ISO 8601 インスタントを **UTC（Zulu）の `HH:mm`** にフォーマット（ブラウザのローカルタイムゾーンには依存しない）。空・パース不能の場合は表示しない
    - 機種: `model` をそのまま表示（長い場合は省略検討）
    - スクオーク: 値があれば 4 桁、なければ "---" または表示行自体をスキップ（設定による）
 
@@ -104,6 +104,15 @@ labelX, labelY+45   : "R" + riskLevel（色分け: 白/黄/赤）
 
 - **メリット**: 既存の Context/設定パネル構成を流用でき、変更が局所的
 - **デメリット / 受容する制約**: スクオークは 3-1 完了まで実質未使用。ラベルが長くなりレーダー上で重なる可能性は、フォントサイズやレイアウト調整で対応
+
+### ETA 表示のタイムゾーン（決定）
+
+| 項目 | 決定内容 |
+|------|-----------|
+| **基準** | **UTC（Zulu）**。バックエンドの `eta` が ISO 8601 で表す同一瞬間の「協定世界時での時・分」を表示する。 |
+| **理由** | API は `Z` 付き等の UTC 意味を持つ文字列を返す（`CommercialAircraft` コメント・Create 例に準拠）。ATC では Zulu 表示が一般的で、ワークステーションのローカル TZ に依存させない方が訓練・再現性に有利。 |
+| **形式** | `HH:mm`（24 時間、先頭ゼロ埋め）。秒は付けない。 |
+| **UTC / JST 切替** | [#91](https://github.com/Futty93/Horus/issues/91)（`good first issue`）で対応予定。**データブロック表示設定**（既存のスクオーク・機種・ETA と同じパネル想定）に **UTC / JST** の選択項目を追加し、ETA のフォーマット基準を切り替える。現行リリースは UTC 固定。 |
 
 ---
 
@@ -141,7 +150,7 @@ labelX, labelY+45   : "R" + riskLevel（色分け: 白/黄/赤）
 2. **drawAircraftLabel の拡張**
    - 引数に `DataBlockDisplaySetting` を追加
    - `aircraftType` ON 時: `model` を適切な行に描画
-   - `eta` ON 時: `eta` を `HH:mm` 等にフォーマットして描画（空はスキップ）
+   - `eta` ON 時: `eta` を UTC の `HH:mm` にフォーマットして描画（空・無効はスキップ）。実装は `formatEtaToUtcHhMm`（`Frontend/utility/aircraft/formatEtaUtc.ts`）
    - レイアウトは既存の下に追記、または行間を調整
 
 3. **設定 UI**
@@ -169,7 +178,8 @@ labelX, labelY+45   : "R" + riskLevel（色分け: 白/黄/赤）
 ## 未解決事項（Unresolved Questions）
 
 - ラベル行の最大数・レイアウト（機種名が長い場合の省略ルール）
-- ETA のフォーマット（`HH:mm` vs `HH:mm:ss` vs 日付を含めるか）
+
+**解決済み**: ETA は UTC の `HH:mm`（上記「ETA 表示のタイムゾーン」参照）。日付はラベルに含めない。
 
 ---
 
@@ -180,3 +190,4 @@ labelX, labelY+45   : "R" + riskLevel（色分け: 白/黄/赤）
 - [Issue #55（スクオーク 3-1）](https://github.com/Futty93/Horus/issues/55)
 - [spec/20260318-range-rings-display — 参照実装](../20260318-range-rings-display/spec.md)
 - [Frontend/utility/aircraft/drawAircraft.ts](../../Frontend/utility/aircraft/drawAircraft.ts)
+- [Frontend/utility/aircraft/formatEtaUtc.ts](../../Frontend/utility/aircraft/formatEtaUtc.ts)
