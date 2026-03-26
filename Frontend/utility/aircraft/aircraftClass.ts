@@ -2,6 +2,10 @@ export class Aircraft {
   callsign: string;
   position: { x: number; y: number; altitude: number };
   vector: { heading: number; groundSpeed: number; verticalSpeed: number };
+  /**
+   * Pilot-applied target from Operator (POST /control). Not the controller’s clearance memo;
+   * see spec/20260326-instruction-memo-radar-label/spec.md.
+   */
   instructedVector: { heading: number; groundSpeed: number; altitude: number };
   type: string; // 航空機カテゴリ（Commercial, Military, Helicopter）
   model: string; // 航空機機種（B738, F-35A, UH-60J等）

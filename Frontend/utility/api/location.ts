@@ -7,6 +7,7 @@ export interface AircraftLocationDto {
   callsign: string;
   position: { latitude: number; longitude: number; altitude: number };
   vector: { heading: number; groundSpeed: number; verticalSpeed: number };
+  /** Pilot target from backend; distinct from ATC clearance memo (see spec 20260326-instruction-memo-radar-label). */
   instructedVector: { heading: number; groundSpeed: number; altitude: number };
   type: string;
   model: string;

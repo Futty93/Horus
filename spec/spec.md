@@ -37,7 +37,7 @@
 | 2-3 | データブロック（ラベル）に表示項目を追加 | 🟡 | ★☆☆ | [#51](https://github.com/Futty93/Horus/issues/51) | スクオーク・機種・ETA など選択式 → [spec/20260318-data-block-display-items](20260318-data-block-display-items/spec.md) |
 | 2-4 | 速度ベクトル線の長さ（時間）調整 | 🟡 | ★☆☆ | [#52](https://github.com/Futty93/Horus/issues/52) | 設定パネルに追加 |
 | 2-5 | セクター境界線の表示 | 🟡 | ★★☆ | [#53](https://github.com/Futty93/Horus/issues/53) | 担当空域を JSON で定義して描画 |
-| 2-6 | 指示メモをレーダーラベル隣に表示 | 🟡 | ★★☆ | [#54](https://github.com/Futty93/Horus/issues/54) | spec 20260308-ui-ux-improvement の Out of Scope 項目 |
+| 2-6 | 指示メモをレーダーラベル隣に表示 | 🟡 | ★★☆ | [#54](https://github.com/Futty93/Horus/issues/54) | → [spec/20260326-instruction-memo-radar-label](20260326-instruction-memo-radar-label/spec.md) |
 
 ---
 
