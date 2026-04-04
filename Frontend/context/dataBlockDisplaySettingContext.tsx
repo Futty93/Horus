@@ -5,6 +5,8 @@ export interface DataBlockDisplaySetting {
   squawk: boolean;
   aircraftType: boolean;
   eta: boolean;
+  /** 管制クリアランスメモ行（atcClearance vs 実測）。spec 20260326。 */
+  atcClearanceMemo: boolean;
 }
 
 export interface DataBlockDisplaySettingContextType {
@@ -26,6 +28,7 @@ export const DataBlockDisplaySettingProvider: React.FC<{
       squawk: false,
       aircraftType: true,
       eta: true,
+      atcClearanceMemo: true,
     });
 
   return (

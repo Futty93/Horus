@@ -228,6 +228,7 @@ jp.ac.tohoku.qse.takahashi.AtcSimulator/
 │   │   ├── AtsRouteService.java
 │   │   ├── ConflictAlertController.java
 │   │   ├── ControlAircraftService.java
+│   │   ├── AtcClearanceController.java
 │   │   ├── CreateAircraftService.java
 │   │   ├── LocationService.java
 │   │   ├── ScenarioController.java      # シナリオ一括ロード API ✅
@@ -313,7 +314,8 @@ jp.ac.tohoku.qse.takahashi.AtcSimulator/
 外部とのインターフェースを提供します。
 
 **主要クラス**:
-- `ControlAircraftService.java` - 航空機制御APIエンドポイント
+- `ControlAircraftService.java` - 航空機制御APIエンドポイント（パイロット操縦目標）
+- `AtcClearanceController.java` - 管制クリアランスメモ記録API（`instructedVector` とは別）
 - `CreateAircraftService.java` - 航空機作成APIエンドポイント
 - `LocationService.java` - 位置情報取得APIエンドポイント
 - `SimulationService.java` - シミュレーション制御APIエンドポイント
@@ -326,11 +328,12 @@ RESTful APIを提供しており、詳細なAPI仕様は`UranosAPI.yml`ファイ
 主なエンドポイント:
 
 1. **航空機制御**
-   - `POST /api/aircraft/control/{callsign}` - 特定の航空機に管制指示を与える
+   - `POST /api/aircraft/control/{callsign}` - 特定の航空機に**パイロット操縦目標**を与える（`instructedVector`）
    - `POST /api/aircraft/control/{callsign}/direct/{fixName}` - 特定の航空機を特定のFIXに直行させる
+   - `POST /api/aircraft/{callsign}/atc-clearance` - **管制クリアランスメモ**を記録（Body は `ControlAircraftDto` と同型。`GET /aircraft/location/all` の `atcClearance` に反映）
 
 2. **位置情報取得**（JSON 形式）
-   - `GET /aircraft/location/all` - 全航空機の現在位置を取得
+   - `GET /aircraft/location/all` - 全航空機の現在位置を取得（各要素に `atcClearance` が含まれる場合あり）
    - `GET /aircraft/location?callsign={callsign}` - 特定航空機の位置を取得
 
 3. **シミュレーション・シナリオ**

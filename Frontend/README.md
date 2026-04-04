@@ -163,7 +163,7 @@ Operator 専用。管制官の音声指示を復唱した内容を**パイロッ
 
 ### 3. 指示メモ (InstructionMemo)
 
-Controller 専用。管制官が発出した**クリアランス**をメモとして入力・反映する。現状はローカル表示のみだが、レーダーラベル隣への表示と複数クライアント共有のため、**管制クリアランス**をサーバに保持する API 追加が計画されている（上記 spec）。航空機の直接操作（`POST .../control`）は行わない。
+Controller 専用。レーダーで航空機を選択すると、入力欄に当該機の**実測**（`position.altitude` / `vector` の地速・針路、`GET /api/aircraft/location/all`）を自動で入れる（あとから「Refresh inputs from current」で取り直し可）。管制官が発出した**クリアランス**を数値で編集し、**RECORD** で `POST /api/aircraft/{callsign}/atc-clearance`（BFF 経由）へ送信する。バックエンドが `atcClearance` として保持し、`GET /api/aircraft/location/all` で全クライアントに配信。**レーダー上の「管制メモ行」**（`atcClearance` vs 実測の差、略号・スラッシュ表記）は **Controller 画面（`/controller`）のレーダーのみ**に描画する。Controller では **管制クリアランスに高度が記録されているとき**、データブロックの **2 行目（↑/↓ 付き高度行）** はパイロット目標ではなく **クリアランス高度 vs 実測** を表示する（パイロット目標の未更新で矢印が狂うのを防ぐ）。その場合、水色の管制メモ行から **高度ペアは省略**し、針路・地速の差分のみを出す。Operator 画面（`/operator`）ではパイロット目標行（`instructedVector` vs 実測）のみとし、管制メモ行は表示しない（役割分担と主ブロックとの見かけ上の重複を避ける）。管制メモ行の ON/OFF は Controller のデータブロック設定のみ。`POST .../control` は呼ばず、機体のパイロット目標（`instructedVector`）は変更しない。
 
 ### 4. Fix選択モード (SelectFixMode)
 
@@ -208,7 +208,7 @@ React Context APIを使用して、以下の状態を管理しています：
 1. **中心座標** (CenterCoordinateContext)
 2. **表示範囲** (DisplayRangeContext)
 3. **経路情報表示設定** (RouteInfoDisplaySettingContext)
-4. **データブロック表示設定** (DataBlockDisplaySettingContext) — スクオーク・機種・ETA の表示 ON/OFF
+4. **データブロック表示設定** (DataBlockDisplaySettingContext) — スクオーク・機種・ETA・**管制クリアランスメモ行**の表示 ON/OFF（**管制メモ行のトグルは Controller 画面のみ**。Operator では該当チェックボックスを出さない）
 5. **Fix選択モード** (SelectFixModeContext)
 6. **選択航空機** (SelectedAircraftContext) — callsign と `instructedVector`（パイロット操縦目標: altitude, groundSpeed, heading）
 
@@ -216,11 +216,12 @@ React Context APIを使用して、以下の状態を管理しています：
 
 クライアントは同一オリジン（`/api/*`）を呼び出し、Next.js BFF が Java バックエンドへプロキシします。主なエンドポイント：
 
-- `GET /api/aircraft/location/all` - 航空機位置一覧取得
+- `GET /api/aircraft/location/all` - 航空機位置一覧取得（各要素に `atcClearance` が含まれる場合あり）
 - `POST /api/aircraft/create-haneda-samples` - Haneda Samples（約28機）作成
 - `POST /api/aircraft/spawn-with-flightplan` - フライトプラン付き航空機スポーン
 - `POST /api/scenario/load` - シナリオ一括ロード（空域クリア＋複数機スポーン＋シミュレーション開始）
 - `POST /api/aircraft/control/{callsign}` - パイロット操縦目標の送信（`instructedVector` 更新。管制クリアランスメモとは別）
+- `POST /api/aircraft/{callsign}/atc-clearance` - **管制クリアランスメモ**の記録（Body は control と同型。`atcClearance` として保持）
 - `GET /api/aircraft/{callsign}/flightplan` - フライトプラン取得
 - `POST /api/aircraft/{callsign}/flightplan` - フライトプラン割り当て
 - `POST /api/aircraft/{callsign}/direct-to` - 直行指示

@@ -9,6 +9,12 @@ export interface AircraftLocationDto {
   vector: { heading: number; groundSpeed: number; verticalSpeed: number };
   /** Pilot target from backend; distinct from ATC clearance memo (see spec 20260326-instruction-memo-radar-label). */
   instructedVector: { heading: number; groundSpeed: number; altitude: number };
+  /** Controller clearance memo; omitted or null if not recorded. */
+  atcClearance?: {
+    heading: number;
+    groundSpeed: number;
+    altitude: number;
+  } | null;
   type: string;
   model: string;
   originIata: string;
@@ -66,6 +72,15 @@ function mapDtoToAircraft(
     displayRange
   );
 
+  const atc =
+    dto.atcClearance != null
+      ? {
+          heading: dto.atcClearance.heading,
+          groundSpeed: dto.atcClearance.groundSpeed,
+          altitude: dto.atcClearance.altitude,
+        }
+      : null;
+
   return new Aircraft(
     dto.callsign,
     {
@@ -83,6 +98,7 @@ function mapDtoToAircraft(
       groundSpeed: dto.instructedVector.groundSpeed,
       altitude: dto.instructedVector.altitude,
     },
+    atc,
     dto.type,
     dto.model,
     dto.originIata ?? "",
@@ -128,6 +144,7 @@ function updateControllingAircrafts(
       newAircraft.position,
       newAircraft.vector,
       newAircraft.instructedVector,
+      newAircraft.atcClearance,
       newAircraft.type,
       newAircraft.model,
       newAircraft.originIata,

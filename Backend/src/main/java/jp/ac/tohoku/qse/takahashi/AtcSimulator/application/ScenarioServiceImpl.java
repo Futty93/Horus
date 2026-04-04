@@ -33,6 +33,17 @@ public class ScenarioServiceImpl implements ScenarioService {
     }
 
     @Override
+    public void setAtcClearance(Callsign callsign, InstructedVector clearance) {
+        Aircraft aircraft = airspaceManagement.findAircraftByCallsign(callsign);
+        if (aircraft instanceof AircraftBase base) {
+            base.setAtcClearance(clearance);
+            return;
+        }
+        throw new IllegalStateException(
+                "ATC clearance is only supported for AircraftBase: " + aircraft.getClass().getName());
+    }
+
+    @Override
     public void directFixAircraft(Callsign callsign, String fixName) {
         directToFix(callsign, fixName, false);
     }

@@ -4,7 +4,12 @@ import { GLOBAL_SETTINGS } from "../globals/settings";
 import { Aircraft } from "./aircraftClass";
 import { DisplayRange } from "@/context/displayRangeContext";
 import type { DataBlockDisplaySetting } from "@/context/dataBlockDisplaySettingContext";
+import {
+  formatAtcClearanceMemoLine,
+  isAltitudeClearanceRecorded,
+} from "./atcClearanceMemoLine";
 import { formatEtaToUtcHhMm } from "./formatEtaUtc";
+import { formatAltitudeTargetVsActualLabel } from "./altitudeDataBlockLabel";
 
 /**
  * Class to draw aircraft on the canvas
@@ -22,7 +27,9 @@ class DrawAircraft {
     ctx: CanvasRenderingContext2D,
     aircraft: Aircraft,
     displayRange: DisplayRange,
-    dataBlockDisplaySetting: DataBlockDisplaySetting
+    dataBlockDisplaySetting: DataBlockDisplaySetting,
+    /** Controller 画面では管制クリアランス高度があれば 2 行目をクリアランス vs 実測にする（パイロット目標の古い値で矢印が狂うのを防ぐ）。 */
+    useControllerClearanceAltitudeRow = false
   ) {
     this.drawAircraftMarker(ctx, aircraft.position);
     this.drawHeadingLine(
@@ -33,7 +40,12 @@ class DrawAircraft {
       displayRange
     );
     this.drawLabelLiine(ctx, aircraft.position, aircraft.label);
-    this.drawAircraftLabel(ctx, aircraft, dataBlockDisplaySetting);
+    this.drawAircraftLabel(
+      ctx,
+      aircraft,
+      dataBlockDisplaySetting,
+      useControllerClearanceAltitudeRow
+    );
   }
 
   private static drawAircraftMarker(
@@ -76,27 +88,30 @@ class DrawAircraft {
   private static drawAircraftLabel(
     ctx: CanvasRenderingContext2D,
     aircraft: Aircraft,
-    setting: DataBlockDisplaySetting
+    setting: DataBlockDisplaySetting,
+    useControllerClearanceAltitudeRow: boolean
   ) {
     const airplanePosition = aircraft.position;
     const instructedVector = aircraft.instructedVector;
     const labelX: number = airplanePosition.x + aircraft.label.x;
     let lineY: number = airplanePosition.y - aircraft.label.y;
 
-    let altitudeLabel: string = "";
-    if (instructedVector.altitude > airplanePosition.altitude) {
-      altitudeLabel =
-        Math.floor(instructedVector.altitude / 100).toString() +
-        " ↑ " +
-        Math.floor(airplanePosition.altitude / 100).toString();
-    } else if (instructedVector.altitude < airplanePosition.altitude) {
-      altitudeLabel =
-        Math.floor(instructedVector.altitude / 100).toString() +
-        " ↓ " +
-        Math.floor(airplanePosition.altitude / 100).toString();
-    } else {
-      altitudeLabel = Math.floor(airplanePosition.altitude / 100).toString();
-    }
+    const clearance = aircraft.atcClearance;
+    const useClearanceAltitudePrimaryRow =
+      useControllerClearanceAltitudeRow &&
+      clearance != null &&
+      isAltitudeClearanceRecorded(clearance);
+
+    const altitudeLabel =
+      useClearanceAltitudePrimaryRow && clearance
+        ? formatAltitudeTargetVsActualLabel(
+            clearance.altitude,
+            airplanePosition.altitude
+          )
+        : formatAltitudeTargetVsActualLabel(
+            instructedVector.altitude,
+            airplanePosition.altitude
+          );
 
     const riskLevel = aircraft.riskLevel || 0;
     let riskColor = "white";
@@ -118,6 +133,7 @@ class DrawAircraft {
     ctx.fillText(altitudeLabel, labelX, lineY);
     lineY += lineHeight;
 
+    ctx.fillStyle = "white";
     ctx.fillText(
       "G" + Math.floor(aircraft.vector.groundSpeed / 10).toString(),
       labelX,
@@ -131,6 +147,23 @@ class DrawAircraft {
       lineY
     );
     lineY += lineHeight;
+
+    if (setting.atcClearanceMemo) {
+      const memoLine = formatAtcClearanceMemoLine(
+        aircraft.atcClearance,
+        {
+          altitudeFt: airplanePosition.altitude,
+          heading: aircraft.vector.heading,
+          groundSpeed: aircraft.vector.groundSpeed,
+        },
+        { omitAltitude: useClearanceAltitudePrimaryRow }
+      );
+      if (memoLine) {
+        ctx.fillStyle = "#93c5fd";
+        ctx.fillText(memoLine, labelX, lineY);
+        lineY += lineHeight;
+      }
+    }
 
     ctx.fillStyle = riskColor;
     ctx.fillText("R" + Math.floor(riskLevel).toString(), labelX, lineY);

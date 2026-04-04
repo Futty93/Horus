@@ -1,3 +1,9 @@
+export type AtcClearanceVector = {
+  heading: number;
+  groundSpeed: number;
+  altitude: number;
+};
+
 export class Aircraft {
   callsign: string;
   position: { x: number; y: number; altitude: number };
@@ -7,6 +13,8 @@ export class Aircraft {
    * see spec/20260326-instruction-memo-radar-label/spec.md.
    */
   instructedVector: { heading: number; groundSpeed: number; altitude: number };
+  /** Controller-recorded clearance memo from POST .../atc-clearance; null if none. */
+  atcClearance: AtcClearanceVector | null;
   type: string; // 航空機カテゴリ（Commercial, Military, Helicopter）
   model: string; // 航空機機種（B738, F-35A, UH-60J等）
   originIata: string;
@@ -27,6 +35,7 @@ export class Aircraft {
       groundSpeed: number;
       altitude: number;
     },
+    atcClearance: AtcClearanceVector | null = null,
     type: string,
     model: string,
     originIata: string,
@@ -42,6 +51,7 @@ export class Aircraft {
     this.position = position;
     this.vector = vector;
     this.instructedVector = instructedVector;
+    this.atcClearance = atcClearance;
     this.type = type;
     this.model = model;
     this.originIata = originIata;
@@ -57,6 +67,7 @@ export class Aircraft {
     this.position = newAircraft.position;
     this.vector = newAircraft.vector;
     this.instructedVector = newAircraft.instructedVector;
+    this.atcClearance = newAircraft.atcClearance;
     this.eta = newAircraft.eta;
     this.riskLevel = newAircraft.riskLevel;
   }
@@ -64,6 +75,7 @@ export class Aircraft {
   public updateAircraftLocationInfo(newAircraft: Aircraft) {
     this.position = newAircraft.position;
     this.vector = newAircraft.vector;
+    this.atcClearance = newAircraft.atcClearance;
     this.eta = newAircraft.eta;
     this.riskLevel = newAircraft.riskLevel;
   }
