@@ -117,6 +117,7 @@ Frontend/
 │   ├── flight-plan-setup/ # フライトプラン設定用（OdGroupSection, AtsRouteSearch）
 │   ├── sectorSelector.tsx # セクター選択
 │   ├── displayRangeSetting.tsx # 表示範囲設定（ビジュアルレンジバー）
+│   ├── velocityVectorLookaheadSetting.tsx # 速度ベクトル予測時間（スライダー、0.5～10 分）
 │   └── ...
 ├── context/              # React Context定義
 ├── utility/             # ユーティリティ関数
@@ -144,6 +145,7 @@ Frontend/
 **主な機能**:
 
 - 航空機の位置表示
+- **速度ベクトル線**（針路方向の白線）の長さは、地速に対し **速度ベクトル予測時間（分）** に比例。`レーダー表示` パネルのスライダーで **0.5～10 分・0.5 分刻み**（既定 1 分）。表示のみでシミュレーション計算は変更しない（[spec/20260404-velocity-vector-line-duration/spec.md](../spec/20260404-velocity-vector-line-duration/spec.md)）。値は `localStorage` に保存し、Controller / Operator で共有。
 - 経路情報の表示
 - マウスインタラクション
 - ズーム/パン機能
@@ -210,7 +212,8 @@ React Context APIを使用して、以下の状態を管理しています：
 3. **経路情報表示設定** (RouteInfoDisplaySettingContext)
 4. **データブロック表示設定** (DataBlockDisplaySettingContext) — スクオーク・機種・ETA・**管制クリアランスメモ行**の表示 ON/OFF（**管制メモ行のトグルは Controller 画面のみ**。Operator では該当チェックボックスを出さない）
 5. **Fix選択モード** (SelectFixModeContext)
-6. **選択航空機** (SelectedAircraftContext) — callsign と `instructedVector`（パイロット操縦目標: altitude, groundSpeed, heading）
+6. **速度ベクトル予測時間** (VelocityVectorLookaheadContext) — レーダー上の速度ベクトル線の長さに対応する時間（分）。Controller / Operator 共通、`localStorage` 永続化
+7. **選択航空機** (SelectedAircraftContext) — callsign と `instructedVector`（パイロット操縦目標: altitude, groundSpeed, heading）
 
 ## API通信
 
