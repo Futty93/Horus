@@ -19,6 +19,7 @@ describe("Aircraft", () => {
       basePosition,
       baseVector,
       baseInstructedVector,
+      null,
       "Commercial",
       "B738",
       "HND",
@@ -36,6 +37,7 @@ describe("Aircraft", () => {
       { x: 150, y: 250, altitude: 36000 },
       { heading: 95, groundSpeed: 260, verticalSpeed: 5 },
       { heading: 180, groundSpeed: 300, altitude: 39000 },
+      { heading: 200, groundSpeed: 240, altitude: 34000 },
       "Commercial",
       "B738",
       "HND",
@@ -55,5 +57,10 @@ describe("Aircraft", () => {
     expect(aircraft.instructedVector).toEqual(baseInstructedVector);
     expect(aircraft.eta).toBe("12:05");
     expect(aircraft.riskLevel).toBe(30);
+    expect(aircraft.atcClearance).toEqual({
+      heading: 200,
+      groundSpeed: 240,
+      altitude: 34000,
+    });
   });
 });

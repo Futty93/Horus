@@ -51,7 +51,7 @@ export default function OperatorPage() {
                           <div className="space-y-3">
                             <RouteInfoDisplaySetting />
                             <RadarViewSetting />
-                            <DataBlockDisplaySetting />
+                            <DataBlockDisplaySetting variant="operator" />
 
                             {/* Control Buttons */}
                             <SimulationControlButtons />
