@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
-
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ScenarioService;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.AircraftNotFoundException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
@@ -20,6 +18,8 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Aircraft
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.InstructedVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ControlAircraftDto;
+
+import jakarta.validation.Valid;
 
 /**
  * 管制クリアランスメモ（InstructionMemo と同型の数値）を機体に紐づけて保持する API。
