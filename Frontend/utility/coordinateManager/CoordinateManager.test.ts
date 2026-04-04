@@ -66,4 +66,56 @@ describe("CoordinateManager", () => {
       expect(geo.longitude).toBeCloseTo(point.longitude, 1);
     });
   });
+
+  describe("calculateFuturePositionOnCanvas", () => {
+    const futurePosBase = {
+      speed: 600,
+      heading: 90,
+      canvasWidth: 1000,
+      canvasHeight: 1000,
+      current: { x: 500, y: 500 },
+    } as const;
+
+    const callFuturePosition = (durationMinutes?: number) =>
+      durationMinutes === undefined
+        ? CoordinateManager.calculateFuturePositionOnCanvas(
+            futurePosBase.speed,
+            futurePosBase.heading,
+            futurePosBase.canvasWidth,
+            futurePosBase.canvasHeight,
+            displayRange,
+            futurePosBase.current
+          )
+        : CoordinateManager.calculateFuturePositionOnCanvas(
+            futurePosBase.speed,
+            futurePosBase.heading,
+            futurePosBase.canvasWidth,
+            futurePosBase.canvasHeight,
+            displayRange,
+            futurePosBase.current,
+            durationMinutes
+          );
+
+    it.each([
+      { minutesA: 1, minutesB: 2, ratio: 2 },
+      { minutesA: 1, minutesB: 3, ratio: 3 },
+      { minutesA: 0.5, minutesB: 2.5, ratio: 5 },
+    ])(
+      "scales displacement by durationMinutes ($minutesA vs $minutesB min → ratio $ratio)",
+      ({ minutesA, minutesB, ratio }) => {
+        const posA = callFuturePosition(minutesA);
+        const posB = callFuturePosition(minutesB);
+        const dxA = posA.futureX - futurePosBase.current.x;
+        const dxB = posB.futureX - futurePosBase.current.x;
+        expect(dxB).toBeCloseTo(dxA * ratio, 5);
+      }
+    );
+
+    it("defaults duration to 1 minute", () => {
+      const implicit = callFuturePosition();
+      const explicit = callFuturePosition(1);
+      expect(implicit.futureX).toBeCloseTo(explicit.futureX, 6);
+      expect(implicit.futureY).toBeCloseTo(explicit.futureY, 6);
+    });
+  });
 });

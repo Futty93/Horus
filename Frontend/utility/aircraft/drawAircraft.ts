@@ -29,7 +29,8 @@ class DrawAircraft {
     displayRange: DisplayRange,
     dataBlockDisplaySetting: DataBlockDisplaySetting,
     /** Controller 画面では管制クリアランス高度があれば 2 行目をクリアランス vs 実測にする（パイロット目標の古い値で矢印が狂うのを防ぐ）。 */
-    useControllerClearanceAltitudeRow = false
+    useControllerClearanceAltitudeRow = false,
+    durationMinutes = 1
   ) {
     this.drawAircraftMarker(ctx, aircraft.position);
     this.drawHeadingLine(
@@ -37,7 +38,8 @@ class DrawAircraft {
       aircraft.position,
       aircraft.vector.groundSpeed,
       aircraft.vector.heading,
-      displayRange
+      displayRange,
+      durationMinutes
     );
     this.drawLabelLiine(ctx, aircraft.position, aircraft.label);
     this.drawAircraftLabel(
@@ -66,7 +68,8 @@ class DrawAircraft {
     position: { x: number; y: number },
     groundSpeed: number,
     heading: number,
-    displayRange: DisplayRange
+    displayRange: DisplayRange,
+    durationMinutes: number
   ) {
     const futurePosition = CoordinateManager.calculateFuturePositionOnCanvas(
       groundSpeed,
@@ -74,7 +77,8 @@ class DrawAircraft {
       GLOBAL_SETTINGS.canvasWidth,
       GLOBAL_SETTINGS.canvasHeight,
       displayRange,
-      position
+      position,
+      durationMinutes
     );
 
     // Draw a line from the current position to the future position

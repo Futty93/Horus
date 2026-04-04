@@ -13,6 +13,7 @@ import { DrawAircraft } from "@/utility/aircraft/drawAircraft";
 import { useRouteInfoDisplaySetting } from "@/context/routeInfoDisplaySettingContext";
 import { useCenterCoordinate } from "@/context/centerCoordinateContext";
 import { useDisplayRange } from "@/context/displayRangeContext";
+import { useVelocityVectorLookahead } from "@/context/velocityVectorLookaheadContext";
 import { useRangeRingsSetting } from "@/context/rangeRingsSettingContext";
 import {
   useDataBlockDisplaySetting,
@@ -49,6 +50,8 @@ const RadarCanvas: React.FC = () => {
   const centerCoordinateRef = useRef(centerCoordinate);
   const { displayRange } = useDisplayRange();
   const displayRangeRef = useRef(displayRange);
+  const { durationMinutes } = useVelocityVectorLookahead();
+  const velocityVectorDurationRef = useRef(durationMinutes);
   const { rangeRingsSetting } = useRangeRingsSetting();
   const rangeRingsSettingRef = useRef(rangeRingsSetting);
   const { dataBlockDisplaySetting } = useDataBlockDisplaySetting();
@@ -78,6 +81,7 @@ const RadarCanvas: React.FC = () => {
   isDisplayingRef.current = isDisplaying;
   centerCoordinateRef.current = centerCoordinate;
   displayRangeRef.current = displayRange;
+  velocityVectorDurationRef.current = durationMinutes;
   rangeRingsSettingRef.current = rangeRingsSetting;
   dataBlockDisplaySettingRef.current = dataBlockRadarSetting;
   isSelectFixModeRef.current = isSelectFixMode;
@@ -222,7 +226,8 @@ const RadarCanvas: React.FC = () => {
         aircraft,
         displayRangeRef.current,
         dataBlockDisplaySettingRef.current,
-        controllerClearanceAltitudeRowRef.current
+        controllerClearanceAltitudeRowRef.current,
+        velocityVectorDurationRef.current
       );
     });
   };

@@ -4,6 +4,7 @@ import { RouteInfoDisplaySettingProvider } from "@/context/routeInfoDisplaySetti
 import RouteInfoDisplaySetting from "@/components/routeInfoDisplaySetting";
 import { CenterCoordinateProvider } from "@/context/centerCoordinateContext";
 import { DisplayRangeProvider } from "@/context/displayRangeContext";
+import { VelocityVectorLookaheadProvider } from "@/context/velocityVectorLookaheadContext";
 import { RangeRingsSettingProvider } from "@/context/rangeRingsSettingContext";
 import RadarViewSetting from "@/components/radarViewSetting";
 import { DataBlockDisplaySettingProvider } from "@/context/dataBlockDisplaySettingContext";
@@ -25,38 +26,40 @@ export default function ControllerPage() {
     <RouteInfoDisplaySettingProvider>
       <CenterCoordinateProvider>
         <DisplayRangeProvider>
-          <RangeRingsSettingProvider>
-            <DataBlockDisplaySettingProvider>
-              <SelectFixModeProvider>
-                <SelectedAircraftProvider>
-                  <div className="flex h-screen w-full">
-                    <div className="flex w-full">
-                      <RadarCanvas />
-                      <div
-                        className="controlPanel bg-atc-bg border-l border-atc-border text-atc-text
+          <VelocityVectorLookaheadProvider>
+            <RangeRingsSettingProvider>
+              <DataBlockDisplaySettingProvider>
+                <SelectFixModeProvider>
+                  <SelectedAircraftProvider>
+                    <div className="flex h-screen w-full">
+                      <div className="flex w-full">
+                        <RadarCanvas />
+                        <div
+                          className="controlPanel bg-atc-bg border-l border-atc-border text-atc-text
                               p-4 flex flex-col justify-between min-w-80 max-w-80
                               h-full overflow-y-auto overflow-x-hidden
                               scrollbar-thin scrollbar-track-atc scrollbar-thumb-atc"
-                      >
-                        <div className="flex-1 space-y-4 min-h-0">
-                          <SelectedCallsignDisplay variant="controller" />
-                          <FlightPlanDisplay />
-                          <InstructionMemo />
-                        </div>
-                        <div id="settingArea" className="mt-4 space-y-4">
-                          <RouteInfoDisplaySetting />
-                          <div className="flex flex-col space-y-3">
-                            <RadarViewSetting />
-                            <DataBlockDisplaySetting />
+                        >
+                          <div className="flex-1 space-y-4 min-h-0">
+                            <SelectedCallsignDisplay variant="controller" />
+                            <FlightPlanDisplay />
+                            <InstructionMemo />
+                          </div>
+                          <div id="settingArea" className="mt-4 space-y-4">
+                            <RouteInfoDisplaySetting />
+                            <div className="flex flex-col space-y-3">
+                              <RadarViewSetting />
+                              <DataBlockDisplaySetting />
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </SelectedAircraftProvider>
-              </SelectFixModeProvider>
-            </DataBlockDisplaySettingProvider>
-          </RangeRingsSettingProvider>
+                  </SelectedAircraftProvider>
+                </SelectFixModeProvider>
+              </DataBlockDisplaySettingProvider>
+            </RangeRingsSettingProvider>
+          </VelocityVectorLookaheadProvider>
         </DisplayRangeProvider>
       </CenterCoordinateProvider>
     </RouteInfoDisplaySettingProvider>
