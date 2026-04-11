@@ -121,7 +121,7 @@
 | 4.6 | `POST /api/aircraft/{callsign}/direct-to` | FlightPlanController | 完了 |
 | 4.7 | `POST /api/aircraft/{callsign}/resume-navigation` | FlightPlanController | 完了 |
 | 4.8 | `GET /api/aircraft/{callsign}/flightplan` | FlightPlanController | 完了 |
-| 4.9 | `POST /api/scenario/load` | 未着手（後回し） | 未着手 |
+| 4.9 | `POST /api/scenario/load` | ScenarioController | 完了 |
 | 4.10 | UranosAPI.yml 更新 | OpenAPI 仕様 | 完了 |
 | 4.11 | Phase 4 統合テスト | FlightPlanApiIntegrationTest | 完了 |
 

@@ -7,8 +7,55 @@ on:
     branches: [main, master]
 
 jobs:
+  changes:
+    name: Detect changed paths
+    runs-on: ubuntu-latest
+    outputs:
+      run_backend: ${{ steps.pick.outputs.run_backend }}
+      run_frontend: ${{ steps.pick.outputs.run_frontend }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'Backend/**'
+            frontend:
+              - 'Frontend/**'
+            workflow:
+              - '.github/**'
+            repo_wide:
+              - 'spec/**'
+              - '*.md'
+              - 'docs/**'
+
+      - name: Decide which jobs to run
+        id: pick
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "run_backend=true" >> "$GITHUB_OUTPUT"
+            echo "run_frontend=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          b="${{ steps.filter.outputs.backend }}"
+          f="${{ steps.filter.outputs.frontend }}"
+          w="${{ steps.filter.outputs.workflow }}"
+          r="${{ steps.filter.outputs.repo_wide }}"
+          run_b=false
+          run_f=false
+          if [ "$b" = "true" ] || [ "$w" = "true" ] || [ "$r" = "true" ]; then run_b=true; fi
+          if [ "$f" = "true" ] || [ "$w" = "true" ] || [ "$r" = "true" ]; then run_f=true; fi
+          echo "run_backend=$run_b" >> "$GITHUB_OUTPUT"
+          echo "run_frontend=$run_f" >> "$GITHUB_OUTPUT"
+
   backend:
     name: Backend (Gradle test)
+    needs: changes
+    if: needs.changes.outputs.run_backend == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -31,6 +78,8 @@ jobs:
 
   frontend:
     name: Frontend (build)
+    needs: changes
+    if: needs.changes.outputs.run_frontend == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:

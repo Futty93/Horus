@@ -28,6 +28,8 @@ public abstract class AircraftBase implements Aircraft {
     protected AircraftPosition aircraftPosition;
     protected AircraftVector aircraftVector;
     protected InstructedVector instructedVector;
+    /** Controller-recorded clearance memo (altitude / heading / speed); does not drive the aircraft. */
+    protected InstructedVector atcClearance;
     protected final AircraftType aircraftType;
 
     // Strategy パターンによる飛行動作の委譲
@@ -302,6 +304,18 @@ public abstract class AircraftBase implements Aircraft {
 
     public void setInstructedVector(final InstructedVector newInstructedVector) {
         this.instructedVector = newInstructedVector;
+    }
+
+    public InstructedVector getAtcClearance() {
+        return atcClearance;
+    }
+
+    public void setAtcClearance(final InstructedVector clearance) {
+        this.atcClearance = clearance;
+    }
+
+    public boolean hasAtcClearance() {
+        return atcClearance != null;
     }
 
     public void setFlightPlan(FlightPlan flightPlan) {

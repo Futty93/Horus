@@ -12,6 +12,7 @@ public record AircraftLocationDto(
     PositionDto position,
     VectorDto vector,
     InstructedVectorDto instructedVector,
+    InstructedVectorDto atcClearance,
     String type,
     String model,
     String originIata,

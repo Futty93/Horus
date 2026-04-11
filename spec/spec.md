@@ -20,7 +20,7 @@
 |---|--------|--------|--------|-------|------|
 | 1-1 | `POST /api/scenario/load` バックエンド実装 | 🔴 | ★★☆ | [#44](https://github.com/Futty93/Horus/issues/44) | 複数機を一括スポーン。spec 20260308-flight-plan-setup-page で未着手 |
 | 1-2 | フライトプラン設定ページ — JSON エクスポート/インポート | 🔴 | ★☆☆ | [#45](https://github.com/Futty93/Horus/issues/45) | フロントのみ。ブラウザ download API |
-| 1-3 | フライトプラン設定ページ — 「これで始める」ボタン | 🔴 | ★★☆ | [#46](https://github.com/Futty93/Horus/issues/46) | 1-1 完了後。シナリオ送信 → シミュレーション開始 → Controller 遷移 |
+| 1-3 | フライトプラン設定ページ — 「これで始める」ボタン | 🔴 | ★★☆ | [#46](https://github.com/Futty93/Horus/issues/46) | 1-1 完了後。シナリオ送信 → 空域反映 → Operator 遷移。START SIMULATION で開始 |
 | 1-4 | フライトプラン設定ページ — 航空機テーブル編集（追加/削除/初期位置） | 🔴 | ★★☆ | [#47](https://github.com/Futty93/Horus/issues/47) | 現状 OdGroupList は表示のみ |
 | 1-5 | シミュレーション開始画面での JSON アップロード起動 | 🟡 | ★☆☆ | [#48](https://github.com/Futty93/Horus/issues/48) | トップページまたは別エントリ |
 
@@ -33,11 +33,11 @@
 | # | タスク | 優先度 | 難易度 | Issue | 備考 |
 |---|--------|--------|--------|-------|------|
 | 2-1 | 履歴ドット（過去位置の軌跡）表示 | 🔴 | ★☆☆ | [#49](https://github.com/Futty93/Horus/issues/49) | Canvas に過去 N 点を保持して描画 |
-| 2-2 | レンジリング（距離環）表示 | 🔴 | ★☆☆ | [#50](https://github.com/Futty93/Horus/issues/50) | 中心から同心円。表示 NM 数は設定可能に |
-| 2-3 | データブロック（ラベル）に表示項目を追加 | 🟡 | ★☆☆ | [#51](https://github.com/Futty93/Horus/issues/51) | スクオーク・機種・ETA など選択式 |
+| 2-2 | レンジリング（距離環）表示 | 🔴 | ★☆☆ | [#50](https://github.com/Futty93/Horus/issues/50) | 中心から同心円。表示 NM 数は設定可能に → [spec/20260318-range-rings-display](spec/20260318-range-rings-display/spec.md) |
+| 2-3 | データブロック（ラベル）に表示項目を追加 | 🟡 | ★☆☆ | [#51](https://github.com/Futty93/Horus/issues/51) | スクオーク・機種・ETA など選択式 → [spec/20260318-data-block-display-items](20260318-data-block-display-items/spec.md) |
 | 2-4 | 速度ベクトル線の長さ（時間）調整 | 🟡 | ★☆☆ | [#52](https://github.com/Futty93/Horus/issues/52) | 設定パネルに追加 |
 | 2-5 | セクター境界線の表示 | 🟡 | ★★☆ | [#53](https://github.com/Futty93/Horus/issues/53) | 担当空域を JSON で定義して描画 |
-| 2-6 | 指示メモをレーダーラベル隣に表示 | 🟡 | ★★☆ | [#54](https://github.com/Futty93/Horus/issues/54) | spec 20260308-ui-ux-improvement の Out of Scope 項目 |
+| 2-6 | 指示メモをレーダーラベル隣に表示 | 🟡 | ★★☆ | [#54](https://github.com/Futty93/Horus/issues/54) | → [spec/20260326-instruction-memo-radar-label](20260326-instruction-memo-radar-label/spec.md) |
 
 ---
 
@@ -112,6 +112,15 @@
 | T-1 | `ConflictAlertService` の DTO 化（backend-redesign 6.6 未着手） | 🟡 | ★☆☆ | [#74](https://github.com/Futty93/Horus/issues/74) | ✅ 完了 | ConflictAlertDto, ConflictStatisticsDto を interfaces/dto に切り出し |
 | T-2 | API クラス名統一（`*Service` → `*Controller`）（backend-redesign 7.3 保留） | 🟢 | ★★☆ | [#75](https://github.com/Futty93/Horus/issues/75) | - | 影響範囲大のため慎重に |
 | T-3 | テスト網羅（単体・統合）— flight-plan spec 6.1〜6.3 未着手 | 🟡 | ★★☆ | [#76](https://github.com/Futty93/Horus/issues/76) | - | サンプルシナリオ JSON 作成も含む |
+| T-4 | API 応答時間の短縮（Backend） | 🟡 | ★★☆ | - | - | カスタムシリアライザ、レスポンスキャッシュ、非同期処理 |
+| T-5 | テスタビリティの向上（Backend） | 🟡 | ★★☆ | - | - | [spec/20260317-backend-testability](spec/20260317-backend-testability/spec.md) |
+| T-6 | DDD 原則の徹底（Backend） | 🟡 | ★★★ | - | - | 集約境界明確化、値オブジェクト徹底、ドメインイベント導入 |
+| T-7 | 設定の外部化（Backend） | 🟢 | ★☆☆ | - | - | 環境変数活用、環境別設定分離 |
+| T-8 | シナリオ機能強化（Backend） | 🟢 | ★★☆ | - | - | シナリオ DSL 設計、バージョン管理、エディタ連携 API。`POST /api/scenario/load` は完了済み |
+| T-9 | RadarCanvas パフォーマンス最適化（Frontend） | 🟡 | ★★☆ | - | - | useMemo/useCallback、requestAnimationFrame 最適化、描画領域の最適化 |
+| T-10 | 状態管理の改善（Frontend） | 🟡 | ★★☆ | - | - | Context 最適化、型定義強化（`any` 排除） |
+
+**注**: 管制レーダーシステムとしての機能要件（安全管理、通信、フライト管理、空域管理など）は本 spec のフェーズ 2〜7 で定義。各 Phase の子 spec で詳細を管理する。
 
 ---
 

@@ -1,8 +1,11 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Aircraft } from "@/utility/aircraft/aircraftClass";
 import loadAtsRoutes from "@/utility/AtsRouteManager/atsRoutesLoader";
-import { renderMap } from "@/utility/AtsRouteManager/routeRenderer";
+import {
+  renderMap,
+  drawRangeRings,
+} from "@/utility/AtsRouteManager/routeRenderer";
 import { GLOBAL_CONSTANTS } from "@/utility/globals/constants";
 import { GLOBAL_SETTINGS } from "@/utility/globals/settings";
 import { fetchAircraftLocation } from "@/utility/api/location";
@@ -10,6 +13,12 @@ import { DrawAircraft } from "@/utility/aircraft/drawAircraft";
 import { useRouteInfoDisplaySetting } from "@/context/routeInfoDisplaySettingContext";
 import { useCenterCoordinate } from "@/context/centerCoordinateContext";
 import { useDisplayRange } from "@/context/displayRangeContext";
+import { useVelocityVectorLookahead } from "@/context/velocityVectorLookaheadContext";
+import { useRangeRingsSetting } from "@/context/rangeRingsSettingContext";
+import {
+  useDataBlockDisplaySetting,
+  type DataBlockDisplaySetting,
+} from "@/context/dataBlockDisplaySettingContext";
 import { useSelectFixMode } from "@/context/selectFixModeContext";
 import { useSelectedAircraft } from "@/context/selectedAircraftContext";
 import { searchFixName } from "@/utility/AtsRouteManager/FixNameSearch";
@@ -41,6 +50,22 @@ const RadarCanvas: React.FC = () => {
   const centerCoordinateRef = useRef(centerCoordinate);
   const { displayRange } = useDisplayRange();
   const displayRangeRef = useRef(displayRange);
+  const { durationMinutes } = useVelocityVectorLookahead();
+  const velocityVectorDurationRef = useRef(durationMinutes);
+  const { rangeRingsSetting } = useRangeRingsSetting();
+  const rangeRingsSettingRef = useRef(rangeRingsSetting);
+  const { dataBlockDisplaySetting } = useDataBlockDisplaySetting();
+  const pathname = usePathname();
+  const dataBlockRadarSetting = useMemo<DataBlockDisplaySetting>(() => {
+    const operator = pathname === "/operator";
+    return {
+      ...dataBlockDisplaySetting,
+      atcClearanceMemo: operator
+        ? false
+        : dataBlockDisplaySetting.atcClearanceMemo,
+    };
+  }, [pathname, dataBlockDisplaySetting]);
+  const dataBlockDisplaySettingRef = useRef(dataBlockRadarSetting);
   const { isSelectFixMode, setSelectedFixName } = useSelectFixMode();
   const {
     setCallsign,
@@ -49,11 +74,22 @@ const RadarCanvas: React.FC = () => {
   } = useSelectedAircraft();
   const isSelectFixModeRef = useRef(isSelectFixMode);
   const atsRouteDataRef = useRef(atsRouteData);
-  const pathname = usePathname();
+  const controllerClearanceAltitudeRowRef = useRef(false);
+  const pathnameRef = useRef(pathname);
 
-  useEffect(() => {
-    console.log("pathname: ", pathname);
-  }, [pathname]);
+  // Refs for rAF / setInterval / event handlers: sync during render instead of mirroring in useEffect.
+  isDisplayingRef.current = isDisplaying;
+  centerCoordinateRef.current = centerCoordinate;
+  displayRangeRef.current = displayRange;
+  velocityVectorDurationRef.current = durationMinutes;
+  rangeRingsSettingRef.current = rangeRingsSetting;
+  dataBlockDisplaySettingRef.current = dataBlockRadarSetting;
+  isSelectFixModeRef.current = isSelectFixMode;
+  atsRouteDataRef.current = atsRouteData;
+  selectedAircraftRef.current = selectedAircraft;
+  controllingAircraftsRef.current = controllingAircrafts;
+  controllerClearanceAltitudeRowRef.current = pathname === "/controller";
+  pathnameRef.current = pathname;
 
   useEffect(() => {
     const canvasContainer = document.getElementsByClassName(
@@ -104,8 +140,9 @@ const RadarCanvas: React.FC = () => {
   useEffect(() => {
     if (atsRouteData) {
       updateCanvas();
-      startUpdatingAircraftLocations();
+      const stopUpdating = startUpdatingAircraftLocations();
       startRenderingLoop();
+      return stopUpdating;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: run when atsRouteData is set; functions are stable
   }, [atsRouteData]);
@@ -121,40 +158,6 @@ const RadarCanvas: React.FC = () => {
       );
     }
   };
-
-  useEffect(() => {
-    selectedAircraftRef.current = selectedAircraft;
-  }, [selectedAircraft]);
-
-  useEffect(() => {
-    controllingAircraftsRef.current = controllingAircrafts;
-  }, [controllingAircrafts]);
-
-  useEffect(() => {
-    isDisplayingRef.current = isDisplaying;
-  }, [isDisplaying]);
-
-  useEffect(() => {
-    centerCoordinateRef.current = centerCoordinate;
-    console.log(
-      "centerCoordinate",
-      centerCoordinate,
-      centerCoordinateRef.current
-    );
-  }, [centerCoordinate]);
-
-  useEffect(() => {
-    displayRangeRef.current = displayRange;
-    console.log("displayRange", displayRangeRef.current);
-  }, [displayRange]);
-
-  useEffect(() => {
-    isSelectFixModeRef.current = isSelectFixMode;
-  }, [isSelectFixMode]);
-
-  useEffect(() => {
-    atsRouteDataRef.current = atsRouteData;
-  }, [atsRouteData]);
 
   useEffect(() => {
     const unregister = registerApplyInstructedVectorHandler(
@@ -213,11 +216,20 @@ const RadarCanvas: React.FC = () => {
       centerCoordinateRef.current,
       displayRangeRef.current
     );
+    drawRangeRings(ctx, displayRangeRef.current, rangeRingsSettingRef.current);
   };
 
   const renderAircraftsOnCanvas = (ctx: CanvasRenderingContext2D) => {
     controllingAircraftsRef.current.forEach((aircraft) => {
-      DrawAircraft.drawAircraft(ctx, aircraft, displayRangeRef.current);
+      DrawAircraft.drawAircraft(
+        ctx,
+        aircraft,
+        displayRangeRef.current,
+        centerCoordinateRef.current,
+        dataBlockDisplaySettingRef.current,
+        controllerClearanceAltitudeRowRef.current,
+        velocityVectorDurationRef.current
+      );
     });
   };
 
@@ -373,7 +385,7 @@ const RadarCanvas: React.FC = () => {
           currentControllingAircrafts,
           centerCoordinateRef.current,
           displayRangeRef.current,
-          pathname
+          pathnameRef.current
         );
         // console.log("updatedAircrafts", updatedAircrafts);
 

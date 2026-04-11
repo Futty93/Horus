@@ -50,13 +50,24 @@
 
 新機能・リファクタリングを実施する際は **必ず spec を作成**してください。形式は `spec/YYYYMMDD-xxxxxx/spec.md`。テンプレートから作成するには `npm run spec:new <スラッグ>` を実行。詳細は [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) を参照。
 
+実装計画・改善項目（フェーズ・技術的負債）の一覧は [spec/spec.md](spec/spec.md) を参照してください。
+
 ## ライセンス
 
-このプロジェクトはオープンソースとして公開されており、研究・教育目的で自由に利用できます。
+このプロジェクトは [MIT License](LICENSE) の下で公開されています。
 
 ## ブラウザからフロントエンドにアクセス
 
-開発サーバー起動後、[オモテノス](http://localhost:3333) にアクセス。Operator 画面は `/operator`、Controller 画面は `/controller`。
+フロントエンドの開発サーバー（`npm run dev`）起動後、ブラウザで [http://localhost:3333](http://localhost:3333) を開く。
+
+| 画面 | URL | 役割 |
+|------|-----|------|
+| トップ（オモテノス） | `/` | システム概要、各画面へのリンク |
+| フライトプラン設定 | `/flight-plan-setup` | シナリオ作成・編集・「これで始める」 |
+| Operator | `/operator` | 管制官指示の入力・航空機操作 |
+| Controller | `/controller` | レーダー表示・管制官役（指示メモ） |
+
+> シミュレーションを動作させるには、別途バックエンド（`./gradlew bootRun`）の起動が必要です。
 
 # Java環境のセットアップの実行手順
 

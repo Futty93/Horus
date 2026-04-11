@@ -31,12 +31,14 @@ interface RawRadioNavigationAid {
   frequency: string;
 }
 
-// データを取得し、パースする関数
+export type JapanOutline = [number, number][][];
+
 async function loadAtsRoutes(): Promise<{
   waypoints: Waypoint[];
   radioNavigationAids: RadioNavigationAid[];
   atsLowerRoutes: Route[];
   rnavRoutes: Route[];
+  japanOutline: JapanOutline;
 }> {
   try {
     const response = await fetch("/api/ats/route/all");
@@ -52,6 +54,7 @@ async function loadAtsRoutes(): Promise<{
       radioNavigationAids: RawRadioNavigationAid[];
       atsLowerRoutes: RawRoute[];
       rnavRoutes: RawRoute[];
+      japanOutline?: JapanOutline;
     };
 
     if (
@@ -63,6 +66,8 @@ async function loadAtsRoutes(): Promise<{
       console.error("Invalid data structure:", data);
       throw new Error("Invalid data structure");
     }
+
+    const japanOutline = data.japanOutline ?? [];
 
     const toWaypoint = (wp: RawWaypoint): Waypoint => ({
       name: wp.name,
@@ -108,7 +113,13 @@ async function loadAtsRoutes(): Promise<{
       points: route.points.map(toRoutePoint),
     }));
 
-    return { waypoints, radioNavigationAids, atsLowerRoutes, rnavRoutes };
+    return {
+      waypoints,
+      radioNavigationAids,
+      atsLowerRoutes,
+      rnavRoutes,
+      japanOutline,
+    };
   } catch (error) {
     console.error("Failed to load ATS routes:", error);
     throw error;

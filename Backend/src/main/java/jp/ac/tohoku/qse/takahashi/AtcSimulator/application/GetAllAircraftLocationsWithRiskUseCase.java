@@ -86,6 +86,7 @@ public class GetAllAircraftLocationsWithRiskUseCase {
                         base.getInstructedVector().instructedGroundSpeed.toDouble(),
                         base.getInstructedVector().instructedAltitude.toDouble()
                 ),
+                toAtcClearanceDto(base),
                 base.getCharacteristics().getCategory().name(),
                 base.getAircraftType().toString(),
                 originIata,
@@ -103,6 +104,7 @@ public class GetAllAircraftLocationsWithRiskUseCase {
                 new AircraftLocationDto.PositionDto(0, 0, 0),
                 new AircraftLocationDto.VectorDto(0, 0, 0),
                 new AircraftLocationDto.InstructedVectorDto(0, 0, 0),
+                null,
                 "UNKNOWN",
                 "UNKNOWN",
                 "", "", "", "", "",
@@ -124,5 +126,17 @@ public class GetAllAircraftLocationsWithRiskUseCase {
             }
         }
         return maxRisk;
+    }
+
+    private static AircraftLocationDto.InstructedVectorDto toAtcClearanceDto(AircraftBase base) {
+        if (!base.hasAtcClearance()) {
+            return null;
+        }
+        var c = base.getAtcClearance();
+        return new AircraftLocationDto.InstructedVectorDto(
+                c.instructedHeading.toDouble(),
+                c.instructedGroundSpeed.toDouble(),
+                c.instructedAltitude.toDouble()
+        );
     }
 }

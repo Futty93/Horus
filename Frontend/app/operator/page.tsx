@@ -2,10 +2,13 @@ import React from "react";
 import RadarCanvas from "@/components/radarCanvas";
 import { RouteInfoDisplaySettingProvider } from "@/context/routeInfoDisplaySettingContext";
 import RouteInfoDisplaySetting from "@/components/routeInfoDisplaySetting";
-import SectorSelector from "@/components/sectorSelector";
 import { CenterCoordinateProvider } from "@/context/centerCoordinateContext";
 import { DisplayRangeProvider } from "@/context/displayRangeContext";
-import DisplayRangeSetting from "@/components/displayRangeSetting";
+import { VelocityVectorLookaheadProvider } from "@/context/velocityVectorLookaheadContext";
+import { RangeRingsSettingProvider } from "@/context/rangeRingsSettingContext";
+import RadarViewSetting from "@/components/radarViewSetting";
+import { DataBlockDisplaySettingProvider } from "@/context/dataBlockDisplaySettingContext";
+import DataBlockDisplaySetting from "@/components/dataBlockDisplaySetting";
 import ControlAircraft from "@/components/controlAircraft";
 import { SelectFixModeProvider } from "@/context/selectFixModeContext";
 import { SelectedAircraftProvider } from "@/context/selectedAircraftContext";
@@ -24,40 +27,46 @@ export default function OperatorPage() {
     <RouteInfoDisplaySettingProvider>
       <CenterCoordinateProvider>
         <DisplayRangeProvider>
-          <SelectFixModeProvider>
-            <SelectedAircraftProvider>
-              <div className="flex h-screen w-full overflow-hidden">
-                <div className="flex w-full h-full">
-                  <RadarCanvas />
-                  <div
-                    className="controlPanel bg-atc-bg border-l border-atc-border text-atc-text
+          <VelocityVectorLookaheadProvider>
+            <RangeRingsSettingProvider>
+              <DataBlockDisplaySettingProvider>
+                <SelectFixModeProvider>
+                  <SelectedAircraftProvider>
+                    <div className="flex h-screen w-full overflow-hidden">
+                      <div className="flex w-full h-full">
+                        <RadarCanvas />
+                        <div
+                          className="controlPanel bg-atc-bg border-l border-atc-border text-atc-text
                                   p-3 flex flex-col min-w-80 max-w-80
                                   h-full overflow-y-auto overflow-x-hidden
                                   scrollbar-thin scrollbar-track-atc scrollbar-thumb-atc"
-                  >
-                    <SelectedCallsignDisplay variant="operator" />
+                        >
+                          <SelectedCallsignDisplay variant="operator" />
 
-                    {/* Scrollable Content */}
-                    <div className="flex-1 space-y-4 min-h-0">
-                      <ControlAircraft />
-                      <SelectFixMode />
-                      <FlightPlanControl />
+                          {/* Scrollable Content */}
+                          <div className="flex-1 space-y-4 min-h-0">
+                            <ControlAircraft />
+                            <SelectFixMode />
+                            <FlightPlanControl />
 
-                      {/* Settings Area */}
-                      <div className="space-y-3">
-                        <RouteInfoDisplaySetting />
-                        <SectorSelector />
-                        <DisplayRangeSetting />
+                            {/* Settings Area */}
+                            <div className="space-y-3">
+                              <RouteInfoDisplaySetting />
+                              <RadarViewSetting />
+                              <DataBlockDisplaySetting variant="operator" />
 
-                        {/* Control Buttons */}
-                        <SimulationControlButtons />
+                              {/* Control Buttons */}
+                              <SimulationControlButtons />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-            </SelectedAircraftProvider>
-          </SelectFixModeProvider>
+                  </SelectedAircraftProvider>
+                </SelectFixModeProvider>
+              </DataBlockDisplaySettingProvider>
+            </RangeRingsSettingProvider>
+          </VelocityVectorLookaheadProvider>
         </DisplayRangeProvider>
       </CenterCoordinateProvider>
     </RouteInfoDisplaySettingProvider>

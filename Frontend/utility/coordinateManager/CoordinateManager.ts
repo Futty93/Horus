@@ -5,7 +5,6 @@ import { DisplayRange } from "@/context/displayRangeContext";
 
 // 地球の丸みを考慮にいれ、緯度・経度をキャンバス上の座標に変換するクラス
 export class CoordinateManager {
-
   /**
    * 緯度・経度をキャンバス上の座標に変換します。
    * @param centerLatitude 中心の緯度
@@ -15,20 +14,38 @@ export class CoordinateManager {
    * @param targetLongitude 対象の経度
    * @returns キャンバス上の座標 {x, y}
    */
-  public static calculateCanvasCoordinates(pointCoordinate: Coordinate, centerCoordinate: Coordinate, displayRange: DisplayRange): { x: number, y: number } {
+  public static calculateCanvasCoordinates(
+    pointCoordinate: Coordinate,
+    centerCoordinate: Coordinate,
+    displayRange: DisplayRange
+  ): { x: number; y: number } {
     // Convert degrees to radians
     const toRadians = (degrees: number) => degrees * (Math.PI / 180);
 
     // Haversine formula to calculate the distance between two points on the Earth
-    const deltaLat = toRadians(pointCoordinate.latitude - centerCoordinate.latitude);
-    const deltaLon = toRadians(pointCoordinate.longitude - centerCoordinate.longitude);
-    const a = Math.sin(deltaLat / 2) ** 2 + Math.cos(toRadians(centerCoordinate.latitude)) * Math.cos(toRadians(pointCoordinate.latitude)) * Math.sin(deltaLon / 2) ** 2;
+    const deltaLat = toRadians(
+      pointCoordinate.latitude - centerCoordinate.latitude
+    );
+    const deltaLon = toRadians(
+      pointCoordinate.longitude - centerCoordinate.longitude
+    );
+    const a =
+      Math.sin(deltaLat / 2) ** 2 +
+      Math.cos(toRadians(centerCoordinate.latitude)) *
+        Math.cos(toRadians(pointCoordinate.latitude)) *
+        Math.sin(deltaLon / 2) ** 2;
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distanceKm = GLOBAL_CONSTANTS.EARTH_RADIUS_KM * c;
 
     // Calculate the bearing from the center to the point
-    const y = Math.sin(deltaLon) * Math.cos(toRadians(pointCoordinate.latitude));
-    const x = Math.cos(toRadians(centerCoordinate.latitude)) * Math.sin(toRadians(pointCoordinate.latitude)) - Math.sin(toRadians(centerCoordinate.latitude)) * Math.cos(toRadians(pointCoordinate.latitude)) * Math.cos(deltaLon);
+    const y =
+      Math.sin(deltaLon) * Math.cos(toRadians(pointCoordinate.latitude));
+    const x =
+      Math.cos(toRadians(centerCoordinate.latitude)) *
+        Math.sin(toRadians(pointCoordinate.latitude)) -
+      Math.sin(toRadians(centerCoordinate.latitude)) *
+        Math.cos(toRadians(pointCoordinate.latitude)) *
+        Math.cos(deltaLon);
     const bearing = Math.atan2(y, x);
 
     // Scale distance to canvas pixels
@@ -37,8 +54,10 @@ export class CoordinateManager {
     const distancePx = distanceKm * pixelsPerKm;
 
     // Calculate canvas coordinates
-    const canvasX = (GLOBAL_SETTINGS.canvasWidth / 2) + distancePx * Math.sin(bearing);
-    const canvasY = (GLOBAL_SETTINGS.canvasHeight / 2) - distancePx * Math.cos(bearing);
+    const canvasX =
+      GLOBAL_SETTINGS.canvasWidth / 2 + distancePx * Math.sin(bearing);
+    const canvasY =
+      GLOBAL_SETTINGS.canvasHeight / 2 - distancePx * Math.cos(bearing);
 
     return { x: canvasX, y: canvasY };
   }
@@ -51,15 +70,20 @@ export class CoordinateManager {
    * @param displayRange 表示領域の1辺の長さ（キロメートル）
    * @returns 緯度・経度 {latitude, longitude}
    */
-  public static calculateGeoCoordinates(canvasX: number, canvasY: number, centerCoordinate: Coordinate, displayRange: DisplayRange): { latitude: number, longitude: number } {
+  public static calculateGeoCoordinates(
+    canvasX: number,
+    canvasY: number,
+    centerCoordinate: Coordinate,
+    displayRange: DisplayRange
+  ): { latitude: number; longitude: number } {
     // Convert degrees to radians
     const toRadians = (degrees: number) => degrees * (Math.PI / 180);
     // Convert radians to degrees
     const toDegrees = (radians: number) => radians * (180 / Math.PI);
 
     // Calculate the distance from the center of the canvas
-    const deltaX = canvasX - (GLOBAL_SETTINGS.canvasWidth / 2);
-    const deltaY = (GLOBAL_SETTINGS.canvasHeight / 2) - canvasY;
+    const deltaX = canvasX - GLOBAL_SETTINGS.canvasWidth / 2;
+    const deltaY = GLOBAL_SETTINGS.canvasHeight / 2 - canvasY;
     const distancePx = Math.sqrt(deltaX ** 2 + deltaY ** 2);
 
     // Scale pixels to kilometers
@@ -73,18 +97,26 @@ export class CoordinateManager {
     const angularDistance = distanceKm / GLOBAL_CONSTANTS.EARTH_RADIUS_KM;
 
     const newLatitude = Math.asin(
-        Math.sin(toRadians(centerCoordinate.latitude)) * Math.cos(angularDistance) +
-        Math.cos(toRadians(centerCoordinate.latitude)) * Math.sin(angularDistance) * Math.cos(bearing)
+      Math.sin(toRadians(centerCoordinate.latitude)) *
+        Math.cos(angularDistance) +
+        Math.cos(toRadians(centerCoordinate.latitude)) *
+          Math.sin(angularDistance) *
+          Math.cos(bearing)
     );
 
-    const newLongitude = toRadians(centerCoordinate.longitude) + Math.atan2(
-        Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(toRadians(centerCoordinate.latitude)),
-        Math.cos(angularDistance) - Math.sin(toRadians(centerCoordinate.latitude)) * Math.sin(newLatitude)
-    );
+    const newLongitude =
+      toRadians(centerCoordinate.longitude) +
+      Math.atan2(
+        Math.sin(bearing) *
+          Math.sin(angularDistance) *
+          Math.cos(toRadians(centerCoordinate.latitude)),
+        Math.cos(angularDistance) -
+          Math.sin(toRadians(centerCoordinate.latitude)) * Math.sin(newLatitude)
+      );
 
     return {
-        latitude: toDegrees(newLatitude),
-        longitude: toDegrees(newLongitude)
+      latitude: toDegrees(newLatitude),
+      longitude: toDegrees(newLongitude),
     };
   }
 
@@ -94,7 +126,7 @@ export class CoordinateManager {
    * @returns ラジアン
    */
   private degToRad(deg: number): number {
-      return deg * (Math.PI / 180);
+    return deg * (Math.PI / 180);
   }
 
   /**
@@ -105,58 +137,60 @@ export class CoordinateManager {
    * @param lon2 座標2の経度
    * @returns 距離（キロメートル）
    */
-  public calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-      const dLat = this.degToRad(lat2 - lat1);
-      const dLon = this.degToRad(lon2 - lon1);
-      const a =
-          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-          Math.cos(this.degToRad(lat1)) * Math.cos(this.degToRad(lat2)) *
-          Math.sin(dLon / 2) * Math.sin(dLon / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      const distance = GLOBAL_CONSTANTS.EARTH_RADIUS_KM * c;
-      return distance;
+  public calculateDistance(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ): number {
+    const dLat = this.degToRad(lat2 - lat1);
+    const dLon = this.degToRad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.degToRad(lat1)) *
+        Math.cos(this.degToRad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = GLOBAL_CONSTANTS.EARTH_RADIUS_KM * c;
+    return distance;
   }
 
-/**
- * Calculates the canvas position of an aircraft 1 minute into the future based on its current speed and heading.
- * @param speed - Current speed of the aircraft in knots.
- * @param heading - Current heading of the aircraft in degrees.
- * @param canvasWidth - Width of the canvas in pixels.
- * @param canvasHeight - Height of the canvas in pixels.
- * @param displayRange - The width of the displayed airspace in kilometers.
- * @param currentPosition - Current position of the aircraft on the canvas in pixels.
- * @returns The position of the aircraft on the canvas after 1 minute.
- */
-public static calculateFuturePositionOnCanvas(
+  /**
+   * Calculates the canvas endpoint of the velocity vector from current speed and heading.
+   * Uses displacement = (1 minute of travel at current speed) × `durationMinutes` (default 1).
+   * @param durationMinutes - Lookahead time in minutes (e.g. 0.5–10).
+   */
+  public static calculateFuturePositionOnCanvas(
     speed: number,
     heading: number,
     canvasWidth: number,
     canvasHeight: number,
     displayRange: DisplayRange,
-    currentPosition: { x: number; y: number }
+    currentPosition: { x: number; y: number },
+    durationMinutes: number = 1
   ): { futureX: number; futureY: number } {
     // Convert speed from knots to kilometers per minute
-    const speedKmPerMin = speed * 1.852 / 60;
-  
+    const speedKmPerMin = (speed * 1.852) / 60;
+
     // Convert heading from degrees to radians
     const headingRad = (heading - 90) * (Math.PI / 180);
-  
-    // Calculate the distance traveled in x and y directions
-    const deltaX = speedKmPerMin * Math.cos(headingRad);
-    const deltaY = - speedKmPerMin * Math.sin(headingRad);
-  
-    // Calculate the new position in kilometers
-    const futurePositionX = currentPosition.x + deltaX;
-    const futurePositionY = currentPosition.y + deltaY;
-  
-    // Convert the future position from kilometers to canvas pixels
+
+    // Ground displacement (km) over `durationMinutes` (1-minute basis × minutes).
+    const deltaXKm = speedKmPerMin * Math.cos(headingRad) * durationMinutes;
+    const deltaYKm = -speedKmPerMin * Math.sin(headingRad) * durationMinutes;
+
     const kmPerPixel = displayRange.range / canvasWidth;
-    const futureX = currentPosition.x + (futurePositionX - currentPosition.x) / kmPerPixel;
-    const futureY = currentPosition.y - (futurePositionY - currentPosition.y) / kmPerPixel;
-  
+    const deltaXPx = deltaXKm / kmPerPixel;
+    // Screen Y is down-positive; combined with the velocity Y convention, use −(km→px).
+    const deltaYPx = -deltaYKm / kmPerPixel;
+
+    const futureX = currentPosition.x + deltaXPx;
+    const futureY = currentPosition.y + deltaYPx;
+
     return {
       futureX: Math.min(Math.max(futureX, 0), canvasWidth),
-      futureY: Math.min(Math.max(futureY, 0), canvasHeight)
+      futureY: Math.min(Math.max(futureY, 0), canvasHeight),
     };
   }
 }

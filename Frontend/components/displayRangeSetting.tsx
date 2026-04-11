@@ -2,7 +2,7 @@
 import React from "react";
 import { useDisplayRange } from "@/context/displayRangeContext";
 
-const DisplayRangeSetting = () => {
+const DisplayRangeSetting = ({ embedded = false }: { embedded?: boolean }) => {
   const { displayRange, setDisplayRange } = useDisplayRange();
 
   const handleRangeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -14,8 +14,8 @@ const DisplayRangeSetting = () => {
     console.log("Display range changed to:", newRange);
   };
 
-  return (
-    <div className="bg-atc-surface border border-atc-border rounded-lg p-3 mb-3">
+  const content = (
+    <>
       <div className="flex items-center justify-between">
         <label
           htmlFor="displayRange"
@@ -27,7 +27,7 @@ const DisplayRangeSetting = () => {
           <input
             type="number"
             id="displayRange"
-            defaultValue={`${displayRange.range}`}
+            value={displayRange.range}
             min="10"
             max="4000"
             onChange={handleRangeChange}
@@ -57,6 +57,15 @@ const DisplayRangeSetting = () => {
           }}
         />
       </div>
+    </>
+  );
+
+  if (embedded) {
+    return content;
+  }
+  return (
+    <div className="bg-atc-surface border border-atc-border rounded-lg p-3 mb-3">
+      {content}
     </div>
   );
 };

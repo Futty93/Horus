@@ -1,9 +1,16 @@
-import { Display } from "next/dist/compiled/@next/font";
 import CoordinateManager from "../coordinateManager/CoordinateManager";
 import { GLOBAL_CONSTANTS } from "../globals/constants";
 import { GLOBAL_SETTINGS } from "../globals/settings";
 import { Aircraft } from "./aircraftClass";
 import { DisplayRange } from "@/context/displayRangeContext";
+import type { Coordinate } from "@/context/centerCoordinateContext";
+import type { DataBlockDisplaySetting } from "@/context/dataBlockDisplaySettingContext";
+import {
+  formatAtcClearanceMemoLine,
+  isAltitudeClearanceRecorded,
+} from "./atcClearanceMemoLine";
+import { formatEtaToUtcHhMm } from "./formatEtaUtc";
+import { formatAltitudeTargetVsActualLabel } from "./altitudeDataBlockLabel";
 
 /**
  * Class to draw aircraft on the canvas
@@ -20,19 +27,50 @@ class DrawAircraft {
   public static drawAircraft(
     ctx: CanvasRenderingContext2D,
     aircraft: Aircraft,
-    displayRange: DisplayRange
+    displayRange: DisplayRange,
+    centerCoordinate: Coordinate,
+    dataBlockDisplaySetting: DataBlockDisplaySetting,
+    /** Controller 画面では管制クリアランス高度があれば 2 行目をクリアランス vs 実測にする（パイロット目標の古い値で矢印が狂うのを防ぐ）。 */
+    useControllerClearanceAltitudeRow = false,
+    durationMinutes = 1
   ) {
+    this.drawTrack(ctx, aircraft, centerCoordinate, displayRange);
     this.drawAircraftMarker(ctx, aircraft.position);
     this.drawHeadingLine(
       ctx,
       aircraft.position,
       aircraft.vector.groundSpeed,
       aircraft.vector.heading,
-      displayRange
+      displayRange,
+      durationMinutes
     );
     this.drawLabelLiine(ctx, aircraft.position, aircraft.label);
-    this.drawAircraftLabel(ctx, aircraft);
-    this.drawTrack(ctx, aircraft.positionHistory);
+    this.drawAircraftLabel(
+      ctx,
+      aircraft,
+      dataBlockDisplaySetting,
+      useControllerClearanceAltitudeRow
+    );
+  }
+
+  private static drawTrack(
+    ctx: CanvasRenderingContext2D,
+    aircraft: Aircraft,
+    centerCoordinate: Coordinate,
+    displayRange: DisplayRange
+  ) {
+    const radius = 1;
+    for (const sample of aircraft.positionHistory) {
+      const p = CoordinateManager.calculateCanvasCoordinates(
+        { latitude: sample.latitude, longitude: sample.longitude },
+        centerCoordinate,
+        displayRange
+      );
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, radius, 0, 2 * Math.PI);
+      ctx.fillStyle = "white";
+      ctx.fill();
+    }
   }
 
   private static drawAircraftMarker(
@@ -41,7 +79,6 @@ class DrawAircraft {
   ) {
     const radius: number = 5;
 
-    // Draw aircraft as a filled white circle
     ctx.beginPath();
     ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI);
     ctx.fillStyle = "white";
@@ -53,7 +90,8 @@ class DrawAircraft {
     position: { x: number; y: number },
     groundSpeed: number,
     heading: number,
-    displayRange: DisplayRange
+    displayRange: DisplayRange,
+    durationMinutes: number
   ) {
     const futurePosition = CoordinateManager.calculateFuturePositionOnCanvas(
       groundSpeed,
@@ -61,10 +99,10 @@ class DrawAircraft {
       GLOBAL_SETTINGS.canvasWidth,
       GLOBAL_SETTINGS.canvasHeight,
       displayRange,
-      position
+      position,
+      durationMinutes
     );
 
-    // Draw a line from the current position to the future position
     ctx.beginPath();
     ctx.moveTo(position.x, position.y);
     ctx.lineTo(futurePosition.futureX, futurePosition.futureY);
@@ -74,63 +112,111 @@ class DrawAircraft {
 
   private static drawAircraftLabel(
     ctx: CanvasRenderingContext2D,
-    aircraft: Aircraft
+    aircraft: Aircraft,
+    setting: DataBlockDisplaySetting,
+    useControllerClearanceAltitudeRow: boolean
   ) {
     const airplanePosition = aircraft.position;
     const instructedVector = aircraft.instructedVector;
     const labelX: number = airplanePosition.x + aircraft.label.x;
-    const labelY: number = airplanePosition.y - aircraft.label.y;
+    let lineY: number = airplanePosition.y - aircraft.label.y;
 
-    let altitudeLabel: string = "";
+    const clearance = aircraft.atcClearance;
+    const useClearanceAltitudePrimaryRow =
+      useControllerClearanceAltitudeRow &&
+      clearance != null &&
+      isAltitudeClearanceRecorded(clearance);
 
-    if (instructedVector.altitude > airplanePosition.altitude) {
-      altitudeLabel =
-        Math.floor(instructedVector.altitude / 100).toString() +
-        " ↑ " +
-        Math.floor(airplanePosition.altitude / 100).toString();
-    } else if (instructedVector.altitude < airplanePosition.altitude) {
-      altitudeLabel =
-        Math.floor(instructedVector.altitude / 100).toString() +
-        " ↓ " +
-        Math.floor(airplanePosition.altitude / 100).toString();
-    } else {
-      altitudeLabel = Math.floor(airplanePosition.altitude / 100).toString();
-    }
+    const altitudeLabel =
+      useClearanceAltitudePrimaryRow && clearance
+        ? formatAltitudeTargetVsActualLabel(
+            clearance.altitude,
+            airplanePosition.altitude
+          )
+        : formatAltitudeTargetVsActualLabel(
+            instructedVector.altitude,
+            airplanePosition.altitude
+          );
 
-    // 危険度情報を取得（デフォルトは0）
     const riskLevel = aircraft.riskLevel || 0;
-
-    // 危険度に基づく色の決定
-    let riskColor = "white"; // デフォルト（~30）
+    let riskColor = "white";
     if (riskLevel >= 70) {
-      riskColor = "red"; // 70以上は赤
+      riskColor = "red";
     } else if (riskLevel >= 30) {
-      riskColor = "yellow"; // 30-70は黄色
+      riskColor = "yellow";
     }
 
-    // Draw labels with airplane information
     ctx.fillStyle = "white";
     ctx.font = GLOBAL_CONSTANTS.FONT_STYLE_IN_CANVAS;
     ctx.textAlign = "left";
 
-    ctx.fillText(aircraft.callsign, labelX, labelY);
-    ctx.fillText(altitudeLabel, labelX, labelY + 15);
+    const lineHeight = 15;
+
+    ctx.fillText(aircraft.callsign, labelX, lineY);
+    lineY += lineHeight;
+
+    ctx.fillText(altitudeLabel, labelX, lineY);
+    lineY += lineHeight;
+
+    ctx.fillStyle = "white";
     ctx.fillText(
       "G" + Math.floor(aircraft.vector.groundSpeed / 10).toString(),
       labelX,
-      labelY + 30
+      lineY
     );
     ctx.fillText(
       aircraft.destinationIcao.length >= 4
         ? aircraft.destinationIcao.slice(-3)
         : aircraft.destinationIcao,
       labelX + 40,
-      labelY + 30
+      lineY
     );
+    lineY += lineHeight;
 
-    // 危険度を色分けして表示
+    if (setting.atcClearanceMemo) {
+      const memoLine = formatAtcClearanceMemoLine(
+        aircraft.atcClearance,
+        {
+          altitudeFt: airplanePosition.altitude,
+          heading: aircraft.vector.heading,
+          groundSpeed: aircraft.vector.groundSpeed,
+        },
+        { omitAltitude: useClearanceAltitudePrimaryRow }
+      );
+      if (memoLine) {
+        ctx.fillStyle = "#93c5fd";
+        ctx.fillText(memoLine, labelX, lineY);
+        lineY += lineHeight;
+      }
+    }
+
     ctx.fillStyle = riskColor;
-    ctx.fillText("R" + Math.floor(riskLevel).toString(), labelX, labelY + 45);
+    ctx.fillText("R" + Math.floor(riskLevel).toString(), labelX, lineY);
+    lineY += lineHeight;
+
+    if (setting.aircraftType && aircraft.model) {
+      ctx.fillStyle = "white";
+      const modelDisplay =
+        aircraft.model.length > 6 ? aircraft.model.slice(0, 6) : aircraft.model;
+      ctx.fillText(modelDisplay, labelX, lineY);
+      lineY += lineHeight;
+    }
+
+    if (setting.eta && aircraft.eta) {
+      const etaFormatted = formatEtaToUtcHhMm(aircraft.eta);
+      if (etaFormatted) {
+        ctx.fillStyle = "white";
+        ctx.fillText(etaFormatted, labelX, lineY);
+        lineY += lineHeight;
+      }
+    }
+
+    if (setting.squawk) {
+      ctx.fillStyle = "white";
+      const squawkDisplay =
+        (aircraft as Aircraft & { squawk?: string }).squawk ?? "---";
+      ctx.fillText(squawkDisplay, labelX, lineY);
+    }
   }
 
   private static drawLabelLiine(
@@ -151,21 +237,6 @@ class DrawAircraft {
     ctx.lineTo(labelX - 5, labelY + 15);
     ctx.strokeStyle = "white";
     ctx.stroke();
-  }
-
-  // 軌跡を描画
-  private static drawTrack(
-    ctx: CanvasRenderingContext2D,
-    positionHistory: { x: number; y: number }[]
-  ) {
-    const radius: number = 1;
-
-    for (let position of positionHistory) {
-      ctx.beginPath();
-      ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI);
-      ctx.fillStyle = "white";
-      ctx.fill();
-    }
   }
 }
 

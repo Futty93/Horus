@@ -1,18 +1,20 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import type { ScenarioAircraft } from "@/utility/api/scenario";
+import type { ScenarioAircraft } from "@/types/scenario";
 import type { Waypoint } from "@/utility/AtsRouteManager/RouteInterfaces/Waypoint";
 import type { RadioNavigationAid } from "@/utility/AtsRouteManager/RouteInterfaces/RadioNavigationAid";
 import { CoordinateManager } from "@/utility/coordinateManager/CoordinateManager";
 import { GLOBAL_SETTINGS } from "@/utility/globals/settings";
 import { GLOBAL_CONSTANTS } from "@/utility/globals/constants";
+import type { JapanOutline } from "@/utility/AtsRouteManager/atsRoutesLoader";
 
 interface RoutePreviewMapProps {
   selectedAircraft: ScenarioAircraft | null;
   waypoints: Waypoint[];
   radioNavAids: RadioNavigationAid[];
   airportPositions?: Map<string, { latitude: number; longitude: number }>;
+  japanOutline?: JapanOutline;
 }
 
 const PREVIEW_SIZE = 420;
@@ -20,6 +22,7 @@ const DEFAULT_CENTER = { latitude: 34.5, longitude: 138.5 };
 const DEFAULT_RANGE = 500;
 const KM_PER_DEG_LAT = 111;
 const PADDING_FACTOR = 1.4;
+const HEADING_ARROW_LENGTH = 18;
 
 function buildFixLookup(
   waypoints: Waypoint[],
@@ -102,6 +105,7 @@ export function RoutePreviewMap({
   waypoints,
   radioNavAids,
   airportPositions,
+  japanOutline = [],
 }: RoutePreviewMapProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -116,7 +120,28 @@ export function RoutePreviewMap({
     ctx.fillStyle = "#0a0a0f";
     ctx.fillRect(0, 0, PREVIEW_SIZE, PREVIEW_SIZE);
 
+    const drawJapanOutline = (
+      c: { latitude: number; longitude: number },
+      r: number
+    ) => {
+      ctx.strokeStyle = "#30363d";
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = 0.6;
+      for (const ring of japanOutline) {
+        const pts = ring.map(([la, lo]) =>
+          toCanvas(la, lo, c, r, PREVIEW_SIZE, PREVIEW_SIZE)
+        );
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x, pts[0].y);
+        for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+        ctx.closePath();
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    };
+
     if (!selectedAircraft) {
+      drawJapanOutline(DEFAULT_CENTER, DEFAULT_RANGE);
       ctx.fillStyle = "#6b7280";
       ctx.font = "14px monospace";
       ctx.textAlign = "center";
@@ -172,6 +197,8 @@ export function RoutePreviewMap({
       points.push({ x, y, label: c.label });
     }
 
+    drawJapanOutline(center, range);
+
     if (points.length < 2) {
       ctx.fillStyle = "#6b7280";
       ctx.font = "12px monospace";
@@ -189,6 +216,29 @@ export function RoutePreviewMap({
           centerY + 8
         );
       }
+      const pos = toCanvas(
+        latitude,
+        longitude,
+        center,
+        range,
+        PREVIEW_SIZE,
+        PREVIEW_SIZE
+      );
+      const hdg = selectedAircraft.initialPosition.heading;
+      const rad = ((90 - hdg) * Math.PI) / 180;
+      ctx.strokeStyle = "#f59e0b";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+      ctx.lineTo(
+        pos.x + Math.cos(rad) * HEADING_ARROW_LENGTH,
+        pos.y - Math.sin(rad) * HEADING_ARROW_LENGTH
+      );
+      ctx.stroke();
+      ctx.fillStyle = "#f59e0b";
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, 5, 0, 2 * Math.PI);
+      ctx.fill();
       return;
     }
 
@@ -226,6 +276,17 @@ export function RoutePreviewMap({
       PREVIEW_SIZE,
       PREVIEW_SIZE
     );
+    const hdg = selectedAircraft.initialPosition.heading;
+    const hdgRad = ((90 - hdg) * Math.PI) / 180;
+    ctx.strokeStyle = "#f59e0b";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    ctx.lineTo(
+      pos.x + Math.cos(hdgRad) * HEADING_ARROW_LENGTH,
+      pos.y - Math.sin(hdgRad) * HEADING_ARROW_LENGTH
+    );
+    ctx.stroke();
     ctx.fillStyle = "#f59e0b";
     ctx.beginPath();
     ctx.arc(pos.x, pos.y, 5, 0, 2 * Math.PI);
@@ -233,7 +294,13 @@ export function RoutePreviewMap({
     ctx.fillStyle = "#e5e7eb";
     ctx.textAlign = "left";
     ctx.fillText("Now", pos.x + 8, pos.y + 4);
-  }, [selectedAircraft, waypoints, radioNavAids, airportPositions]);
+  }, [
+    selectedAircraft,
+    waypoints,
+    radioNavAids,
+    airportPositions,
+    japanOutline,
+  ]);
 
   return (
     <div className="border border-atc-border rounded-lg overflow-hidden bg-atc-bg">
@@ -257,7 +324,8 @@ export function RoutePreviewMap({
         <div className="px-3 py-2 text-xs text-atc-text-muted border-t border-atc-border">
           <span className="text-atc-accent">●</span> Origin ·{" "}
           <span className="text-atc-danger">●</span> Dest ·{" "}
-          <span className="text-amber-500">▲</span> Current pos
+          <span className="text-amber-500">▲</span> Current pos (arrow =
+          heading)
         </div>
       )}
     </div>

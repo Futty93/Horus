@@ -3,7 +3,9 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.api;
 import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.DEFAULT_SIMULATION_ETA;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +58,26 @@ public class ScenarioController {
                     .body(Map.of("success", false, "message", "aircraft array is required and must not be empty"));
         }
 
+        Set<String> seenCallsigns = new HashSet<>();
+        for (SpawnWithFlightPlanDto ac : dto.aircraft()) {
+            String cs = ac.flightPlan().callsign();
+            if (!seenCallsigns.add(cs)) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("success", false, "message", "Duplicate callsign: " + cs));
+            }
+        }
+
+        // Validate FlightPlan of aircraft that will be spawned; skip those without initialPosition
+        for (SpawnWithFlightPlanDto ac : dto.aircraft()) {
+            if (ac.initialPosition() == null) continue;
+            try {
+                flightPlanConverter.toDomain(ac.flightPlan());
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("success", false, "message", e.getMessage()));
+            }
+        }
+
         GlobalVariables.isSimulationRunning = false;
         aircraftRepository.clear();
 
@@ -71,8 +93,6 @@ public class ScenarioController {
             scenarioService.spawnAircraft(aircraft);
             count++;
         }
-
-        GlobalVariables.isSimulationRunning = true;
 
         logger.info("Scenario loaded: {} aircraft, scenarioName={}", count, dto.scenarioName());
         Map<String, Object> body = new HashMap<>();
