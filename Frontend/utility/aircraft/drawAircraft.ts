@@ -3,6 +3,7 @@ import { GLOBAL_CONSTANTS } from "../globals/constants";
 import { GLOBAL_SETTINGS } from "../globals/settings";
 import { Aircraft } from "./aircraftClass";
 import { DisplayRange } from "@/context/displayRangeContext";
+import type { Coordinate } from "@/context/centerCoordinateContext";
 import type { DataBlockDisplaySetting } from "@/context/dataBlockDisplaySettingContext";
 import {
   formatAtcClearanceMemoLine,
@@ -10,6 +11,11 @@ import {
 } from "./atcClearanceMemoLine";
 import { formatEtaToUtcHhMm } from "./formatEtaUtc";
 import { formatAltitudeTargetVsActualLabel } from "./altitudeDataBlockLabel";
+import {
+  isTrackHistoryFreshForDraw,
+  selectTrackDisplaySamples,
+  TRACK_DISPLAY_DOT_RADIUS_PX,
+} from "./trackHistoryDisplaySamples";
 
 /**
  * Class to draw aircraft on the canvas
@@ -27,11 +33,13 @@ class DrawAircraft {
     ctx: CanvasRenderingContext2D,
     aircraft: Aircraft,
     displayRange: DisplayRange,
+    centerCoordinate: Coordinate,
     dataBlockDisplaySetting: DataBlockDisplaySetting,
     /** Controller 画面では管制クリアランス高度があれば 2 行目をクリアランス vs 実測にする（パイロット目標の古い値で矢印が狂うのを防ぐ）。 */
     useControllerClearanceAltitudeRow = false,
     durationMinutes = 1
   ) {
+    this.drawTrack(ctx, aircraft, centerCoordinate, displayRange);
     this.drawAircraftMarker(ctx, aircraft.position);
     this.drawHeadingLine(
       ctx,
@@ -50,13 +58,37 @@ class DrawAircraft {
     );
   }
 
+  private static drawTrack(
+    ctx: CanvasRenderingContext2D,
+    aircraft: Aircraft,
+    centerCoordinate: Coordinate,
+    displayRange: DisplayRange
+  ) {
+    const nowMs = Date.now();
+    if (!isTrackHistoryFreshForDraw(aircraft.positionHistory, nowMs)) {
+      return;
+    }
+    const radius = TRACK_DISPLAY_DOT_RADIUS_PX;
+    const samples = selectTrackDisplaySamples(aircraft.positionHistory, nowMs);
+    for (const sample of samples) {
+      const p = CoordinateManager.calculateCanvasCoordinates(
+        { latitude: sample.latitude, longitude: sample.longitude },
+        centerCoordinate,
+        displayRange
+      );
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, radius, 0, 2 * Math.PI);
+      ctx.fillStyle = "white";
+      ctx.fill();
+    }
+  }
+
   private static drawAircraftMarker(
     ctx: CanvasRenderingContext2D,
     position: { x: number; y: number }
   ) {
     const radius: number = 5;
 
-    // Draw aircraft as a filled white circle
     ctx.beginPath();
     ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI);
     ctx.fillStyle = "white";
@@ -81,7 +113,6 @@ class DrawAircraft {
       durationMinutes
     );
 
-    // Draw a line from the current position to the future position
     ctx.beginPath();
     ctx.moveTo(position.x, position.y);
     ctx.lineTo(futurePosition.futureX, futurePosition.futureY);

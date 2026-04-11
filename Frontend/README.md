@@ -145,6 +145,7 @@ Frontend/
 **主な機能**:
 
 - 航空機の位置表示
+- **履歴ドット**: 位置更新のたびに直前の緯度・経度・高度（WGS-84）をクライアント側に蓄積（最大 **120** 点）。**描画は 10s / 20s / 30s 前**に相当するサンプルを各 1 点ずつ選び、`CoordinateManager.calculateCanvasCoordinates` でキャンバス座標へ変換する（パン・中心座標・表示範囲の変更後も軌跡がずれない）。点の半径は `TRACK_DISPLAY_DOT_RADIUS_PX`（既定 **3px**、機体マーカー 5px より小さく）。
 - **速度ベクトル線**（針路方向の白線）の長さは、地速に対し **速度ベクトル予測時間（分）** に比例。`レーダー表示` パネルのスライダーで **0.5～10 分・0.5 分刻み**（既定 1 分）。表示のみでシミュレーション計算は変更しない（[spec/20260404-velocity-vector-line-duration/spec.md](../spec/20260404-velocity-vector-line-duration/spec.md)）。値は `localStorage` に保存し、Controller / Operator で共有。
 - 経路情報の表示
 - マウスインタラクション

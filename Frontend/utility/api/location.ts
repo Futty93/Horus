@@ -89,6 +89,10 @@ function mapDtoToAircraft(
       altitude: dto.position.altitude,
     },
     {
+      latitude: dto.position.latitude,
+      longitude: dto.position.longitude,
+    },
+    {
       heading: dto.vector.heading,
       groundSpeed: dto.vector.groundSpeed,
       verticalSpeed: dto.vector.verticalSpeed,
@@ -142,6 +146,7 @@ function updateControllingAircrafts(
     const newAirplane = new Aircraft(
       newAircraft.callsign,
       newAircraft.position,
+      newAircraft.geoPosition,
       newAircraft.vector,
       newAircraft.instructedVector,
       newAircraft.atcClearance,

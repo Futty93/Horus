@@ -41,6 +41,7 @@ const RadarCanvas: React.FC = () => {
     ReturnType<typeof loadAtsRoutes>
   > | null>(null);
   const [bg, setBg] = useState(0);
+  const bgRef = useRef(0);
   const draggingLabelIndexRef = useRef(-1);
   const offsetXRef = useRef(0);
   const offsetYRef = useRef(0);
@@ -90,6 +91,7 @@ const RadarCanvas: React.FC = () => {
   controllingAircraftsRef.current = controllingAircrafts;
   controllerClearanceAltitudeRowRef.current = pathname === "/controller";
   pathnameRef.current = pathname;
+  bgRef.current = bg;
 
   useEffect(() => {
     const canvasContainer = document.getElementsByClassName(
@@ -138,12 +140,25 @@ const RadarCanvas: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (atsRouteData) {
+    if (!atsRouteData) return;
+
+    updateCanvas();
+    const stopUpdating = startUpdatingAircraftLocations();
+
+    let rafId = 0;
+    let running = true;
+    const renderLoop = () => {
+      if (!running) return;
       updateCanvas();
-      const stopUpdating = startUpdatingAircraftLocations();
-      startRenderingLoop();
-      return stopUpdating;
-    }
+      rafId = requestAnimationFrame(renderLoop);
+    };
+    rafId = requestAnimationFrame(renderLoop);
+
+    return () => {
+      running = false;
+      cancelAnimationFrame(rafId);
+      stopUpdating();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: run when atsRouteData is set; functions are stable
   }, [atsRouteData]);
 
@@ -179,25 +194,29 @@ const RadarCanvas: React.FC = () => {
   }, [registerApplyInstructedVectorHandler]);
 
   const updateCanvas = () => {
-    if (!atsRouteData) {
+    if (!atsRouteDataRef.current) {
       console.error("ATS Route data is missing or incomplete.");
       return;
     }
 
-    const ctx = getCanvasContext(bg);
+    const idx = bgRef.current;
+    const ctx = getCanvasContext(idx);
     if (!ctx) return;
 
-    clearCanvas(ctx);
+    const canvas = canvasRefs[idx]?.current;
+    if (!canvas) return;
+
+    clearCanvas(ctx, canvas);
     renderMapOnCanvas(ctx);
     renderAircraftsOnCanvas(ctx);
 
     toggleCanvasDisplay();
   };
 
-  const getCanvasContext = (bg: number): CanvasRenderingContext2D | null => {
-    const canvas = canvasRefs[bg]?.current;
+  const getCanvasContext = (index: number): CanvasRenderingContext2D | null => {
+    const canvas = canvasRefs[index]?.current;
     if (!canvas) {
-      console.error(`Canvas element is not found for bg: ${bg}`);
+      console.error(`Canvas element is not found for index: ${index}`);
       return null;
     }
 
@@ -225,6 +244,7 @@ const RadarCanvas: React.FC = () => {
         ctx,
         aircraft,
         displayRangeRef.current,
+        centerCoordinateRef.current,
         dataBlockDisplaySettingRef.current,
         controllerClearanceAltitudeRowRef.current,
         velocityVectorDurationRef.current
@@ -232,29 +252,23 @@ const RadarCanvas: React.FC = () => {
     });
   };
 
-  const clearCanvas = (ctx: CanvasRenderingContext2D) => {
+  const clearCanvas = (
+    ctx: CanvasRenderingContext2D,
+    canvas: HTMLCanvasElement
+  ) => {
     ctx.fillStyle = "black";
-    ctx.fillRect(
-      0,
-      0,
-      GLOBAL_SETTINGS.canvasWidth,
-      GLOBAL_SETTINGS.canvasHeight
-    );
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
   };
 
   const toggleCanvasDisplay = () => {
-    canvasRefs[1 - bg].current!.style.display = "none";
-    canvasRefs[bg].current!.style.display = "block";
-    setBg(1 - bg);
-  };
-
-  const startRenderingLoop = () => {
-    const renderLoop = () => {
-      updateCanvas(); // Update the canvas at each frame
-      requestAnimationFrame(renderLoop); // Schedule the next frame
-    };
-
-    requestAnimationFrame(renderLoop); // Start the first frame
+    const idx = bgRef.current;
+    const back = canvasRefs[1 - idx].current;
+    const front = canvasRefs[idx].current;
+    if (back) back.style.display = "none";
+    if (front) front.style.display = "block";
+    const next = 1 - idx;
+    bgRef.current = next;
+    setBg(next);
   };
 
   const onMouseDown = (event: MouseEvent) => {
