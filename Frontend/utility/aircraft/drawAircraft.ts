@@ -11,6 +11,11 @@ import {
 } from "./atcClearanceMemoLine";
 import { formatEtaToUtcHhMm } from "./formatEtaUtc";
 import { formatAltitudeTargetVsActualLabel } from "./altitudeDataBlockLabel";
+import {
+  isTrackHistoryFreshForDraw,
+  selectTrackDisplaySamples,
+  TRACK_DISPLAY_DOT_RADIUS_PX,
+} from "./trackHistoryDisplaySamples";
 
 /**
  * Class to draw aircraft on the canvas
@@ -59,8 +64,13 @@ class DrawAircraft {
     centerCoordinate: Coordinate,
     displayRange: DisplayRange
   ) {
-    const radius = 1;
-    for (const sample of aircraft.positionHistory) {
+    const nowMs = Date.now();
+    if (!isTrackHistoryFreshForDraw(aircraft.positionHistory, nowMs)) {
+      return;
+    }
+    const radius = TRACK_DISPLAY_DOT_RADIUS_PX;
+    const samples = selectTrackDisplaySamples(aircraft.positionHistory, nowMs);
+    for (const sample of samples) {
       const p = CoordinateManager.calculateCanvasCoordinates(
         { latitude: sample.latitude, longitude: sample.longitude },
         centerCoordinate,

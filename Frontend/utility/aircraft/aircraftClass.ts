@@ -13,7 +13,8 @@ export type PositionHistoryPoint = {
   recordedAt: string;
 };
 
-export const POSITION_HISTORY_MAX_POINTS = 30;
+/** Enough for 90s track marks at ~1 Hz polls plus margin. */
+export const POSITION_HISTORY_MAX_POINTS = 120;
 
 export class Aircraft {
   callsign: string;
