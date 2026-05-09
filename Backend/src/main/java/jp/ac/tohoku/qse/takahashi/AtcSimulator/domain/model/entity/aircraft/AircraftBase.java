@@ -62,6 +62,7 @@ public abstract class AircraftBase implements Aircraft {
     private static final double WAYPOINT_PASS_THRESHOLD_MAX_NM = 5.0;
     private static final double WAYPOINT_PASS_SECONDS = 5.0;
     private static final double HOLD_OUTBOUND_LEG_DISTANCE_NM = 4.0;
+    private static final double HOLD_WAYPOINT_PASS_THRESHOLD_NM = 0.25;
 
     private static final boolean WP_DEBUG = "true".equalsIgnoreCase(System.getProperty("flightplan.wp.debug"));
 
@@ -201,7 +202,9 @@ public abstract class AircraftBase implements Aircraft {
             return;
         }
         double currentDistance = GeodeticUtils.distanceToFix(aircraftPosition, target);
-        double threshold = calculateDynamicThreshold();
+        double threshold = navigationMode == NavigationMode.HOLDING
+                ? HOLD_WAYPOINT_PASS_THRESHOLD_NM
+                : calculateDynamicThreshold();
 
         boolean withinThreshold = currentDistance < threshold;
         boolean movingAway = currentDistance > previousDistanceToWaypoint;

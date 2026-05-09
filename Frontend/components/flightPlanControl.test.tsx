@@ -33,7 +33,7 @@ describe("FlightPlanControl", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders Direct to Fix input and DIRECT TO button when callsign set", () => {
+  it("renders guidance and RESUME button when callsign set", () => {
     render(
       <SelectedAircraftProvider>
         <StateSetter callsign="JAL123" />
@@ -41,43 +41,12 @@ describe("FlightPlanControl", () => {
       </SelectedAircraftProvider>
     );
 
-    expect(screen.getByPlaceholderText(/FIX name/i)).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /DIRECT TO/i })
+      screen.getByText(/panel to select a fix and choose direct\/hold/i)
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /RESUME OWN NAVIGATION/i })
     ).toBeInTheDocument();
-  });
-
-  it("DIRECT TO is disabled when fix name is empty", () => {
-    render(
-      <SelectedAircraftProvider>
-        <StateSetter callsign="JAL123" />
-        <FlightPlanControl />
-      </SelectedAircraftProvider>
-    );
-
-    expect(screen.getByRole("button", { name: /DIRECT TO/i })).toBeDisabled();
-  });
-
-  it("shows success message when directToFix succeeds", async () => {
-    (flightPlanApi.directToFix as jest.Mock).mockResolvedValue(true);
-    const user = userEvent.setup();
-
-    render(
-      <SelectedAircraftProvider>
-        <StateSetter callsign="JAL123" />
-        <FlightPlanControl />
-      </SelectedAircraftProvider>
-    );
-
-    await user.type(screen.getByPlaceholderText(/FIX name/i), "ABENO");
-    await user.click(screen.getByRole("button", { name: /DIRECT TO/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/Direct to applied/i)).toBeInTheDocument();
-    });
   });
 
   it("shows success message when resumeNavigation succeeds", async () => {
@@ -97,25 +66,6 @@ describe("FlightPlanControl", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Resume applied/i)).toBeInTheDocument();
-    });
-  });
-
-  it("shows success message when holdAtFix succeeds", async () => {
-    (flightPlanApi.holdAtFix as jest.Mock).mockResolvedValue(true);
-    const user = userEvent.setup();
-
-    render(
-      <SelectedAircraftProvider>
-        <StateSetter callsign="JAL123" />
-        <FlightPlanControl />
-      </SelectedAircraftProvider>
-    );
-
-    await user.type(screen.getByPlaceholderText(/FIX name/i), "ABENO");
-    await user.click(screen.getByRole("button", { name: /HOLD AT FIX/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/Hold applied/i)).toBeInTheDocument();
     });
   });
 });
