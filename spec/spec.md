@@ -169,6 +169,7 @@
 | T-8 | シナリオ DSL 等 | 🟢 | ★★☆ | - | - | `scenario/load` とは別 |
 | T-9 | RadarCanvas 最適化 | 🟡 | ★★☆ | - | - | `radarCanvas.tsx` の rAF ループ・依存配列 |
 | T-10 | FE 状態管理 | 🟡 | ★★☆ | - | - | Context 分割・型 |
+| T-11 | Next dev キャッシュ復旧導線 | 🟡 | ★☆☆ | - | ✅ | [20260509-nextjs-dev-cache-recovery](20260509-nextjs-dev-cache-recovery/spec.md) |
 
 ---
 
@@ -206,6 +207,7 @@ Phase 1 spec/Issue 整合 ──→ T-3（並行）
 
 | 日付 | 内容 |
 |------|------|
+| 2026-05-09 | Next.js 開発時の `.next` chunk 欠損対策 spec を追加（[20260509-nextjs-dev-cache-recovery](20260509-nextjs-dev-cache-recovery/spec.md)）。 |
 | 2026-05-09 | Phase 4 スライス 2 着手用 spec: ペア数値・強通知（[20260509-phase4-conflict-pair-ui-alerts](20260509-phase4-conflict-pair-ui-alerts/spec.md)）。フェーズ 4 表・ギャップ・着手順にリンク。 |
 | 2026-05-09 | Phase 4 スライス: Conflict BFF・STCA ストリップ・シンボル強調（[20260509-phase4-conflict-bff-ui](20260509-phase4-conflict-bff-ui/spec.md)）。4-1/4-3 を部分完了に更新。 |
 | 2026-05-09 | T-3 完了（テスト・サンプル・README・マトリクス）。着手順 2 を完了扱いに。 |
