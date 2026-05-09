@@ -1,24 +1,19 @@
-import { formatConflictPairLine, parseOtherCallsignFromPairId } from "./pairId";
+import { formatConflictPairLine, getOtherCallsignFromPair } from "./pairId";
 
-describe("parseOtherCallsignFromPairId", () => {
-  it("returns other when own is lexicographically first in pairId", () => {
-    expect(parseOtherCallsignFromPairId("CF1-CF2", "CF1")).toBe("CF2");
-  });
-
-  it("returns other when own is lexicographically second", () => {
-    expect(parseOtherCallsignFromPairId("CF1-CF2", "CF2")).toBe("CF1");
-  });
-
-  it("handles hyphenated own callsign (prefix match)", () => {
-    expect(parseOtherCallsignFromPairId("A-B-ZZ", "A-B")).toBe("ZZ");
-  });
-
-  it("handles hyphenated own callsign (suffix match)", () => {
-    expect(parseOtherCallsignFromPairId("A-B-ZZ", "ZZ")).toBe("A-B");
-  });
-
-  it("returns null when own is not in pairId", () => {
-    expect(parseOtherCallsignFromPairId("CF1-CF2", "ZZ")).toBeNull();
+describe("getOtherCallsignFromPair", () => {
+  it("returns opposite callsign from structured pair", () => {
+    expect(
+      getOtherCallsignFromPair(
+        { callsignA: "ANA601", callsignB: "SKY605" },
+        "ANA601"
+      )
+    ).toBe("SKY605");
+    expect(
+      getOtherCallsignFromPair(
+        { callsignA: "ANA601", callsignB: "SKY605" },
+        "SKY605"
+      )
+    ).toBe("ANA601");
   });
 });
 

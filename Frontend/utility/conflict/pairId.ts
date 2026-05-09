@@ -1,23 +1,8 @@
-/**
- * Matches backend `StringUtils.generatePairId`: lexicographically smaller callsign first,
- * joined with a single "-". Use prefix/suffix matching against `ownCallsign` so hyphenated
- * callsigns still parse (splitting on "-" alone would be wrong).
- */
-export function parseOtherCallsignFromPairId(
-  pairId: string,
+export function getOtherCallsignFromPair(
+  pair: { callsignA: string; callsignB: string },
   ownCallsign: string
-): string | null {
-  const prefix = `${ownCallsign}-`;
-  if (pairId.startsWith(prefix)) {
-    const other = pairId.slice(prefix.length);
-    return other.length > 0 ? other : null;
-  }
-  const suffix = `-${ownCallsign}`;
-  if (pairId.endsWith(suffix)) {
-    const other = pairId.slice(0, -suffix.length);
-    return other.length > 0 ? other : null;
-  }
-  return null;
+): string {
+  return pair.callsignA === ownCallsign ? pair.callsignB : pair.callsignA;
 }
 
 /** Backend units: horizontal NM, vertical ft, TCPA seconds (RiskAssessment). */

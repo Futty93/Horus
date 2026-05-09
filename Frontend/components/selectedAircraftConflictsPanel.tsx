@@ -9,7 +9,7 @@ import {
 } from "@/utility/api/conflict";
 import {
   formatConflictPairLine,
-  parseOtherCallsignFromPairId,
+  getOtherCallsignFromPair,
 } from "@/utility/conflict/pairId";
 
 const SelectedAircraftConflictsPanel: React.FC = () => {
@@ -55,10 +55,12 @@ const SelectedAircraftConflictsPanel: React.FC = () => {
       ) : (
         <ul className="space-y-1.5 text-atc-text">
           {rows.map((r) => {
-            const other = parseOtherCallsignFromPairId(r.pairId, callsign);
-            const label = other ?? r.pairId;
+            const label = getOtherCallsignFromPair(r, callsign);
             return (
-              <li key={r.pairId} className="leading-snug">
+              <li
+                key={`${r.callsignA}-${r.callsignB}`}
+                className="leading-snug"
+              >
                 <span className="font-medium text-atc-warning">{label}</span>
                 <span className="text-atc-text-muted"> · </span>
                 <span>{formatConflictPairLine(r)}</span>

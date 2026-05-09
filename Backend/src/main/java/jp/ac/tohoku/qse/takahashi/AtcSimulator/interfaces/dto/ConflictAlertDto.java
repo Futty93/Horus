@@ -5,7 +5,8 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto;
  * Flattened from RiskAssessment to avoid domain leakage at API boundary.
  */
 public record ConflictAlertDto(
-    String pairId,
+    String callsignA,
+    String callsignB,
     double riskLevel,
     String alertLevel,
     double timeToClosest,

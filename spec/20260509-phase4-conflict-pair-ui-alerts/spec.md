@@ -14,7 +14,7 @@
 ### 現状
 
 - `utility/api/conflict.ts` に `fetchAircraftConflicts(callsign)` および `fetchConflictViolations` / `fetchConflictCritical` がある。BFF は `/api/conflict/aircraft/[callsign]` 等で転送済み。
-- `ConflictAlertDto` は `pairId`（例: テスト上 `CF1-CF2`）、`closestHorizontalDistance` / `closestVerticalDistance`、`timeToClosest`、`alertLevel`、`riskLevel` 等を持つ。
+- `ConflictAlertDto` は `callsignA` / `callsignB` を持つ構造化 DTO とし、`pairId` 文字列の split には依存しない。
 - レーダーは `riskLevel` 由来のラベル色・`R` 行、STCA ストリップ、シンボルリングはあるが、**どの機と何 NM / 何 ft 離れているか**はラベルからは読みにくい。
 - ストリップはパッシブ表示に留まり、**新規の違反発生時に注意を引く**仕組みがない。
 
@@ -37,13 +37,13 @@
    - **データ取得**: 位置ポーリングと同周期、またはやや低頻度で、**フォーカス機**（クリック選択中の `callsign`）に対して `fetchAircraftConflicts` を呼ぶ。全機分が必要なら `fetchConflictAll` / critical / violations との使い分けを設計コメントで固定する（N+1 過多を避ける）。
    - **表示場所（いずれかまたは併用）**:
      - **A**: `drawAircraft` のデータブロック近傍に、当該機のコンフリクト 1 件目（または最大 `riskLevel`）の **H/V 距離・相手識別**を短い行で表示。
-     - **B**: 既存パネル（例: フライトプラン操作付近）に **選択機のコンフリクト一覧**（`pairId` から相手コールサインを表示。`pairId` の分解規約は `ConflictDetector` / `StringUtils.generatePairId` に合わせ、コールサインに `-` が含まる場合は別途バックエンド仕様を確認する）。
+     - **B**: 既存パネル（例: フライトプラン操作付近）に **選択機のコンフリクト一覧**（`callsignA` / `callsignB` から相手機を直接表示）。
    - **単位**: Backend が返す距離の単位（NM / m 等）を `Frontend/README.md` または型コメントで明示し、UI 表記と一致させる。
 
 2. **4-3（強通知）**
-   - **トリガ**: `fetchConflictViolations` または `fetchConflictCritical` の結果で、**前回ポーリングと比較して新規の `pairId` が現れた**、または `separationViolationCount`（統計）が増加したときに通知。
+   - **トリガ**: `fetchConflictAll` の結果で、**前回ポーリングと比較して新規ペア（`callsignA` + `callsignB`）が現れた**、または `separationViolationCount`（統計）が増加したときに通知。
    - **UI**: プロジェクトに既存のトースト／ダイアログ基盤があればそれを利用。なければ **軽量な固定ポジションのバナー**（レーダー下など）＋自動消去で開始し、後からコンポーネント化する。
-   - **抑制**: 同一 `pairId` の連打を避けるため、**クールダウン**（例: 数秒〜数十秒）または「最後に通知した pairId + 時刻」を保持する。
+   - **抑制**: 同一ペアの連打を避けるため、**クールダウン**（例: 数秒〜数十秒）または「最後に通知したペア + 時刻」を保持する。
 
 ### 検討した他案（Alternatives Considered）
 
@@ -79,7 +79,7 @@
 
 1. 選択 `callsign` をレーダー系に伝播（既存の選択ハンドラがあれば流用）。
 2. `fetchAircraftConflicts` の結果を state に保持し、描画パスまたはサイド一覧に接続。
-3. `pairId` から相手コールサイン表示（仕様確認と単体テスト可能な純関数に切り出し）。
+3. `callsignA` / `callsignB` から相手コールサイン表示（純関数で切り出し）。
 
 ### Phase 2（4-3）
 
@@ -99,7 +99,7 @@
 
 ## 未解決事項（Unresolved Questions）
 
-- `pairId` の文字列形式がコールサインに `-` を含む場合も一意に分解できるか（必要なら Backend で `otherCallsign` フィールド追加を別 spec 化）。
+- `callsignA` / `callsignB` の並び順を API 仕様として固定するか（辞書順固定か、検出時順か）。
 - Controller と Operator で通知の重複を避けるか（共有 Context にするかページ単位か）。
 
 ---

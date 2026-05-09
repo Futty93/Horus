@@ -78,7 +78,7 @@ class ConflictDetectorTest {
             List<Aircraft> aircraftList = Arrays.asList(testAircraft1, testAircraft2);
 
             // 実行
-            Map<String, RiskAssessment> results = conflictDetector.calculateAllConflicts(aircraftList);
+            Map<ConflictDetector.ConflictPair, RiskAssessment> results = conflictDetector.calculateAllConflicts(aircraftList);
 
             // 検証
             assertNotNull(results);
@@ -167,7 +167,7 @@ class ConflictDetectorTest {
 
             // 実行時間測定
             long startTime = System.currentTimeMillis();
-            Map<String, RiskAssessment> results = conflictDetector.calculateAllConflicts(largeAircraftList);
+            Map<ConflictDetector.ConflictPair, RiskAssessment> results = conflictDetector.calculateAllConflicts(largeAircraftList);
             long endTime = System.currentTimeMillis();
 
             long executionTime = endTime - startTime;
@@ -191,7 +191,7 @@ class ConflictDetectorTest {
 
             // 大量データ処理
             List<Aircraft> aircraftList = generate200Aircraft();
-            Map<String, RiskAssessment> results = conflictDetector.calculateAllConflicts(aircraftList);
+            Map<ConflictDetector.ConflictPair, RiskAssessment> results = conflictDetector.calculateAllConflicts(aircraftList);
 
             // メモリ使用量確認
             long finalMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
@@ -229,7 +229,7 @@ class ConflictDetectorTest {
         @Test
         @DisplayName("空リスト処理")
         void testCalculateAllConflicts_EmptyList() {
-            Map<String, RiskAssessment> results = conflictDetector.calculateAllConflicts(new ArrayList<>());
+            Map<ConflictDetector.ConflictPair, RiskAssessment> results = conflictDetector.calculateAllConflicts(new ArrayList<>());
 
             assertNotNull(results);
             assertTrue(results.isEmpty());
@@ -239,7 +239,7 @@ class ConflictDetectorTest {
         @DisplayName("単一航空機処理")
         void testCalculateAllConflicts_SingleAircraft() {
             List<Aircraft> singleAircraft = Arrays.asList(testAircraft1);
-            Map<String, RiskAssessment> results = conflictDetector.calculateAllConflicts(singleAircraft);
+            Map<ConflictDetector.ConflictPair, RiskAssessment> results = conflictDetector.calculateAllConflicts(singleAircraft);
 
             assertNotNull(results);
             assertTrue(results.isEmpty());

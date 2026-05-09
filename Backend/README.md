@@ -86,8 +86,10 @@ curl http://localhost:8080/api/conflict/statistics
 #### レスポンス例
 
 ```json
-{
-  "JAL512-ANA456": {
+[
+  {
+    "callsignA": "ANA456",
+    "callsignB": "JAL512",
     "riskLevel": 75.2,
     "timeToClosest": 45.5,
     "closestHorizontalDistance": 3.2,
@@ -95,7 +97,7 @@ curl http://localhost:8080/api/conflict/statistics
     "conflictPredicted": true,
     "alertLevel": "RED_CONFLICT"
   }
-}
+]
 ```
 
 ---

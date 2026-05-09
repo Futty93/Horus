@@ -16,7 +16,6 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.GeodeticUtils;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.StringUtils;
 
 /**
  * 航空機間のコンフリクト検出を行うドメインサービス
@@ -29,6 +28,21 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.StringUtils;
  * - パフォーマンス最適化（最大200機対応）
  */
 public class ConflictDetector {
+    public record ConflictPair(String callsignA, String callsignB) {
+        public ConflictPair {
+            Objects.requireNonNull(callsignA, "callsignA must not be null");
+            Objects.requireNonNull(callsignB, "callsignB must not be null");
+            if (callsignA.compareTo(callsignB) > 0) {
+                String tmp = callsignA;
+                callsignA = callsignB;
+                callsignB = tmp;
+            }
+        }
+
+        public boolean includes(String callsign) {
+            return callsignA.equals(callsign) || callsignB.equals(callsign);
+        }
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(ConflictDetector.class);
 
@@ -42,7 +56,7 @@ public class ConflictDetector {
      * @return 航空機ペアIDをキーとするリスク評価マップ
      * @throws InvalidParameterException 航空機リストがnullの場合
      */
-    public Map<String, RiskAssessment> calculateAllConflicts(List<Aircraft> aircraftList) {
+    public Map<ConflictPair, RiskAssessment> calculateAllConflicts(List<Aircraft> aircraftList) {
         validateAircraftList(aircraftList);
 
         if (aircraftList.size() < 2) {
@@ -53,7 +67,7 @@ public class ConflictDetector {
         logger.debug("コンフリクト計算開始: {}機", aircraftList.size());
 
         // 並列処理対応のためConcurrentHashMapを使用
-        Map<String, RiskAssessment> results = new ConcurrentHashMap<>();
+        Map<ConflictPair, RiskAssessment> results = new ConcurrentHashMap<>();
 
         // 航空機ペアの事前フィルタリングでパフォーマンス向上
         List<AircraftPair> candidatePairs = preFilterAircraftPairs(aircraftList);
@@ -67,11 +81,11 @@ public class ConflictDetector {
 
                 // 危険度が閾値以上の場合のみ結果に含める
                 if (assessment.getRiskLevel() > 0.0) {
-                    String pairId = StringUtils.generatePairId(
+                    ConflictPair pairKey = new ConflictPair(
                         pair.aircraft1.getCallsign().toString(),
                         pair.aircraft2.getCallsign().toString()
                     );
-                    results.put(pairId, assessment);
+                    results.put(pairKey, assessment);
                 }
             } catch (Exception e) {
                 String errorMsg = String.format("航空機ペア計算エラー: %s - %s",

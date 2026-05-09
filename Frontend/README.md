@@ -130,7 +130,7 @@ Frontend/
 
 **STCA（コンフリクト）BFF**: `app/api/conflict/*` が Java `ConflictAlertController` の `/api/conflict/all`・`filtered`・`critical`・`violations`・`statistics`・`health`・`aircraft/{callsign}` へプロキシする。クライアント型・取得ヘルパーは `utility/api/conflict.ts`。
 
-**STCA 距離の単位（UI と一致）**: バックエンド `RiskAssessment` に合わせ、**水平隔離 `closestHorizontalDistance` は海里（NM）**、**鉛直隔離 `closestVerticalDistance` はフィート（ft）**、**最接近までの時間 `timeToClosest` は秒**。選択機のペア一覧は `selectedAircraftConflictsPanel.tsx`（`fetchAircraftConflicts`、位置更新と同じ 1s 間隔）。**違反・高リスクの強通知**は `separationViolationAlerts.tsx` が `violations` / `critical` の **新規 `pairId`** または **統計の `separationViolationCount` 増加**を検知し、レーダー下にバナーを出す（約 10s で自動消去）。同一 `pairId` は **30s クールダウン**で連打を抑制。Controller / Operator でそれぞれマウントするため通知は画面ごとに独立。
+**STCA 距離の単位（UI と一致）**: バックエンド `RiskAssessment` に合わせ、**水平隔離 `closestHorizontalDistance` は海里（NM）**、**鉛直隔離 `closestVerticalDistance` はフィート（ft）**、**最接近までの時間 `timeToClosest` は秒**。選択機のペア一覧は `selectedAircraftConflictsPanel.tsx`（`fetchAircraftConflicts`、位置更新と同じ 1s 間隔）。API は `pairId` 文字列ではなく `callsignA` / `callsignB` を返すため、相手機表示は構造化データで解決できる。**違反・高リスクの強通知**は `separationViolationAlerts.tsx` が `/api/conflict/all` の差分から新規ペアを検知してレーダー下にバナーを出す（約 10s で自動消去）。同一ペアは **30s クールダウン**で連打を抑制。Controller / Operator でそれぞれマウントするため通知は画面ごとに独立。
 
 ## 主要コンポーネント
 

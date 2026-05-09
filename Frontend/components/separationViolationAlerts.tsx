@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { GLOBAL_CONSTANTS } from "@/utility/globals/constants";
 import {
   fetchConflictAll,
-  type RiskAssessmentDto,
+  type ConflictAlertDto,
 } from "@/utility/api/conflict";
 import { formatConflictPairLine } from "@/utility/conflict/pairId";
 import { findNewIdsInSet } from "@/utility/conflict/violationDiff";
@@ -12,28 +12,32 @@ import { findNewIdsInSet } from "@/utility/conflict/violationDiff";
 const COOLDOWN_MS = 30_000;
 const BANNER_AUTO_HIDE_MS = 10_000;
 
+function toPairKey(alert: { callsignA: string; callsignB: string }): string {
+  return `${alert.callsignA}::${alert.callsignB}`;
+}
+
 function mergePairIds(
-  violations: Array<{ pairId: string }> | null,
-  critical: Array<{ pairId: string }> | null
+  violations: ConflictAlertDto[] | null,
+  critical: ConflictAlertDto[] | null
 ): Set<string> {
   const s = new Set<string>();
   for (const v of violations ?? []) {
-    s.add(v.pairId);
+    s.add(toPairKey(v));
   }
   for (const c of critical ?? []) {
-    s.add(c.pairId);
+    s.add(toPairKey(c));
   }
   return s;
 }
 
 function pickAlertForPair(
-  pairId: string,
-  violations: Array<RiskAssessmentDto & { pairId: string }> | null,
-  critical: Array<RiskAssessmentDto & { pairId: string }> | null
-): (RiskAssessmentDto & { pairId: string }) | null {
+  pairKey: string,
+  violations: ConflictAlertDto[] | null,
+  critical: ConflictAlertDto[] | null
+): ConflictAlertDto | null {
   return (
-    violations?.find((x) => x.pairId === pairId) ??
-    critical?.find((x) => x.pairId === pairId) ??
+    violations?.find((x) => toPairKey(x) === pairKey) ??
+    critical?.find((x) => toPairKey(x) === pairKey) ??
     null
   );
 }
@@ -70,13 +74,11 @@ const SeparationViolationAlerts: React.FC = () => {
     const tick = async () => {
       const allConflicts = await fetchConflictAll();
       if (cancelled) return;
-      const entries = Object.entries(allConflicts ?? {});
-      const violations = entries
-        .filter(([, risk]) => risk.conflictPredicted)
-        .map(([pairId, risk]) => ({ pairId, ...risk }));
-      const critical = entries
-        .filter(([, risk]) => risk.alertLevel === "RED_CONFLICT")
-        .map(([pairId, risk]) => ({ pairId, ...risk }));
+      const rows = allConflicts ?? [];
+      const violations = rows.filter((risk) => risk.conflictPredicted);
+      const critical = rows.filter(
+        (risk) => risk.alertLevel === "RED_CONFLICT"
+      );
       const sepCount = violations.length;
 
       const now = Date.now();
@@ -91,29 +93,31 @@ const SeparationViolationAlerts: React.FC = () => {
 
       const prev = prevMergedPairIdsRef.current ?? new Set();
       const newIds = findNewIdsInSet(prev, merged);
-      const violationIdSet = new Set((violations ?? []).map((v) => v.pairId));
+      const violationIdSet = new Set(
+        (violations ?? []).map((v) => toPairKey(v))
+      );
       const orderedNew = [
         ...newIds.filter((id) => violationIdSet.has(id)),
         ...newIds.filter((id) => !violationIdSet.has(id)),
       ];
 
       const tryNotifyPair = (
-        pairId: string,
+        pairKey: string,
         source: "violation" | "critical"
       ): boolean => {
-        const until = cooldownUntilRef.current.get(pairId) ?? 0;
+        const until = cooldownUntilRef.current.get(pairKey) ?? 0;
         if (now < until) {
           return false;
         }
-        const alert = pickAlertForPair(pairId, violations, critical);
-        cooldownUntilRef.current.set(pairId, now + COOLDOWN_MS);
+        const alert = pickAlertForPair(pairKey, violations, critical);
+        cooldownUntilRef.current.set(pairKey, now + COOLDOWN_MS);
         if (alert) {
           showBanner(
-            `STCA ${source}: ${pairId} — ${formatConflictPairLine(alert)}`,
+            `STCA ${source}: ${alert.callsignA}-${alert.callsignB} — ${formatConflictPairLine(alert)}`,
             source
           );
         } else {
-          showBanner(`STCA ${source}: new pair ${pairId}`, source);
+          showBanner(`STCA ${source}: new pair ${pairKey}`, source);
         }
         return true;
       };

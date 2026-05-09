@@ -1,7 +1,6 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.api;
 
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ConflictAlertService;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ConflictAlertDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ConflictStatisticsDto;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.RiskAssessmentDto;
 
 /**
  * コンフリクトアラート機能のREST APIコントローラー
@@ -44,10 +42,10 @@ public class ConflictAlertController {
      * @return 全コンフリクト評価結果
      */
     @GetMapping("/all")
-    public ResponseEntity<Map<String, RiskAssessmentDto>> getAllConflicts() {
+    public ResponseEntity<List<ConflictAlertDto>> getAllConflicts() {
         logger.debug("全コンフリクトアラート取得要求");
 
-        Map<String, RiskAssessmentDto> conflicts = conflictAlertService.getAllConflictAlertsAsDto();
+        List<ConflictAlertDto> conflicts = conflictAlertService.getAllConflictAlertsAsDto();
 
         logger.debug("全コンフリクトアラート取得完了: {}件", conflicts.size());
         return ResponseEntity.ok(conflicts);
@@ -61,11 +59,11 @@ public class ConflictAlertController {
      * @throws InvalidParameterException 無効なアラートレベルが指定された場合（Service から伝播）
      */
     @GetMapping("/filtered")
-    public ResponseEntity<Map<String, RiskAssessmentDto>> getFilteredConflicts(
+    public ResponseEntity<List<ConflictAlertDto>> getFilteredConflicts(
             @RequestParam(defaultValue = "WHITE_CONFLICT") String level) {
         logger.debug("フィルタされたコンフリクト取得要求: レベル={}", level);
 
-        Map<String, RiskAssessmentDto> conflicts = conflictAlertService.getFilteredConflictAlertsAsDto(level);
+        List<ConflictAlertDto> conflicts = conflictAlertService.getFilteredConflictAlertsAsDto(level);
 
         logger.debug("フィルタされたコンフリクト取得完了: {}件", conflicts.size());
         return ResponseEntity.ok(conflicts);
