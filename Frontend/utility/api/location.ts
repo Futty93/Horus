@@ -24,6 +24,7 @@ export interface AircraftLocationDto {
   /** ISO 8601 instant (e.g. …Z). Data block shows UTC HH:mm. */
   eta: string;
   squawk?: string | null;
+  navigationMode: string;
   riskLevel: number;
 }
 
@@ -114,7 +115,8 @@ function mapDtoToAircraft(
     dto.eta ?? "",
     50,
     50,
-    dto.riskLevel ?? 0
+    dto.riskLevel ?? 0,
+    dto.navigationMode ?? "HEADING"
   );
 }
 
@@ -162,7 +164,8 @@ function updateControllingAircrafts(
       newAircraft.eta,
       50,
       50,
-      newAircraft.riskLevel
+      newAircraft.riskLevel,
+      newAircraft.navigationMode
     );
     controllingAircrafts.push(newAirplane);
   });

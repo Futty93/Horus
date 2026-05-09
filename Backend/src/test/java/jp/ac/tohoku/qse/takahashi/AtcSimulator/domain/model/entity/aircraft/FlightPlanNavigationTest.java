@@ -13,6 +13,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.char
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.AltitudeConstraint;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlan;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlanWaypoint;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.HoldTurnDirection;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.NavigationMode;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.WaypointAction;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude;
@@ -91,6 +92,40 @@ class FlightPlanNavigationTest {
             aircraft.setResumeNavigation();
 
             assertEquals(NavigationMode.FLIGHT_PLAN, aircraft.getNavigationMode());
+        }
+
+        @Test
+        void holdKeepsCurrentAltitudeAndSpeedTargets() {
+            var aircraft = createTestAircraft(35.0, 139.0, 5000, 0, 250);
+            var wp1 = new FlightPlanWaypoint("ABENO", fixAt(35.1, 139.0), new Altitude(12000), new GroundSpeed(280),
+                    AltitudeConstraint.AT, WaypointAction.CONTINUE);
+            var plan = new FlightPlan(new Callsign("TEST01"), "RJTT", "RJOO", List.of(wp1),
+                    new Altitude(35000), new GroundSpeed(450));
+            aircraft.setFlightPlan(plan);
+            aircraft.setInstructedVector(new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.InstructedVector(
+                    new Heading(90), new Altitude(7000), new GroundSpeed(230)));
+
+            aircraft.setHoldAtFix(fixAt(35.1, 139.0), "ABENO", HoldTurnDirection.RIGHT);
+            aircraft.calculateNextAircraftVector();
+
+            assertEquals(7000, aircraft.getInstructedVector().instructedAltitude.toDouble());
+            assertEquals(230, aircraft.getInstructedVector().instructedGroundSpeed.toDouble());
+        }
+
+        @Test
+        void resumeNavigationAfterHoldSkipsHeldWaypoint() {
+            var aircraft = createTestAircraft(35.0, 139.0, 5000, 0, 250);
+            var wp1 = new FlightPlanWaypoint("ABENO", fixAt(35.1, 139.0), null, null, AltitudeConstraint.NONE, WaypointAction.CONTINUE);
+            var wp2 = new FlightPlanWaypoint("MAIKO", fixAt(35.2, 139.1), null, null, AltitudeConstraint.NONE, WaypointAction.CONTINUE);
+            var plan = new FlightPlan(new Callsign("TEST01"), "RJTT", "RJOO", List.of(wp1, wp2),
+                    new Altitude(35000), new GroundSpeed(450));
+            aircraft.setFlightPlan(plan);
+
+            aircraft.setHoldAtFix(fixAt(35.1, 139.0), "ABENO", HoldTurnDirection.RIGHT);
+            aircraft.setResumeNavigation();
+
+            assertEquals(NavigationMode.FLIGHT_PLAN, aircraft.getNavigationMode());
+            assertEquals(1, aircraft.getCurrentWaypointIndex());
         }
     }
 

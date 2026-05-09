@@ -56,6 +56,7 @@ public abstract class AircraftBase implements Aircraft {
     protected FixPosition holdingOutboundTarget;
     protected HoldTurnDirection holdTurnDirection;
     protected boolean holdingToOutboundLeg;
+    protected int resumeFlightPlanIndexAfterHold;
 
     private static final double WAYPOINT_PASS_THRESHOLD_MIN_NM = 1.5;
     private static final double WAYPOINT_PASS_THRESHOLD_MAX_NM = 5.0;
@@ -88,6 +89,7 @@ public abstract class AircraftBase implements Aircraft {
         this.holdingOutboundTarget = null;
         this.holdTurnDirection = HoldTurnDirection.RIGHT;
         this.holdingToOutboundLeg = false;
+        this.resumeFlightPlanIndexAfterHold = -1;
     }
 
     @Override
@@ -103,11 +105,15 @@ public abstract class AircraftBase implements Aircraft {
     public void calculateNextAircraftVector() {
         updateInstructedVectorFromNavigation();
 
-        var nextHeading = flightBehavior.calculateNextHeading(
-            this.aircraftVector.heading.toDouble(),
-            this.instructedVector.instructedHeading.toDouble(),
-            this.characteristics.getMaxTurnRate()
-        );
+        var nextHeading = (navigationMode == NavigationMode.HOLDING && holdTurnDirection == HoldTurnDirection.RIGHT)
+                ? calculateNextHeadingRightTurn(
+                        this.aircraftVector.heading.toDouble(),
+                        this.instructedVector.instructedHeading.toDouble(),
+                        this.characteristics.getMaxTurnRate())
+                : flightBehavior.calculateNextHeading(
+                        this.aircraftVector.heading.toDouble(),
+                        this.instructedVector.instructedHeading.toDouble(),
+                        this.characteristics.getMaxTurnRate());
 
         var nextGroundSpeed = flightBehavior.calculateNextGroundSpeed(
             this.aircraftVector.groundSpeed.toDouble(),
@@ -168,7 +174,9 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     private Altitude resolveTargetAltitude() {
-        if (navigationMode == NavigationMode.DIRECT_TO || flightPlan == null) {
+        if (navigationMode == NavigationMode.DIRECT_TO
+                || navigationMode == NavigationMode.HOLDING
+                || flightPlan == null) {
             return instructedVector.instructedAltitude;
         }
         return flightPlan.getNextWaypoint(currentWaypointIndex)
@@ -177,7 +185,9 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     private GroundSpeed resolveTargetSpeed() {
-        if (navigationMode == NavigationMode.DIRECT_TO || flightPlan == null) {
+        if (navigationMode == NavigationMode.DIRECT_TO
+                || navigationMode == NavigationMode.HOLDING
+                || flightPlan == null) {
             return instructedVector.instructedGroundSpeed;
         }
         return flightPlan.getNextWaypoint(currentWaypointIndex)
@@ -382,6 +392,7 @@ public abstract class AircraftBase implements Aircraft {
         this.holdTurnDirection = turnDirection;
         this.holdingToOutboundLeg = false;
         this.holdingOutboundTarget = createHoldingOutboundTarget(fix, fixName);
+        this.resumeFlightPlanIndexAfterHold = computeResumeFlightPlanIndexAfterHold(fixName);
         this.navigationMode = NavigationMode.HOLDING;
         this.directToTarget = null;
         this.directToFixName = null;
@@ -391,6 +402,9 @@ public abstract class AircraftBase implements Aircraft {
 
     public void setResumeNavigation() {
         if (flightPlan != null) {
+            if (resumeFlightPlanIndexAfterHold >= 0) {
+                this.currentWaypointIndex = resumeFlightPlanIndexAfterHold;
+            }
             this.navigationMode = NavigationMode.FLIGHT_PLAN;
             this.directToTarget = null;
             this.directToFixName = null;
@@ -432,6 +446,32 @@ public abstract class AircraftBase implements Aircraft {
         this.holdingOutboundTarget = null;
         this.holdTurnDirection = HoldTurnDirection.RIGHT;
         this.holdingToOutboundLeg = false;
+        this.resumeFlightPlanIndexAfterHold = -1;
+    }
+
+    private int computeResumeFlightPlanIndexAfterHold(String fixName) {
+        if (flightPlan == null) {
+            return -1;
+        }
+        if (fixName == null || fixName.isBlank()) {
+            return currentWaypointIndex;
+        }
+        int holdFixIndex = flightPlan.findWaypointIndex(fixName);
+        if (holdFixIndex < 0) {
+            return currentWaypointIndex;
+        }
+        int nextIndex = holdFixIndex + 1;
+        int maxIndex = flightPlan.getWaypoints().size() - 1;
+        if (maxIndex < 0) {
+            return -1;
+        }
+        return Math.min(nextIndex, maxIndex);
+    }
+
+    private Heading calculateNextHeadingRightTurn(double currentHeading, double targetHeading, double maxTurnRate) {
+        double clockwiseDelta = GeodeticUtils.normalizeAngle(targetHeading - currentHeading);
+        double turnAmount = Math.min(maxTurnRate, clockwiseDelta);
+        return new Heading(GeodeticUtils.normalizeAngle(currentHeading + turnAmount));
     }
 
     public void setNavigationMode(NavigationMode mode) {

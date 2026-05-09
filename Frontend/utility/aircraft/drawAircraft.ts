@@ -268,6 +268,12 @@ class DrawAircraft {
     ctx.fillText("R" + riskDisplayFloor.toString(), labelX, lineY);
     lineY += lineHeight;
 
+    if (aircraft.navigationMode === "HOLDING") {
+      ctx.fillStyle = "#f59e0b";
+      ctx.fillText("HLD", labelX, lineY);
+      lineY += lineHeight;
+    }
+
     if (setting.aircraftType && aircraft.model) {
       ctx.fillStyle = "white";
       const modelDisplay =

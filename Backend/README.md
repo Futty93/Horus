@@ -357,7 +357,7 @@ RESTful APIを提供しており、詳細なAPI仕様は`UranosAPI.yml`ファイ
    - `POST /api/aircraft/{callsign}/squawk` - **スクオークコード**を割り当て（Body: `{ "squawk": "1200" }`、4桁オクタル）
 
 2. **位置情報取得**（JSON 形式）
-   - `GET /aircraft/location/all` - 全航空機の現在位置を取得（各要素に `atcClearance` と、未割当時は `null` の `squawk` を常に含む）
+   - `GET /aircraft/location/all` - 全航空機の現在位置を取得（各要素に `atcClearance`、未割当時は `null` の `squawk`、および `navigationMode` を含む）
    - `GET /aircraft/location?callsign={callsign}` - 特定航空機の位置を取得
 
 3. **シミュレーション・シナリオ**
