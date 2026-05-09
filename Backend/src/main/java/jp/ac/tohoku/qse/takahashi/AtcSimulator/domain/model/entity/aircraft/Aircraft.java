@@ -8,9 +8,9 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
 
 public interface Aircraft {
-    void calculateNextAircraftPosition();
+    void calculateNextAircraftPosition(double simDeltaSeconds);
 
-    void calculateNextAircraftVector();
+    void calculateNextAircraftVector(double simDeltaSeconds);
 
     double calculateTurnAngle(FixPosition fixPosition);
 

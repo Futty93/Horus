@@ -108,6 +108,19 @@ class SimulationSpeedIntegrationTest {
     }
 
     @Test
+    @DisplayName("PUT /simulation/speed rejects empty JSON body (missing speedMultiplier)")
+    void putSpeed_missingField_returns400() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>("{}", headers);
+
+        ResponseEntity<Map> response = restTemplate.exchange(
+                baseUrl() + "/simulation/speed", HttpMethod.PUT, entity, Map.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
     @DisplayName("PUT /simulation/speed rejects non-preset multiplier")
     void putSpeed_invalid_returns400() {
         HttpHeaders headers = new HttpHeaders();

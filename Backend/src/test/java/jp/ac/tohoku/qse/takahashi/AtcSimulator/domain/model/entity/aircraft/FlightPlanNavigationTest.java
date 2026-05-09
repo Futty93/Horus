@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.config.SimulationTiming;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.behavior.FixedWingFlightBehavior;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.characteristics.AircraftCharacteristics;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.AltitudeConstraint;
@@ -106,7 +107,7 @@ class FlightPlanNavigationTest {
                     new Heading(90), new Altitude(7000), new GroundSpeed(230)));
 
             aircraft.setHoldAtFix(fixAt(35.1, 139.0), "ABENO", HoldTurnDirection.RIGHT);
-            aircraft.calculateNextAircraftVector();
+            aircraft.calculateNextAircraftVector(SimulationTiming.SIM_DELTA_SECONDS);
 
             assertEquals(7000, aircraft.getInstructedVector().instructedAltitude.toDouble());
             assertEquals(230, aircraft.getInstructedVector().instructedGroundSpeed.toDouble());
@@ -118,7 +119,7 @@ class FlightPlanNavigationTest {
             var holdFix = fixAt(35.0, 138.8);
 
             aircraft.setHoldAtFix(holdFix, "ABENO", HoldTurnDirection.RIGHT);
-            aircraft.calculateNextAircraftVector();
+            aircraft.calculateNextAircraftVector(SimulationTiming.SIM_DELTA_SECONDS);
 
             assertTrue(
                     aircraft.getAircraftVector().heading.toDouble() > 350.0,
@@ -169,7 +170,7 @@ class FlightPlanNavigationTest {
                     new Altitude(35000), new GroundSpeed(450));
             aircraft.setFlightPlan(plan);
 
-            aircraft.calculateNextAircraftVector();
+            aircraft.calculateNextAircraftVector(SimulationTiming.SIM_DELTA_SECONDS);
 
             double instructedHeading = aircraft.getInstructedVector().instructedHeading.toDouble();
             assertTrue(instructedHeading >= 0 && instructedHeading <= 360, "Bearing to north should be ~0");

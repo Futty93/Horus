@@ -41,6 +41,11 @@ public class SimulationTiming {
         }
     }
 
+    /** Simulation time advanced per tick (seconds). Passed into {@code nextStep} / aircraft integration. */
+    public double getSimDeltaSeconds() {
+        return SIM_DELTA_SECONDS;
+    }
+
     public void setSpeedMultiplier(double multiplier) {
         if (!isValidPreset(multiplier)) {
             throw new IllegalArgumentException("speedMultiplier must be one of: 0.25, 0.5, 1, 2, 4, 10");

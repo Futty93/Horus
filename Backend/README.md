@@ -208,7 +208,7 @@ npm run dev
 | POST | `/api/aircraft/{callsign}/hold` | Hold At Fix（初期版: 右旋回固定レーストラック、`turnDirection` は `RIGHT` のみ。同一Fixでは侵入方向に依存せず決定論的に同一トラック向きを共有） |
 | POST | `/api/aircraft/{callsign}/resume-navigation` | フライトプラン経路再開 |
 | GET | `/simulation/speed` | シミュレーション時間倍率と実時間ティック間隔（ms） |
-| PUT | `/simulation/speed` | 倍率を離散プリセットのみに設定（`0.25` / `0.5` / `1` / `2` / `4` / `10`）。他は 400 |
+| PUT | `/simulation/speed` | JSON `{"speedMultiplier": …}`（必須。欠落・`null` は 400）。値は離散プリセットのみ（`0.25` / `0.5` / `1` / `2` / `4` / `10`）。他は 400 |
 
 統合テスト: `src/test/java/.../FlightPlanApiIntegrationTest.java`、`SimulationSpeedIntegrationTest.java`（`fixtures/scenario-load-minimal.json` は [docs/test-data/scenario-load-minimal.json](docs/test-data/scenario-load-minimal.json) と同一内容）。200 機 `nextStep` 計測は `NextStepTwoHundredAircraftPerformanceTest.java`（1 ティック平均 100ms 超で失敗。多くの環境で 1ms 未満）。200 機 `getAllConflictAlerts` 計測は `ConflictDetectionTwoHundredAircraftPerformanceTest.java`（API と同経路、平均 100ms 超で失敗。README のコンフリクト目安と整合）。
 

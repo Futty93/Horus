@@ -59,6 +59,6 @@ public class SimulationTickScheduler {
         if (!GlobalVariables.isSimulationRunning) {
             return;
         }
-        airspaceManagement.nextStep();
+        airspaceManagement.nextStep(simulationTiming.getSimDeltaSeconds());
     }
 }

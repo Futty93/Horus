@@ -1,7 +1,5 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.behavior;
 
-import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.*;
-
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.*;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
@@ -17,14 +15,12 @@ public class HelicopterFlightBehavior implements FlightBehavior {
     private static final double HOVERING_THRESHOLD = 5.0; // ホバリング判定の閾値（ノット）
 
     @Override
-    public AircraftPosition calculateNextPosition(AircraftPosition currentPos, AircraftVector vector, double refreshRate) {
-        double refreshRateInSeconds = 1.0 / refreshRate;
-
+    public AircraftPosition calculateNextPosition(AircraftPosition currentPos, AircraftVector vector, double simDeltaSeconds) {
         // ホバリング状態の判定
         if (vector.groundSpeed.toDouble() < HOVERING_THRESHOLD) {
             // 空中停止：水平位置は変更せず、垂直移動のみ
             Altitude newAlt = new Altitude(currentPos.altitude.toDouble() +
-                (vector.verticalSpeed.toDouble() * refreshRateInSeconds / 60.0));
+                (vector.verticalSpeed.toDouble() * simDeltaSeconds / 60.0));
 
             return new AircraftPosition(currentPos.latitude, currentPos.longitude, newAlt);
         }
@@ -35,7 +31,7 @@ public class HelicopterFlightBehavior implements FlightBehavior {
             vector.groundSpeed.toDouble(),
             vector.heading.toDouble(),
             vector.verticalSpeed.toDouble(),
-            refreshRateInSeconds
+            simDeltaSeconds
         );
     }
 
@@ -54,10 +50,10 @@ public class HelicopterFlightBehavior implements FlightBehavior {
     }
 
     @Override
-    public VerticalSpeed calculateNextVerticalSpeed(double currentAltitude, double targetAltitude, double maxClimbRate, double refreshRate) {
+    public VerticalSpeed calculateNextVerticalSpeed(double currentAltitude, double targetAltitude, double maxClimbRate, double simDeltaSeconds) {
         // ヘリコプターは垂直上昇/降下が得意
         double helicopterClimbRate = maxClimbRate * 1.8;
-        return PositionUtils.calculateNextVerticalSpeed(currentAltitude, targetAltitude, helicopterClimbRate, refreshRate);
+        return PositionUtils.calculateNextVerticalSpeed(currentAltitude, targetAltitude, helicopterClimbRate, simDeltaSeconds);
     }
 
     @Override

@@ -1,3 +1,6 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto;
 
-public record SimulationSpeedRequest(double speedMultiplier) {}
+import jakarta.validation.constraints.NotNull;
+
+public record SimulationSpeedRequest(
+        @NotNull(message = "speedMultiplier is required") Double speedMultiplier) {}

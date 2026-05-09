@@ -31,8 +31,6 @@ public class CommercialAircraft extends AircraftBase {
     // 最適化のためのキャッシュ変数
     private AircraftPosition lastCachedPosition;
     private AircraftVector lastCachedVector;
-    private long lastPositionUpdateTime;
-    private long lastVectorUpdateTime;
 
     // 計算効率化のための前回値保持
     private double previousDistanceTraveled = 0.0;
@@ -75,8 +73,6 @@ public class CommercialAircraft extends AircraftBase {
         // 最適化用初期化
         this.lastCachedPosition = aircraftPosition;
         this.lastCachedVector = aircraftVector;
-        this.lastPositionUpdateTime = System.currentTimeMillis();
-        this.lastVectorUpdateTime = System.currentTimeMillis();
 
         // パフォーマンスユーティリティの初期化確認
         PerformanceUtils.initialize();
@@ -101,8 +97,6 @@ public class CommercialAircraft extends AircraftBase {
         // 最適化用初期化
         this.lastCachedPosition = aircraftPosition;
         this.lastCachedVector = aircraftVector;
-        this.lastPositionUpdateTime = System.currentTimeMillis();
-        this.lastVectorUpdateTime = System.currentTimeMillis();
 
         // パフォーマンスユーティリティの初期化確認
         PerformanceUtils.initialize();
@@ -113,36 +107,26 @@ public class CommercialAircraft extends AircraftBase {
      * 必要以上の計算を避け、効率的な位置更新を実現
      */
     @Override
-    public void calculateNextAircraftPosition() {
-        long currentTime = System.currentTimeMillis();
-
-        // 位置更新の必要性をチェック（しきい値による最適化）
+    public void calculateNextAircraftPosition(double simDeltaSeconds) {
         if (!shouldUpdatePosition()) {
             return;
         }
 
-        // 移動距離の事前計算
-        double refreshRateInSeconds = 1.0 / REFRESH_RATE;
         double groundSpeedKmPerSec = aircraftVector.groundSpeed.toDouble() * KNOTS_TO_KM_PER_HOUR / 3600.0;
-        double distanceTraveled = groundSpeedKmPerSec * refreshRateInSeconds;
+        double distanceTraveled = groundSpeedKmPerSec * simDeltaSeconds;
 
-        // 微小移動の場合は平面近似を使用（高速）
         AircraftPosition newPosition;
         if (distanceTraveled < CommercialAircraftConstants.PLANAR_APPROXIMATION_THRESHOLD) {
-            newPosition = calculatePositionPlanar(refreshRateInSeconds);
+            newPosition = calculatePositionPlanar(simDeltaSeconds);
         } else {
-            // 長距離移動の場合は高精度計算
-            newPosition = GeodeticUtils.predictPosition(aircraftPosition, aircraftVector, refreshRateInSeconds);
+            newPosition = GeodeticUtils.predictPosition(aircraftPosition, aircraftVector, simDeltaSeconds);
         }
 
-        // 位置の変化量をチェックして更新
         if (isSignificantPositionChange(newPosition)) {
             this.aircraftPosition = newPosition;
             this.lastCachedPosition = newPosition;
-            this.lastPositionUpdateTime = currentTime;
             this.previousDistanceTraveled = distanceTraveled;
 
-            // レーダー表示文字列のキャッシュを無効化
             invalidateRadarStringCache();
         }
     }
@@ -153,22 +137,18 @@ public class CommercialAircraft extends AircraftBase {
      * 高度同期問題を解決するための改善版
      */
     @Override
-    public void calculateNextAircraftVector() {
+    public void calculateNextAircraftVector(double simDeltaSeconds) {
         applyWaypointPassCheck();
 
-        long currentTime = System.currentTimeMillis();
         if (!shouldUpdateVector()) {
             return;
         }
 
-        super.calculateNextAircraftVector();
+        super.calculateNextAircraftVector(simDeltaSeconds);
 
-        // 変化量をチェックして更新
         if (isSignificantVectorChange()) {
             this.lastCachedVector = this.aircraftVector;
-            this.lastVectorUpdateTime = currentTime;
 
-            // レーダー表示文字列のキャッシュを無効化
             invalidateRadarStringCache();
         }
     }
@@ -205,14 +185,7 @@ public class CommercialAircraft extends AircraftBase {
      * パフォーマンス向上のためのしきい値チェック
      */
     private boolean shouldUpdatePosition() {
-        // 速度がしきい値以下の場合は更新をスキップ
-        if (aircraftVector.groundSpeed.toDouble() < SPEED_UPDATE_THRESHOLD) {
-            return false;
-        }
-
-        // 前回更新からの経過時間をチェック
-        long timeSinceLastUpdate = System.currentTimeMillis() - lastPositionUpdateTime;
-        return timeSinceLastUpdate >= (1000 / REFRESH_RATE); // リフレッシュレートに基づく最小間隔
+        return aircraftVector.groundSpeed.toDouble() >= SPEED_UPDATE_THRESHOLD;
     }
 
     /**
@@ -369,12 +342,6 @@ public class CommercialAircraft extends AircraftBase {
 final class CommercialAircraftConstants {
     /** 平面近似を使用する距離のしきい値（キロメートル） */
     static final double PLANAR_APPROXIMATION_THRESHOLD = 50.0 * NAUTICAL_MILES_TO_KM;
-
-    /** 文字列キャッシュの有効期間（ミリ秒） */
-    static final long RADAR_STRING_CACHE_DURATION = 100;
-
-    /** 位置更新の最小間隔（ミリ秒） */
-    static final long MIN_POSITION_UPDATE_INTERVAL = 1000 / REFRESH_RATE;
 
     private CommercialAircraftConstants() {
         throw new AssertionError("定数クラスのインスタンス化は禁止されています");

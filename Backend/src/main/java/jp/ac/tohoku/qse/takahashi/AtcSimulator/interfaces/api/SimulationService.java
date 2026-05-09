@@ -19,6 +19,8 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.SimulationSpeedReq
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.SimulationSpeedResponse;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.SimulationStatusDto;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/simulation")
 @Validated
@@ -64,16 +66,17 @@ public class SimulationService {
     }
 
     @PutMapping("/speed")
-    public ResponseEntity<?> putSpeed(@RequestBody SimulationSpeedRequest request) {
-        if (!SimulationTiming.isValidPreset(request.speedMultiplier())) {
+    public ResponseEntity<?> putSpeed(@Valid @RequestBody SimulationSpeedRequest request) {
+        double multiplier = request.speedMultiplier();
+        if (!SimulationTiming.isValidPreset(multiplier)) {
             return ResponseEntity.badRequest()
                     .body(new SimulationSpeedErrorResponse(
                             "speedMultiplier must be one of: 0.25, 0.5, 1, 2, 4, 10"));
         }
-        simulationTiming.setSpeedMultiplier(request.speedMultiplier());
+        simulationTiming.setSpeedMultiplier(multiplier);
         simulationTickScheduler.reschedule();
         logger.info("Simulation speed set to {}x (tick every {} ms wall)",
-                request.speedMultiplier(), simulationTiming.getTickIntervalWallMs());
+                multiplier, simulationTiming.getTickIntervalWallMs());
         return ResponseEntity.ok().build();
     }
 }

@@ -12,13 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.AircraftFactory;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.config.SimulationTiming;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalVariables;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aggregate.airspace.AirspaceManagement;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.CreateAircraftDto;
 
 /**
- * Measures wall-clock time of one {@link AirspaceManagement#nextStep()} with many aircraft.
+ * Measures wall-clock time of one {@link AirspaceManagement#nextStep(double)} with many aircraft.
  * Aircraft count matches {@code Backend/README.md} conflict capacity (200). Not a formal load test.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -69,13 +70,13 @@ class NextStepTwoHundredAircraftPerformanceTest {
     @DisplayName("nextStep with 200 commercial aircraft: report avg ms per tick")
     void nextStep_twoHundredAircraft_reportsTiming() {
         for (int i = 0; i < WARMUP_STEPS; i++) {
-            airspaceManagement.nextStep();
+            airspaceManagement.nextStep(SimulationTiming.SIM_DELTA_SECONDS);
         }
 
         long totalNanos = 0;
         for (int i = 0; i < TIMED_ITERATIONS; i++) {
             long t0 = System.nanoTime();
-            airspaceManagement.nextStep();
+            airspaceManagement.nextStep(SimulationTiming.SIM_DELTA_SECONDS);
             totalNanos += System.nanoTime() - t0;
         }
 

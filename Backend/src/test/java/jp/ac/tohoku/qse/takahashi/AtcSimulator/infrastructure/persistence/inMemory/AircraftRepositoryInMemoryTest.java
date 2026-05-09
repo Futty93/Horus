@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.config.SimulationTiming;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.AircraftConflictException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.AircraftNotFoundException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
@@ -181,7 +182,7 @@ public class AircraftRepositoryInMemoryTest {
         for (int i = 0; i < numberOfThreads; i++) {
             executor.submit(() -> {
                 try {
-                    repository.nextStep();
+                    repository.nextStep(SimulationTiming.SIM_DELTA_SECONDS);
                 } finally {
                     latch.countDown();
                 }

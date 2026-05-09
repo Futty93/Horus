@@ -1,7 +1,5 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft;
 
-import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.REFRESH_RATE;
-
 import java.util.Objects;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.behavior.FlightBehavior;
@@ -95,16 +93,16 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     @Override
-    public void calculateNextAircraftPosition() {
+    public void calculateNextAircraftPosition(double simDeltaSeconds) {
         this.aircraftPosition = flightBehavior.calculateNextPosition(
             this.aircraftPosition,
             this.aircraftVector,
-            REFRESH_RATE
+            simDeltaSeconds
         );
     }
 
     @Override
-    public void calculateNextAircraftVector() {
+    public void calculateNextAircraftVector(double simDeltaSeconds) {
         updateInstructedVectorFromNavigation();
 
         boolean applyRightTurnConstraint = shouldForceRightTurnInHolding();
@@ -128,7 +126,7 @@ public abstract class AircraftBase implements Aircraft {
             this.aircraftPosition.altitude.toDouble(),
             this.instructedVector.instructedAltitude.toDouble(),
             this.characteristics.getMaxClimbRate(),
-            REFRESH_RATE
+            simDeltaSeconds
         );
 
         this.aircraftVector = new AircraftVector(nextHeading, nextGroundSpeed, nextVerticalSpeed);
