@@ -30,6 +30,8 @@ public abstract class AircraftBase implements Aircraft {
     protected InstructedVector instructedVector;
     /** Controller-recorded clearance memo (altitude / heading / speed); does not drive the aircraft. */
     protected InstructedVector atcClearance;
+    /** Optional SSR transponder code; null means unassigned. */
+    protected String squawk;
     protected final AircraftType aircraftType;
 
     // Strategy パターンによる飛行動作の委譲
@@ -63,6 +65,7 @@ public abstract class AircraftBase implements Aircraft {
         this.flightBehavior = flightBehavior;
         this.characteristics = characteristics;
         this.instructedVector = new InstructedVector(aircraftVector.heading, aircraftPosition.altitude, aircraftVector.groundSpeed);
+        this.squawk = null;
         this.flightPlan = null;
         this.currentWaypointIndex = 0;
         this.navigationMode = NavigationMode.HEADING;
@@ -316,6 +319,14 @@ public abstract class AircraftBase implements Aircraft {
 
     public boolean hasAtcClearance() {
         return atcClearance != null;
+    }
+
+    public String getSquawk() {
+        return squawk;
+    }
+
+    public void setSquawk(String squawk) {
+        this.squawk = squawk;
     }
 
     public void setFlightPlan(FlightPlan flightPlan) {

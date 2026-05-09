@@ -355,7 +355,7 @@ RESTful APIを提供しており、詳細なAPI仕様は`UranosAPI.yml`ファイ
    - `POST /api/aircraft/{callsign}/atc-clearance` - **管制クリアランスメモ**を記録（Body は `ControlAircraftDto` と同型。`GET /aircraft/location/all` の `atcClearance` に反映）
 
 2. **位置情報取得**（JSON 形式）
-   - `GET /aircraft/location/all` - 全航空機の現在位置を取得（各要素に `atcClearance` が含まれる場合あり）
+   - `GET /aircraft/location/all` - 全航空機の現在位置を取得（各要素に `atcClearance` と、未割当時は `null` の `squawk` を含む）
    - `GET /aircraft/location?callsign={callsign}` - 特定航空機の位置を取得
 
 3. **シミュレーション・シナリオ**

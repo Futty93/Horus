@@ -48,6 +48,7 @@ const RadarCanvas: React.FC = () => {
   const [selectedAircraft, setSelectedAircraft] = useState<Aircraft | null>(
     null
   );
+  const [squawkFilterInput, setSquawkFilterInput] = useState("");
   const selectedAircraftRef = useRef(selectedAircraft);
   const [atsRouteData, setAtsRouteData] = useState<Awaited<
     ReturnType<typeof loadAtsRoutes>
@@ -89,6 +90,7 @@ const RadarCanvas: React.FC = () => {
   const atsRouteDataRef = useRef(atsRouteData);
   const controllerClearanceAltitudeRowRef = useRef(false);
   const pathnameRef = useRef(pathname);
+  const squawkHighlightRef = useRef<string | null>(null);
 
   // Refs for rAF / setInterval / event handlers: sync during render instead of mirroring in useEffect.
   isDisplayingRef.current = isDisplaying;
@@ -104,6 +106,8 @@ const RadarCanvas: React.FC = () => {
   controllerClearanceAltitudeRowRef.current = pathname === "/controller";
   pathnameRef.current = pathname;
   bgRef.current = bg;
+  squawkHighlightRef.current =
+    squawkFilterInput.trim().length === 4 ? squawkFilterInput.trim() : null;
 
   useEffect(() => {
     const canvasContainer = document.getElementsByClassName(
@@ -265,7 +269,8 @@ const RadarCanvas: React.FC = () => {
         dataBlockDisplaySettingRef.current,
         controllerClearanceAltitudeRowRef.current,
         velocityVectorDurationRef.current,
-        nowMs
+        nowMs,
+        squawkHighlightRef.current
       );
     });
   };
@@ -434,6 +439,35 @@ const RadarCanvas: React.FC = () => {
 
   return (
     <div className="radarArea relative h-full w-full">
+      <div className="absolute left-3 top-3 z-10 flex items-center gap-2 rounded bg-black/60 p-2 text-xs text-white">
+        <span>SQUAWK</span>
+        <input
+          className="w-20 rounded border border-zinc-500 bg-zinc-900 px-2 py-1 text-white"
+          inputMode="numeric"
+          maxLength={4}
+          placeholder="----"
+          value={squawkFilterInput}
+          onChange={(e) =>
+            setSquawkFilterInput(
+              e.target.value.replace(/[^0-9]/g, "").slice(0, 4)
+            )
+          }
+        />
+        <button
+          type="button"
+          className="rounded border border-zinc-500 px-2 py-1"
+          onClick={() => setSquawkFilterInput("7600")}
+        >
+          7600
+        </button>
+        <button
+          type="button"
+          className="rounded border border-zinc-500 px-2 py-1"
+          onClick={() => setSquawkFilterInput("7700")}
+        >
+          7700
+        </button>
+      </div>
       <canvas ref={canvasRefs[0]} className="w-full h-full bg-black"></canvas>
       <canvas ref={canvasRefs[1]} className="w-full hidden"></canvas>
     </div>

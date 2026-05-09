@@ -23,6 +23,7 @@ export interface AircraftLocationDto {
   destinationIcao: string;
   /** ISO 8601 instant (e.g. …Z). Data block shows UTC HH:mm. */
   eta: string;
+  squawk?: string | null;
   riskLevel: number;
 }
 
@@ -109,6 +110,7 @@ function mapDtoToAircraft(
     dto.originIcao ?? "",
     dto.destinationIata ?? "",
     dto.destinationIcao ?? "",
+    dto.squawk ?? null,
     dto.eta ?? "",
     50,
     50,
@@ -156,6 +158,7 @@ function updateControllingAircrafts(
       newAircraft.originIcao,
       newAircraft.destinationIata,
       newAircraft.destinationIcao,
+      newAircraft.squawk,
       newAircraft.eta,
       50,
       50,

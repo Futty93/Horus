@@ -35,6 +35,7 @@ export class Aircraft {
   originIcao: string;
   destinationIata: string;
   destinationIcao: string;
+  squawk: string | null;
   /** ISO 8601 instant from API; data block shows UTC HH:mm (see spec 20260318-data-block-display-items). */
   eta: string;
   label: { x: number; y: number };
@@ -58,6 +59,7 @@ export class Aircraft {
     originIcao: string,
     destinationIata: string,
     destinationIcao: string,
+    squawk: string | null,
     eta: string,
     labelX: number = 50,
     labelY: number = 50,
@@ -75,6 +77,7 @@ export class Aircraft {
     this.originIcao = originIcao;
     this.destinationIata = destinationIata;
     this.destinationIcao = destinationIcao;
+    this.squawk = squawk;
     this.eta = eta;
     this.label = { x: labelX, y: labelY };
     this.riskLevel = riskLevel;
@@ -100,6 +103,7 @@ export class Aircraft {
     this.vector = newAircraft.vector;
     this.instructedVector = newAircraft.instructedVector;
     this.atcClearance = newAircraft.atcClearance;
+    this.squawk = newAircraft.squawk;
     this.eta = newAircraft.eta;
     this.riskLevel = newAircraft.riskLevel;
   }
@@ -110,6 +114,7 @@ export class Aircraft {
     this.geoPosition = newAircraft.geoPosition;
     this.vector = newAircraft.vector;
     this.atcClearance = newAircraft.atcClearance;
+    this.squawk = newAircraft.squawk;
     this.eta = newAircraft.eta;
     this.riskLevel = newAircraft.riskLevel;
   }

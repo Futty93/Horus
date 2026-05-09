@@ -227,15 +227,16 @@ React Context APIを使用して、以下の状態を管理しています：
 2. **表示範囲** (DisplayRangeContext)
 3. **経路情報表示設定** (RouteInfoDisplaySettingContext)
 4. **データブロック表示設定** (DataBlockDisplaySettingContext) — スクオーク・機種・ETA・**管制クリアランスメモ行**の表示 ON/OFF（**管制メモ行のトグルは Controller 画面のみ**。Operator では該当チェックボックスを出さない）
-5. **Fix選択モード** (SelectFixModeContext)
-6. **速度ベクトル予測時間** (VelocityVectorLookaheadContext) — レーダー上の速度ベクトル線の長さに対応する時間（分）。Controller / Operator 共通、`localStorage` 永続化
-7. **選択航空機** (SelectedAircraftContext) — callsign と `instructedVector`（パイロット操縦目標: altitude, groundSpeed, heading）
+5. **SQUAWK 強調フィルタ**（RadarCanvas）— 4桁の完全一致入力で対象機を強調（未割当 `---` は対象外、STCA 強調がある場合は STCA を優先）
+6. **Fix選択モード** (SelectFixModeContext)
+7. **速度ベクトル予測時間** (VelocityVectorLookaheadContext) — レーダー上の速度ベクトル線の長さに対応する時間（分）。Controller / Operator 共通、`localStorage` 永続化
+8. **選択航空機** (SelectedAircraftContext) — callsign と `instructedVector`（パイロット操縦目標: altitude, groundSpeed, heading）
 
 ## API通信
 
 クライアントは同一オリジン（`/api/*`）を呼び出し、Next.js BFF が Java バックエンドへプロキシします。主なエンドポイント：
 
-- `GET /api/aircraft/location/all` - 航空機位置一覧取得（各要素に `atcClearance` が含まれる場合あり）
+- `GET /api/aircraft/location/all` - 航空機位置一覧取得（各要素に `atcClearance` / `squawk` が含まれる場合あり）
 - `POST /api/aircraft/create-haneda-samples` - Haneda Samples（約28機）作成
 - `POST /api/aircraft/spawn-with-flightplan` - フライトプラン付き航空機スポーン
 - `POST /api/scenario/load` - シナリオ一括ロード（空域クリア＋複数機スポーン）。**シミュレーション開始は行わない**（`POST /api/simulation/start` は別操作）
