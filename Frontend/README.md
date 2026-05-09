@@ -86,6 +86,14 @@ BACKEND_SERVER_PORT=8080      # Java バックエンドのポート
 npm run dev
 ```
 
+開発中に `.next/server` のチャンク欠損（`Cannot find module './xxx.js'`）で API Route が 500 化する場合は、キャッシュを消して再起動する:
+
+```bash
+npm run dev:clean
+```
+
+再発時は Node / Next のバージョンと発生した API パス（例: `/api/aircraft/location/all`）をログに残して切り分けする。
+
 5. ブラウザでアクセス
 
 ```
