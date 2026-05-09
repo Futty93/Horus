@@ -74,7 +74,10 @@ const SeparationViolationAlerts: React.FC = () => {
     const tick = async () => {
       const allConflicts = await fetchConflictAll();
       if (cancelled) return;
-      const rows = allConflicts ?? [];
+      if (allConflicts == null) {
+        return;
+      }
+      const rows = allConflicts;
       const violations = rows.filter((risk) => risk.conflictPredicted);
       const critical = rows.filter(
         (risk) => risk.alertLevel === "RED_CONFLICT"
