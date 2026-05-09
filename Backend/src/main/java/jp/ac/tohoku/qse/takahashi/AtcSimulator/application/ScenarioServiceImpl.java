@@ -6,6 +6,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.FixNotFoundExcep
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aggregate.airspace.AirspaceManagement;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftBase;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.HoldTurnDirection;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.NavigationMode;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
@@ -67,6 +68,16 @@ public class ScenarioServiceImpl implements ScenarioService {
             throw new FixNotFoundException(fixName);
         }
         ((AircraftBase) aircraft).setDirectTo(fixPosition.get(), fixName, resumeFlightPlan);
+    }
+
+    @Override
+    public void holdAtFix(Callsign callsign, String fixName, HoldTurnDirection turnDirection) {
+        Aircraft aircraft = airspaceManagement.findAircraftByCallsign(callsign);
+        Optional<FixPosition> fixPosition = airspaceManagement.getFixPosition(fixName);
+        if (fixPosition.isEmpty()) {
+            throw new FixNotFoundException(fixName);
+        }
+        ((AircraftBase) aircraft).setHoldAtFix(fixPosition.get(), fixName, turnDirection);
     }
 
     @Override

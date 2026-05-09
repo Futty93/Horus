@@ -2,6 +2,7 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +18,10 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalVariables;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftBase;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class FlightPlanApiIntegrationTest {
@@ -421,5 +424,118 @@ class FlightPlanApiIntegrationTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).containsEntry("success", true);
         assertThat(response.getBody()).containsEntry("navigationMode", "FLIGHT_PLAN");
+    }
+
+    @Test
+    @DisplayName("POST /api/aircraft/{callsign}/hold applies right-turn holding")
+    void holdAtFix_appliesInstruction() {
+        var flightPlan = Map.of(
+                "callsign", "FPAPI01",
+                "cruiseAltitude", 35000,
+                "cruiseSpeed", 450,
+                "route", List.of(Map.of("fix", "ABENO", "action", "CONTINUE"))
+        );
+        var initialPosition = Map.of(
+                "latitude", 35.0, "longitude", 139.0, "altitude", 5000,
+                "heading", 90, "groundSpeed", 250, "verticalSpeed", 0
+        );
+        restTemplate.postForEntity(baseUrl() + "/api/aircraft/spawn-with-flightplan",
+                Map.of("flightPlan", flightPlan, "initialPosition", initialPosition), Map.class);
+
+        ResponseEntity<Map> response = restTemplate.postForEntity(
+                baseUrl() + "/api/aircraft/FPAPI01/hold",
+                Map.of("fixName", "ABENO", "turnDirection", "RIGHT"),
+                Map.class
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).containsEntry("success", true);
+        assertThat(response.getBody()).containsEntry("navigationMode", "HOLDING");
+        assertThat(response.getBody()).containsEntry("turnDirection", "RIGHT");
+    }
+
+    @Test
+    @DisplayName("POST /api/aircraft/{callsign}/hold rejects unsupported turn direction")
+    void holdAtFix_rejectsLeftTurn() {
+        var flightPlan = Map.of(
+                "callsign", "FPAPI01",
+                "cruiseAltitude", 35000,
+                "cruiseSpeed", 450,
+                "route", List.of(Map.of("fix", "ABENO", "action", "CONTINUE"))
+        );
+        var initialPosition = Map.of(
+                "latitude", 35.0, "longitude", 139.0, "altitude", 5000,
+                "heading", 90, "groundSpeed", 250, "verticalSpeed", 0
+        );
+        restTemplate.postForEntity(baseUrl() + "/api/aircraft/spawn-with-flightplan",
+                Map.of("flightPlan", flightPlan, "initialPosition", initialPosition), Map.class);
+
+        ResponseEntity<Map> response = restTemplate.postForEntity(
+                baseUrl() + "/api/aircraft/FPAPI01/hold",
+                Map.of("fixName", "ABENO", "turnDirection", "LEFT"),
+                Map.class
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).containsEntry("success", false);
+    }
+
+    @Test
+    @DisplayName("same fix hold uses identical deterministic orientation")
+    void holdAtFix_sameFixUsesDeterministicOrientation() {
+        var flightPlanA = Map.of(
+                "callsign", "HOLDA1",
+                "cruiseAltitude", 35000,
+                "cruiseSpeed", 450,
+                "route", List.of(Map.of("fix", "ABENO", "action", "CONTINUE"))
+        );
+        var flightPlanB = Map.of(
+                "callsign", "HOLDB1",
+                "cruiseAltitude", 35000,
+                "cruiseSpeed", 450,
+                "route", List.of(Map.of("fix", "ABENO", "action", "CONTINUE"))
+        );
+        var initialPositionA = Map.of(
+                "latitude", 35.0, "longitude", 139.0, "altitude", 5000,
+                "heading", 30, "groundSpeed", 250, "verticalSpeed", 0
+        );
+        var initialPositionB = Map.of(
+                "latitude", 34.6, "longitude", 138.6, "altitude", 5000,
+                "heading", 280, "groundSpeed", 250, "verticalSpeed", 0
+        );
+
+        restTemplate.postForEntity(baseUrl() + "/api/aircraft/spawn-with-flightplan",
+                Map.of("flightPlan", flightPlanA, "initialPosition", initialPositionA), Map.class);
+        restTemplate.postForEntity(baseUrl() + "/api/aircraft/spawn-with-flightplan",
+                Map.of("flightPlan", flightPlanB, "initialPosition", initialPositionB), Map.class);
+
+        restTemplate.postForEntity(
+                baseUrl() + "/api/aircraft/HOLDA1/hold",
+                Map.of("fixName", "ABENO", "turnDirection", "RIGHT"),
+                Map.class
+        );
+        restTemplate.postForEntity(
+                baseUrl() + "/api/aircraft/HOLDB1/hold",
+                Map.of("fixName", "ABENO", "turnDirection", "RIGHT"),
+                Map.class
+        );
+
+        var aircraftA = (AircraftBase) aircraftRepository.findByCallsign(new Callsign("HOLDA1"));
+        var aircraftB = (AircraftBase) aircraftRepository.findByCallsign(new Callsign("HOLDB1"));
+        FixPosition outboundA = extractHoldingOutboundTarget(aircraftA);
+        FixPosition outboundB = extractHoldingOutboundTarget(aircraftB);
+
+        assertThat(outboundA.latitude.toDouble()).isEqualTo(outboundB.latitude.toDouble());
+        assertThat(outboundA.longitude.toDouble()).isEqualTo(outboundB.longitude.toDouble());
+    }
+
+    private FixPosition extractHoldingOutboundTarget(AircraftBase aircraft) {
+        try {
+            Field field = AircraftBase.class.getDeclaredField("holdingOutboundTarget");
+            field.setAccessible(true);
+            return (FixPosition) field.get(aircraft);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new IllegalStateException("Failed to inspect holding outbound target", e);
+        }
     }
 }

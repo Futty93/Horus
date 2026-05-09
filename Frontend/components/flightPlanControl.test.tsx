@@ -99,4 +99,23 @@ describe("FlightPlanControl", () => {
       expect(screen.getByText(/Resume applied/i)).toBeInTheDocument();
     });
   });
+
+  it("shows success message when holdAtFix succeeds", async () => {
+    (flightPlanApi.holdAtFix as jest.Mock).mockResolvedValue(true);
+    const user = userEvent.setup();
+
+    render(
+      <SelectedAircraftProvider>
+        <StateSetter callsign="JAL123" />
+        <FlightPlanControl />
+      </SelectedAircraftProvider>
+    );
+
+    await user.type(screen.getByPlaceholderText(/FIX name/i), "ABENO");
+    await user.click(screen.getByRole("button", { name: /HOLD AT FIX/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Hold applied/i)).toBeInTheDocument();
+    });
+  });
 });

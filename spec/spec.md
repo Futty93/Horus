@@ -107,7 +107,7 @@
 |---|--------|--------|--------|-------|------------------|
 | 3-1 | スクオーク割当・表示 | 🔴 | ★☆☆ | [#55](https://github.com/Futty93/Horus/issues/55) | 着手用子 spec [20260509-phase3-squawk-assignment-display](20260509-phase3-squawk-assignment-display/spec.md)。Backend: 航空機状態 + API。Frontend: `AircraftLocationDto` / `drawAircraft` の実値化（現プレースホルダ）。 |
 | 3-1b | 特定 Squawk 強調表示 | 🟡 | ★☆☆ | - | 着手用子 spec [20260509-phase3-squawk-highlight-filter](20260509-phase3-squawk-highlight-filter/spec.md)。完全一致フィルタとレーダー強調（STCA優先）。 |
-| 3-2 | ホールディング（`HOLD`） | 🔴 | ★★★ | [#56](https://github.com/Futty93/Horus/issues/56) | `WaypointAction`・`CommercialAircraft` / `FlightBehavior` の飛行ループ拡張。 |
+| 3-2 | ホールディング（`HOLD`） | 🔴 | ★★★ | [#56](https://github.com/Futty93/Horus/issues/56) | 着手用子 spec [20260509-phase3-holding-pattern](20260509-phase3-holding-pattern/spec.md)。`WaypointAction`・`CommercialAircraft` / `FlightBehavior` の飛行ループ拡張。 |
 | 3-3 | 高度制限の指示 | 🟡 | ★★☆ | [#57](https://github.com/Futty93/Horus/issues/57) | `AltitudeConstraint` と `ControlAircraftService` / DTO の拡張。 |
 | 3-4 | ハンドオフ（`HANDOFF`） | 🟡 | ★★★ | [#58](https://github.com/Futty93/Horus/issues/58) | 表示から入るなら UI 状態のみでも可。 |
 | 3-5 | Mach 数指示 | 🟢 | ★☆☆ | [#59](https://github.com/Futty93/Horus/issues/59) | 指示 DTO と速度変換。 |
@@ -208,6 +208,7 @@ Phase 1 spec/Issue 整合 ──→ T-3（並行）
 
 | 日付 | 内容 |
 |------|------|
+| 2026-05-09 | Phase 3-2（ホールディング `HOLD`）の着手用 spec を追加（[20260509-phase3-holding-pattern](20260509-phase3-holding-pattern/spec.md)）。 |
 | 2026-05-09 | Phase 3-1b（特定 Squawk 強調表示）の着手用 spec を追加（[20260509-phase3-squawk-highlight-filter](20260509-phase3-squawk-highlight-filter/spec.md)）。 |
 | 2026-05-09 | Phase 3-1（スクオーク割当・表示）の着手用 spec を追加（[20260509-phase3-squawk-assignment-display](20260509-phase3-squawk-assignment-display/spec.md)）。 |
 | 2026-05-09 | 2-5（セクター境界線）は公式データ整備コストを踏まえて Deferred に更新。調査メモを [20260509-phase2-sector-boundary-lines](20260509-phase2-sector-boundary-lines/spec.md) に追記。 |

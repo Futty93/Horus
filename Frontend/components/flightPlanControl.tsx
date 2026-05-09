@@ -2,7 +2,11 @@
 
 import React, { useState } from "react";
 import { useSelectedAircraft } from "@/context/selectedAircraftContext";
-import { directToFix, resumeNavigation } from "@/utility/api/flightPlan";
+import {
+  directToFix,
+  holdAtFix,
+  resumeNavigation,
+} from "@/utility/api/flightPlan";
 
 const FlightPlanControl: React.FC = () => {
   const { callsign } = useSelectedAircraft();
@@ -14,6 +18,9 @@ const FlightPlanControl: React.FC = () => {
   const [resumeResult, setResumeResult] = useState<
     "idle" | "success" | "error"
   >("idle");
+  const [holdResult, setHoldResult] = useState<"idle" | "success" | "error">(
+    "idle"
+  );
 
   const handleDirectTo = async () => {
     if (!callsign || !fixName.trim()) return;
@@ -29,6 +36,14 @@ const FlightPlanControl: React.FC = () => {
     const ok = await resumeNavigation(callsign);
     setResumeResult(ok ? "success" : "error");
     if (ok) setTimeout(() => setResumeResult("idle"), 2000);
+  };
+
+  const handleHold = async () => {
+    if (!callsign || !fixName.trim()) return;
+    setHoldResult("idle");
+    const ok = await holdAtFix(callsign, fixName.trim());
+    setHoldResult(ok ? "success" : "error");
+    if (ok) setTimeout(() => setHoldResult("idle"), 2000);
   };
 
   if (!callsign) {
@@ -82,6 +97,21 @@ const FlightPlanControl: React.FC = () => {
         )}
         {directResult === "error" && (
           <p className="text-xs text-atc-danger">Failed to apply direct to</p>
+        )}
+        <button
+          onClick={handleHold}
+          disabled={!fixName.trim()}
+          className="w-full px-4 py-2 bg-atc-warning text-white font-bold text-xs rounded
+                     hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed
+                     transition-opacity duration-200"
+        >
+          HOLD AT FIX (RIGHT)
+        </button>
+        {holdResult === "success" && (
+          <p className="text-xs text-atc-accent">Hold applied</p>
+        )}
+        {holdResult === "error" && (
+          <p className="text-xs text-atc-danger">Failed to apply hold</p>
         )}
       </div>
 

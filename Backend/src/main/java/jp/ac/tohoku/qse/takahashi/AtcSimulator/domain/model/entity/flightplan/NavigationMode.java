@@ -12,5 +12,8 @@ public enum NavigationMode {
     HEADING,
 
     /** 指定された Fix へ直行。到達後は resume 設定に応じて FLIGHT_PLAN または HEADING へ */
-    DIRECT_TO
+    DIRECT_TO,
+
+    /** 指定された Fix を基準にホールディング（初期版は右旋回レーストラック固定） */
+    HOLDING
 }

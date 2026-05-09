@@ -193,7 +193,7 @@ Operator 専用。航空機の直行指示（Direct To）をレーダー上の F
 
 ### 6. フライトプラン制御 (FlightPlanControl)
 
-Operator 専用。Direct To（Fix 名入力）、Resume Navigation をバックエンドへ送信。
+Operator 専用。Direct To（Fix 名入力）、Hold At Fix（初期版: 右旋回固定のレーストラック）、Resume Navigation をバックエンドへ送信。
 
 ### 7. 経路情報表示設定 (RouteInfoDisplaySetting)
 
@@ -245,6 +245,7 @@ React Context APIを使用して、以下の状態を管理しています：
 - `GET /api/aircraft/{callsign}/flightplan` - フライトプラン取得
 - `POST /api/aircraft/{callsign}/flightplan` - フライトプラン割り当て
 - `POST /api/aircraft/{callsign}/direct-to` - 直行指示
+- `POST /api/aircraft/{callsign}/hold` - ホールディング指示（初期版は `turnDirection=RIGHT` のみ）
 - `POST /api/aircraft/{callsign}/resume-navigation` - ナビゲーション再開
 - `POST /api/simulation/start` - シミュレーション開始
 - `POST /api/simulation/pause` - シミュレーション一時停止
