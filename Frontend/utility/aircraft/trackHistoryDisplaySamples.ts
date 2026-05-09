@@ -52,19 +52,26 @@ export function isTrackHistoryFreshForDraw(
   return nowMs - newest <= maxStaleMs;
 }
 
+/** Backend presets; avoids divide-by-zero and matches SimulationTiming. */
+const MIN_SIM_SPEED_MULTIPLIER = 0.25;
+
 /**
- * For each offset, choose the newest sample with recordedAt <= (now - offset).
- * Offsets with no qualifying sample are skipped. Duplicate picks (same point) appear once.
+ * For each offset (simulation-time seconds before "now"), choose the newest sample with
+ * recordedAt <= (now - offsetSimSec * 1000 / speedMultiplier). History timestamps are
+ * wall-clock client receive times; scaling aligns dot spacing with sim time when speed ≠ 1.
  */
 export function selectTrackDisplaySamples(
   history: PositionHistoryPoint[],
-  nowMs: number
+  nowMs: number,
+  simulationSpeedMultiplier = 1
 ): PositionHistoryPoint[] {
+  const speed = Math.max(simulationSpeedMultiplier, MIN_SIM_SPEED_MULTIPLIER);
   const seen = new Set<string>();
   const out: PositionHistoryPoint[] = [];
 
   for (const sec of TRACK_DISPLAY_OFFSETS_SEC) {
-    const deadline = nowMs - sec * 1000;
+    const wallMsAgo = (sec * 1000) / speed;
+    const deadline = nowMs - wallMsAgo;
     let best: PositionHistoryPoint | null = null;
     let bestT = -Infinity;
 

@@ -50,12 +50,19 @@ class DrawAircraft {
     useControllerClearanceAltitudeRow = false,
     durationMinutes = 1,
     nowMs = performance.now(),
-    squawkHighlight: string | null = null
+    squawkHighlight: string | null = null,
+    simulationSpeedMultiplier = 1
   ) {
     const riskDisplayFloor = this.computeRiskDisplayFloor(aircraft);
     ctx.save();
     try {
-      this.drawTrack(ctx, aircraft, centerCoordinate, displayRange);
+      this.drawTrack(
+        ctx,
+        aircraft,
+        centerCoordinate,
+        displayRange,
+        simulationSpeedMultiplier
+      );
       const isSquawkMatched =
         squawkHighlight != null &&
         aircraft.squawk != null &&
@@ -93,14 +100,19 @@ class DrawAircraft {
     ctx: CanvasRenderingContext2D,
     aircraft: Aircraft,
     centerCoordinate: Coordinate,
-    displayRange: DisplayRange
+    displayRange: DisplayRange,
+    simulationSpeedMultiplier: number
   ) {
     const nowMs = Date.now();
     if (!isTrackHistoryFreshForDraw(aircraft.positionHistory, nowMs)) {
       return;
     }
     const radius = TRACK_DISPLAY_DOT_RADIUS_PX;
-    const samples = selectTrackDisplaySamples(aircraft.positionHistory, nowMs);
+    const samples = selectTrackDisplaySamples(
+      aircraft.positionHistory,
+      nowMs,
+      simulationSpeedMultiplier
+    );
     for (const sample of samples) {
       const p = CoordinateManager.calculateCanvasCoordinates(
         { latitude: sample.latitude, longitude: sample.longitude },
