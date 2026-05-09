@@ -113,6 +113,19 @@ class FlightPlanNavigationTest {
         }
 
         @Test
+        void holdEntryUsesShortestTurnTowardFixBeforeRacetrack() {
+            var aircraft = createTestAircraft(35.0, 139.0, 5000, 0, 250);
+            var holdFix = fixAt(35.0, 138.8);
+
+            aircraft.setHoldAtFix(holdFix, "ABENO", HoldTurnDirection.RIGHT);
+            aircraft.calculateNextAircraftVector();
+
+            assertTrue(
+                    aircraft.getAircraftVector().heading.toDouble() > 350.0,
+                    "Entry leg should turn left toward the fix before right-turn racetrack starts.");
+        }
+
+        @Test
         void resumeNavigationAfterHoldSkipsHeldWaypoint() {
             var aircraft = createTestAircraft(35.0, 139.0, 5000, 0, 250);
             var wp1 = new FlightPlanWaypoint("ABENO", fixAt(35.1, 139.0), null, null, AltitudeConstraint.NONE, WaypointAction.CONTINUE);
@@ -126,6 +139,21 @@ class FlightPlanNavigationTest {
 
             assertEquals(NavigationMode.FLIGHT_PLAN, aircraft.getNavigationMode());
             assertEquals(1, aircraft.getCurrentWaypointIndex());
+        }
+
+        @Test
+        void resumeNavigationAfterHoldAtFinalWaypointCompletesPlan() {
+            var aircraft = createTestAircraft(35.0, 139.0, 5000, 0, 250);
+            var wp1 = new FlightPlanWaypoint("ABENO", fixAt(35.1, 139.0), null, null, AltitudeConstraint.NONE, WaypointAction.CONTINUE);
+            var wp2 = new FlightPlanWaypoint("MAIKO", fixAt(35.2, 139.1), null, null, AltitudeConstraint.NONE, WaypointAction.REMOVE_AIRCRAFT);
+            var plan = new FlightPlan(new Callsign("TEST01"), "RJTT", "RJOO", List.of(wp1, wp2),
+                    new Altitude(35000), new GroundSpeed(450));
+            aircraft.setFlightPlan(plan);
+
+            aircraft.setHoldAtFix(fixAt(35.2, 139.1), "MAIKO", HoldTurnDirection.RIGHT);
+            aircraft.setResumeNavigation();
+
+            assertEquals(NavigationMode.HEADING, aircraft.getNavigationMode());
         }
     }
 
