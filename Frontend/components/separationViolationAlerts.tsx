@@ -3,10 +3,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { GLOBAL_CONSTANTS } from "@/utility/globals/constants";
 import {
-  fetchConflictCritical,
-  fetchConflictStatistics,
-  fetchConflictViolations,
-  type ConflictAlertDto,
+  fetchConflictAll,
+  type RiskAssessmentDto,
 } from "@/utility/api/conflict";
 import { formatConflictPairLine } from "@/utility/conflict/pairId";
 import { findNewIdsInSet } from "@/utility/conflict/violationDiff";
@@ -15,8 +13,8 @@ const COOLDOWN_MS = 30_000;
 const BANNER_AUTO_HIDE_MS = 10_000;
 
 function mergePairIds(
-  violations: ConflictAlertDto[] | null,
-  critical: ConflictAlertDto[] | null
+  violations: Array<{ pairId: string }> | null,
+  critical: Array<{ pairId: string }> | null
 ): Set<string> {
   const s = new Set<string>();
   for (const v of violations ?? []) {
@@ -30,9 +28,9 @@ function mergePairIds(
 
 function pickAlertForPair(
   pairId: string,
-  violations: ConflictAlertDto[] | null,
-  critical: ConflictAlertDto[] | null
-): ConflictAlertDto | null {
+  violations: Array<RiskAssessmentDto & { pairId: string }> | null,
+  critical: Array<RiskAssessmentDto & { pairId: string }> | null
+): (RiskAssessmentDto & { pairId: string }) | null {
   return (
     violations?.find((x) => x.pairId === pairId) ??
     critical?.find((x) => x.pairId === pairId) ??
@@ -70,19 +68,23 @@ const SeparationViolationAlerts: React.FC = () => {
     let cancelled = false;
 
     const tick = async () => {
-      const [stats, violations, critical] = await Promise.all([
-        fetchConflictStatistics(),
-        fetchConflictViolations(),
-        fetchConflictCritical(),
-      ]);
+      const allConflicts = await fetchConflictAll();
       if (cancelled) return;
+      const entries = Object.entries(allConflicts ?? {});
+      const violations = entries
+        .filter(([, risk]) => risk.conflictPredicted)
+        .map(([pairId, risk]) => ({ pairId, ...risk }));
+      const critical = entries
+        .filter(([, risk]) => risk.alertLevel === "RED_CONFLICT")
+        .map(([pairId, risk]) => ({ pairId, ...risk }));
+      const sepCount = violations.length;
 
       const now = Date.now();
       const merged = mergePairIds(violations, critical);
 
       if (!baselineDoneRef.current) {
         prevMergedPairIdsRef.current = merged;
-        prevSepCountRef.current = stats?.separationViolationCount ?? 0;
+        prevSepCountRef.current = sepCount;
         baselineDoneRef.current = true;
         return;
       }
@@ -126,8 +128,7 @@ const SeparationViolationAlerts: React.FC = () => {
       }
 
       const prevSep = prevSepCountRef.current ?? 0;
-      const sepIncreased =
-        stats != null && stats.separationViolationCount > prevSep;
+      const sepIncreased = sepCount > prevSep;
 
       if (!notified && sepIncreased) {
         const sepKey = "__sep_count__";
@@ -135,14 +136,14 @@ const SeparationViolationAlerts: React.FC = () => {
         if (now >= until) {
           cooldownUntilRef.current.set(sepKey, now + COOLDOWN_MS);
           showBanner(
-            `Separation violation count increased (Sep ${stats!.separationViolationCount})`,
+            `Separation violation count increased (Sep ${sepCount})`,
             "sep"
           );
         }
       }
 
       prevMergedPairIdsRef.current = merged;
-      prevSepCountRef.current = stats?.separationViolationCount ?? prevSep;
+      prevSepCountRef.current = sepCount;
     };
 
     void tick();

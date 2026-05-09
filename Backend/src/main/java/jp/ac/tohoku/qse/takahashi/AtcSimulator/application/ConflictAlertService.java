@@ -143,10 +143,14 @@ public class ConflictAlertService {
         Map<String, RiskAssessment> allConflicts = getAllConflictAlerts();
 
         return allConflicts.entrySet().stream()
-            .filter(entry -> entry.getKey().contains(callsign))
+            .filter(entry -> isPairRelatedToCallsign(entry.getKey(), callsign))
             .map(entry -> toDto(entry.getKey(), entry.getValue()))
             .sorted(Comparator.comparing(ConflictAlertDto::riskLevel).reversed())
             .collect(Collectors.toList());
+    }
+
+    private static boolean isPairRelatedToCallsign(String pairId, String callsign) {
+        return pairId.startsWith(callsign + "-") || pairId.endsWith("-" + callsign);
     }
 
     /**

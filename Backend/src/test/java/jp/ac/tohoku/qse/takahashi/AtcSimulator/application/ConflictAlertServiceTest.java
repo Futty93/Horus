@@ -78,6 +78,23 @@ class ConflictAlertServiceTest {
     }
 
     @Test
+    @DisplayName("getAircraftConflicts uses pair boundary matching instead of substring contains")
+    void getAircraftConflicts_filtersByPairBoundary() {
+        RiskAssessment related = new RiskAssessment(40.0, 90.0, 4.0, 1200.0, false);
+        RiskAssessment unrelatedButContaining = new RiskAssessment(60.0, 80.0, 3.5, 900.0, false);
+        when(conflictDetector.calculateAllConflicts(anyList()))
+                .thenReturn(Map.of(
+                        "A-B", related,
+                        "JA1-A-CF2", unrelatedButContaining
+                ));
+
+        List<ConflictAlertDto> results = conflictAlertService.getAircraftConflicts("A");
+
+        assertThat(results).hasSize(1);
+        assertThat(results.get(0).pairId()).isEqualTo("A-B");
+    }
+
+    @Test
     @DisplayName("getAllConflictAlertsAsDto returns DTO map")
     void getAllConflictAlertsAsDto_returnsDtoMap() {
         RiskAssessment a1 = new RiskAssessment(10.0, 200.0, 8.0, 2000.0, false);
