@@ -98,12 +98,14 @@ class DrawAircraft {
     const radius: number = 5;
     const flashOn = Math.floor(nowMs / 450) % 2 === 0;
 
-    if (riskLevel >= 70 && flashOn) {
-      ctx.beginPath();
-      ctx.arc(position.x, position.y, radius + 6, 0, 2 * Math.PI);
-      ctx.strokeStyle = "rgba(207, 34, 34, 0.9)";
-      ctx.lineWidth = 3;
-      ctx.stroke();
+    if (riskLevel >= 70) {
+      if (flashOn) {
+        ctx.beginPath();
+        ctx.arc(position.x, position.y, radius + 6, 0, 2 * Math.PI);
+        ctx.strokeStyle = "rgba(207, 34, 34, 0.9)";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      }
     } else if (riskLevel >= 30) {
       ctx.beginPath();
       ctx.arc(position.x, position.y, radius + 4, 0, 2 * Math.PI);
@@ -140,6 +142,7 @@ class DrawAircraft {
     ctx.moveTo(position.x, position.y);
     ctx.lineTo(futurePosition.futureX, futurePosition.futureY);
     ctx.strokeStyle = "white";
+    ctx.lineWidth = 1;
     ctx.stroke();
   }
 

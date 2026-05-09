@@ -24,6 +24,18 @@ import { useSelectedAircraft } from "@/context/selectedAircraftContext";
 import { searchFixName } from "@/utility/AtsRouteManager/FixNameSearch";
 import { usePathname } from "next/navigation";
 
+function resetCanvas2dState(ctx: CanvasRenderingContext2D): void {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = "source-over";
+  ctx.lineWidth = 1;
+  ctx.lineCap = "butt";
+  ctx.lineJoin = "miter";
+  ctx.setLineDash([]);
+  ctx.shadowBlur = 0;
+  ctx.shadowColor = "transparent";
+}
+
 const RadarCanvas: React.FC = () => {
   const canvasRefs = [
     useRef<HTMLCanvasElement>(null),
@@ -208,6 +220,7 @@ const RadarCanvas: React.FC = () => {
 
     const nowMs = performance.now();
     clearCanvas(ctx, canvas);
+    resetCanvas2dState(ctx);
     renderMapOnCanvas(ctx);
     renderAircraftsOnCanvas(ctx, nowMs);
 
