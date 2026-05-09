@@ -22,10 +22,12 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Airc
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.types.commercial.CommercialAircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlan;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlanWaypoint;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.HoldTurnDirection;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.fix.AtsRouteFixPositionRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.DirectToRequestDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.FlightPlanDto;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.HoldRequestDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.InitialPositionDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.SpawnWithFlightPlanDto;
 
@@ -169,11 +171,44 @@ public class FlightPlanController {
         Map<String, Object> body = new HashMap<>();
         body.put("success", true);
         body.put("callsign", callsign);
-        body.put("navigationMode", "FLIGHT_PLAN");
+        body.put("navigationMode", ((AircraftBase) aircraft).getNavigationMode().name());
         if (nextWaypoint != null) {
             body.put("nextWaypoint", nextWaypoint);
         }
         return ResponseEntity.ok(body);
+    }
+
+    @PostMapping(path = "/{callsign}/hold", consumes = "application/json")
+    public ResponseEntity<Map<String, Object>> holdAtFix(
+            @PathVariable String callsign,
+            @Valid @RequestBody HoldRequestDto request) {
+        if (!aircraftRepository.isAircraftExist(new Callsign(callsign))) {
+            throw new AircraftNotFoundException(callsign);
+        }
+        final HoldTurnDirection turnDirection;
+        try {
+            turnDirection = request.resolvedTurnDirection();
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "turnDirection must be RIGHT"
+            ));
+        }
+        if (turnDirection != HoldTurnDirection.RIGHT) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "turnDirection must be RIGHT"
+            ));
+        }
+        scenarioService.holdAtFix(new Callsign(callsign), request.fixName(), turnDirection);
+        logger.info("Hold at {} for {} (turnDirection={})", request.fixName(), callsign, turnDirection);
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "callsign", callsign,
+                "targetFix", request.fixName(),
+                "navigationMode", "HOLDING",
+                "turnDirection", turnDirection.name()
+        ));
     }
 
     @GetMapping(path = "/{callsign}/flightplan", produces = "application/json")

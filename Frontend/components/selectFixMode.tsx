@@ -1,8 +1,8 @@
 "use client";
 import { useSelectFixMode } from "@/context/selectFixModeContext";
 import { useSelectedAircraft } from "@/context/selectedAircraftContext";
-import { directToFix } from "@/utility/api/flightPlan";
-import React from "react";
+import { directToFix, holdAtFix } from "@/utility/api/flightPlan";
+import React, { useState } from "react";
 
 const SelectFixMode = () => {
   const {
@@ -12,6 +12,9 @@ const SelectFixMode = () => {
     setSelectedFixName,
   } = useSelectFixMode();
   const { callsign } = useSelectedAircraft();
+  const [commandType, setCommandType] = useState<"DIRECT_TO" | "HOLD">(
+    "DIRECT_TO"
+  );
 
   return (
     <div className="bg-atc-surface border border-atc-border rounded-lg p-4 mt-4">
@@ -35,6 +38,7 @@ const SelectFixMode = () => {
               return;
             }
             setSelectedFixName("No fixes selected");
+            setCommandType("DIRECT_TO");
             setIsSelectFixMode({ selectFixMode: true });
           }}
         >
@@ -42,6 +46,30 @@ const SelectFixMode = () => {
         </button>
       ) : (
         <div className="flex flex-col space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              className={`px-3 py-2 text-xs font-bold rounded border transition-colors ${
+                commandType === "DIRECT_TO"
+                  ? "bg-atc-accent text-white border-atc-accent"
+                  : "bg-atc-surface-elevated text-atc-text border-atc-border"
+              }`}
+              onClick={() => setCommandType("DIRECT_TO")}
+              type="button"
+            >
+              DIRECT TO
+            </button>
+            <button
+              className={`px-3 py-2 text-xs font-bold rounded border transition-colors ${
+                commandType === "HOLD"
+                  ? "bg-atc-warning text-white border-atc-warning"
+                  : "bg-atc-surface-elevated text-atc-text border-atc-border"
+              }`}
+              onClick={() => setCommandType("HOLD")}
+              type="button"
+            >
+              HOLD
+            </button>
+          </div>
           <button
             className="w-full px-4 py-3 bg-atc-accent text-white font-bold text-sm
                        rounded-lg border border-transparent
@@ -54,7 +82,10 @@ const SelectFixMode = () => {
                 return;
               }
               try {
-                const ok = await directToFix(callsign, selectedFixName, false);
+                const ok =
+                  commandType === "DIRECT_TO"
+                    ? await directToFix(callsign, selectedFixName, false)
+                    : await holdAtFix(callsign, selectedFixName);
                 if (ok) {
                   console.log(`Aircraft ${callsign} controlled successfully.`);
                 } else {
@@ -70,6 +101,7 @@ const SelectFixMode = () => {
               }
 
               setSelectedFixName("No fixes selected");
+              setCommandType("DIRECT_TO");
               setIsSelectFixMode({ selectFixMode: false });
             }}
           >
@@ -84,6 +116,7 @@ const SelectFixMode = () => {
                        focus:outline-none focus:ring-2 focus:ring-atc-danger focus:ring-offset-2 focus:ring-offset-atc-bg"
             onClick={() => {
               setSelectedFixName("No fixes selected");
+              setCommandType("DIRECT_TO");
               setIsSelectFixMode({ selectFixMode: false });
             }}
           >

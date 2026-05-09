@@ -12,6 +12,7 @@ import {
   SelectedAircraftProvider,
   useSelectedAircraft,
 } from "@/context/selectedAircraftContext";
+import * as flightPlanApi from "@/utility/api/flightPlan";
 
 function StateSetter({ callsign }: { callsign: string | null }) {
   const { setCallsign } = useSelectedAircraft();
@@ -30,15 +31,11 @@ function FixModeActivator({ fixName }: { fixName: string }) {
   return null;
 }
 
-const originalFetch = global.fetch;
-
 beforeEach(() => {
-  global.fetch = jest.fn();
+  jest.clearAllMocks();
 });
 
-afterEach(() => {
-  global.fetch = originalFetch;
-});
+jest.mock("@/utility/api/flightPlan");
 
 function renderWithProviders(callsign: string | null) {
   return render(
@@ -114,10 +111,9 @@ describe("SelectFixMode", () => {
     });
   });
 
-  it("CONFIRM calls fetch with correct URL and body when fix is selected", async () => {
+  it("CONFIRM calls directToFix when direct command is selected", async () => {
     const user = userEvent.setup();
-    const mockFetch = jest.fn().mockResolvedValue({ ok: true });
-    global.fetch = mockFetch;
+    (flightPlanApi.directToFix as jest.Mock).mockResolvedValue(true);
 
     render(
       <SelectedAircraftProvider>
@@ -138,14 +134,39 @@ describe("SelectFixMode", () => {
     await user.click(screen.getByRole("button", { name: /CONFIRM/i }));
 
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining("/api/aircraft/JAL123/direct-to"),
-        expect.objectContaining({
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fixName: "ABENO", resumeFlightPlan: false }),
-        })
+      expect(flightPlanApi.directToFix).toHaveBeenCalledWith(
+        "JAL123",
+        "ABENO",
+        false
       );
+    });
+  });
+
+  it("CONFIRM calls holdAtFix when hold command is selected", async () => {
+    const user = userEvent.setup();
+    (flightPlanApi.holdAtFix as jest.Mock).mockResolvedValue(true);
+
+    render(
+      <SelectedAircraftProvider>
+        <SelectFixModeProvider>
+          <StateSetter callsign="JAL123" />
+          <FixModeActivator fixName="ABENO" />
+          <SelectFixMode />
+        </SelectFixModeProvider>
+      </SelectedAircraftProvider>
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /^HOLD$/i })
+      ).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole("button", { name: /^HOLD$/i }));
+    await user.click(screen.getByRole("button", { name: /CONFIRM/i }));
+
+    await waitFor(() => {
+      expect(flightPlanApi.holdAtFix).toHaveBeenCalledWith("JAL123", "ABENO");
     });
   });
 });

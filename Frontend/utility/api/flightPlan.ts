@@ -58,3 +58,20 @@ export async function resumeNavigation(callsign: string): Promise<boolean> {
     return false;
   }
 }
+
+export async function holdAtFix(
+  callsign: string,
+  fixName: string
+): Promise<boolean> {
+  try {
+    const response = await fetch(`/api/aircraft/${callsign}/hold`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fixName, turnDirection: "RIGHT" }),
+    });
+    return response.ok;
+  } catch (error) {
+    console.error("Error applying hold:", error);
+    return false;
+  }
+}

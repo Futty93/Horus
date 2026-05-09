@@ -21,6 +21,7 @@ public record AircraftLocationDto(
     String destinationIcao,
     String eta,
     @JsonInclude(JsonInclude.Include.ALWAYS) String squawk,
+    String navigationMode,
     double riskLevel
 ) {
     public record PositionDto(double latitude, double longitude, double altitude) {}

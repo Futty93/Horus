@@ -2,10 +2,13 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft;
 
 import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.REFRESH_RATE;
 
+import java.util.Objects;
+
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.behavior.FlightBehavior;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.characteristics.AircraftCharacteristics;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlan;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlanWaypoint;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.HoldTurnDirection;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.NavigationMode;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.GroundSpeed;
@@ -48,10 +51,19 @@ public abstract class AircraftBase implements Aircraft {
     protected String directToFixName;
     protected boolean resumeFlightPlanAfterDirectTo;
     protected boolean markedForRemoval;
+    protected FixPosition holdingFix;
+    protected FixPosition holdingOutboundTarget;
+    protected HoldTurnDirection holdTurnDirection;
+    protected boolean holdingToOutboundLeg;
+    protected boolean holdingEntryCompleted;
+    protected int resumeFlightPlanIndexAfterHold;
 
     private static final double WAYPOINT_PASS_THRESHOLD_MIN_NM = 1.5;
     private static final double WAYPOINT_PASS_THRESHOLD_MAX_NM = 5.0;
     private static final double WAYPOINT_PASS_SECONDS = 5.0;
+    private static final double HOLD_OUTBOUND_LEG_DISTANCE_NM = 4.0;
+    private static final double HOLD_WAYPOINT_PASS_THRESHOLD_NM = 0.25;
+    private static final double HOLD_RIGHT_TURN_FORCE_THRESHOLD_DEG = 45.0;
 
     private static final boolean WP_DEBUG = "true".equalsIgnoreCase(System.getProperty("flightplan.wp.debug"));
 
@@ -74,6 +86,12 @@ public abstract class AircraftBase implements Aircraft {
         this.directToFixName = null;
         this.resumeFlightPlanAfterDirectTo = false;
         this.markedForRemoval = false;
+        this.holdingFix = null;
+        this.holdingOutboundTarget = null;
+        this.holdTurnDirection = HoldTurnDirection.RIGHT;
+        this.holdingToOutboundLeg = false;
+        this.holdingEntryCompleted = false;
+        this.resumeFlightPlanIndexAfterHold = -1;
     }
 
     @Override
@@ -89,11 +107,16 @@ public abstract class AircraftBase implements Aircraft {
     public void calculateNextAircraftVector() {
         updateInstructedVectorFromNavigation();
 
-        var nextHeading = flightBehavior.calculateNextHeading(
-            this.aircraftVector.heading.toDouble(),
-            this.instructedVector.instructedHeading.toDouble(),
-            this.characteristics.getMaxTurnRate()
-        );
+        boolean applyRightTurnConstraint = shouldForceRightTurnInHolding();
+        var nextHeading = applyRightTurnConstraint
+                ? calculateNextHeadingRightTurn(
+                        this.aircraftVector.heading.toDouble(),
+                        this.instructedVector.instructedHeading.toDouble(),
+                        this.characteristics.getMaxTurnRate())
+                : flightBehavior.calculateNextHeading(
+                        this.aircraftVector.heading.toDouble(),
+                        this.instructedVector.instructedHeading.toDouble(),
+                        this.characteristics.getMaxTurnRate());
 
         var nextGroundSpeed = flightBehavior.calculateNextGroundSpeed(
             this.aircraftVector.groundSpeed.toDouble(),
@@ -124,6 +147,22 @@ public abstract class AircraftBase implements Aircraft {
         }
     }
 
+    private boolean shouldForceRightTurnInHolding() {
+        if (navigationMode != NavigationMode.HOLDING || !holdingEntryCompleted || holdTurnDirection != HoldTurnDirection.RIGHT) {
+            return false;
+        }
+        FixPosition target = resolveNavigationTarget();
+        if (target == null) {
+            return false;
+        }
+        double currentHeading = this.aircraftVector.heading.toDouble();
+        double targetHeading = flightBehavior.calculateTurnAngle(aircraftPosition, currentHeading, target);
+        double clockwiseDelta = GeodeticUtils.normalizeAngle(targetHeading - currentHeading);
+        double counterClockwiseDelta = 360.0 - clockwiseDelta;
+        return counterClockwiseDelta >= HOLD_RIGHT_TURN_FORCE_THRESHOLD_DEG
+                && counterClockwiseDelta < clockwiseDelta;
+    }
+
     private void updateInstructedVectorFromNavigation() {
         if (navigationMode == NavigationMode.HEADING) {
             return;
@@ -147,11 +186,19 @@ public abstract class AircraftBase implements Aircraft {
                     .map(FlightPlanWaypoint::getPosition)
                     .orElse(null);
         }
+        if (navigationMode == NavigationMode.HOLDING && holdingFix != null) {
+            if (!holdingEntryCompleted) {
+                return holdingFix;
+            }
+            return holdingToOutboundLeg ? holdingOutboundTarget : holdingFix;
+        }
         return null;
     }
 
     private Altitude resolveTargetAltitude() {
-        if (navigationMode == NavigationMode.DIRECT_TO || flightPlan == null) {
+        if (navigationMode == NavigationMode.DIRECT_TO
+                || navigationMode == NavigationMode.HOLDING
+                || flightPlan == null) {
             return instructedVector.instructedAltitude;
         }
         return flightPlan.getNextWaypoint(currentWaypointIndex)
@@ -160,7 +207,9 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     private GroundSpeed resolveTargetSpeed() {
-        if (navigationMode == NavigationMode.DIRECT_TO || flightPlan == null) {
+        if (navigationMode == NavigationMode.DIRECT_TO
+                || navigationMode == NavigationMode.HOLDING
+                || flightPlan == null) {
             return instructedVector.instructedGroundSpeed;
         }
         return flightPlan.getNextWaypoint(currentWaypointIndex)
@@ -174,7 +223,9 @@ public abstract class AircraftBase implements Aircraft {
             return;
         }
         double currentDistance = GeodeticUtils.distanceToFix(aircraftPosition, target);
-        double threshold = calculateDynamicThreshold();
+        double threshold = navigationMode == NavigationMode.HOLDING
+                ? HOLD_WAYPOINT_PASS_THRESHOLD_NM
+                : calculateDynamicThreshold();
 
         boolean withinThreshold = currentDistance < threshold;
         boolean movingAway = currentDistance > previousDistanceToWaypoint;
@@ -198,6 +249,10 @@ public abstract class AircraftBase implements Aircraft {
 
         if (navigationMode == NavigationMode.DIRECT_TO) {
             onDirectToTargetReached();
+            return;
+        }
+        if (navigationMode == NavigationMode.HOLDING) {
+            onHoldingTargetReached();
             return;
         }
 
@@ -234,6 +289,21 @@ public abstract class AircraftBase implements Aircraft {
         if (currentWaypointIndex >= flightPlan.getWaypoints().size()) {
             navigationMode = NavigationMode.HEADING;
         }
+    }
+
+    private void onHoldingTargetReached() {
+        if (holdingFix == null || holdingOutboundTarget == null) {
+            setResumeNavigation();
+            return;
+        }
+        if (!holdingEntryCompleted) {
+            holdingEntryCompleted = true;
+            holdingToOutboundLeg = true;
+            previousDistanceToWaypoint = Double.MAX_VALUE;
+            return;
+        }
+        holdingToOutboundLeg = !holdingToOutboundLeg;
+        previousDistanceToWaypoint = Double.MAX_VALUE;
     }
 
     private double calculateDynamicThreshold() {
@@ -334,6 +404,7 @@ public abstract class AircraftBase implements Aircraft {
         this.currentWaypointIndex = 0;
         this.navigationMode = flightPlan != null ? NavigationMode.FLIGHT_PLAN : NavigationMode.HEADING;
         this.previousDistanceToWaypoint = Double.MAX_VALUE;
+        clearHoldingState();
     }
 
     public void setDirectTo(FixPosition target, String fixName, boolean resumeFlightPlan) {
@@ -342,15 +413,103 @@ public abstract class AircraftBase implements Aircraft {
         this.resumeFlightPlanAfterDirectTo = resumeFlightPlan;
         this.navigationMode = NavigationMode.DIRECT_TO;
         this.previousDistanceToWaypoint = Double.MAX_VALUE;
+        clearHoldingState();
+    }
+
+    public void setHoldAtFix(FixPosition fix, String fixName, HoldTurnDirection turnDirection) {
+        this.holdingFix = fix;
+        this.holdTurnDirection = turnDirection;
+        this.holdingToOutboundLeg = false;
+        this.holdingEntryCompleted = false;
+        this.holdingOutboundTarget = createHoldingOutboundTarget(fix, fixName);
+        this.resumeFlightPlanIndexAfterHold = computeResumeFlightPlanIndexAfterHold(fixName);
+        this.navigationMode = NavigationMode.HOLDING;
+        this.directToTarget = null;
+        this.directToFixName = null;
+        this.resumeFlightPlanAfterDirectTo = false;
+        this.previousDistanceToWaypoint = Double.MAX_VALUE;
     }
 
     public void setResumeNavigation() {
         if (flightPlan != null) {
+            if (resumeFlightPlanIndexAfterHold >= flightPlan.getWaypoints().size()) {
+                this.navigationMode = NavigationMode.HEADING;
+                clearHoldingState();
+                return;
+            }
+            if (resumeFlightPlanIndexAfterHold >= 0) {
+                this.currentWaypointIndex = resumeFlightPlanIndexAfterHold;
+            }
             this.navigationMode = NavigationMode.FLIGHT_PLAN;
             this.directToTarget = null;
             this.directToFixName = null;
             this.resumeFlightPlanAfterDirectTo = false;
+            clearHoldingState();
         }
+    }
+
+    private FixPosition createHoldingOutboundTarget(FixPosition fix, String fixName) {
+        double inboundBearing = calculateDeterministicInboundBearing(fix, fixName);
+        double outboundBearing = GeodeticUtils.normalizeAngle(inboundBearing + 180.0);
+        return offsetFix(fix, outboundBearing, HOLD_OUTBOUND_LEG_DISTANCE_NM);
+    }
+
+    private double calculateDeterministicInboundBearing(FixPosition fix, String fixName) {
+        if (fixName != null && !fixName.isBlank()) {
+            return Math.floorMod(fixName.trim().toUpperCase().hashCode(), 360);
+        }
+        int latMilli = (int) Math.round(fix.latitude.toDouble() * 1000.0);
+        int lonMilli = (int) Math.round(fix.longitude.toDouble() * 1000.0);
+        return Math.floorMod(Objects.hash(latMilli, lonMilli), 360);
+    }
+
+    private FixPosition offsetFix(FixPosition origin, double bearingDeg, double distanceNm) {
+        double bearingRad = Math.toRadians(bearingDeg);
+        double latDeg = origin.latitude.toDouble();
+        double lonDeg = origin.longitude.toDouble();
+        double deltaLatDeg = (distanceNm * Math.cos(bearingRad)) / 60.0;
+        double cosLat = Math.cos(Math.toRadians(latDeg));
+        double deltaLonDeg = cosLat == 0.0 ? 0.0 : (distanceNm * Math.sin(bearingRad)) / (60.0 * cosLat);
+        return new FixPosition(
+                new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Latitude(latDeg + deltaLatDeg),
+                new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Longitude(lonDeg + deltaLonDeg));
+    }
+
+    private void clearHoldingState() {
+        this.holdingFix = null;
+        this.holdingOutboundTarget = null;
+        this.holdTurnDirection = HoldTurnDirection.RIGHT;
+        this.holdingToOutboundLeg = false;
+        this.holdingEntryCompleted = false;
+        this.resumeFlightPlanIndexAfterHold = -1;
+    }
+
+    private int computeResumeFlightPlanIndexAfterHold(String fixName) {
+        if (flightPlan == null) {
+            return -1;
+        }
+        if (fixName == null || fixName.isBlank()) {
+            return currentWaypointIndex;
+        }
+        int holdFixIndex = flightPlan.findWaypointIndex(fixName);
+        if (holdFixIndex < 0) {
+            return currentWaypointIndex;
+        }
+        int nextIndex = holdFixIndex + 1;
+        int waypointCount = flightPlan.getWaypoints().size();
+        if (waypointCount <= 0) {
+            return -1;
+        }
+        if (nextIndex >= waypointCount) {
+            return waypointCount;
+        }
+        return nextIndex;
+    }
+
+    private Heading calculateNextHeadingRightTurn(double currentHeading, double targetHeading, double maxTurnRate) {
+        double clockwiseDelta = GeodeticUtils.normalizeAngle(targetHeading - currentHeading);
+        double turnAmount = Math.min(maxTurnRate, clockwiseDelta);
+        return new Heading(GeodeticUtils.normalizeAngle(currentHeading + turnAmount));
     }
 
     public void setNavigationMode(NavigationMode mode) {

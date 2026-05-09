@@ -205,6 +205,7 @@ npm run dev
 | POST | `/api/aircraft/{callsign}/flightplan` | 既存機にフライトプランを付与・差し替え |
 | GET | `/api/aircraft/{callsign}/flightplan` | ナビモード・残ウェイポイント等 |
 | POST | `/api/aircraft/{callsign}/direct-to` | Direct To |
+| POST | `/api/aircraft/{callsign}/hold` | Hold At Fix（初期版: 右旋回固定レーストラック、`turnDirection` は `RIGHT` のみ。同一Fixでは侵入方向に依存せず決定論的に同一トラック向きを共有） |
 | POST | `/api/aircraft/{callsign}/resume-navigation` | フライトプラン経路再開 |
 
 統合テスト: `src/test/java/.../FlightPlanApiIntegrationTest.java`
@@ -356,7 +357,7 @@ RESTful APIを提供しており、詳細なAPI仕様は`UranosAPI.yml`ファイ
    - `POST /api/aircraft/{callsign}/squawk` - **スクオークコード**を割り当て（Body: `{ "squawk": "1200" }`、4桁オクタル）
 
 2. **位置情報取得**（JSON 形式）
-   - `GET /aircraft/location/all` - 全航空機の現在位置を取得（各要素に `atcClearance` と、未割当時は `null` の `squawk` を常に含む）
+   - `GET /aircraft/location/all` - 全航空機の現在位置を取得（各要素に `atcClearance`、未割当時は `null` の `squawk`、および `navigationMode` を含む）
    - `GET /aircraft/location?callsign={callsign}` - 特定航空機の位置を取得
 
 3. **シミュレーション・シナリオ**

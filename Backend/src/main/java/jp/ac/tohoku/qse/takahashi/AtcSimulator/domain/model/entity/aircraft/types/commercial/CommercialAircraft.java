@@ -223,6 +223,9 @@ public class CommercialAircraft extends AircraftBase {
         if (navigationMode == NavigationMode.DIRECT_TO && directToTarget != null) {
             return true;
         }
+        if (navigationMode == NavigationMode.HOLDING && holdingFix != null) {
+            return true;
+        }
         if (navigationMode == NavigationMode.FLIGHT_PLAN && flightPlan != null
                 && flightPlan.getNextWaypoint(currentWaypointIndex).isPresent()) {
             return true;

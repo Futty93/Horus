@@ -95,6 +95,7 @@ public class GetAllAircraftLocationsWithRiskUseCase {
                 destinationIcao,
                 eta,
                 base.getSquawk(),
+                base.getNavigationMode().name(),
                 riskLevel
         );
     }
@@ -108,7 +109,7 @@ public class GetAllAircraftLocationsWithRiskUseCase {
                 null,
                 "UNKNOWN",
                 "UNKNOWN",
-                "", "", "", "", "", null,
+                "", "", "", "", "", null, "UNKNOWN",
                 riskLevel
         );
     }

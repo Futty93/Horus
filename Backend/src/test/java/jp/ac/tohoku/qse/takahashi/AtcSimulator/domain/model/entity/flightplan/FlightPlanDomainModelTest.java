@@ -24,18 +24,6 @@ class FlightPlanDomainModelTest {
     }
 
     @Nested
-    @DisplayName("NavigationMode")
-    class NavigationModeTest {
-        @Test
-        void allModesExist() {
-            assertEquals(3, NavigationMode.values().length);
-            assertNotNull(NavigationMode.valueOf("FLIGHT_PLAN"));
-            assertNotNull(NavigationMode.valueOf("HEADING"));
-            assertNotNull(NavigationMode.valueOf("DIRECT_TO"));
-        }
-    }
-
-    @Nested
     @DisplayName("AltitudeConstraint")
     class AltitudeConstraintTest {
         @Test

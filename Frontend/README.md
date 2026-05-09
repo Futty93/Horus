@@ -185,7 +185,7 @@ Controller 専用。レーダーで航空機を選択すると、入力欄に当
 
 ### 4. Fix選択モード (SelectFixMode)
 
-Operator 専用。航空機の直行指示（Direct To）をレーダー上の Fix 選択で行う。
+Operator 専用。航空機の指示先 Fix をレーダー上で選択し、`Direct To` または `Hold` を選んで実行する。
 
 ### 5. フライトプラン設定ページ (Flight Plan Setup)
 
@@ -193,7 +193,7 @@ Operator 専用。航空機の直行指示（Direct To）をレーダー上の F
 
 ### 6. フライトプラン制御 (FlightPlanControl)
 
-Operator 専用。Direct To（Fix 名入力）、Resume Navigation をバックエンドへ送信。
+Operator 専用。Direct To（Fix 名入力）、Hold At Fix（初期版: 右旋回固定のレーストラック）、Resume Navigation をバックエンドへ送信。
 
 ### 7. 経路情報表示設定 (RouteInfoDisplaySetting)
 
@@ -236,7 +236,7 @@ React Context APIを使用して、以下の状態を管理しています：
 
 クライアントは同一オリジン（`/api/*`）を呼び出し、Next.js BFF が Java バックエンドへプロキシします。主なエンドポイント：
 
-- `GET /api/aircraft/location/all` - 航空機位置一覧取得（各要素に `atcClearance` / `squawk` が含まれる場合あり）
+- `GET /api/aircraft/location/all` - 航空機位置一覧取得（各要素に `atcClearance` / `squawk` / `navigationMode` が含まれる場合あり。`navigationMode=HOLDING` はデータブロックで `HLD` 表示）
 - `POST /api/aircraft/create-haneda-samples` - Haneda Samples（約28機）作成
 - `POST /api/aircraft/spawn-with-flightplan` - フライトプラン付き航空機スポーン
 - `POST /api/scenario/load` - シナリオ一括ロード（空域クリア＋複数機スポーン）。**シミュレーション開始は行わない**（`POST /api/simulation/start` は別操作）
@@ -245,6 +245,7 @@ React Context APIを使用して、以下の状態を管理しています：
 - `GET /api/aircraft/{callsign}/flightplan` - フライトプラン取得
 - `POST /api/aircraft/{callsign}/flightplan` - フライトプラン割り当て
 - `POST /api/aircraft/{callsign}/direct-to` - 直行指示
+- `POST /api/aircraft/{callsign}/hold` - ホールディング指示（初期版は `turnDirection=RIGHT` のみ）
 - `POST /api/aircraft/{callsign}/resume-navigation` - ナビゲーション再開
 - `POST /api/simulation/start` - シミュレーション開始
 - `POST /api/simulation/pause` - シミュレーション一時停止
