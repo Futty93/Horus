@@ -207,6 +207,7 @@ function drawLineBetweenPoints(
   ctx.lineTo(point2Coordinate.x, point2Coordinate.y);
   ctx.globalAlpha = 0.7; // Set opacity for waypoints
   ctx.strokeStyle = color; // Line color
+  ctx.lineWidth = 1;
   ctx.stroke();
 
   // Draw black circle under the marker

@@ -21,6 +21,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.GeodeticUtils;
 
 /**
  * ConflictDetectorの包括的なテストクラス
@@ -415,6 +416,31 @@ class ConflictDetectorTest {
             assertTrue(result.getRiskLevel() > 0.0 && result.getRiskLevel() <= 50.0,
                 "並行飛行でも間隔不足では適度な危険度");
             assertEquals(Double.POSITIVE_INFINITY, result.getTimeToClosest());
+        }
+
+        @Test
+        @DisplayName("すれ違い後は測地距離の現在隔離でリスクを評価し CPA 距離だけで張り付かない")
+        void testPostEncounterUsesGeodeticCurrentSeparationNotCpa() {
+            Aircraft westbound = createTestAircraft("WEST", 35.0, 139.0, 35000, 270, 400, 0);
+            Aircraft eastbound = createTestAircraft("EAST", 35.0, 139.28, 35000, 90, 400, 0);
+
+            RiskAssessment result = conflictDetector.calculateConflictRisk(westbound, eastbound);
+
+            double currentHorizontalNm = GeodeticUtils.calculateHorizontalDistance(
+                westbound.getAircraftPosition(),
+                eastbound.getAircraftPosition()
+            );
+
+            assertTrue(result.getTimeToClosest() < 0.0, "すれ違い後は最接近時刻が負");
+            assertTrue(
+                currentHorizontalNm > MINIMUM_HORIZONTAL_SEPARATION * 2,
+                "現位置は水平方向に十分離れている");
+            assertTrue(
+                result.getClosestHorizontalDistance() < MINIMUM_HORIZONTAL_SEPARATION,
+                "CPA では狭い接近だった");
+            assertTrue(
+                result.getRiskLevel() <= 25.0,
+                "現在隔離が大きいすれ違い後は低リスク");
         }
 
         @Test

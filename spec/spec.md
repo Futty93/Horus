@@ -61,7 +61,7 @@
 |------|----------------|-------------|
 | **Phase 1（入口）** | 上記フローは実装済み。 | 1-1〜1-4 は**コア Done**（子 spec 2026-05-09 更新済）。**残り**: Optional・手動 E2E・Issue #45–#47 の Close 運用。1-5 は未着手。 |
 | **Phase 2（レーダー）** | 履歴ドット・レンジリング・速度ベクトル時間は **Canvas ＋ Context で動作**。データブロックは **表示トグルと描画**あり。スクオーク行は **プレースホルダ**（`drawAircraft.ts`、Backend 未連携）。 | 2-1・2-2・2-4 はロードマップ上「未着手」扱いが不整合。**残りは拡張（点数・間隔の設定、子 spec の DoD との一致確認）** と 2-3 の **実データ連携（3-1 と接続）**、2-5・2-6。 |
-| **Phase 4（安全 UI）** | `riskLevel` は API → `Aircraft` → ラベル色（赤/黄）と `R` 行表示。 | **シンボル点滅・ペア強調・Conflict API のフロント未使用**（grep で Frontend に `conflict` 呼び出し無し）。4-1 は「強調の強化」、4-2〜4-3 は **BFF + `ConflictAlertController` 利用**が次の一手。 |
+| **Phase 4（安全 UI）** | `riskLevel` は API → `Aircraft` → ラベル色（赤/黄）と `R` 行表示。**BFF `/api/conflict/*`・STCA ストリップ・シンボルリング**は [20260509-phase4-conflict-bff-ui](20260509-phase4-conflict-bff-ui/spec.md)。 | **残り**: ペア数値ラベル（4-2）、強通知（4-3）、シンボル/閾値 UI の仕上げ（4-1）。 |
 | **シミュレーション速度（5-1）** | `AtcSimulatorConstants.REFRESH_RATE` が静的。 | 動的変更 API とスケジューラの見直しが必要。 |
 | **命名負債（T-2）** | `interfaces/api` に `*Service` が複数残存。 | `FlightPlanController` / `ScenarioController` と混在。リネームは OpenAPI・BFF・README を一括追従。 |
 
@@ -117,9 +117,9 @@
 
 | # | タスク | 状況 | 優先度 | 難易度 | Issue | 実装の所在 / 次の具体タスク |
 |---|--------|------|--------|--------|-------|---------------------------|
-| 4-1 | STCA 視覚強調 | 🔄 | 🔴 | ★☆☆ | [#60](https://github.com/Futty93/Horus/issues/60) | `riskLevel` によるラベル色・`R` 表示は実装済み。**未了**: シンボル本体の強調、点滅、閾値の設定 UI 等。 |
-| 4-2 | ペア間隔の数値表示 | ⬜ | 🟡 | ★★☆ | [#61](https://github.com/Futty93/Horus/issues/61) | Backend `ConflictAlertController` 利用。**新規**: BFF `app/api/...` + ラベル横またはサイドパネル。 |
-| 4-3 | 間隔違反の明示通知 | ⬜ | 🟡 | ★★☆ | [#62](https://github.com/Futty93/Horus/issues/62) | `ConflictStatisticsDto` を UI に接続（ポーリング間隔と負荷に注意）。 |
+| 4-1 | STCA 視覚強調 | 🔄 | 🔴 | ★☆☆ | [#60](https://github.com/Futty93/Horus/issues/60) | `riskLevel` によるラベル色・`R` 表示に加え、**シンボルリング強調・赤レベル時の点滅**（[20260509-phase4-conflict-bff-ui](20260509-phase4-conflict-bff-ui/spec.md)）。**残り**: 閾値の設定 UI、ペア連動強調。 |
+| 4-2 | ペア間隔の数値表示 | ⬜ | 🟡 | ★★☆ | [#61](https://github.com/Futty93/Horus/issues/61) | BFF は [20260509-phase4-conflict-bff-ui](20260509-phase4-conflict-bff-ui/spec.md) で整備済み。**新規**: ラベル横またはサイドパネルで `getAircraftConflicts` 等を表示。 |
+| 4-3 | 間隔違反の明示通知 | 🔄 | 🟡 | ★★☆ | [#62](https://github.com/Futty93/Horus/issues/62) | **STCA ストリップ**で `ConflictStatisticsDto`（Sep / R / W / pairs）を表示（[20260509-phase4-conflict-bff-ui](20260509-phase4-conflict-bff-ui/spec.md)）。**残り**: トースト・サイドパネル等の強い通知。 |
 | 4-4 | MSAW 簡易版 | ⬜ | 🟢 | ★★☆ | [#63](https://github.com/Futty93/Horus/issues/63) | 最低高度しきい値と `AircraftLocationDto` 拡張または別エンドポイント。 |
 
 ---
@@ -179,7 +179,7 @@
 2. **（並行）T-3** — ✅ **完了**（[20260509-t3-flight-plan-tests-docs](20260509-t3-flight-plan-tests-docs/spec.md)）。次は **Phase 4**（Conflict UI）または Phase 2 残り。
 
 3. **Phase 4 のフロント接続（4-1 強化 → 4-2 / 4-3）**  
-   Backend は `ConflictAlertController` 済み。**BFF + ポーリング**でペア情報・統計を取り、レーダー上の強調とセットで実装すると一貫する。4-1 の「シンボル強調」は `drawAircraft.ts` の拡張。
+   **スライス 1 完了**: BFF・統計ストリップ・シンボル強調（[20260509-phase4-conflict-bff-ui](20260509-phase4-conflict-bff-ui/spec.md)）。**次**: 4-2 ペア間隔表示、`getAircraftConflicts` の UI 接続、4-3 のトースト等。
 
 4. **Phase 2 の残り（2-5、2-6 の仕上げ、2-3 のデータ連携準備）**  
    2-1・2-2・2-4 は実装済みのため、**新規は主に 2-5 とメモ spec の仕上げ**。2-3 のスクオーク実値は **3-1 と同一スプリント**にすると二度手間が減る。
@@ -206,6 +206,7 @@ Phase 1 spec/Issue 整合 ──→ T-3（並行）
 
 | 日付 | 内容 |
 |------|------|
+| 2026-05-09 | Phase 4 スライス: Conflict BFF・STCA ストリップ・シンボル強調（[20260509-phase4-conflict-bff-ui](20260509-phase4-conflict-bff-ui/spec.md)）。4-1/4-3 を部分完了に更新。 |
 | 2026-05-09 | T-3 完了（テスト・サンプル・README・マトリクス）。着手順 2 を完了扱いに。 |
 | 2026-05-09 | T-3 着手用 spec 追加: [20260509-t3-flight-plan-tests-docs](20260509-t3-flight-plan-tests-docs/spec.md)。T-3 行・着手順 2 にリンク。 |
 | 2026-05-09 | Phase 1 子 spec 整合実施（1-2〜1-4 を Done 扱いに更新）。着手順 1 を完了扱いに。 |
