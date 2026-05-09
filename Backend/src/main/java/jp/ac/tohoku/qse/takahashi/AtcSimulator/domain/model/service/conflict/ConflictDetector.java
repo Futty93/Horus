@@ -104,8 +104,13 @@ public class ConflictDetector {
             // CPA分析による最接近点計算
             CPAResult cpaResult = calculateCPA(aircraft1, aircraft2);
 
-            // 危険度評価の実行
-            double riskLevel = assessRiskLevel(cpaResult);
+            AircraftPosition pos1 = aircraft1.getAircraftPosition();
+            AircraftPosition pos2 = aircraft2.getAircraftPosition();
+            double currentHorizontalNm = GeodeticUtils.calculateHorizontalDistance(pos1, pos2);
+            double currentVerticalFt = GeodeticUtils.calculateVerticalDistance(pos1, pos2);
+
+            // 危険度評価の実行（現在隔離は測地距離、最接近は CPA 結果）
+            double riskLevel = assessRiskLevel(cpaResult, currentHorizontalNm, currentVerticalFt);
             boolean isConflictPredicted = predictSeparationViolation(cpaResult);
 
             return new RiskAssessment(
@@ -340,14 +345,13 @@ public class ConflictDetector {
     /**
      * CPA結果に基づくリスク評価
      */
-    private double assessRiskLevel(CPAResult cpaResult) {
-        // 既存のcalculateRiskLevelメソッドを使用
+    private double assessRiskLevel(CPAResult cpaResult, double currentHorizontalNm, double currentVerticalFt) {
         return calculateRiskLevel(
             cpaResult.timeToClosest,
             cpaResult.horizontalDistance,
             cpaResult.verticalDistance,
-            cpaResult.horizontalDistance, // 現在距離として使用
-            cpaResult.verticalDistance   // 現在距離として使用
+            currentHorizontalNm,
+            currentVerticalFt
         );
     }
 
