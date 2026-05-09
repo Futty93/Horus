@@ -223,7 +223,7 @@ public class ConflictDetector {
             currentHorizontalRisk *= 0.3; // 垂直分離が確保されている場合は水平リスクを70%軽減
         }
 
-        double currentRisk = Math.max(currentHorizontalRisk, currentVerticalRisk);
+        double currentRisk = calculateCoupledDimensionalRisk(currentHorizontalRisk, currentVerticalRisk);
 
         // 並行飛行（相対速度ほぼゼロ）の場合
         if (timeToClosest == Double.POSITIVE_INFINITY) {
@@ -247,7 +247,7 @@ public class ConflictDetector {
             predictedHorizontalRisk *= 0.3; // 垂直分離が確保されている場合は水平リスクを70%軽減
         }
 
-        double predictedRisk = Math.max(predictedHorizontalRisk, predictedVerticalRisk);
+        double predictedRisk = calculateCoupledDimensionalRisk(predictedHorizontalRisk, predictedVerticalRisk);
 
         // 現在距離による緊急度補正
         double urgencyFactor = calculateUrgencyFactor(currentHorizontalDistance, currentVerticalDistance);
@@ -275,6 +275,18 @@ public class ConflictDetector {
 
         // 0-100の範囲に正規化
         return Math.min(100.0, Math.max(0.0, totalRisk * 100));
+    }
+
+    /**
+     * 水平・垂直リスクの同時性を反映した合成リスク。
+     * 片側のみ高いケースでの過大警報を抑えつつ、両側が高い場合は十分に高い値を返す。
+     */
+    private double calculateCoupledDimensionalRisk(double horizontalRisk, double verticalRisk) {
+        double dominant = Math.max(horizontalRisk, verticalRisk);
+        double coupled = Math.min(horizontalRisk, verticalRisk);
+
+        // 片側のみ高い場合は dominant の 35% まで抑制、両側が高いと 100% に近づく。
+        return dominant * (0.35 + 0.65 * coupled);
     }
 
     /**

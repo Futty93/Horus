@@ -16,6 +16,8 @@ import SelectedCallsignDisplay from "@/components/selectedCallsignDisplay";
 import FlightPlanDisplay from "@/components/flightPlanDisplay";
 import InstructionMemo from "@/components/instructionMemo";
 import ConflictSummaryStrip from "@/components/conflictSummaryStrip";
+import SeparationViolationAlerts from "@/components/separationViolationAlerts";
+import SelectedAircraftConflictsPanel from "@/components/selectedAircraftConflictsPanel";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -36,6 +38,7 @@ export default function ControllerPage() {
                       <div className="flex min-h-0 w-full min-w-0 flex-1">
                         <div className="relative h-full min-h-0 min-w-0 flex-1">
                           <ConflictSummaryStrip />
+                          <SeparationViolationAlerts />
                           <RadarCanvas />
                         </div>
                         <div
@@ -46,6 +49,7 @@ export default function ControllerPage() {
                         >
                           <div className="flex-1 space-y-4 min-h-0">
                             <SelectedCallsignDisplay variant="controller" />
+                            <SelectedAircraftConflictsPanel />
                             <FlightPlanDisplay />
                             <InstructionMemo />
                           </div>

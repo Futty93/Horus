@@ -502,6 +502,24 @@ class ConflictDetectorTest {
         }
 
         @Test
+        @DisplayName("水平十分・鉛直不足のみでは赤に張り付かない")
+        void testNoRedWhenOnlyVerticalIsInsufficientAtCpa() {
+            // 水平は大きく離れているが、同高度で交差する想定
+            Aircraft aircraft1 = createTestAircraft("ANA601", 35.0, 139.0, 35000, 90, 400, 0);
+            Aircraft aircraft2 = createTestAircraft("SKY605", 35.6, 139.0, 35000, 90, 400, 0);
+
+            RiskAssessment result = conflictDetector.calculateConflictRisk(aircraft1, aircraft2);
+
+            assertTrue(
+                result.getClosestHorizontalDistance() >= MINIMUM_HORIZONTAL_SEPARATION,
+                "CPA の水平隔離は基準以上");
+            assertFalse(result.isConflictPredicted(), "水平・垂直の同時不足ではないため違反予測なし");
+            assertTrue(
+                result.getRiskLevel() < 70.0,
+                "片側不足のみでは赤アラート閾値未満に抑制される");
+        }
+
+        @Test
         @DisplayName("継続的なリスク監視シミュレーション")
         void testContinuousRiskMonitoring() {
             // 接近中の2機をシミュレート

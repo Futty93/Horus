@@ -1,13 +1,18 @@
+/** Distances match backend `RiskAssessment`: horizontal NM, vertical ft, TCPA seconds. */
 export interface RiskAssessmentDto {
   riskLevel: number;
   alertLevel: string;
+  /** Seconds until closest point of approach (may be non-finite when no CPA). */
   timeToClosest: number;
+  /** Nautical miles. */
   closestHorizontalDistance: number;
+  /** Feet. */
   closestVerticalDistance: number;
   conflictPredicted: boolean;
 }
 
 export interface ConflictAlertDto {
+  /** Lexicographic `callsignA-callsignB` per `StringUtils.generatePairId`. */
   pairId: string;
   riskLevel: number;
   alertLevel: string;
