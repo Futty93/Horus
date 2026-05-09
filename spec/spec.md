@@ -96,7 +96,7 @@
 | 2-2 | レンジリング | ✅ | 🔴 | ★☆☆ | [#50](https://github.com/Futty93/Horus/issues/50) | `rangeRingsSettingContext` + `rangeRingsSetting.tsx` + `radarCanvas.tsx` の `drawRangeRings`。子 spec [20260318-range-rings-display](20260318-range-rings-display/spec.md) を実装に合わせ更新。 |
 | 2-3 | データブロック項目追加 | 🔄 | 🟡 | ★☆☆ | [#51](https://github.com/Futty93/Horus/issues/51) | `dataBlockDisplaySettingContext` + `drawAircraft.ts`。**スクオーク実値は 3-1 とセット**（現状 `---`）。 |
 | 2-4 | 速度ベクトル線の時間 | ✅ | 🟡 | ★☆☆ | [#52](https://github.com/Futty93/Horus/issues/52) | `velocityVectorLookaheadContext` + `radarCanvas.tsx`。子 spec [20260404-velocity-vector-line-duration](20260404-velocity-vector-line-duration/spec.md) と突合。 |
-| 2-5 | セクター境界線 | ⬜ | 🟡 | ★★☆ | [#53](https://github.com/Futty93/Horus/issues/53) | JSON 定義 + `routeRenderer` または別レイヤ描画の設計から。 |
+| 2-5 | セクター境界線 | ⬜ | 🟡 | ★★☆ | [#53](https://github.com/Futty93/Horus/issues/53) | 着手用子 spec [20260509-phase2-sector-boundary-lines](20260509-phase2-sector-boundary-lines/spec.md)。**現時点は後回し（公式データ整備コストのため Deferred）**。 |
 | 2-6 | 指示メモをラベル隣 | 🔄 | 🟡 | ★★☆ | [#54](https://github.com/Futty93/Horus/issues/54) | `drawAircraft.ts` のメモ行、`LocationService` 系 DTO の `atcClearance`。子 spec [20260326-instruction-memo-radar-label](20260326-instruction-memo-radar-label/spec.md)。 |
 
 ---
@@ -207,6 +207,8 @@ Phase 1 spec/Issue 整合 ──→ T-3（並行）
 
 | 日付 | 内容 |
 |------|------|
+| 2026-05-09 | 2-5（セクター境界線）は公式データ整備コストを踏まえて Deferred に更新。調査メモを [20260509-phase2-sector-boundary-lines](20260509-phase2-sector-boundary-lines/spec.md) に追記。 |
+| 2026-05-09 | Phase 2-5（セクター境界線）の着手用 spec を追加（[20260509-phase2-sector-boundary-lines](20260509-phase2-sector-boundary-lines/spec.md)）。 |
 | 2026-05-09 | Next.js 開発時の `.next` chunk 欠損対策 spec を追加（[20260509-nextjs-dev-cache-recovery](20260509-nextjs-dev-cache-recovery/spec.md)）。 |
 | 2026-05-09 | Phase 4 スライス 2 着手用 spec: ペア数値・強通知（[20260509-phase4-conflict-pair-ui-alerts](20260509-phase4-conflict-pair-ui-alerts/spec.md)）。フェーズ 4 表・ギャップ・着手順にリンク。 |
 | 2026-05-09 | Phase 4 スライス: Conflict BFF・STCA ストリップ・シンボル強調（[20260509-phase4-conflict-bff-ui](20260509-phase4-conflict-bff-ui/spec.md)）。4-1/4-3 を部分完了に更新。 |
