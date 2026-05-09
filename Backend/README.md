@@ -186,7 +186,22 @@ npm run dev
 
 ### フライトプラン機能のマニュアルテスト
 
-Swagger を用いた詳細な手順は [docs/test-data/MANUAL_TEST.md](docs/test-data/MANUAL_TEST.md) を参照してください。
+- **手順書**: [docs/test-data/MANUAL_TEST.md](docs/test-data/MANUAL_TEST.md)（Swagger で spawn / direct-to / resume 等）
+- **サンプル JSON 一覧**: [docs/test-data/README.md](docs/test-data/README.md)（`scenario-load-minimal.json`、`spawn-with-flightplan-*.json` 等）
+- **実装計画・テスト網羅表**: リポジトリルートの [spec/20260509-t3-flight-plan-tests-docs/spec.md](../spec/20260509-t3-flight-plan-tests-docs/spec.md)（T-3）
+
+主な API（詳細は `UranosAPI.yml`）:
+
+| メソッド | パス | 説明 |
+|----------|------|------|
+| POST | `/api/scenario/load` | シナリオ一括ロード（空域クリア＋複数機スポーン）。シミュ開始は別途 `POST /simulation/start` |
+| POST | `/api/aircraft/spawn-with-flightplan` | 1 機スポーン＋フライトプラン |
+| POST | `/api/aircraft/{callsign}/flightplan` | 既存機にフライトプランを付与・差し替え |
+| GET | `/api/aircraft/{callsign}/flightplan` | ナビモード・残ウェイポイント等 |
+| POST | `/api/aircraft/{callsign}/direct-to` | Direct To |
+| POST | `/api/aircraft/{callsign}/resume-navigation` | フライトプラン経路再開 |
+
+統合テスト: `src/test/java/.../FlightPlanApiIntegrationTest.java`
 
 ## プロジェクト構造
 
@@ -232,6 +247,7 @@ jp.ac.tohoku.qse.takahashi.AtcSimulator/
 │   │   ├── CreateAircraftService.java
 │   │   ├── LocationService.java
 │   │   ├── ScenarioController.java      # シナリオ一括ロード API ✅
+│   │   ├── FlightPlanController.java   # spawn-with-flightplan, flightplan CRUD, direct-to, resume-navigation
 │   │   └── SimulationService.java
 │   └── dto/
 │       ├── AircraftLocationDto.java  # 位置情報 JSON レスポンス用
@@ -337,7 +353,7 @@ RESTful APIを提供しており、詳細なAPI仕様は`UranosAPI.yml`ファイ
    - `GET /aircraft/location?callsign={callsign}` - 特定航空機の位置を取得
 
 3. **シミュレーション・シナリオ**
-   - `POST /api/scenario/load` - シナリオ一括ロード（空域クリア＋複数機スポーン）。シミュレーション開始は `POST /simulation/start` で行う ✅
+   - `POST /api/scenario/load` - シナリオ一括ロード（空域クリア＋複数機スポーン）。シミュレーション開始は `POST /simulation/start` で行う ✅。Swagger 用最小例: [docs/test-data/scenario-load-minimal.json](docs/test-data/scenario-load-minimal.json)
    - `POST /simulation/start` - シミュレーションを開始
    - `POST /simulation/pause` - シミュレーションを一時停止
    - `GET /simulation/status` - シミュレーションの状態を取得

@@ -223,7 +223,7 @@ React Context APIを使用して、以下の状態を管理しています：
 - `GET /api/aircraft/location/all` - 航空機位置一覧取得（各要素に `atcClearance` が含まれる場合あり）
 - `POST /api/aircraft/create-haneda-samples` - Haneda Samples（約28機）作成
 - `POST /api/aircraft/spawn-with-flightplan` - フライトプラン付き航空機スポーン
-- `POST /api/scenario/load` - シナリオ一括ロード（空域クリア＋複数機スポーン＋シミュレーション開始）
+- `POST /api/scenario/load` - シナリオ一括ロード（空域クリア＋複数機スポーン）。**シミュレーション開始は行わない**（`POST /api/simulation/start` は別操作）
 - `POST /api/aircraft/control/{callsign}` - パイロット操縦目標の送信（`instructedVector` 更新。管制クリアランスメモとは別）
 - `POST /api/aircraft/{callsign}/atc-clearance` - **管制クリアランスメモ**の記録（Body は control と同型。`atcClearance` として保持）
 - `GET /api/aircraft/{callsign}/flightplan` - フライトプラン取得
@@ -234,6 +234,8 @@ React Context APIを使用して、以下の状態を管理しています：
 - `POST /api/simulation/pause` - シミュレーション一時停止
 - `GET /api/ats/route/all` - ATS 経路・Fix・日本海岸線（japanOutline）取得
 - `GET /api/ats/route/suggest?origin=&destination=` - A\* による空港間経路提案
+
+**バックエンドのみでの検証**: `./gradlew bootRun` 後に Swagger（`http://localhost:8080/docs.html`）と [Backend の MANUAL_TEST.md](../Backend/docs/test-data/MANUAL_TEST.md)、サンプル JSON（[test-data/README.md](../Backend/docs/test-data/README.md)）で上記のうちフライトプラン関連を手動確認できる。統合テストは `FlightPlanApiIntegrationTest`（Backend）。
 
 ## 開発ガイドライン
 

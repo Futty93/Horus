@@ -148,13 +148,15 @@
 
 **目的**: 品質保証とドキュメント整備
 
+**完了（2026-05-09）**: [spec/20260509-t3-flight-plan-tests-docs](../20260509-t3-flight-plan-tests-docs/spec.md)（T-3）で棚卸し・ギャップ埋め・README 同期を実施。API×テスト×サンプルのマトリクスは同 spec 参照。
+
 | # | タスク | 状態 |
 |---|--------|------|
-| 6.1 | 単体テスト網羅 | 未着手 |
-| 6.2 | 統合テスト | 未着手 |
-| 6.3 | サンプルシナリオファイル作成 | 未着手 |
-| 6.4 | Backend README.md 更新 | 未着手 |
-| 6.5 | ユーザーマニュアル更新（該当する場合） | 未着手 |
+| 6.1 | 単体テスト網羅 | ✅ 運用基準充足（ドメイン・シナリオ・回帰テストあり。網羅表は T-3 spec） |
+| 6.2 | 統合テスト | ✅ `FlightPlanApiIntegrationTest`（spawn / load / GET / direct-to / resume / **flightplan 付与** / load 異常系） |
+| 6.3 | サンプルシナリオファイル作成 | ✅ `Backend/docs/test-data/`（`scenario-load-minimal.json` 含む） |
+| 6.4 | Backend README.md 更新 | ✅ フライトプラン API 表・test-data・T-3 へのリンク |
+| 6.5 | ユーザーマニュアル更新（該当する場合） | ✅ [MANUAL_TEST.md](../../Backend/docs/test-data/MANUAL_TEST.md) に `scenario/load` 手順を追加。Frontend README にバックエンド検証導線を追加 |
 
 ---
 
@@ -181,3 +183,4 @@
 | 2026-03-08 | Phase 3 完了。ScenarioService に directToFix/resumeNavigation、instructAircraft で HEADING 設定 |
 | 2026-03-08 | Phase 4 完了。FlightPlanController、DTO、FlightPlanFromDtoConverter、UranosAPI.yml 更新 |
 | 2026-03-08 | Phase 5 完了。FlightPlanDisplay、FlightPlanControl、flightPlan API、SelectFixMode 新 API 対応 |
+| 2026-05-09 | Phase 6 の実行を [20260509-t3-flight-plan-tests-docs](../20260509-t3-flight-plan-tests-docs/spec.md) に委譲。表を部分実装に更新 |

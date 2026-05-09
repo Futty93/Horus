@@ -352,6 +352,51 @@ class FlightPlanApiIntegrationTest {
     }
 
     @Test
+    @DisplayName("POST /api/aircraft/{callsign}/flightplan assigns flight plan to existing aircraft")
+    void assignFlightPlan_toExistingAircraft() {
+        var fpSpawn = Map.of(
+                "callsign", "ASGN01",
+                "cruiseAltitude", 35000,
+                "cruiseSpeed", 450,
+                "route", List.of(Map.of("fix", "ABENO", "action", "CONTINUE"))
+        );
+        var initialPosition = Map.of(
+                "latitude", 35.0, "longitude", 139.0, "altitude", 5000,
+                "heading", 90, "groundSpeed", 250, "verticalSpeed", 0
+        );
+        restTemplate.postForEntity(baseUrl() + "/api/aircraft/spawn-with-flightplan",
+                Map.of("flightPlan", fpSpawn, "initialPosition", initialPosition), Map.class);
+
+        var assignBody = Map.of(
+                "callsign", "ASGN01",
+                "aircraftType", "B738",
+                "departureAirport", "RJTT",
+                "arrivalAirport", "RJOO",
+                "cruiseAltitude", 36000,
+                "cruiseSpeed", 460,
+                "route", List.of(
+                        Map.of("fix", "ABENO", "action", "CONTINUE"),
+                        Map.of("fix", "MAIKO", "action", "CONTINUE")
+                )
+        );
+        ResponseEntity<Map> assignResp = restTemplate.postForEntity(
+                baseUrl() + "/api/aircraft/ASGN01/flightplan",
+                assignBody,
+                Map.class
+        );
+
+        assertThat(assignResp.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(assignResp.getBody()).containsEntry("success", true);
+
+        ResponseEntity<Map> getResp = restTemplate.getForEntity(
+                baseUrl() + "/api/aircraft/ASGN01/flightplan", Map.class);
+        assertThat(getResp.getStatusCode()).isEqualTo(HttpStatus.OK);
+        @SuppressWarnings("unchecked")
+        List<String> remaining = (List<String>) getResp.getBody().get("remainingWaypoints");
+        assertThat(remaining).as("route should include MAIKO after assign").contains("MAIKO");
+    }
+
+    @Test
     @DisplayName("POST /api/aircraft/{callsign}/resume-navigation applies resume")
     void resumeNavigation_appliesInstruction() {
         var flightPlan = Map.of(
