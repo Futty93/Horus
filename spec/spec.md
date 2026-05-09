@@ -118,7 +118,7 @@
 
 | # | タスク | 状況 | 優先度 | 難易度 | Issue | 実装の所在 / 次の具体タスク |
 |---|--------|------|--------|--------|-------|---------------------------|
-| 4-1 | STCA 視覚強調 | 🔄 | 🔴 | ★☆☆ | [#60](https://github.com/Futty93/Horus/issues/60) | `riskLevel` によるラベル色・`R` 表示に加え、**シンボルリング強調・赤レベル時の点滅**（[20260509-phase4-conflict-bff-ui](20260509-phase4-conflict-bff-ui/spec.md)）。**残り**: 閾値の設定 UI、ペア連動強調。 |
+| 4-1 | STCA 視覚強調 | 🔄 | 🟢 | ★☆☆ | [#60](https://github.com/Futty93/Horus/issues/60) | `riskLevel` によるラベル色・`R` 表示に加え、**シンボルリング強調・赤レベル時の点滅**（[20260509-phase4-conflict-bff-ui](20260509-phase4-conflict-bff-ui/spec.md)）。**残り**: 閾値の設定 UI、ペア連動強調。**現時点では優先度を下げ、当面は後回し**。 |
 | 4-2 | ペア間隔の数値表示 | ⬜ | 🟡 | ★★☆ | [#61](https://github.com/Futty93/Horus/issues/61) | 着手用子 spec [20260509-phase4-conflict-pair-ui-alerts](20260509-phase4-conflict-pair-ui-alerts/spec.md)。BFF 済み。**新規**: ラベル横またはサイドで `fetchAircraftConflicts` 等を表示。 |
 | 4-3 | 間隔違反の明示通知 | 🔄 | 🟡 | ★★☆ | [#62](https://github.com/Futty93/Horus/issues/62) | ストリップは [20260509-phase4-conflict-bff-ui](20260509-phase4-conflict-bff-ui/spec.md)。**残り（強通知）**は [20260509-phase4-conflict-pair-ui-alerts](20260509-phase4-conflict-pair-ui-alerts/spec.md)。 |
 | 4-4 | MSAW 簡易版 | ⬜ | 🟢 | ★★☆ | [#63](https://github.com/Futty93/Horus/issues/63) | 最低高度しきい値と `AircraftLocationDto` 拡張または別エンドポイント。 |
@@ -208,6 +208,7 @@ Phase 1 spec/Issue 整合 ──→ T-3（並行）
 
 | 日付 | 内容 |
 |------|------|
+| 2026-05-09 | Phase 4-1（STCA 視覚強調）は既存の点滅・リング強調で当面運用し、残タスク（閾値 UI・ペア連動強調）は優先度を 🟢 に下げて後回し方針を明記。 |
 | 2026-05-09 | Phase 3-2（ホールディング `HOLD`）の着手用 spec を追加（[20260509-phase3-holding-pattern](20260509-phase3-holding-pattern/spec.md)）。 |
 | 2026-05-09 | Phase 3-1b（特定 Squawk 強調表示）の着手用 spec を追加（[20260509-phase3-squawk-highlight-filter](20260509-phase3-squawk-highlight-filter/spec.md)）。 |
 | 2026-05-09 | Phase 3-1（スクオーク割当・表示）の着手用 spec を追加（[20260509-phase3-squawk-assignment-display](20260509-phase3-squawk-assignment-display/spec.md)）。 |
