@@ -10,6 +10,8 @@ public interface ScenarioService {
 
     void setAtcClearance(Callsign callsign, InstructedVector clearance);
 
+    void setSquawk(Callsign callsign, String squawk);
+
     void directFixAircraft(Callsign callsign, String fixName);
 
     void directToFix(Callsign callsign, String fixName, boolean resumeFlightPlan);

@@ -49,13 +49,24 @@ class DrawAircraft {
     /** Controller 画面では管制クリアランス高度があれば 2 行目をクリアランス vs 実測にする（パイロット目標の古い値で矢印が狂うのを防ぐ）。 */
     useControllerClearanceAltitudeRow = false,
     durationMinutes = 1,
-    nowMs = performance.now()
+    nowMs = performance.now(),
+    squawkHighlight: string | null = null
   ) {
     const riskDisplayFloor = this.computeRiskDisplayFloor(aircraft);
     ctx.save();
     try {
       this.drawTrack(ctx, aircraft, centerCoordinate, displayRange);
-      this.drawAircraftMarker(ctx, aircraft.position, riskDisplayFloor, nowMs);
+      const isSquawkMatched =
+        squawkHighlight != null &&
+        aircraft.squawk != null &&
+        aircraft.squawk === squawkHighlight;
+      this.drawAircraftMarker(
+        ctx,
+        aircraft.position,
+        riskDisplayFloor,
+        nowMs,
+        isSquawkMatched
+      );
       this.drawHeadingLine(
         ctx,
         aircraft.position,
@@ -70,7 +81,8 @@ class DrawAircraft {
         aircraft,
         dataBlockDisplaySetting,
         useControllerClearanceAltitudeRow,
-        riskDisplayFloor
+        riskDisplayFloor,
+        isSquawkMatched
       );
     } finally {
       ctx.restore();
@@ -106,7 +118,8 @@ class DrawAircraft {
     ctx: CanvasRenderingContext2D,
     position: { x: number; y: number },
     riskDisplayFloor: number,
-    nowMs: number
+    nowMs: number,
+    isSquawkMatched: boolean
   ) {
     const radius: number = 5;
     const flashOn = Math.floor(nowMs / 450) % 2 === 0;
@@ -123,6 +136,12 @@ class DrawAircraft {
       ctx.beginPath();
       ctx.arc(position.x, position.y, radius + 4, 0, 2 * Math.PI);
       ctx.strokeStyle = "rgba(158, 106, 3, 0.95)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    } else if (isSquawkMatched) {
+      ctx.beginPath();
+      ctx.arc(position.x, position.y, radius + 4, 0, 2 * Math.PI);
+      ctx.strokeStyle = "rgba(56, 189, 248, 0.95)";
       ctx.lineWidth = 2;
       ctx.stroke();
     }
@@ -164,7 +183,8 @@ class DrawAircraft {
     aircraft: Aircraft,
     setting: DataBlockDisplaySetting,
     useControllerClearanceAltitudeRow: boolean,
-    riskDisplayFloor: number
+    riskDisplayFloor: number,
+    isSquawkMatched: boolean
   ) {
     const airplanePosition = aircraft.position;
     const instructedVector = aircraft.instructedVector;
@@ -201,6 +221,11 @@ class DrawAircraft {
 
     const lineHeight = 15;
 
+    if (isSquawkMatched && riskDisplayFloor < 30) {
+      ctx.fillStyle = "rgba(56, 189, 248, 0.25)";
+      ctx.fillRect(labelX - 2, lineY - 11, 74, 15);
+      ctx.fillStyle = "white";
+    }
     ctx.fillText(aircraft.callsign, labelX, lineY);
     lineY += lineHeight;
 
@@ -262,8 +287,7 @@ class DrawAircraft {
 
     if (setting.squawk) {
       ctx.fillStyle = "white";
-      const squawkDisplay =
-        (aircraft as Aircraft & { squawk?: string }).squawk ?? "---";
+      const squawkDisplay = aircraft.squawk ?? "---";
       ctx.fillText(squawkDisplay, labelX, lineY);
     }
   }
