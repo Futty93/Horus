@@ -16,6 +16,7 @@ import SelectFixMode from "@/components/selectFixMode";
 import SelectedCallsignDisplay from "@/components/selectedCallsignDisplay";
 import FlightPlanControl from "@/components/flightPlanControl";
 import SimulationControlButtons from "@/components/simulationControlButtons";
+import ConflictSummaryStrip from "@/components/conflictSummaryStrip";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -33,8 +34,11 @@ export default function OperatorPage() {
                 <SelectFixModeProvider>
                   <SelectedAircraftProvider>
                     <div className="flex h-screen w-full overflow-hidden">
-                      <div className="flex w-full h-full">
-                        <RadarCanvas />
+                      <div className="flex h-full min-h-0 w-full min-w-0 flex-1">
+                        <div className="relative h-full min-h-0 min-w-0 flex-1">
+                          <ConflictSummaryStrip />
+                          <RadarCanvas />
+                        </div>
                         <div
                           className="controlPanel bg-atc-bg border-l border-atc-border text-atc-text
                                   p-3 flex flex-col min-w-80 max-w-80

@@ -110,6 +110,7 @@ Frontend/
 │   └── layout.tsx         # 共通レイアウト
 ├── components/            # 再利用可能なコンポーネント
 │   ├── radarCanvas.tsx    # レーダー表示キャンバス
+│   ├── conflictSummaryStrip.tsx # STCA 統計（ConflictStatisticsDto）をレーダー左上にポーリング表示
 │   ├── controlAircraft.tsx # 航空機制御パネル（Operator 専用）
 │   ├── instructionMemo.tsx # 指示メモ（Controller 専用）
 │   ├── selectFixMode.tsx  # Fix選択モード
@@ -124,6 +125,8 @@ Frontend/
 ├── tailwind.config.ts   # ATC テーマ設定
 └── public/             # 静的ファイル
 ```
+
+**STCA（コンフリクト）BFF**: `app/api/conflict/*` が Java `ConflictAlertController` の `/api/conflict/all`・`filtered`・`critical`・`violations`・`statistics`・`health`・`aircraft/{callsign}` へプロキシする。クライアント型・取得ヘルパーは `utility/api/conflict.ts`。
 
 ## 主要コンポーネント
 

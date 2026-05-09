@@ -37,10 +37,16 @@ class DrawAircraft {
     dataBlockDisplaySetting: DataBlockDisplaySetting,
     /** Controller 画面では管制クリアランス高度があれば 2 行目をクリアランス vs 実測にする（パイロット目標の古い値で矢印が狂うのを防ぐ）。 */
     useControllerClearanceAltitudeRow = false,
-    durationMinutes = 1
+    durationMinutes = 1,
+    nowMs = performance.now()
   ) {
     this.drawTrack(ctx, aircraft, centerCoordinate, displayRange);
-    this.drawAircraftMarker(ctx, aircraft.position);
+    this.drawAircraftMarker(
+      ctx,
+      aircraft.position,
+      aircraft.riskLevel ?? 0,
+      nowMs
+    );
     this.drawHeadingLine(
       ctx,
       aircraft.position,
@@ -85,9 +91,26 @@ class DrawAircraft {
 
   private static drawAircraftMarker(
     ctx: CanvasRenderingContext2D,
-    position: { x: number; y: number }
+    position: { x: number; y: number },
+    riskLevel: number,
+    nowMs: number
   ) {
     const radius: number = 5;
+    const flashOn = Math.floor(nowMs / 450) % 2 === 0;
+
+    if (riskLevel >= 70 && flashOn) {
+      ctx.beginPath();
+      ctx.arc(position.x, position.y, radius + 6, 0, 2 * Math.PI);
+      ctx.strokeStyle = "rgba(207, 34, 34, 0.9)";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    } else if (riskLevel >= 30) {
+      ctx.beginPath();
+      ctx.arc(position.x, position.y, radius + 4, 0, 2 * Math.PI);
+      ctx.strokeStyle = "rgba(158, 106, 3, 0.95)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
 
     ctx.beginPath();
     ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI);

@@ -206,9 +206,10 @@ const RadarCanvas: React.FC = () => {
     const canvas = canvasRefs[idx]?.current;
     if (!canvas) return;
 
+    const nowMs = performance.now();
     clearCanvas(ctx, canvas);
     renderMapOnCanvas(ctx);
-    renderAircraftsOnCanvas(ctx);
+    renderAircraftsOnCanvas(ctx, nowMs);
 
     toggleCanvasDisplay();
   };
@@ -238,7 +239,10 @@ const RadarCanvas: React.FC = () => {
     drawRangeRings(ctx, displayRangeRef.current, rangeRingsSettingRef.current);
   };
 
-  const renderAircraftsOnCanvas = (ctx: CanvasRenderingContext2D) => {
+  const renderAircraftsOnCanvas = (
+    ctx: CanvasRenderingContext2D,
+    nowMs: number
+  ) => {
     controllingAircraftsRef.current.forEach((aircraft) => {
       DrawAircraft.drawAircraft(
         ctx,
@@ -247,7 +251,8 @@ const RadarCanvas: React.FC = () => {
         centerCoordinateRef.current,
         dataBlockDisplaySettingRef.current,
         controllerClearanceAltitudeRowRef.current,
-        velocityVectorDurationRef.current
+        velocityVectorDurationRef.current,
+        nowMs
       );
     });
   };
@@ -415,7 +420,7 @@ const RadarCanvas: React.FC = () => {
   };
 
   return (
-    <div className="radarArea relative w-full">
+    <div className="radarArea relative h-full w-full">
       <canvas ref={canvasRefs[0]} className="w-full h-full bg-black"></canvas>
       <canvas ref={canvasRefs[1]} className="w-full hidden"></canvas>
     </div>
