@@ -62,7 +62,7 @@
   - [20260315-aircraft-table-edit](../20260315-aircraft-table-edit/spec.md)（1-4）
 - [x] 各子 spec に **「残タスク」** 節を追加（Optional / 手動 E2E / 親 spec メンテ）
 - [x] [spec/spec.md](../spec.md) Phase 1 行（1-2〜1-4）を更新
-- [ ] 関連 GitHub Issue（#45–#47）にコメント（下記テンプレ）。**権限があれば Close またはラベル更新**
+- [x] 関連 GitHub Issue（#45–#47）に `gh issue comment` で更新済み（リポジトリ: `HorusATC/Horus`）。いずれも **既に Closed** のため close コマンドは不要だった
 
 ---
 
@@ -97,7 +97,7 @@ spec 整合（2026-05-09）: docs/spec-phase1-setup-alignment ブランチ
 | A | `page.tsx`、`scenario.ts`、`ScenarioController`、テストの突合 | ✅ |
 | B | 子 spec 3 件の本文更新・残タスク節 | ✅ |
 | C | `spec/spec.md` Phase 1 更新 | ✅ |
-| C2 | Issue コメント | ⬜ 人手（テンプレ参照） |
+| C2 | Issue コメント | ✅ \`gh issue comment 45 46 47\`（HorusATC/Horus） |
 
 ---
 
