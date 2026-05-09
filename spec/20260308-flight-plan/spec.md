@@ -148,12 +148,14 @@
 
 **目的**: 品質保証とドキュメント整備
 
+**実行計画（2026-05-09）**: 実装は先行しているため、棚卸し・ギャップ埋め・本表の更新は [spec/20260509-t3-flight-plan-tests-docs](../20260509-t3-flight-plan-tests-docs/spec.md)（マスター [spec/spec.md](../spec.md) T-3）で管理する。
+
 | # | タスク | 状態 |
 |---|--------|------|
-| 6.1 | 単体テスト網羅 | 未着手 |
-| 6.2 | 統合テスト | 未着手 |
-| 6.3 | サンプルシナリオファイル作成 | 未着手 |
-| 6.4 | Backend README.md 更新 | 未着手 |
+| 6.1 | 単体テスト網羅 | 🔄 部分（ドメイン・`ScenarioServiceFlightPlanTest` 等あり。網羅マトリクスは T-3 spec） |
+| 6.2 | 統合テスト | 🔄 部分（`FlightPlanApiIntegrationTest` あり。T-3 でギャップ確認） |
+| 6.3 | サンプルシナリオファイル作成 | 🔄 部分（`Backend/docs/test-data/` あり。`scenario/load` 用の明示掲載は T-3） |
+| 6.4 | Backend README.md 更新 | 🔄 T-3 で整合 |
 | 6.5 | ユーザーマニュアル更新（該当する場合） | 未着手 |
 
 ---
@@ -181,3 +183,4 @@
 | 2026-03-08 | Phase 3 完了。ScenarioService に directToFix/resumeNavigation、instructAircraft で HEADING 設定 |
 | 2026-03-08 | Phase 4 完了。FlightPlanController、DTO、FlightPlanFromDtoConverter、UranosAPI.yml 更新 |
 | 2026-03-08 | Phase 5 完了。FlightPlanDisplay、FlightPlanControl、flightPlan API、SelectFixMode 新 API 対応 |
+| 2026-05-09 | Phase 6 の実行を [20260509-t3-flight-plan-tests-docs](../20260509-t3-flight-plan-tests-docs/spec.md) に委譲。表を部分実装に更新 |
