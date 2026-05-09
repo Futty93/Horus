@@ -1,0 +1,23 @@
+{
+  "scenarioName": "Swagger minimal (single aircraft)",
+  "aircraft": [
+    {
+      "flightPlan": {
+        "callsign": "SCLOAD01",
+        "departureAirport": "RJTT",
+        "arrivalAirport": "RJAA",
+        "cruiseAltitude": 35000,
+        "cruiseSpeed": 450,
+        "route": []
+      },
+      "initialPosition": {
+        "latitude": 35.0,
+        "longitude": 139.0,
+        "altitude": 5000,
+        "heading": 90,
+        "groundSpeed": 250,
+        "verticalSpeed": 0
+      }
+    }
+  ]
+}

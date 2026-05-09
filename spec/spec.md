@@ -161,7 +161,7 @@
 |---|--------|--------|--------|-------|------|------------------|
 | T-1 | ConflictAlert DTO 化 | 🟡 | ★☆☆ | [#74](https://github.com/Futty93/Horus/issues/74) | ✅ | `ConflictAlertDto` / `ConflictStatisticsDto` / `ConflictAlertController` |
 | T-2 | `*Service` → `*Controller` 統一 | 🟢 | ★★☆ | [#75](https://github.com/Futty93/Horus/issues/75) | - | `LocationService`, `CreateAircraftService`, `ControlAircraftService`, `SimulationService`, `AtsRouteService` 等 + BFF パス |
-| T-3 | テスト・サンプル・README | 🟡 | ★★☆ | [#76](https://github.com/HorusATC/Horus/issues/76) | 🔄 | **着手 spec**: [20260509-t3-flight-plan-tests-docs](20260509-t3-flight-plan-tests-docs/spec.md)。`Backend/docs/test-data/`、[20260308-flight-plan Phase 6](20260308-flight-plan/spec.md) |
+| T-3 | テスト・サンプル・README | 🟡 | ★★☆ | [#76](https://github.com/HorusATC/Horus/issues/76) | ✅ | **Done** [20260509-t3-flight-plan-tests-docs](20260509-t3-flight-plan-tests-docs/spec.md)。マトリクス・`scenario-load-minimal.json`・MANUAL_TEST・Backend/Frontend README |
 | T-4 | API 応答時間 | 🟡 | ★★☆ | - | - | 位置一覧のペイロード・シリアライズ・キャッシュ |
 | T-5 | テスタビリティ | 🟡 | ★★☆ | - | - | [20260317-backend-testability](20260317-backend-testability/spec.md) |
 | T-6 | DDD 徹底 | 🟡 | ★★★ | - | - | 集約境界・ドメインイベント |
@@ -176,8 +176,7 @@
 
 1. **Phase 1 の「ドキュメントと DoD の整合」** — ✅ **完了**（[20260509-phase1-flight-plan-setup-spec-alignment](20260509-phase1-flight-plan-setup-spec-alignment/spec.md)）。Issue #45–#47 へコメント・Close は人手。次は **T-3** または **Phase 4** へ。
 
-2. **（並行）T-3** — [20260509-t3-flight-plan-tests-docs](20260509-t3-flight-plan-tests-docs/spec.md)  
-   `FlightPlanApiIntegrationTest` 等を足がかりに、**シナリオ・フライトプラン経路の README / サンプル JSON** を揃え、[20260308-flight-plan Phase 6](20260308-flight-plan/spec.md) の表を実態に合わせ更新する。
+2. **（並行）T-3** — ✅ **完了**（[20260509-t3-flight-plan-tests-docs](20260509-t3-flight-plan-tests-docs/spec.md)）。次は **Phase 4**（Conflict UI）または Phase 2 残り。
 
 3. **Phase 4 のフロント接続（4-1 強化 → 4-2 / 4-3）**  
    Backend は `ConflictAlertController` 済み。**BFF + ポーリング**でペア情報・統計を取り、レーダー上の強調とセットで実装すると一貫する。4-1 の「シンボル強調」は `drawAircraft.ts` の拡張。
@@ -207,6 +206,7 @@ Phase 1 spec/Issue 整合 ──→ T-3（並行）
 
 | 日付 | 内容 |
 |------|------|
+| 2026-05-09 | T-3 完了（テスト・サンプル・README・マトリクス）。着手順 2 を完了扱いに。 |
 | 2026-05-09 | T-3 着手用 spec 追加: [20260509-t3-flight-plan-tests-docs](20260509-t3-flight-plan-tests-docs/spec.md)。T-3 行・着手順 2 にリンク。 |
 | 2026-05-09 | Phase 1 子 spec 整合実施（1-2〜1-4 を Done 扱いに更新）。着手順 1 を完了扱いに。 |
 | 2026-05-09 | Phase 1 着手用 spec 追加: [20260509-phase1-flight-plan-setup-spec-alignment](20260509-phase1-flight-plan-setup-spec-alignment/spec.md)。推奨着手順 1 にリンク。 |

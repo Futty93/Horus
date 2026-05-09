@@ -148,15 +148,15 @@
 
 **目的**: 品質保証とドキュメント整備
 
-**実行計画（2026-05-09）**: 実装は先行しているため、棚卸し・ギャップ埋め・本表の更新は [spec/20260509-t3-flight-plan-tests-docs](../20260509-t3-flight-plan-tests-docs/spec.md)（マスター [spec/spec.md](../spec.md) T-3）で管理する。
+**完了（2026-05-09）**: [spec/20260509-t3-flight-plan-tests-docs](../20260509-t3-flight-plan-tests-docs/spec.md)（T-3）で棚卸し・ギャップ埋め・README 同期を実施。API×テスト×サンプルのマトリクスは同 spec 参照。
 
 | # | タスク | 状態 |
 |---|--------|------|
-| 6.1 | 単体テスト網羅 | 🔄 部分（ドメイン・`ScenarioServiceFlightPlanTest` 等あり。網羅マトリクスは T-3 spec） |
-| 6.2 | 統合テスト | 🔄 部分（`FlightPlanApiIntegrationTest` あり。T-3 でギャップ確認） |
-| 6.3 | サンプルシナリオファイル作成 | 🔄 部分（`Backend/docs/test-data/` あり。`scenario/load` 用の明示掲載は T-3） |
-| 6.4 | Backend README.md 更新 | 🔄 T-3 で整合 |
-| 6.5 | ユーザーマニュアル更新（該当する場合） | 未着手 |
+| 6.1 | 単体テスト網羅 | ✅ 運用基準充足（ドメイン・シナリオ・回帰テストあり。網羅表は T-3 spec） |
+| 6.2 | 統合テスト | ✅ `FlightPlanApiIntegrationTest`（spawn / load / GET / direct-to / resume / **flightplan 付与** / load 異常系） |
+| 6.3 | サンプルシナリオファイル作成 | ✅ `Backend/docs/test-data/`（`scenario-load-minimal.json` 含む） |
+| 6.4 | Backend README.md 更新 | ✅ フライトプラン API 表・test-data・T-3 へのリンク |
+| 6.5 | ユーザーマニュアル更新（該当する場合） | ✅ [MANUAL_TEST.md](../../Backend/docs/test-data/MANUAL_TEST.md) に `scenario/load` 手順を追加。Frontend README にバックエンド検証導線を追加 |
 
 ---
 

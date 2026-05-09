@@ -42,6 +42,25 @@ npm run dev
 
 ---
 
+## 手順 1.4（任意）: シナリオ一括ロード `POST /api/scenario/load`
+
+フライトプラン設定画面を使わず、**複数機を一度に空域へ載せる**場合の最短手順です（空域はクリアされます）。
+
+1. Swagger UI で `POST /api/scenario/load` を展開
+2. **Try it out** をクリック
+3. Request body に **`docs/test-data/scenario-load-minimal.json`** の内容をコピー＆ペースト
+
+   - 1 機（`SCLOAD01`）、`route` は空配列。統合テストと同形式です。
+4. **Execute** をクリック
+5. レスポンス **200**、`"success": true`、`"aircraftCount": 1` を確認
+
+**確認**:
+
+- `GET /simulation/status` を実行し、`isSimulationRunning` が **false** のままであること（load だけではシミュレーションは開始されない）
+- 以降は **手順 2** で `POST /simulation/start` を行ってから、spawn 手順（手順 3）は**スキップ**して **手順 4** 以降で `callsign` を `SCLOAD01` に読み替えて確認可能
+
+---
+
 ## 手順 2: シミュレーション開始
 
 ### 2.1 POST /simulation/start
