@@ -185,7 +185,7 @@ Controller 専用。レーダーで航空機を選択すると、入力欄に当
 
 ### 4. Fix選択モード (SelectFixMode)
 
-Operator 専用。航空機の直行指示（Direct To）をレーダー上の Fix 選択で行う。
+Operator 専用。航空機の指示先 Fix をレーダー上で選択し、`Direct To` または `Hold` を選んで実行する。
 
 ### 5. フライトプラン設定ページ (Flight Plan Setup)
 
