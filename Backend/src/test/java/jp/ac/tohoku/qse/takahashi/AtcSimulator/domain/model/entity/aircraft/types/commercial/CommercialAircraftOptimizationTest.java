@@ -230,13 +230,12 @@ public class CommercialAircraftOptimizationTest {
         System.gc();
         long initialMemory = runtime.totalMemory() - runtime.freeMemory();
 
-        // メモリ集約的な処理を実行
-        List<String> radarStrings = new ArrayList<>();
+        // 全文字列を List に溜めない（CI や JVM により数 MB〜数百 MB ばらつくため）。生成コストだけ負荷に含める。
         for (int i = 0; i < 1000; i++) {
             for (CommercialAircraft aircraft : testAircraft) {
                 aircraft.calculateNextAircraftVector(SimulationTiming.SIM_DELTA_SECONDS);
                 aircraft.calculateNextAircraftPosition(SimulationTiming.SIM_DELTA_SECONDS);
-                radarStrings.add(aircraft.toRadarString());
+                assertFalse(aircraft.toRadarString().isEmpty());
             }
         }
 
@@ -249,9 +248,8 @@ public class CommercialAircraftOptimizationTest {
         System.out.printf("追加メモリ使用量: %d KB\n", memoryUsed / 1024);
         System.out.printf("1機あたりメモリ使用量: %.2f KB\n", (double) memoryUsed / (1024 * AIRCRAFT_COUNT));
 
-        // ループ内で全機のレーダー文字列を List に保持するため、主因は文字列バッファ（機数×1000 本）
         double memoryPerAircraft = (double) memoryUsed / (1024 * AIRCRAFT_COUNT);
-        assertTrue(memoryPerAircraft < 600.0,
+        assertTrue(memoryPerAircraft < 200.0,
                   String.format("メモリ使用量が多すぎます: %.2f KB/機", memoryPerAircraft));
 
         System.out.println("✓ メモリ効率テスト完了\n");
