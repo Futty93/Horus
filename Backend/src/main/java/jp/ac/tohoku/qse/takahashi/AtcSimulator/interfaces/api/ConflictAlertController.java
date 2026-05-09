@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.ConflictAlertService;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ConflictAlertDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ConflictStatisticsDto;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.HealthStatusDto;
 
 /**
  * コンフリクトアラート機能のREST APIコントローラー
@@ -137,40 +138,18 @@ public class ConflictAlertController {
      * @return システム状態
      */
     @GetMapping("/health")
-    public ResponseEntity<HealthStatus> getHealthStatus() {
+    public ResponseEntity<HealthStatusDto> getHealthStatus() {
         logger.debug("ヘルスチェック要求");
 
         ConflictStatisticsDto statistics = conflictAlertService.getConflictStatistics();
-        HealthStatus status = new HealthStatus(
+        HealthStatusDto status = new HealthStatusDto(
             "OK",
             System.currentTimeMillis(),
             statistics.totalConflicts(),
             statistics.redConflictCount()
         );
 
-        logger.debug("ヘルスチェック完了: ステータス={}", status.getStatus());
+        logger.debug("ヘルスチェック完了: ステータス={}", status.status());
         return ResponseEntity.ok(status);
-    }
-
-    /**
-     * ヘルスステータス情報を表すクラス
-     */
-    public static class HealthStatus {
-        private final String status;
-        private final long timestamp;
-        private final long totalConflicts;
-        private final long criticalConflicts;
-
-        public HealthStatus(String status, long timestamp, long totalConflicts, long criticalConflicts) {
-            this.status = status;
-            this.timestamp = timestamp;
-            this.totalConflicts = totalConflicts;
-            this.criticalConflicts = criticalConflicts;
-        }
-
-        public String getStatus() { return status; }
-        public long getTimestamp() { return timestamp; }
-        public long getTotalConflicts() { return totalConflicts; }
-        public long getCriticalConflicts() { return criticalConflicts; }
     }
 }
