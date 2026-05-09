@@ -207,8 +207,10 @@ npm run dev
 | POST | `/api/aircraft/{callsign}/direct-to` | Direct To |
 | POST | `/api/aircraft/{callsign}/hold` | Hold At Fix（初期版: 右旋回固定レーストラック、`turnDirection` は `RIGHT` のみ。同一Fixでは侵入方向に依存せず決定論的に同一トラック向きを共有） |
 | POST | `/api/aircraft/{callsign}/resume-navigation` | フライトプラン経路再開 |
+| GET | `/simulation/speed` | シミュレーション時間倍率と実時間ティック間隔（ms） |
+| PUT | `/simulation/speed` | 倍率を離散プリセットのみに設定（`0.25` / `0.5` / `1` / `2` / `4` / `10`）。他は 400 |
 
-統合テスト: `src/test/java/.../FlightPlanApiIntegrationTest.java`
+統合テスト: `src/test/java/.../FlightPlanApiIntegrationTest.java`、`SimulationSpeedIntegrationTest.java`（`fixtures/scenario-load-minimal.json` は [docs/test-data/scenario-load-minimal.json](docs/test-data/scenario-load-minimal.json) と同一内容）。200 機 `nextStep` 計測は `NextStepTwoHundredAircraftPerformanceTest.java`（1 ティック平均 100ms 超で失敗。多くの環境で 1ms 未満）。200 機 `getAllConflictAlerts` 計測は `ConflictDetectionTwoHundredAircraftPerformanceTest.java`（API と同経路、平均 100ms 超で失敗。README のコンフリクト目安と整合）。
 
 ## プロジェクト構造
 
@@ -364,7 +366,8 @@ RESTful APIを提供しており、詳細なAPI仕様は`UranosAPI.yml`ファイ
    - `POST /api/scenario/load` - シナリオ一括ロード（空域クリア＋複数機スポーン）。シミュレーション開始は `POST /simulation/start` で行う ✅。Swagger 用最小例: [docs/test-data/scenario-load-minimal.json](docs/test-data/scenario-load-minimal.json)
    - `POST /simulation/start` - シミュレーションを開始
    - `POST /simulation/pause` - シミュレーションを一時停止
-   - `GET /simulation/status` - シミュレーションの状態を取得
+   - `GET /simulation/status` - シミュレーションの状態（`isSimulationRunning`、`speedMultiplier`、`tickIntervalWallMs`）
+   - `GET /simulation/speed` / `PUT /simulation/speed` - 時間倍率（プリセットのみ）とティック間隔
 
 4. **★ コンフリクトアラート（新規）**
    - `GET /api/conflict/all` - 全コンフリクトアラートを取得
@@ -423,6 +426,12 @@ RESTful APIを提供しており、詳細なAPI仕様は`UranosAPI.yml`ファイ
 
 # パフォーマンステスト
 ./gradlew test --tests "*ConflictDetectorTest.testPerformanceWith200Aircraft"
+
+# シミュ 1 ティック（nextStep）を商業機 200 機で計測（ログに avg ms/tick）
+./gradlew test --tests "*NextStepTwoHundredAircraftPerformanceTest"
+
+# 全機コンフリクト評価（ConflictAlertService#getAllConflictAlerts）を 200 機で計測（ログに avg ms/run）
+./gradlew test --tests "*ConflictDetectionTwoHundredAircraftPerformanceTest"
 
 # サンプル実行
 java -cp build/libs/atc-simulator.jar jp.ac.tohoku.qse.takahashi.AtcSimulator.example.ConflictDetectionExample

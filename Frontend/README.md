@@ -249,6 +249,7 @@ React Context APIを使用して、以下の状態を管理しています：
 - `POST /api/aircraft/{callsign}/resume-navigation` - ナビゲーション再開
 - `POST /api/simulation/start` - シミュレーション開始
 - `POST /api/simulation/pause` - シミュレーション一時停止
+- `GET /api/simulation/speed` / `PUT /api/simulation/speed` - 時間倍率（プリセット `0.25` / `0.5` / `1` / `2` / `4` / `10` のみ）と実時間ティック間隔
 - `GET /api/ats/route/all` - ATS 経路・Fix・日本海岸線（japanOutline）取得
 - `GET /api/ats/route/suggest?origin=&destination=` - A\* による空港間経路提案
 

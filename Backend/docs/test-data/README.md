@@ -39,6 +39,10 @@
 | assign-flightplan-sample.json | `POST /api/aircraft/{callsign}/flightplan` 用。Body の callsign は path と一致させる（サーバが path を優先） |
 | direct-to-sample.json | Direct To 指示（fixName: UNAGI, resumeFlightPlan: true） |
 
+## 自動テストとの対応
+
+- `SimulationSpeedIntegrationTest`（Backend）は `scenario-load-minimal.json` と同一内容を `src/test/resources/fixtures/scenario-load-minimal.json` に置き、`PUT /simulation/speed` とシミュ進行後の位置変化を検証します。
+
 ## 注意
 
 - route 内の fix は waypoints.json に存在する名称を使用すること
