@@ -4,10 +4,10 @@ export function findNewIdsInSet(
   current: ReadonlySet<string>
 ): string[] {
   const out: string[] = [];
-  for (const id of current) {
+  current.forEach((id) => {
     if (!previous.has(id)) {
       out.push(id);
     }
-  }
+  });
   return out;
 }
