@@ -44,6 +44,17 @@ public class ScenarioServiceImpl implements ScenarioService {
     }
 
     @Override
+    public void setSquawk(Callsign callsign, String squawk) {
+        Aircraft aircraft = airspaceManagement.findAircraftByCallsign(callsign);
+        if (aircraft instanceof AircraftBase base) {
+            base.setSquawk(squawk);
+            return;
+        }
+        throw new IllegalStateException(
+                "Squawk assignment is only supported for AircraftBase: " + aircraft.getClass().getName());
+    }
+
+    @Override
     public void directFixAircraft(Callsign callsign, String fixName) {
         directToFix(callsign, fixName, false);
     }

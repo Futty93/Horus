@@ -18,6 +18,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Aircraft
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.InstructedVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ControlAircraftDto;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.SquawkAssignmentDto;
 
 import jakarta.validation.Valid;
 
@@ -58,5 +59,21 @@ public class AtcClearanceController {
 
         logger.info("管制クリアランス記録完了: {}", callsign);
         return ResponseEntity.ok("ATC clearance recorded: " + callsign);
+    }
+
+    @PostMapping("/{callsign}/squawk")
+    public ResponseEntity<String> setSquawk(
+            @PathVariable String callsign,
+            @Valid @RequestBody SquawkAssignmentDto body) {
+        logger.debug("スクオーク割当要求: {} -> {}", callsign, body.squawk());
+
+        Callsign cs = new Callsign(callsign);
+        if (!aircraftRepository.isAircraftExist(cs)) {
+            throw new AircraftNotFoundException(callsign);
+        }
+
+        scenarioService.setSquawk(cs, body.squawk());
+        logger.info("スクオーク割当完了: {} -> {}", callsign, body.squawk());
+        return ResponseEntity.ok("Squawk assigned: " + callsign);
     }
 }
