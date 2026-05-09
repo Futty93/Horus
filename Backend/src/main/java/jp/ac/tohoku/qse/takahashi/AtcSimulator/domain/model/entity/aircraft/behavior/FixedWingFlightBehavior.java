@@ -1,7 +1,5 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.behavior;
 
-import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.AtcSimulatorConstants.*;
-
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.*;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftVector;
@@ -15,15 +13,13 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.PositionUtils;
 public class FixedWingFlightBehavior implements FlightBehavior {
 
     @Override
-    public AircraftPosition calculateNextPosition(AircraftPosition currentPos, AircraftVector vector, double refreshRate) {
-        double refreshRateInSeconds = 1.0 / refreshRate;
-
+    public AircraftPosition calculateNextPosition(AircraftPosition currentPos, AircraftVector vector, double simDeltaSeconds) {
         return PositionUtils.calculateNextPosition(
             currentPos,
             vector.groundSpeed.toDouble(),
             vector.heading.toDouble(),
             vector.verticalSpeed.toDouble(),
-            refreshRateInSeconds
+            simDeltaSeconds
         );
     }
 
@@ -38,8 +34,8 @@ public class FixedWingFlightBehavior implements FlightBehavior {
     }
 
     @Override
-    public VerticalSpeed calculateNextVerticalSpeed(double currentAltitude, double targetAltitude, double maxClimbRate, double refreshRate) {
-        return PositionUtils.calculateNextVerticalSpeed(currentAltitude, targetAltitude, maxClimbRate, refreshRate);
+    public VerticalSpeed calculateNextVerticalSpeed(double currentAltitude, double targetAltitude, double maxClimbRate, double simDeltaSeconds) {
+        return PositionUtils.calculateNextVerticalSpeed(currentAltitude, targetAltitude, maxClimbRate, simDeltaSeconds);
     }
 
     @Override

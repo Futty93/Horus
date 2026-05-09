@@ -16,6 +16,6 @@ public interface AirspaceManagement {
     public Aircraft findAircraftByCallsign(Callsign callsign);
     public Optional<FixPosition> getFixPosition(String fixName);
 
-    void nextStep();
+    void nextStep(double simDeltaSeconds);
 
 }

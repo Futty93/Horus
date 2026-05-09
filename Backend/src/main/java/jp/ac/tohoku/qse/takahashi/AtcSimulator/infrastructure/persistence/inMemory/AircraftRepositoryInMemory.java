@@ -104,7 +104,7 @@ public class AircraftRepositoryInMemory implements AircraftRepository {
     }
 
     @Override
-    public void nextStep() {
+    public void nextStep(double simDeltaSeconds) {
         lock.writeLock().lock();
         try {
             logger.debug("全航空機の次ステップ計算開始: {}機", aircraftMap.size());
@@ -113,8 +113,8 @@ public class AircraftRepositoryInMemory implements AircraftRepository {
             List<Aircraft> toRemove = new ArrayList<>();
             for (Aircraft aircraft : aircraftMap.values()) {
                 try {
-                    aircraft.calculateNextAircraftVector();
-                    aircraft.calculateNextAircraftPosition();
+                    aircraft.calculateNextAircraftVector(simDeltaSeconds);
+                    aircraft.calculateNextAircraftPosition(simDeltaSeconds);
                     processedCount++;
                     if (aircraft.shouldBeRemovedFromSimulation()) {
                         toRemove.add(aircraft);

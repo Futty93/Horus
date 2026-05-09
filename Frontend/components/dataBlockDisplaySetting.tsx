@@ -86,7 +86,6 @@ const DataBlockDisplaySetting = ({
             className="rounded border-atc-border bg-atc-surface-elevated text-atc-accent focus:ring-atc-accent"
           />
           <span className="text-atc-text text-xs">スクオーク</span>
-          <span className="text-atc-text-muted text-xs">(3-1で有効化予定)</span>
         </label>
       </div>
     </CollapsiblePanel>

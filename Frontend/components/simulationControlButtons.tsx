@@ -1,6 +1,13 @@
 "use client";
 
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  SIMULATION_SPEED_PRESETS,
+  fetchSimulationSpeed,
+  isSameSpeedMultiplier,
+  setSimulationSpeed,
+  type SimulationSpeed,
+} from "@/utility/api/simulation";
 
 async function handleSimulationAction(
   action: "start" | "pause"
@@ -24,8 +31,40 @@ async function handleSimulationAction(
 }
 
 const SimulationControlButtons: React.FC = () => {
+  const [speed, setSpeed] = useState<SimulationSpeed | null>(null);
+  const [speedLoading, setSpeedLoading] = useState(true);
+  const [speedApplying, setSpeedApplying] = useState(false);
+
+  const refreshSpeed = useCallback(async () => {
+    setSpeedLoading(true);
+    const next = await fetchSimulationSpeed();
+    setSpeed(next);
+    setSpeedLoading(false);
+    if (!next) {
+      console.error("Could not load simulation speed");
+    }
+  }, []);
+
+  useEffect(() => {
+    void refreshSpeed();
+  }, [refreshSpeed]);
+
   const onStart = useCallback(() => handleSimulationAction("start"), []);
   const onPause = useCallback(() => handleSimulationAction("pause"), []);
+
+  const onSelectPreset = useCallback(async (multiplier: number) => {
+    setSpeedApplying(true);
+    const next = await setSimulationSpeed(multiplier);
+    setSpeedApplying(false);
+    if (next) {
+      setSpeed(next);
+    } else {
+      console.error("Could not set simulation speed");
+    }
+  }, []);
+
+  const mult = speed?.speedMultiplier;
+  const tickMs = speed?.tickIntervalWallMs;
 
   return (
     <div className="bg-atc-surface border border-atc-border rounded-lg p-3">
@@ -69,6 +108,49 @@ const SimulationControlButtons: React.FC = () => {
           >
             RESET
           </button>
+        </div>
+
+        <div className="pt-1 border-t border-atc-border">
+          <div className="text-[10px] font-mono text-atc-text/80 tracking-wider mb-1.5 text-center">
+            TIME SCALE
+          </div>
+          <div className="text-[10px] font-mono text-atc-text/70 text-center mb-2 space-x-2">
+            <span>
+              {speedLoading ? "…" : mult !== undefined ? `${mult}×` : "—"}
+            </span>
+            <span className="text-atc-border">|</span>
+            <span>
+              {speedLoading
+                ? "…"
+                : tickMs !== undefined
+                  ? `${tickMs} ms/tick`
+                  : "—"}
+            </span>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5">
+            {SIMULATION_SPEED_PRESETS.map((preset) => {
+              const active =
+                mult !== undefined && isSameSpeedMultiplier(mult, preset);
+              return (
+                <button
+                  key={preset}
+                  type="button"
+                  disabled={speedApplying}
+                  onClick={() => void onSelectPreset(preset)}
+                  className={`px-1.5 py-1.5 text-[10px] font-mono font-bold tracking-wider rounded border transition-colors duration-150
+                    focus:outline-none focus:ring-2 focus:ring-atc-accent focus:ring-offset-1 focus:ring-offset-atc-bg
+                    disabled:opacity-50 disabled:cursor-not-allowed
+                    ${
+                      active
+                        ? "bg-atc-accent/25 text-atc-text border-atc-accent"
+                        : "bg-atc-bg text-atc-text/90 border-atc-border hover:border-atc-accent/60"
+                    }`}
+                >
+                  {`${preset}×`}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

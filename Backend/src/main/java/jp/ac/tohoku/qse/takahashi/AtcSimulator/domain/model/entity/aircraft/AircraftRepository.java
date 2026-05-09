@@ -12,7 +12,7 @@ public interface AircraftRepository {
     Aircraft findByCallsign(Callsign callsign);
     List<Aircraft> findAll();
 
-    void nextStep();
+    void nextStep(double simDeltaSeconds);
 
     void clear();
 }

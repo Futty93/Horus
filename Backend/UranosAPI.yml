@@ -16,6 +16,8 @@ tags:
     description: "Aircraft location and status information."
   - name: "scenario"
     description: "Scenario load and management."
+  - name: "simulation"
+    description: "Simulation run/pause, status, and wall-clock speed multiplier."
 paths:
   "/startGame":
     post:
@@ -224,6 +226,64 @@ paths:
                     type: string
         "400":
           description: Bad request (empty aircraft, duplicate callsign, fix not found)
+
+  "/simulation/start":
+    post:
+      tags: ["simulation"]
+      summary: "Start simulation"
+      responses:
+        "200":
+          description: Simulation running flag set to true
+
+  "/simulation/pause":
+    post:
+      tags: ["simulation"]
+      summary: "Pause simulation"
+      responses:
+        "200":
+          description: Simulation running flag set to false
+
+  "/simulation/status":
+    get:
+      tags: ["simulation"]
+      summary: "Simulation status and timing"
+      responses:
+        "200":
+          description: Current state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SimulationStatus"
+
+  "/simulation/speed":
+    get:
+      tags: ["simulation"]
+      summary: "Get speed multiplier and wall-clock tick interval"
+      responses:
+        "200":
+          description: Current speed settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SimulationSpeed"
+    put:
+      tags: ["simulation"]
+      summary: "Set speed multiplier (discrete presets only)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SimulationSpeedRequest"
+      responses:
+        "200":
+          description: Speed updated; scheduler rescheduled
+        "400":
+          description: Invalid multiplier (must be 0.25, 0.5, 1, 2, 4, or 10)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SimulationSpeedError"
 
   "/aircraft/location":
     get:
@@ -558,4 +618,40 @@ components:
           type: integer
         verticalSpeed:
           type: integer
+
+    SimulationStatus:
+      type: object
+      required: [isSimulationRunning, speedMultiplier, tickIntervalWallMs]
+      properties:
+        isSimulationRunning:
+          type: boolean
+        speedMultiplier:
+          type: number
+          description: "Wall-clock multiplier; 1 = one sim second per second of real time (tick every 1000 ms)."
+        tickIntervalWallMs:
+          type: integer
+          description: "Approximate milliseconds between simulation ticks at current multiplier."
+
+    SimulationSpeed:
+      type: object
+      required: [speedMultiplier, tickIntervalWallMs]
+      properties:
+        speedMultiplier:
+          type: number
+        tickIntervalWallMs:
+          type: integer
+
+    SimulationSpeedRequest:
+      type: object
+      required: [speedMultiplier]
+      properties:
+        speedMultiplier:
+          type: number
+          enum: [0.25, 0.5, 1, 2, 4, 10]
+
+    SimulationSpeedError:
+      type: object
+      properties:
+        message:
+          type: string
 

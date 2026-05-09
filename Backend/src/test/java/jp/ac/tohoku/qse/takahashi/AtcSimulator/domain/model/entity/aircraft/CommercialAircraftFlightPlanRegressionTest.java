@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.config.SimulationTiming;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.types.commercial.CommercialAircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.AltitudeConstraint;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlan;
@@ -53,7 +54,7 @@ class CommercialAircraftFlightPlanRegressionTest {
             var targetFix = fixAt(34.65, 138.61);
             aircraft.setDirectTo(targetFix, "UNAGI", false);
 
-            aircraft.calculateNextAircraftVector();
+            aircraft.calculateNextAircraftVector(SimulationTiming.SIM_DELTA_SECONDS);
 
             double instructedHdg = aircraft.getInstructedVector().instructedHeading.toDouble();
             assertThat(instructedHdg).isBetween(0.0, 360.0);
@@ -77,7 +78,7 @@ class CommercialAircraftFlightPlanRegressionTest {
             aircraft.setFlightPlan(plan);
             aircraft.setCurrentWaypointIndex(1);
 
-            aircraft.calculateNextAircraftVector();
+            aircraft.calculateNextAircraftVector(SimulationTiming.SIM_DELTA_SECONDS);
 
             double instructedHdg = aircraft.getInstructedVector().instructedHeading.toDouble();
             assertThat(instructedHdg).isBetween(0.0, 360.0);
@@ -107,7 +108,7 @@ class CommercialAircraftFlightPlanRegressionTest {
             aircraft.setAircraftPosition(new AircraftPosition(
                     new Latitude(34.4046), new Longitude(138.52), new Altitude(5000)));
 
-            aircraft.calculateNextAircraftVector();
+            aircraft.calculateNextAircraftVector(SimulationTiming.SIM_DELTA_SECONDS);
 
             assertThat(aircraft.getCurrentWaypointIndex()).isEqualTo(1);
         }

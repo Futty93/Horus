@@ -46,7 +46,7 @@ public class AirspaceManagementImpl implements AirspaceManagement {
     }
 
     @Override
-    public void nextStep() {
-        aircraftRepository.nextStep();
+    public void nextStep(double simDeltaSeconds) {
+        aircraftRepository.nextStep(simDeltaSeconds);
     }
 }

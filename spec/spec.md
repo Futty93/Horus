@@ -62,7 +62,7 @@
 | **Phase 1（入口）** | 上記フローは実装済み。 | 1-1〜1-4 は**コア Done**（子 spec 2026-05-09 更新済）。**残り**: Optional・手動 E2E・Issue #45–#47 の Close 運用。1-5 は未着手。 |
 | **Phase 2（レーダー）** | 履歴ドット・レンジリング・速度ベクトル時間は **Canvas ＋ Context で動作**。データブロックは **表示トグルと描画**あり。スクオーク行は **プレースホルダ**（`drawAircraft.ts`、Backend 未連携）。 | 2-1・2-2・2-4 はロードマップ上「未着手」扱いが不整合。**残りは拡張（点数・間隔の設定、子 spec の DoD との一致確認）** と 2-3 の **実データ連携（3-1 と接続）**、2-5・2-6。 |
 | **Phase 4（安全 UI）** | `riskLevel` は API → `Aircraft` → ラベル色（赤/黄）と `R` 行表示。**BFF・ストリップ・シンボル**は [20260509-phase4-conflict-bff-ui](20260509-phase4-conflict-bff-ui/spec.md)。**選択機ペア数値・違反バナー**は [20260509-phase4-conflict-pair-ui-alerts](20260509-phase4-conflict-pair-ui-alerts/spec.md)。加えて 2026-05 に **片側不足のみで赤張り付きしないよう H/V 同時性を反映したリスク合成へ調整**。 | **残り**: シンボル/閾値 UI の仕上げ（4-1）など。 |
-| **シミュレーション速度（5-1）** | `AtcSimulatorConstants.REFRESH_RATE` が静的。 | 動的変更 API とスケジューラの見直しが必要。 |
+| **シミュレーション速度（5-1）** | `AtcSimulatorConstants.REFRESH_RATE` が静的。 | 子 spec [20260509-phase5-simulation-speed](20260509-phase5-simulation-speed/spec.md): 時間倍率 API、`TaskScheduler` 再スケジュール、ドメイン dt の単一供給。 |
 | **命名負債（T-2）** | `interfaces/api` に `*Service` が複数残存。 | `FlightPlanController` / `ScenarioController` と混在。リネームは OpenAPI・BFF・README を一括追従。 |
 
 ---
@@ -129,7 +129,7 @@
 
 | # | タスク | 優先度 | 難易度 | Issue | 実装方針のフック |
 |---|--------|--------|--------|-------|------------------|
-| 5-1 | シミュレーション速度変更 | 🔴 | ★★☆ | [#64](https://github.com/Futty93/Horus/issues/64) | `REFRESH_RATE` / `TICK_INTERVAL_MS` の動的化、`@Scheduled` 側の取り込み。 |
+| 5-1 | シミュレーション速度変更 | 🔴 | ★★☆ | [#64](https://github.com/Futty93/Horus/issues/64) | 着手用子 spec [20260509-phase5-simulation-speed](20260509-phase5-simulation-speed/spec.md)。時間倍率、`TaskScheduler` による再スケジュール、ドメインの dt 供給の単一化。 |
 | 5-2 | セッション記録 | 🟡 | ★★☆ | [#65](https://github.com/Futty93/Horus/issues/65) | Application 層でイベント追記、永続は後から DB に差し替え可能な設計。 |
 | 5-3 | 採点・レポート | 🟡 | ★★★ | [#66](https://github.com/Futty93/Horus/issues/66) | 5-2 の集計。 |
 | 5-4 | 難易度設定 | 🟢 | ★★☆ | [#67](https://github.com/Futty93/Horus/issues/67) | スポーンスケジューラ。 |
@@ -208,6 +208,7 @@ Phase 1 spec/Issue 整合 ──→ T-3（並行）
 
 | 日付 | 内容 |
 |------|------|
+| 2026-05-09 | Phase 5-1（シミュレーション速度変更）の着手用 spec を追加（[20260509-phase5-simulation-speed](20260509-phase5-simulation-speed/spec.md)）。ロードマップ 5-1 行にリンク。 |
 | 2026-05-09 | Phase 4-1（STCA 視覚強調）は既存の点滅・リング強調で当面運用し、残タスク（閾値 UI・ペア連動強調）は優先度を 🟢 に下げて後回し方針を明記。 |
 | 2026-05-09 | Phase 3-2（ホールディング `HOLD`）の着手用 spec を追加（[20260509-phase3-holding-pattern](20260509-phase3-holding-pattern/spec.md)）。 |
 | 2026-05-09 | Phase 3-1b（特定 Squawk 強調表示）の着手用 spec を追加（[20260509-phase3-squawk-highlight-filter](20260509-phase3-squawk-highlight-filter/spec.md)）。 |

@@ -160,7 +160,7 @@ Frontend/
 **主な機能**:
 
 - 航空機の位置表示
-- **履歴ドット**: 位置更新のたびに直前の緯度・経度・高度（WGS-84）をクライアント側に蓄積（最大 **120** 点）。**描画は 10s / 20s / 30s 前**に相当するサンプルを各 1 点ずつ選び、`CoordinateManager.calculateCanvasCoordinates` でキャンバス座標へ変換する（パン・中心座標・表示範囲の変更後も軌跡がずれない）。点の半径は `TRACK_DISPLAY_DOT_RADIUS_PX`（既定 **3px**、機体マーカー 5px より小さく）。
+- **履歴ドット**: 位置更新のたびに直前の緯度・経度・高度（WGS-84）をクライアント側に蓄積（最大 **120** 点）。**描画はシミュレーション時間で 10s / 20s / 30s 前**に相当するサンプルを各 1 点ずつ選ぶ（`GET /api/simulation/speed` の倍率で壁時計の遡り幅を補正。例: 10× なら約 1s / 2s / 3s 前の受信サンプル）。`CoordinateManager.calculateCanvasCoordinates` でキャンバス座標へ変換する（パン・中心座標・表示範囲の変更後も軌跡がずれない）。点の半径は `TRACK_DISPLAY_DOT_RADIUS_PX`（既定 **2px**、機体マーカー 5px より小さく）。
 - **速度ベクトル線**（針路方向の白線）の長さは、地速に対し **速度ベクトル予測時間（分）** に比例。`レーダー表示` パネルのスライダーで **0.5～10 分・0.5 分刻み**（既定 1 分）。表示のみでシミュレーション計算は変更しない（[spec/20260404-velocity-vector-line-duration/spec.md](../spec/20260404-velocity-vector-line-duration/spec.md)）。値は `localStorage` に保存し、Controller / Operator で共有。
 - 経路情報の表示
 - マウスインタラクション
@@ -219,6 +219,10 @@ Operator 専用。Direct To（Fix 名入力）、Hold At Fix（初期版: 右旋
 - 現在値の動的表示
 - スピンボタンの非表示
 
+### 10. シミュレーション制御 (SimulationControlButtons)
+
+Operator 専用（`/operator` 右パネル）。START / PAUSE / RESET に加え、**時間倍率**をプリセット（`0.25` / `0.5` / `1` / `2` / `4` / `10`）から選択。`utility/api/simulation.ts` 経由で `GET` / `PUT /api/simulation/speed` を呼び出し、現在倍率と壁時計あたりのティック間隔（ms）を表示する。
+
 ## 状態管理
 
 React Context APIを使用して、以下の状態を管理しています：
@@ -249,6 +253,7 @@ React Context APIを使用して、以下の状態を管理しています：
 - `POST /api/aircraft/{callsign}/resume-navigation` - ナビゲーション再開
 - `POST /api/simulation/start` - シミュレーション開始
 - `POST /api/simulation/pause` - シミュレーション一時停止
+- `GET /api/simulation/speed` / `PUT /api/simulation/speed` - 時間倍率（プリセット `0.25` / `0.5` / `1` / `2` / `4` / `10` のみ）と実時間ティック間隔
 - `GET /api/ats/route/all` - ATS 経路・Fix・日本海岸線（japanOutline）取得
 - `GET /api/ats/route/suggest?origin=&destination=` - A\* による空港間経路提案
 

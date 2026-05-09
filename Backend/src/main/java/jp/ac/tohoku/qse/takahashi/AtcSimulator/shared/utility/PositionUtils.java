@@ -112,13 +112,13 @@ public final class PositionUtils {
      * @param currentAltitude 現在の高度
      * @param targetAltitude 目標高度
      * @param maxClimbRate 最大上昇率（ft/min）
-     * @param refreshRate リフレッシュレート
+     * @param simDeltaSeconds 1ティックあたりのシミュレーション経過時間（秒）
      * @return 新しい垂直速度
      */
     public static VerticalSpeed calculateNextVerticalSpeed(double currentAltitude,
                                                          double targetAltitude,
                                                          double maxClimbRate,
-                                                         double refreshRate) {
+                                                         double simDeltaSeconds) {
         double altitudeDifference = targetAltitude - currentAltitude;
 
         // 高度差が非常に小さい場合（5フィート以内）は垂直速度を0にして安定化
@@ -131,16 +131,16 @@ public final class PositionUtils {
             // 低速調整：最大レートの10%で緩やかに調整
             double gentleRate = maxClimbRate * 0.1;
             double climbRate = Math.signum(altitudeDifference) *
-                              Math.min(gentleRate, Math.abs(altitudeDifference) * refreshRate);
+                              Math.min(gentleRate, Math.abs(altitudeDifference) / simDeltaSeconds);
             return new VerticalSpeed(climbRate);
         }
 
-        // 一般的な場合：通常の上昇率計算
-        double maxRatePerSecond = maxClimbRate / (60.0 * refreshRate);
-        double climbRate = Math.signum(altitudeDifference) *
-                          Math.min(maxRatePerSecond, Math.abs(altitudeDifference));
+        // 一般的な場合：通常の上昇率計算（maxClimbRate は ft/min）
+        double maxFeetPerTick = maxClimbRate * simDeltaSeconds / 60.0;
+        double feetThisTick = Math.signum(altitudeDifference)
+                * Math.min(maxFeetPerTick, Math.abs(altitudeDifference));
 
-        return new VerticalSpeed(climbRate * 60); // ft/minに変換
+        return new VerticalSpeed(feetThisTick * 60.0 / simDeltaSeconds);
     }
 
     /**

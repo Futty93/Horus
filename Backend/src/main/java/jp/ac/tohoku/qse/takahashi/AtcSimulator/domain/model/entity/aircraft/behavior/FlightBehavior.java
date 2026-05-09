@@ -16,10 +16,10 @@ public interface FlightBehavior {
      *
      * @param currentPosition 現在位置
      * @param vector 現在の速度ベクトル
-     * @param refreshRate リフレッシュレート
+     * @param simDeltaSeconds 1ティックあたりのシミュレーション経過時間（秒）
      * @return 計算された次の位置
      */
-    AircraftPosition calculateNextPosition(AircraftPosition currentPosition, AircraftVector vector, double refreshRate);
+    AircraftPosition calculateNextPosition(AircraftPosition currentPosition, AircraftVector vector, double simDeltaSeconds);
 
     /**
      * 次のヘディングを計算する
@@ -47,10 +47,10 @@ public interface FlightBehavior {
      * @param currentAltitude 現在高度
      * @param targetAltitude 目標高度
      * @param maxClimbRate 最大上昇/降下速度
-     * @param refreshRate リフレッシュレート
+     * @param simDeltaSeconds 1ティックあたりのシミュレーション経過時間（秒）
      * @return 計算された次の垂直速度
      */
-    VerticalSpeed calculateNextVerticalSpeed(double currentAltitude, double targetAltitude, double maxClimbRate, double refreshRate);
+    VerticalSpeed calculateNextVerticalSpeed(double currentAltitude, double targetAltitude, double maxClimbRate, double simDeltaSeconds);
 
     /**
      * 指定された位置への旋回角度を計算する

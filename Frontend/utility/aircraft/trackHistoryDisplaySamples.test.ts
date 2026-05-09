@@ -69,6 +69,29 @@ describe("selectTrackDisplaySamples", () => {
     expect(TRACK_DISPLAY_INTERVAL_SEC).toBe(10);
     expect([...TRACK_DISPLAY_OFFSETS_SEC]).toEqual([10, 20, 30]);
   });
+
+  it("uses wall lookback = sim offset / speedMultiplier so trails match sim time", () => {
+    const now = Date.parse("2026-04-04T12:00:00.000Z");
+    const speed = 10;
+    const history: PositionHistoryPoint[] = [
+      pt(5, now),
+      pt(3.5, now),
+      pt(2.5, now),
+      pt(1.5, now),
+      pt(0.5, now),
+    ];
+    const selected = selectTrackDisplaySamples(history, now, speed);
+    expect(selected).toHaveLength(3);
+    const agesSec = selected.map(
+      (p) => (now - Date.parse(p.recordedAt)) / 1000
+    );
+    expect(agesSec[0]).toBeGreaterThanOrEqual(1);
+    expect(agesSec[0]).toBeLessThanOrEqual(1.6);
+    expect(agesSec[1]).toBeGreaterThanOrEqual(2);
+    expect(agesSec[1]).toBeLessThanOrEqual(2.6);
+    expect(agesSec[2]).toBeGreaterThanOrEqual(3);
+    expect(agesSec[2]).toBeLessThanOrEqual(3.6);
+  });
 });
 
 describe("getNewestHistoryRecordedAtMs / isTrackHistoryFreshForDraw", () => {

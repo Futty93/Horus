@@ -9,6 +9,7 @@ import {
 import { GLOBAL_CONSTANTS } from "@/utility/globals/constants";
 import { GLOBAL_SETTINGS } from "@/utility/globals/settings";
 import { fetchAircraftLocation } from "@/utility/api/location";
+import { fetchSimulationSpeed } from "@/utility/api/simulation";
 import { DrawAircraft } from "@/utility/aircraft/drawAircraft";
 import { useRouteInfoDisplaySetting } from "@/context/routeInfoDisplaySettingContext";
 import { useCenterCoordinate } from "@/context/centerCoordinateContext";
@@ -91,6 +92,7 @@ const RadarCanvas: React.FC = () => {
   const controllerClearanceAltitudeRowRef = useRef(false);
   const pathnameRef = useRef(pathname);
   const squawkHighlightRef = useRef<string | null>(null);
+  const simulationSpeedMultiplierRef = useRef(1);
 
   // Refs for rAF / setInterval / event handlers: sync during render instead of mirroring in useEffect.
   isDisplayingRef.current = isDisplaying;
@@ -159,6 +161,9 @@ const RadarCanvas: React.FC = () => {
     if (!atsRouteData) return;
 
     updateCanvas();
+    void fetchSimulationSpeed().then((s) => {
+      if (s != null) simulationSpeedMultiplierRef.current = s.speedMultiplier;
+    });
     const stopUpdating = startUpdatingAircraftLocations();
 
     let rafId = 0;
@@ -270,7 +275,8 @@ const RadarCanvas: React.FC = () => {
         controllerClearanceAltitudeRowRef.current,
         velocityVectorDurationRef.current,
         nowMs,
-        squawkHighlightRef.current
+        squawkHighlightRef.current,
+        simulationSpeedMultiplierRef.current
       );
     });
   };
@@ -416,13 +422,18 @@ const RadarCanvas: React.FC = () => {
   const startUpdatingAircraftLocations = () => {
     const fetchLocationInterval = setInterval(async () => {
       try {
-        const currentControllingAircrafts = controllingAircraftsRef.current;
-        const updatedAircrafts = await fetchAircraftLocation(
-          currentControllingAircrafts,
-          centerCoordinateRef.current,
-          displayRangeRef.current,
-          pathnameRef.current
-        );
+        const [speed, updatedAircrafts] = await Promise.all([
+          fetchSimulationSpeed(),
+          fetchAircraftLocation(
+            controllingAircraftsRef.current,
+            centerCoordinateRef.current,
+            displayRangeRef.current,
+            pathnameRef.current
+          ),
+        ]);
+        if (speed != null) {
+          simulationSpeedMultiplierRef.current = speed.speedMultiplier;
+        }
         // console.log("updatedAircrafts", updatedAircrafts);
 
         // 最新の controllingAircrafts を取得して状態を更新
