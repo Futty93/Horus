@@ -171,7 +171,7 @@ public class FlightPlanController {
         Map<String, Object> body = new HashMap<>();
         body.put("success", true);
         body.put("callsign", callsign);
-        body.put("navigationMode", "FLIGHT_PLAN");
+        body.put("navigationMode", ((AircraftBase) aircraft).getNavigationMode().name());
         if (nextWaypoint != null) {
             body.put("nextWaypoint", nextWaypoint);
         }

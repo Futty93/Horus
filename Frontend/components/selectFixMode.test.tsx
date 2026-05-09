@@ -31,15 +31,8 @@ function FixModeActivator({ fixName }: { fixName: string }) {
   return null;
 }
 
-const originalFetch = global.fetch;
-
 beforeEach(() => {
-  global.fetch = jest.fn();
   jest.clearAllMocks();
-});
-
-afterEach(() => {
-  global.fetch = originalFetch;
 });
 
 jest.mock("@/utility/api/flightPlan");

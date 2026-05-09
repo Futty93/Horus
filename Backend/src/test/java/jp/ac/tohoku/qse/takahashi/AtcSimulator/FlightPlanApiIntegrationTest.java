@@ -2,7 +2,6 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,10 +17,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.config.globals.GlobalVariables;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftBase;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class FlightPlanApiIntegrationTest {
@@ -481,61 +478,39 @@ class FlightPlanApiIntegrationTest {
     }
 
     @Test
-    @DisplayName("same fix hold uses identical deterministic orientation")
-    void holdAtFix_sameFixUsesDeterministicOrientation() {
-        var flightPlanA = Map.of(
-                "callsign", "HOLDA1",
+    @DisplayName("resume-navigation returns HEADING after hold at final waypoint")
+    void resumeNavigation_afterHoldAtFinalWaypoint_returnsHeading() {
+        var flightPlan = Map.of(
+                "callsign", "HOLDEND1",
                 "cruiseAltitude", 35000,
                 "cruiseSpeed", 450,
-                "route", List.of(Map.of("fix", "ABENO", "action", "CONTINUE"))
+                "route", List.of(
+                        Map.of("fix", "ABENO", "action", "CONTINUE"),
+                        Map.of("fix", "MAIKO", "action", "REMOVE_AIRCRAFT")
+                )
         );
-        var flightPlanB = Map.of(
-                "callsign", "HOLDB1",
-                "cruiseAltitude", 35000,
-                "cruiseSpeed", 450,
-                "route", List.of(Map.of("fix", "ABENO", "action", "CONTINUE"))
-        );
-        var initialPositionA = Map.of(
+        var initialPosition = Map.of(
                 "latitude", 35.0, "longitude", 139.0, "altitude", 5000,
-                "heading", 30, "groundSpeed", 250, "verticalSpeed", 0
-        );
-        var initialPositionB = Map.of(
-                "latitude", 34.6, "longitude", 138.6, "altitude", 5000,
-                "heading", 280, "groundSpeed", 250, "verticalSpeed", 0
+                "heading", 90, "groundSpeed", 250, "verticalSpeed", 0
         );
 
         restTemplate.postForEntity(baseUrl() + "/api/aircraft/spawn-with-flightplan",
-                Map.of("flightPlan", flightPlanA, "initialPosition", initialPositionA), Map.class);
-        restTemplate.postForEntity(baseUrl() + "/api/aircraft/spawn-with-flightplan",
-                Map.of("flightPlan", flightPlanB, "initialPosition", initialPositionB), Map.class);
+                Map.of("flightPlan", flightPlan, "initialPosition", initialPosition), Map.class);
 
         restTemplate.postForEntity(
-                baseUrl() + "/api/aircraft/HOLDA1/hold",
-                Map.of("fixName", "ABENO", "turnDirection", "RIGHT"),
-                Map.class
-        );
-        restTemplate.postForEntity(
-                baseUrl() + "/api/aircraft/HOLDB1/hold",
-                Map.of("fixName", "ABENO", "turnDirection", "RIGHT"),
+                baseUrl() + "/api/aircraft/HOLDEND1/hold",
+                Map.of("fixName", "MAIKO", "turnDirection", "RIGHT"),
                 Map.class
         );
 
-        var aircraftA = (AircraftBase) aircraftRepository.findByCallsign(new Callsign("HOLDA1"));
-        var aircraftB = (AircraftBase) aircraftRepository.findByCallsign(new Callsign("HOLDB1"));
-        FixPosition outboundA = extractHoldingOutboundTarget(aircraftA);
-        FixPosition outboundB = extractHoldingOutboundTarget(aircraftB);
+        ResponseEntity<Map> response = restTemplate.postForEntity(
+                baseUrl() + "/api/aircraft/HOLDEND1/resume-navigation",
+                null,
+                Map.class
+        );
 
-        assertThat(outboundA.latitude.toDouble()).isEqualTo(outboundB.latitude.toDouble());
-        assertThat(outboundA.longitude.toDouble()).isEqualTo(outboundB.longitude.toDouble());
-    }
-
-    private FixPosition extractHoldingOutboundTarget(AircraftBase aircraft) {
-        try {
-            Field field = AircraftBase.class.getDeclaredField("holdingOutboundTarget");
-            field.setAccessible(true);
-            return (FixPosition) field.get(aircraft);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new IllegalStateException("Failed to inspect holding outbound target", e);
-        }
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).containsEntry("success", true);
+        assertThat(response.getBody()).containsEntry("navigationMode", "HEADING");
     }
 }

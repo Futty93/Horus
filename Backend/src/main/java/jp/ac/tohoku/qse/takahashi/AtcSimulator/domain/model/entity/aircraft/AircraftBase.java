@@ -52,7 +52,6 @@ public abstract class AircraftBase implements Aircraft {
     protected boolean resumeFlightPlanAfterDirectTo;
     protected boolean markedForRemoval;
     protected FixPosition holdingFix;
-    protected String holdingFixName;
     protected FixPosition holdingOutboundTarget;
     protected HoldTurnDirection holdTurnDirection;
     protected boolean holdingToOutboundLeg;
@@ -88,7 +87,6 @@ public abstract class AircraftBase implements Aircraft {
         this.resumeFlightPlanAfterDirectTo = false;
         this.markedForRemoval = false;
         this.holdingFix = null;
-        this.holdingFixName = null;
         this.holdingOutboundTarget = null;
         this.holdTurnDirection = HoldTurnDirection.RIGHT;
         this.holdingToOutboundLeg = false;
@@ -420,7 +418,6 @@ public abstract class AircraftBase implements Aircraft {
 
     public void setHoldAtFix(FixPosition fix, String fixName, HoldTurnDirection turnDirection) {
         this.holdingFix = fix;
-        this.holdingFixName = fixName;
         this.holdTurnDirection = turnDirection;
         this.holdingToOutboundLeg = false;
         this.holdingEntryCompleted = false;
@@ -480,7 +477,6 @@ public abstract class AircraftBase implements Aircraft {
 
     private void clearHoldingState() {
         this.holdingFix = null;
-        this.holdingFixName = null;
         this.holdingOutboundTarget = null;
         this.holdTurnDirection = HoldTurnDirection.RIGHT;
         this.holdingToOutboundLeg = false;
