@@ -5,11 +5,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -34,6 +38,45 @@ class FlightPlanApiIntegrationTest {
 
     private String baseUrl() {
         return "http://localhost:" + port;
+    }
+
+    private Map<String, Object> defaultInitialPosition() {
+        return Map.of(
+                "latitude", 35.0,
+                "longitude", 139.0,
+                "altitude", 5000,
+                "heading", 90,
+                "groundSpeed", 250,
+                "verticalSpeed", 0
+        );
+    }
+
+    private void spawnWithFlightPlan(String callsign, List<Map<String, Object>> route) {
+        var flightPlan = Map.of(
+                "callsign", callsign,
+                "cruiseAltitude", 35000,
+                "cruiseSpeed", 450,
+                "route", route
+        );
+        restTemplate.postForEntity(
+                baseUrl() + "/api/aircraft/spawn-with-flightplan",
+                Map.of("flightPlan", flightPlan, "initialPosition", defaultInitialPosition()),
+                Map.class
+        );
+    }
+
+    private void spawnWithSingleWaypointFlightPlan(String callsign, String fixName) {
+        spawnWithFlightPlan(
+                callsign,
+                List.of(Map.of("fix", fixName, "action", "CONTINUE"))
+        );
+    }
+
+    private static Stream<Arguments> holdTurnCases() {
+        return Stream.of(
+                Arguments.of("RIGHT", HttpStatus.OK, true, "HOLDING"),
+                Arguments.of("LEFT", HttpStatus.BAD_REQUEST, false, null)
+        );
     }
 
     @BeforeEach
@@ -87,20 +130,7 @@ class FlightPlanApiIntegrationTest {
     @Test
     @DisplayName("GET /api/aircraft/{callsign}/flightplan returns flight plan status")
     void getFlightPlan_returnsStatus() {
-        var flightPlan = Map.of(
-                "callsign", "FPAPI01",
-                "cruiseAltitude", 35000,
-                "cruiseSpeed", 450,
-                "route", List.of(
-                        Map.of("fix", "ABENO", "action", "CONTINUE")
-                )
-        );
-        var initialPosition = Map.of(
-                "latitude", 35.0, "longitude", 139.0, "altitude", 5000,
-                "heading", 90, "groundSpeed", 250, "verticalSpeed", 0
-        );
-        restTemplate.postForEntity(baseUrl() + "/api/aircraft/spawn-with-flightplan",
-                Map.of("flightPlan", flightPlan, "initialPosition", initialPosition), Map.class);
+        spawnWithSingleWaypointFlightPlan("FPAPI01", "ABENO");
 
         ResponseEntity<Map> response = restTemplate.getForEntity(
                 baseUrl() + "/api/aircraft/FPAPI01/flightplan",
@@ -116,18 +146,7 @@ class FlightPlanApiIntegrationTest {
     @Test
     @DisplayName("POST /api/aircraft/{callsign}/direct-to applies direct to")
     void directTo_appliesInstruction() {
-        var flightPlan = Map.of(
-                "callsign", "FPAPI01",
-                "cruiseAltitude", 35000,
-                "cruiseSpeed", 450,
-                "route", List.of(Map.of("fix", "ABENO", "action", "CONTINUE"))
-        );
-        var initialPosition = Map.of(
-                "latitude", 35.0, "longitude", 139.0, "altitude", 5000,
-                "heading", 90, "groundSpeed", 250, "verticalSpeed", 0
-        );
-        restTemplate.postForEntity(baseUrl() + "/api/aircraft/spawn-with-flightplan",
-                Map.of("flightPlan", flightPlan, "initialPosition", initialPosition), Map.class);
+        spawnWithSingleWaypointFlightPlan("FPAPI01", "ABENO");
 
         ResponseEntity<Map> response = restTemplate.postForEntity(
                 baseUrl() + "/api/aircraft/FPAPI01/direct-to",
@@ -354,18 +373,7 @@ class FlightPlanApiIntegrationTest {
     @Test
     @DisplayName("POST /api/aircraft/{callsign}/flightplan assigns flight plan to existing aircraft")
     void assignFlightPlan_toExistingAircraft() {
-        var fpSpawn = Map.of(
-                "callsign", "ASGN01",
-                "cruiseAltitude", 35000,
-                "cruiseSpeed", 450,
-                "route", List.of(Map.of("fix", "ABENO", "action", "CONTINUE"))
-        );
-        var initialPosition = Map.of(
-                "latitude", 35.0, "longitude", 139.0, "altitude", 5000,
-                "heading", 90, "groundSpeed", 250, "verticalSpeed", 0
-        );
-        restTemplate.postForEntity(baseUrl() + "/api/aircraft/spawn-with-flightplan",
-                Map.of("flightPlan", fpSpawn, "initialPosition", initialPosition), Map.class);
+        spawnWithSingleWaypointFlightPlan("ASGN01", "ABENO");
 
         var assignBody = Map.of(
                 "callsign", "ASGN01",
@@ -399,18 +407,7 @@ class FlightPlanApiIntegrationTest {
     @Test
     @DisplayName("POST /api/aircraft/{callsign}/resume-navigation applies resume")
     void resumeNavigation_appliesInstruction() {
-        var flightPlan = Map.of(
-                "callsign", "FPAPI01",
-                "cruiseAltitude", 35000,
-                "cruiseSpeed", 450,
-                "route", List.of(Map.of("fix", "ABENO", "action", "CONTINUE"))
-        );
-        var initialPosition = Map.of(
-                "latitude", 35.0, "longitude", 139.0, "altitude", 5000,
-                "heading", 90, "groundSpeed", 250, "verticalSpeed", 0
-        );
-        restTemplate.postForEntity(baseUrl() + "/api/aircraft/spawn-with-flightplan",
-                Map.of("flightPlan", flightPlan, "initialPosition", initialPosition), Map.class);
+        spawnWithSingleWaypointFlightPlan("FPAPI01", "ABENO");
 
         ResponseEntity<Map> response = restTemplate.postForEntity(
                 baseUrl() + "/api/aircraft/FPAPI01/resume-navigation",
@@ -423,79 +420,41 @@ class FlightPlanApiIntegrationTest {
         assertThat(response.getBody()).containsEntry("navigationMode", "FLIGHT_PLAN");
     }
 
-    @Test
-    @DisplayName("POST /api/aircraft/{callsign}/hold applies right-turn holding")
-    void holdAtFix_appliesInstruction() {
-        var flightPlan = Map.of(
-                "callsign", "FPAPI01",
-                "cruiseAltitude", 35000,
-                "cruiseSpeed", 450,
-                "route", List.of(Map.of("fix", "ABENO", "action", "CONTINUE"))
-        );
-        var initialPosition = Map.of(
-                "latitude", 35.0, "longitude", 139.0, "altitude", 5000,
-                "heading", 90, "groundSpeed", 250, "verticalSpeed", 0
-        );
-        restTemplate.postForEntity(baseUrl() + "/api/aircraft/spawn-with-flightplan",
-                Map.of("flightPlan", flightPlan, "initialPosition", initialPosition), Map.class);
+    @ParameterizedTest(name = "turnDirection={0} -> status={1}")
+    @MethodSource("holdTurnCases")
+    @DisplayName("POST /api/aircraft/{callsign}/hold validates turn direction")
+    void holdAtFix_validatesTurnDirection(
+            String turnDirection,
+            HttpStatus expectedStatus,
+            boolean expectedSuccess,
+            String expectedNavigationMode
+    ) {
+        spawnWithSingleWaypointFlightPlan("FPAPI01", "ABENO");
 
         ResponseEntity<Map> response = restTemplate.postForEntity(
                 baseUrl() + "/api/aircraft/FPAPI01/hold",
-                Map.of("fixName", "ABENO", "turnDirection", "RIGHT"),
+                Map.of("fixName", "ABENO", "turnDirection", turnDirection),
                 Map.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).containsEntry("success", true);
-        assertThat(response.getBody()).containsEntry("navigationMode", "HOLDING");
-        assertThat(response.getBody()).containsEntry("turnDirection", "RIGHT");
-    }
-
-    @Test
-    @DisplayName("POST /api/aircraft/{callsign}/hold rejects unsupported turn direction")
-    void holdAtFix_rejectsLeftTurn() {
-        var flightPlan = Map.of(
-                "callsign", "FPAPI01",
-                "cruiseAltitude", 35000,
-                "cruiseSpeed", 450,
-                "route", List.of(Map.of("fix", "ABENO", "action", "CONTINUE"))
-        );
-        var initialPosition = Map.of(
-                "latitude", 35.0, "longitude", 139.0, "altitude", 5000,
-                "heading", 90, "groundSpeed", 250, "verticalSpeed", 0
-        );
-        restTemplate.postForEntity(baseUrl() + "/api/aircraft/spawn-with-flightplan",
-                Map.of("flightPlan", flightPlan, "initialPosition", initialPosition), Map.class);
-
-        ResponseEntity<Map> response = restTemplate.postForEntity(
-                baseUrl() + "/api/aircraft/FPAPI01/hold",
-                Map.of("fixName", "ABENO", "turnDirection", "LEFT"),
-                Map.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).containsEntry("success", false);
+        assertThat(response.getStatusCode()).isEqualTo(expectedStatus);
+        assertThat(response.getBody()).containsEntry("success", expectedSuccess);
+        if (expectedNavigationMode != null) {
+            assertThat(response.getBody()).containsEntry("navigationMode", expectedNavigationMode);
+            assertThat(response.getBody()).containsEntry("turnDirection", turnDirection);
+        }
     }
 
     @Test
     @DisplayName("resume-navigation returns HEADING after hold at final waypoint")
     void resumeNavigation_afterHoldAtFinalWaypoint_returnsHeading() {
-        var flightPlan = Map.of(
-                "callsign", "HOLDEND1",
-                "cruiseAltitude", 35000,
-                "cruiseSpeed", 450,
-                "route", List.of(
+        spawnWithFlightPlan(
+                "HOLDEND1",
+                List.of(
                         Map.of("fix", "ABENO", "action", "CONTINUE"),
                         Map.of("fix", "MAIKO", "action", "REMOVE_AIRCRAFT")
                 )
         );
-        var initialPosition = Map.of(
-                "latitude", 35.0, "longitude", 139.0, "altitude", 5000,
-                "heading", 90, "groundSpeed", 250, "verticalSpeed", 0
-        );
-
-        restTemplate.postForEntity(baseUrl() + "/api/aircraft/spawn-with-flightplan",
-                Map.of("flightPlan", flightPlan, "initialPosition", initialPosition), Map.class);
 
         restTemplate.postForEntity(
                 baseUrl() + "/api/aircraft/HOLDEND1/hold",
