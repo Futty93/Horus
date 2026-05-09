@@ -219,6 +219,10 @@ Operator 専用。Direct To（Fix 名入力）、Hold At Fix（初期版: 右旋
 - 現在値の動的表示
 - スピンボタンの非表示
 
+### 10. シミュレーション制御 (SimulationControlButtons)
+
+Operator 専用（`/operator` 右パネル）。START / PAUSE / RESET に加え、**時間倍率**をプリセット（`0.25` / `0.5` / `1` / `2` / `4` / `10`）から選択。`utility/api/simulation.ts` 経由で `GET` / `PUT /api/simulation/speed` を呼び出し、現在倍率と壁時計あたりのティック間隔（ms）を表示する。
+
 ## 状態管理
 
 React Context APIを使用して、以下の状態を管理しています：
