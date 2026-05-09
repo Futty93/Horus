@@ -89,12 +89,14 @@ public class ConflictDetectionExample {
 
         // 全ペア計算
         List<Aircraft> aircraftList = Arrays.asList(JAL512, ana456, ual789);
-        Map<String, RiskAssessment> allConflicts = detector.calculateAllConflicts(aircraftList);
+        Map<ConflictDetector.ConflictPair, RiskAssessment> allConflicts = detector.calculateAllConflicts(aircraftList);
 
         System.out.println("\n全航空機ペアの評価:");
-        allConflicts.forEach((pairId, assessment) -> {
+        allConflicts.forEach((pair, assessment) -> {
             System.out.printf("- %s: 危険度%.2f (%s)\n",
-                pairId, assessment.getRiskLevel(), assessment.getAlertLevel());
+                pair.callsignA() + "-" + pair.callsignB(),
+                assessment.getRiskLevel(),
+                assessment.getAlertLevel());
         });
 
         System.out.println();
@@ -120,7 +122,7 @@ public class ConflictDetectionExample {
 
             // 実際の測定
             long startTime = System.nanoTime();
-            Map<String, RiskAssessment> results = detector.calculateAllConflicts(aircraftList);
+            Map<ConflictDetector.ConflictPair, RiskAssessment> results = detector.calculateAllConflicts(aircraftList);
             long endTime = System.nanoTime();
 
             double executionTimeMs = (endTime - startTime) / 1_000_000.0;
@@ -138,7 +140,7 @@ public class ConflictDetectionExample {
         long beforeMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 
         List<Aircraft> largeList = generateRandomAircraft(200);
-        Map<String, RiskAssessment> largeResults = detector.calculateAllConflicts(largeList);
+        Map<ConflictDetector.ConflictPair, RiskAssessment> largeResults = detector.calculateAllConflicts(largeList);
 
         long afterMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         double memoryUsedMB = (afterMemory - beforeMemory) / (1024.0 * 1024.0);

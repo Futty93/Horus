@@ -29,6 +29,10 @@
 - **水平間隔**: 5海里（レーダー管制下）
 - **予測時間**: 最大5分先まで
 
+#### リスク合成ポリシー（2026-05）
+- 管制間隔欠如予測（`conflictPredicted`）は **CPA 時点で水平・垂直の両方が不足**した場合のみ true。
+- `riskLevel` は水平/垂直の各リスクを合成して算出するが、**片側だけが高いケースは抑制**し、両側が同時に高い場合に強く上がるよう調整。
+
 #### パフォーマンス特性
 - **処理能力**: 200機同時処理（通常 < 100ms）
 - **メモリ使用量**: < 50MB
@@ -82,8 +86,10 @@ curl http://localhost:8080/api/conflict/statistics
 #### レスポンス例
 
 ```json
-{
-  "JAL512-ANA456": {
+[
+  {
+    "callsignA": "ANA456",
+    "callsignB": "JAL512",
     "riskLevel": 75.2,
     "timeToClosest": 45.5,
     "closestHorizontalDistance": 3.2,
@@ -91,7 +97,7 @@ curl http://localhost:8080/api/conflict/statistics
     "conflictPredicted": true,
     "alertLevel": "RED_CONFLICT"
   }
-}
+]
 ```
 
 ---

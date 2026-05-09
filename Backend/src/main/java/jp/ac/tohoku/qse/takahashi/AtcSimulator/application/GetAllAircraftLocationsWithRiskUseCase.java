@@ -8,10 +8,10 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Airc
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftBase;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.types.commercial.CommercialAircraft;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.service.conflict.ConflictDetector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.RiskAssessment;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.AircraftLocationDto;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.StringUtils;
 
 /**
  * Use case: get all aircraft locations with risk assessment for radar display.
@@ -29,7 +29,7 @@ public class GetAllAircraftLocationsWithRiskUseCase {
 
     public List<AircraftLocationDto> execute() {
         List<Aircraft> allAircraft = aircraftRepository.findAll();
-        Map<String, RiskAssessment> allConflicts = conflictAlertService.getAllConflictAlerts();
+        Map<ConflictDetector.ConflictPair, RiskAssessment> allConflicts = conflictAlertService.getAllConflictAlerts();
 
         return allAircraft.stream()
                 .map(aircraft -> toDto(aircraft, allConflicts, allAircraft))
@@ -46,7 +46,7 @@ public class GetAllAircraftLocationsWithRiskUseCase {
                 .orElseThrow();
     }
 
-    private AircraftLocationDto toDto(Aircraft aircraft, Map<String, RiskAssessment> allConflicts,
+    private AircraftLocationDto toDto(Aircraft aircraft, Map<ConflictDetector.ConflictPair, RiskAssessment> allConflicts,
                                       List<Aircraft> allAircraft) {
         if (!(aircraft instanceof AircraftBase base)) {
             return fallbackDto(aircraft, 0.0);
@@ -113,13 +113,13 @@ public class GetAllAircraftLocationsWithRiskUseCase {
     }
 
     private double calculateMaxRiskForAircraft(String targetCallsign,
-                                              Map<String, RiskAssessment> allConflicts,
+                                              Map<ConflictDetector.ConflictPair, RiskAssessment> allConflicts,
                                               List<Aircraft> allAircraft) {
         double maxRisk = 0.0;
         for (Aircraft other : allAircraft) {
             if (!other.getCallsign().toString().equals(targetCallsign)) {
-                String pairId = StringUtils.generatePairId(targetCallsign, other.getCallsign().toString());
-                RiskAssessment risk = allConflicts.get(pairId);
+                var pair = new ConflictDetector.ConflictPair(targetCallsign, other.getCallsign().toString());
+                RiskAssessment risk = allConflicts.get(pair);
                 if (risk != null && risk.getRiskLevel() > maxRisk) {
                     maxRisk = risk.getRiskLevel();
                 }

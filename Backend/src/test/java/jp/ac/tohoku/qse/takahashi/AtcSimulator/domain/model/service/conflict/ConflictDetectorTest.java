@@ -78,7 +78,7 @@ class ConflictDetectorTest {
             List<Aircraft> aircraftList = Arrays.asList(testAircraft1, testAircraft2);
 
             // 実行
-            Map<String, RiskAssessment> results = conflictDetector.calculateAllConflicts(aircraftList);
+            Map<ConflictDetector.ConflictPair, RiskAssessment> results = conflictDetector.calculateAllConflicts(aircraftList);
 
             // 検証
             assertNotNull(results);
@@ -167,7 +167,7 @@ class ConflictDetectorTest {
 
             // 実行時間測定
             long startTime = System.currentTimeMillis();
-            Map<String, RiskAssessment> results = conflictDetector.calculateAllConflicts(largeAircraftList);
+            Map<ConflictDetector.ConflictPair, RiskAssessment> results = conflictDetector.calculateAllConflicts(largeAircraftList);
             long endTime = System.currentTimeMillis();
 
             long executionTime = endTime - startTime;
@@ -191,7 +191,7 @@ class ConflictDetectorTest {
 
             // 大量データ処理
             List<Aircraft> aircraftList = generate200Aircraft();
-            Map<String, RiskAssessment> results = conflictDetector.calculateAllConflicts(aircraftList);
+            Map<ConflictDetector.ConflictPair, RiskAssessment> results = conflictDetector.calculateAllConflicts(aircraftList);
 
             // メモリ使用量確認
             long finalMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
@@ -229,7 +229,7 @@ class ConflictDetectorTest {
         @Test
         @DisplayName("空リスト処理")
         void testCalculateAllConflicts_EmptyList() {
-            Map<String, RiskAssessment> results = conflictDetector.calculateAllConflicts(new ArrayList<>());
+            Map<ConflictDetector.ConflictPair, RiskAssessment> results = conflictDetector.calculateAllConflicts(new ArrayList<>());
 
             assertNotNull(results);
             assertTrue(results.isEmpty());
@@ -239,7 +239,7 @@ class ConflictDetectorTest {
         @DisplayName("単一航空機処理")
         void testCalculateAllConflicts_SingleAircraft() {
             List<Aircraft> singleAircraft = Arrays.asList(testAircraft1);
-            Map<String, RiskAssessment> results = conflictDetector.calculateAllConflicts(singleAircraft);
+            Map<ConflictDetector.ConflictPair, RiskAssessment> results = conflictDetector.calculateAllConflicts(singleAircraft);
 
             assertNotNull(results);
             assertTrue(results.isEmpty());
@@ -499,6 +499,24 @@ class ConflictDetectorTest {
             assertTrue(result.getRiskLevel() <= 30.0, "十分な垂直分離では危険度は低い");
             assertEquals(AlertLevel.SAFE, result.getAlertLevel());
             assertFalse(result.isSeparationViolation());
+        }
+
+        @Test
+        @DisplayName("水平十分・鉛直不足のみでは赤に張り付かない")
+        void testNoRedWhenOnlyVerticalIsInsufficientAtCpa() {
+            // 水平は大きく離れているが、同高度で交差する想定
+            Aircraft aircraft1 = createTestAircraft("ANA601", 35.0, 139.0, 35000, 90, 400, 0);
+            Aircraft aircraft2 = createTestAircraft("SKY605", 35.6, 139.0, 35000, 90, 400, 0);
+
+            RiskAssessment result = conflictDetector.calculateConflictRisk(aircraft1, aircraft2);
+
+            assertTrue(
+                result.getClosestHorizontalDistance() >= MINIMUM_HORIZONTAL_SEPARATION,
+                "CPA の水平隔離は基準以上");
+            assertFalse(result.isConflictPredicted(), "水平・垂直の同時不足ではないため違反予測なし");
+            assertTrue(
+                result.getRiskLevel() < 70.0,
+                "片側不足のみでは赤アラート閾値未満に抑制される");
         }
 
         @Test

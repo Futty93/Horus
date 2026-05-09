@@ -1,18 +1,14 @@
-export interface RiskAssessmentDto {
-  riskLevel: number;
-  alertLevel: string;
-  timeToClosest: number;
-  closestHorizontalDistance: number;
-  closestVerticalDistance: number;
-  conflictPredicted: boolean;
-}
-
+/** Distances match backend `RiskAssessment`: horizontal NM, vertical ft, TCPA seconds. */
 export interface ConflictAlertDto {
-  pairId: string;
+  callsignA: string;
+  callsignB: string;
   riskLevel: number;
   alertLevel: string;
+  /** Seconds until closest point of approach (may be non-finite when no CPA). */
   timeToClosest: number;
+  /** Nautical miles. */
   closestHorizontalDistance: number;
+  /** Feet. */
   closestVerticalDistance: number;
   conflictPredicted: boolean;
 }
@@ -46,11 +42,8 @@ export async function fetchConflictStatistics(): Promise<ConflictStatisticsDto |
   return fetchJson<ConflictStatisticsDto>("/api/conflict/statistics");
 }
 
-export async function fetchConflictAll(): Promise<Record<
-  string,
-  RiskAssessmentDto
-> | null> {
-  return fetchJson<Record<string, RiskAssessmentDto>>("/api/conflict/all");
+export async function fetchConflictAll(): Promise<ConflictAlertDto[] | null> {
+  return fetchJson<ConflictAlertDto[]>("/api/conflict/all");
 }
 
 export async function fetchConflictCritical(): Promise<

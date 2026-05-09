@@ -110,7 +110,9 @@ Frontend/
 │   └── layout.tsx         # 共通レイアウト
 ├── components/            # 再利用可能なコンポーネント
 │   ├── radarCanvas.tsx    # レーダー表示キャンバス
-│   ├── conflictSummaryStrip.tsx # STCA 統計（ConflictStatisticsDto）をレーダー左上にポーリング表示
+│   ├── conflictSummaryStrip.tsx # STCA 統計をレーダー左上にポーリング表示
+│   ├── separationViolationAlerts.tsx # 新規違反ペア / Sep 増のバナー（レーダー下）
+│   ├── selectedAircraftConflictsPanel.tsx # 選択機の STCA ペア数値（サイドパネル）
 │   ├── controlAircraft.tsx # 航空機制御パネル（Operator 専用）
 │   ├── instructionMemo.tsx # 指示メモ（Controller 専用）
 │   ├── selectFixMode.tsx  # Fix選択モード
@@ -127,6 +129,8 @@ Frontend/
 ```
 
 **STCA（コンフリクト）BFF**: `app/api/conflict/*` が Java `ConflictAlertController` の `/api/conflict/all`・`filtered`・`critical`・`violations`・`statistics`・`health`・`aircraft/{callsign}` へプロキシする。クライアント型・取得ヘルパーは `utility/api/conflict.ts`。
+
+**STCA 距離の単位（UI と一致）**: バックエンド `RiskAssessment` に合わせ、**水平隔離 `closestHorizontalDistance` は海里（NM）**、**鉛直隔離 `closestVerticalDistance` はフィート（ft）**、**最接近までの時間 `timeToClosest` は秒**。選択機のペア一覧は `selectedAircraftConflictsPanel.tsx`（`fetchAircraftConflicts`、位置更新と同じ 1s 間隔）。API は `pairId` 文字列ではなく `callsignA` / `callsignB` を返すため、相手機表示は構造化データで解決できる。**違反・高リスクの強通知**は `separationViolationAlerts.tsx` が `/api/conflict/all` の差分から新規ペアを検知してレーダー下にバナーを出す（約 10s で自動消去）。同一ペアは **30s クールダウン**で連打を抑制。Controller / Operator でそれぞれマウントするため通知は画面ごとに独立。
 
 ## 主要コンポーネント
 

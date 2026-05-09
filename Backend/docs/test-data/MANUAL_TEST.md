@@ -285,6 +285,12 @@ npm run dev
 
 ---
 
+## STCA（フロント）: 選択機ペア数値と違反バナー
+
+2 機以上でシミュレーション中、`/controller` または `/operator` で機体を選択するとサイドの **STCA pairs (selected)** に H/V（NM・ft）が表示され、新規違反ペア検知時はレーダー下にバナーが出る（詳細は `Frontend/README.md` の STCA 節）。
+
+---
+
 ## トラブルシューティング
 
 ### 航空機が動かない

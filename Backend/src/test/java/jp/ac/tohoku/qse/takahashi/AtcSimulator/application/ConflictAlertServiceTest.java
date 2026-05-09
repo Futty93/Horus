@@ -23,7 +23,6 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.persistence.inMemory.AircraftRepositoryInMemory;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ConflictAlertDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ConflictStatisticsDto;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.RiskAssessmentDto;
 
 /**
  * Unit tests for ConflictAlertService.
@@ -65,50 +64,90 @@ class ConflictAlertServiceTest {
         RiskAssessment assessment = new RiskAssessment(
                 50.0, 120.0, 3.0, 800.0, false);
         when(conflictDetector.calculateAllConflicts(anyList()))
-                .thenReturn(Map.of("CF1-CF2", assessment));
+                .thenReturn(Map.of(new ConflictDetector.ConflictPair("CF1", "CF2"), assessment));
 
         List<ConflictAlertDto> results = conflictAlertService.getAircraftConflicts("CF1");
 
         assertThat(results).hasSize(1);
         ConflictAlertDto first = results.get(0);
-        assertThat(first.pairId()).isEqualTo("CF1-CF2");
-        assertThat(first.pairId().split("-")).hasSize(2);
+        assertThat(first.callsignA()).isEqualTo("CF1");
+        assertThat(first.callsignB()).isEqualTo("CF2");
         assertThat(first.riskLevel()).isEqualTo(50.0);
         assertThat(first.alertLevel()).isEqualTo("WHITE_CONFLICT");
     }
 
     @Test
-    @DisplayName("getAllConflictAlertsAsDto returns DTO map")
-    void getAllConflictAlertsAsDto_returnsDtoMap() {
-        RiskAssessment a1 = new RiskAssessment(10.0, 200.0, 8.0, 2000.0, false);
-        RiskAssessment a2 = new RiskAssessment(80.0, 30.0, 2.0, 500.0, true);
+    @DisplayName("getAircraftConflicts uses pair boundary matching instead of substring contains")
+    void getAircraftConflicts_filtersByPairBoundary() {
+        RiskAssessment related = new RiskAssessment(40.0, 90.0, 4.0, 1200.0, false);
+        RiskAssessment unrelatedButContaining = new RiskAssessment(60.0, 80.0, 3.5, 900.0, false);
         when(conflictDetector.calculateAllConflicts(anyList()))
-                .thenReturn(Map.of("A-B", a1, "C-D", a2));
+                .thenReturn(Map.of(
+                        new ConflictDetector.ConflictPair("A", "B"), related,
+                        new ConflictDetector.ConflictPair("JA1-A", "CF2"), unrelatedButContaining
+                ));
 
-        Map<String, RiskAssessmentDto> result = conflictAlertService.getAllConflictAlertsAsDto();
+        List<ConflictAlertDto> results = conflictAlertService.getAircraftConflicts("A");
 
-        assertThat(result).hasSize(2);
-        assertThat(result.get("A-B").riskLevel()).isEqualTo(10.0);
-        assertThat(result.get("C-D").riskLevel()).isEqualTo(80.0);
-        assertThat(result.get("C-D").conflictPredicted()).isTrue();
+        assertThat(results).hasSize(1);
+        assertThat(results.get(0).callsignA()).isEqualTo("A");
+        assertThat(results.get(0).callsignB()).isEqualTo("B");
     }
 
     @Test
-    @DisplayName("getFilteredConflictAlertsAsDto filters by level and returns DTO map")
+    @DisplayName("getAllConflictAlertsAsDto returns DTO list")
+    void getAllConflictAlertsAsDto_returnsDtoList() {
+        RiskAssessment a1 = new RiskAssessment(10.0, 200.0, 8.0, 2000.0, false);
+        RiskAssessment a2 = new RiskAssessment(80.0, 30.0, 2.0, 500.0, true);
+        when(conflictDetector.calculateAllConflicts(anyList()))
+                .thenReturn(Map.of(
+                        new ConflictDetector.ConflictPair("A", "B"), a1,
+                        new ConflictDetector.ConflictPair("C", "D"), a2));
+
+        List<ConflictAlertDto> result = conflictAlertService.getAllConflictAlertsAsDto();
+
+        assertThat(result).hasSize(2);
+        assertThat(result).anySatisfy(alert -> {
+            assertThat(alert.callsignA()).isEqualTo("A");
+            assertThat(alert.callsignB()).isEqualTo("B");
+            assertThat(alert.riskLevel()).isEqualTo(10.0);
+        });
+        assertThat(result).anySatisfy(alert -> {
+            assertThat(alert.callsignA()).isEqualTo("C");
+            assertThat(alert.callsignB()).isEqualTo("D");
+            assertThat(alert.riskLevel()).isEqualTo(80.0);
+            assertThat(alert.conflictPredicted()).isTrue();
+        });
+    }
+
+    @Test
+    @DisplayName("getFilteredConflictAlertsAsDto filters by level and returns DTO list")
     void getFilteredConflictAlertsAsDto_filtersByLevel() {
         RiskAssessment safe = new RiskAssessment(10.0, 200.0, 8.0, 2000.0, false);
         RiskAssessment white = new RiskAssessment(50.0, 120.0, 4.0, 1200.0, false);
         RiskAssessment red = new RiskAssessment(85.0, 45.0, 2.0, 600.0, true);
         when(conflictDetector.calculateAllConflicts(anyList()))
-                .thenReturn(Map.of("A-B", safe, "C-D", white, "E-F", red));
+                .thenReturn(Map.of(
+                        new ConflictDetector.ConflictPair("A", "B"), safe,
+                        new ConflictDetector.ConflictPair("C", "D"), white,
+                        new ConflictDetector.ConflictPair("E", "F"), red));
 
-        Map<String, RiskAssessmentDto> result =
+        List<ConflictAlertDto> result =
                 conflictAlertService.getFilteredConflictAlertsAsDto("WHITE_CONFLICT");
 
         assertThat(result).hasSize(2);
-        assertThat(result).containsKey("C-D");
-        assertThat(result).containsKey("E-F");
-        assertThat(result).doesNotContainKey("A-B");
+        assertThat(result).anySatisfy(alert -> {
+            assertThat(alert.callsignA()).isEqualTo("C");
+            assertThat(alert.callsignB()).isEqualTo("D");
+        });
+        assertThat(result).anySatisfy(alert -> {
+            assertThat(alert.callsignA()).isEqualTo("E");
+            assertThat(alert.callsignB()).isEqualTo("F");
+        });
+        assertThat(result).noneSatisfy(alert -> {
+            assertThat(alert.callsignA()).isEqualTo("A");
+            assertThat(alert.callsignB()).isEqualTo("B");
+        });
     }
 
     @Test
@@ -126,7 +165,11 @@ class ConflictAlertServiceTest {
         RiskAssessment white2 = new RiskAssessment(60.0, 90.0, 3.5, 1100.0, true);
         RiskAssessment red = new RiskAssessment(85.0, 45.0, 2.0, 600.0, true);
         when(conflictDetector.calculateAllConflicts(anyList()))
-                .thenReturn(Map.of("A-B", safe, "C-D", white1, "E-F", white2, "G-H", red));
+                .thenReturn(Map.of(
+                        new ConflictDetector.ConflictPair("A", "B"), safe,
+                        new ConflictDetector.ConflictPair("C", "D"), white1,
+                        new ConflictDetector.ConflictPair("E", "F"), white2,
+                        new ConflictDetector.ConflictPair("G", "H"), red));
 
         ConflictStatisticsDto result = conflictAlertService.getConflictStatistics();
 
