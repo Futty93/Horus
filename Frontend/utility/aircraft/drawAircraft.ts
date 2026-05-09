@@ -29,6 +29,17 @@ import {
  * @see CanvasRenderingContext2D
  */
 class DrawAircraft {
+  /** Same integer as the data-block `R` row; drives STCA ring thresholds so R0 never gets a ring from float/NaN quirks. */
+  private static computeRiskDisplayFloor(aircraft: Aircraft): number {
+    const raw = aircraft.riskLevel;
+    const n =
+      typeof raw === "number" && Number.isFinite(raw) ? raw : Number(raw);
+    if (!Number.isFinite(n)) {
+      return 0;
+    }
+    return Math.floor(Math.max(0, Math.min(100, n)));
+  }
+
   public static drawAircraft(
     ctx: CanvasRenderingContext2D,
     aircraft: Aircraft,
@@ -40,28 +51,30 @@ class DrawAircraft {
     durationMinutes = 1,
     nowMs = performance.now()
   ) {
-    this.drawTrack(ctx, aircraft, centerCoordinate, displayRange);
-    this.drawAircraftMarker(
-      ctx,
-      aircraft.position,
-      aircraft.riskLevel ?? 0,
-      nowMs
-    );
-    this.drawHeadingLine(
-      ctx,
-      aircraft.position,
-      aircraft.vector.groundSpeed,
-      aircraft.vector.heading,
-      displayRange,
-      durationMinutes
-    );
-    this.drawLabelLiine(ctx, aircraft.position, aircraft.label);
-    this.drawAircraftLabel(
-      ctx,
-      aircraft,
-      dataBlockDisplaySetting,
-      useControllerClearanceAltitudeRow
-    );
+    const riskDisplayFloor = this.computeRiskDisplayFloor(aircraft);
+    ctx.save();
+    try {
+      this.drawTrack(ctx, aircraft, centerCoordinate, displayRange);
+      this.drawAircraftMarker(ctx, aircraft.position, riskDisplayFloor, nowMs);
+      this.drawHeadingLine(
+        ctx,
+        aircraft.position,
+        aircraft.vector.groundSpeed,
+        aircraft.vector.heading,
+        displayRange,
+        durationMinutes
+      );
+      this.drawLabelLiine(ctx, aircraft.position, aircraft.label);
+      this.drawAircraftLabel(
+        ctx,
+        aircraft,
+        dataBlockDisplaySetting,
+        useControllerClearanceAltitudeRow,
+        riskDisplayFloor
+      );
+    } finally {
+      ctx.restore();
+    }
   }
 
   private static drawTrack(
@@ -92,13 +105,13 @@ class DrawAircraft {
   private static drawAircraftMarker(
     ctx: CanvasRenderingContext2D,
     position: { x: number; y: number },
-    riskLevel: number,
+    riskDisplayFloor: number,
     nowMs: number
   ) {
     const radius: number = 5;
     const flashOn = Math.floor(nowMs / 450) % 2 === 0;
 
-    if (riskLevel >= 70) {
+    if (riskDisplayFloor >= 70) {
       if (flashOn) {
         ctx.beginPath();
         ctx.arc(position.x, position.y, radius + 6, 0, 2 * Math.PI);
@@ -106,7 +119,7 @@ class DrawAircraft {
         ctx.lineWidth = 3;
         ctx.stroke();
       }
-    } else if (riskLevel >= 30) {
+    } else if (riskDisplayFloor >= 30) {
       ctx.beginPath();
       ctx.arc(position.x, position.y, radius + 4, 0, 2 * Math.PI);
       ctx.strokeStyle = "rgba(158, 106, 3, 0.95)";
@@ -150,7 +163,8 @@ class DrawAircraft {
     ctx: CanvasRenderingContext2D,
     aircraft: Aircraft,
     setting: DataBlockDisplaySetting,
-    useControllerClearanceAltitudeRow: boolean
+    useControllerClearanceAltitudeRow: boolean,
+    riskDisplayFloor: number
   ) {
     const airplanePosition = aircraft.position;
     const instructedVector = aircraft.instructedVector;
@@ -174,11 +188,10 @@ class DrawAircraft {
             airplanePosition.altitude
           );
 
-    const riskLevel = aircraft.riskLevel || 0;
     let riskColor = "white";
-    if (riskLevel >= 70) {
+    if (riskDisplayFloor >= 70) {
       riskColor = "red";
-    } else if (riskLevel >= 30) {
+    } else if (riskDisplayFloor >= 30) {
       riskColor = "yellow";
     }
 
@@ -227,7 +240,7 @@ class DrawAircraft {
     }
 
     ctx.fillStyle = riskColor;
-    ctx.fillText("R" + Math.floor(riskLevel).toString(), labelX, lineY);
+    ctx.fillText("R" + riskDisplayFloor.toString(), labelX, lineY);
     lineY += lineHeight;
 
     if (setting.aircraftType && aircraft.model) {
@@ -272,6 +285,7 @@ class DrawAircraft {
     ctx.moveTo(aircraftPosition.x + 10 * cos, aircraftPosition.y - 10 * sin);
     ctx.lineTo(labelX - 5, labelY + 15);
     ctx.strokeStyle = "white";
+    ctx.lineWidth = 1;
     ctx.stroke();
   }
 }
