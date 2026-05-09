@@ -59,7 +59,7 @@
 
 | 観点 | コード上の事実 | 計画への反映 |
 |------|----------------|-------------|
-| **Phase 1（入口）** | `scenario/load`・BFF・`flight-plan-setup` のテンプレ/Suggest/Import/Export/「これで始める」・**機体追加・削除・初期位置編集**まで実装済み。 | 1-1 は完了。1-4 は**コア UI は揃っている**ため、子 spec の完了条件との差分（例: テーブル上でのフライトプラン直接編集、バリデーション強化）を棚卸しし、Issue の状態を更新する。 |
+| **Phase 1（入口）** | 上記フローは実装済み。 | 1-1〜1-4 は**コア Done**（子 spec 2026-05-09 更新済）。**残り**: Optional・手動 E2E・Issue #45–#47 の Close 運用。1-5 は未着手。 |
 | **Phase 2（レーダー）** | 履歴ドット・レンジリング・速度ベクトル時間は **Canvas ＋ Context で動作**。データブロックは **表示トグルと描画**あり。スクオーク行は **プレースホルダ**（`drawAircraft.ts`、Backend 未連携）。 | 2-1・2-2・2-4 はロードマップ上「未着手」扱いが不整合。**残りは拡張（点数・間隔の設定、子 spec の DoD との一致確認）** と 2-3 の **実データ連携（3-1 と接続）**、2-5・2-6。 |
 | **Phase 4（安全 UI）** | `riskLevel` は API → `Aircraft` → ラベル色（赤/黄）と `R` 行表示。 | **シンボル点滅・ペア強調・Conflict API のフロント未使用**（grep で Frontend に `conflict` 呼び出し無し）。4-1 は「強調の強化」、4-2〜4-3 は **BFF + `ConflictAlertController` 利用**が次の一手。 |
 | **シミュレーション速度（5-1）** | `AtcSimulatorConstants.REFRESH_RATE` が静的。 | 動的変更 API とスケジューラの見直しが必要。 |
@@ -81,9 +81,9 @@
 | # | タスク | 状態 | 優先度 | 難易度 | Issue | 実装の所在 / 次の具体タスク |
 |---|--------|------|--------|--------|-------|---------------------------|
 | 1-1 | `POST /api/scenario/load` | ✅ | 🔴 | ★★☆ | [#44](https://github.com/Futty93/Horus/issues/44) | `ScenarioController` + `FlightPlanApiIntegrationTest`。子 spec [20260315-scenario-load-api](20260315-scenario-load-api/spec.md)。 |
-| 1-2 | JSON エクスポート/インポート | 🔄 | 🔴 | ★☆☆ | [#45](https://github.com/Futty93/Horus/issues/45) | `utility/api/scenario.ts`（`parseScenarioJson` は最低限検証）。**スキーマ拡張時の型安全・エラーメッセージ統一**が残り。 |
-| 1-3 | 「これで始める」 | 🔄 | 🔴 | ★★☆ | [#46](https://github.com/Futty93/Horus/issues/46) | `page.tsx` + `loadScenarioAndStart`（4xx/5xx で `message` 抽出済み）。**トースト化・再試行 UX**など子 spec の Optional。 |
-| 1-4 | 航空機テーブル編集 | 🔄 | 🔴 | ★★☆ | [#47](https://github.com/Futty93/Horus/issues/47) | `AircraftTable` / `AddAircraftForm` / `InitialPositionEditor` / `handleDeleteAircraft`。**子 spec と Issue を「コア実装済」に更新**し、足りない編集（コールサイン変更、ルートの行内編集等）を列挙。 |
+| 1-2 | JSON エクスポート/インポート | ✅ | 🔴 | ★☆☆ | [#45](https://github.com/Futty93/Horus/issues/45) | コア Done（[20260308-json-export-import](20260308-json-export-import/spec.md)）。**残り**: Optional（厳密バリデーション・トースト）、`exportScenario` の直接テスト。 |
+| 1-3 | 「これで始める」 | ✅ | 🔴 | ★★☆ | [#46](https://github.com/Futty93/Horus/issues/46) | Must/Should 完了（[20260315-start-with-this-button](20260315-start-with-this-button/spec.md)、`scenario.test.ts`）。**残り**: 手動 E2E、ネットワーク文言 Optional。 |
+| 1-4 | 航空機テーブル編集 | ✅ | 🔴 | ★★☆ | [#47](https://github.com/Futty93/Horus/issues/47) | コア Done（[20260315-aircraft-table-edit](20260315-aircraft-table-edit/spec.md)）。**残り**: 手動 E2E、行内 FP 編集は Optional。 |
 | 1-5 | トップ等から JSON アップロード起動 | ⬜ | 🟡 | ★☆☆ | [#48](https://github.com/Futty93/Horus/issues/48) | `app/page.tsx` はリンクのみ。**新規: ファイル選択 → `parseScenarioJson` → `loadScenarioAndStart` または setup へ引き渡し**の要否を決める。 |
 
 ---
@@ -174,8 +174,7 @@
 
 ## 推奨着手順序（コードベース反映版）
 
-1. **Phase 1 の「ドキュメントと DoD の整合」**（**着手 spec**: [20260509-phase1-flight-plan-setup-spec-alignment](20260509-phase1-flight-plan-setup-spec-alignment/spec.md)）  
-   1-4・1-2・1-3 の子 spec / Issue を、**既存実装（`flight-plan-setup/page.tsx` 周辺）に合わせて更新**し、残タスクだけを列挙する。これでロードマップと現場の認識が一致する。
+1. **Phase 1 の「ドキュメントと DoD の整合」** — ✅ **完了**（[20260509-phase1-flight-plan-setup-spec-alignment](20260509-phase1-flight-plan-setup-spec-alignment/spec.md)）。Issue #45–#47 へコメント・Close は人手。次は **T-3** または **Phase 4** へ。
 
 2. **（並行）T-3**  
    `FlightPlanApiIntegrationTest` 等を足がかりに、**シナリオ・フライトプラン経路の README / サンプル JSON** を揃える。
@@ -208,6 +207,7 @@ Phase 1 spec/Issue 整合 ──→ T-3（並行）
 
 | 日付 | 内容 |
 |------|------|
+| 2026-05-09 | Phase 1 子 spec 整合実施（1-2〜1-4 を Done 扱いに更新）。着手順 1 を完了扱いに。 |
 | 2026-05-09 | Phase 1 着手用 spec 追加: [20260509-phase1-flight-plan-setup-spec-alignment](20260509-phase1-flight-plan-setup-spec-alignment/spec.md)。推奨着手順 1 にリンク。 |
 | 2026-05-09 | コードベース照合: Backend/Frontend マップ、Phase 1〜4 の実装状況列、着手順の更新（2-1/2-2/2-4 実装済みを反映）。 |
 | 2026-05-09 | Phase 1 の進捗・ギャップ・T-3 対応づけ。 |

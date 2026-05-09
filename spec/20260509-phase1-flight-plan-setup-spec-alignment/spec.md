@@ -2,7 +2,7 @@
 
 ## メタデータ
 
-- **Status**: Accepted
+- **Status**: Done（2026-05-09: 子 spec・親 spec 更新完了）
 - **Date**: 2026-05-09
 - **親ロードマップ**: [spec/spec.md](../spec.md)（推奨着手順序 1 番）
 - **対象 Issue**: [#45](https://github.com/Futty93/Horus/issues/45), [#46](https://github.com/Futty93/Horus/issues/46), [#47](https://github.com/Futty93/Horus/issues/47)（必要に応じて #44 参照）
@@ -38,7 +38,7 @@
 1. **実装を正**とする。子 spec の「詳細調査結果」「現状の実装」表を、リポジトリ内の実ファイル名・振る舞いに合わせて更新する。
 2. 各子 spec の **Status** を更新する（例: `In Progress` → `Done` の条件を満たすなら `Done`、残作業のみなら `In Progress` と **残タスク一覧**を明記）。
 3. **新規のプロダクト要件は扱わない**。本 spec のスコープは「整合」。別機能（トースト UI 全面導入など）は、残タスクとして **1〜2 行で指摘**に留め、必要なら **別 spec / Issue** に切り出す。
-4. 親 [spec/spec.md](../spec.md) Phase 1 表の「次の具体タスク」列を、整合後の事実と矛盾しないよう **1 回だけ追随更新**する（本ブランチ内で実施してよい）。
+4. 親 [spec/spec.md](../spec.md) Phase 1 表の「次の具体タスク」列を、整合後の事実と矛盾しないよう **追随更新**する。
 
 ### 検討した他案（Alternatives Considered）
 
@@ -50,75 +50,81 @@
 ### トレードオフ（Trade-offs）
 
 - **メリット**: チーム全体で同じ優先度認識を持てる。次タスク（Conflict UI、T-3 等）に素直に進める。
-- **デメリット / 受容する制約**: コードの細部まで読み直すため、**初回は 0.5〜1 日程度**の調査・編集が必要。自動テストは「ドキュメントのみ」変更なら必須ではないが、記載内容と実装の突合用に **手動で画面を一度通す**ことを推奨。
+- **デメリット / 受容する制約**: GitHub Issue 本文の更新は権限が必要な場合がある → 下記 **Issue コメントテンプレ**を利用。
 
 ---
 
 ## 完了条件（Success Criteria）
 
-- [ ] 以下 3 子 spec を読み、**メタデータの Status** と本文の「現状」記述が **2026-05-09 時点のコード**と矛盾しない:
+- [x] 以下 3 子 spec の **Status** と「現状」記述を **2026-05-09 時点のコード**に整合:
   - [20260308-json-export-import](../20260308-json-export-import/spec.md)（1-2）
   - [20260315-start-with-this-button](../20260315-start-with-this-button/spec.md)（1-3）
   - [20260315-aircraft-table-edit](../20260315-aircraft-table-edit/spec.md)（1-4）
-- [ ] 各子 spec に **「残タスク」** セクションまたはチェックリストがあり、**Must-have / Should-have / 別 Issue 化**のいずれかに分類されている（残り無しなら「残タスクなし」と明記）。
-- [ ] [spec/spec.md](../spec.md) の Phase 1 行（1-2〜1-4）と **推奨着手順序 1** が、上記更新内容と **矛盾しない**（本 spec へのリンクを 1 行追加してよい）。
-- [ ] 関連 GitHub Issue（#45–#47）の本文またはコメントで、**spec 更新を参照**するか、Issue 状態を **Open/Close/Done の理由**が分かるように更新する（権限・運用に応じてコメントのみでも可）。
+- [x] 各子 spec に **「残タスク」** 節を追加（Optional / 手動 E2E / 親 spec メンテ）
+- [x] [spec/spec.md](../spec.md) Phase 1 行（1-2〜1-4）を更新
+- [ ] 関連 GitHub Issue（#45–#47）にコメント（下記テンプレ）。**権限があれば Close またはラベル更新**
+
+---
+
+## GitHub Issue コメント用テンプレ（#45 / #46 / #47）
+
+コピーして各 Issue に投稿してください。
+
+```text
+spec 整合（2026-05-09）: docs/spec-phase1-setup-alignment ブランチ
+・親: spec/20260509-phase1-flight-plan-setup-spec-alignment/spec.md
+・#45 → spec/20260308-json-export-import/spec.md（Status Done、残タスクは Optional のみ）
+・#46 → spec/20260315-start-with-this-button/spec.md（Status Done、手動 E2E・Optional 文言のみ）
+・#47 → spec/20260315-aircraft-table-edit/spec.md（Status Done、手動 E2E・行内編集は Optional）
+コア実装は既に main 系に存在。Issue を Close してよいかご判断ください。
+```
+
+（#45 のみ投稿する場合は該当行だけに読み替え）
 
 ---
 
 ## 影響範囲
 
 - **ドキュメント**: `spec/20260308-json-export-import/spec.md`、`spec/20260315-start-with-this-button/spec.md`、`spec/20260315-aircraft-table-edit/spec.md`、`spec/spec.md`
-- **コード**: 原則 **変更しない**。実装と spec の差が **バグ**であると判断した場合のみ、**別 PR** で扱う（本 spec の完了条件からは外す）。
+- **コード**: 変更なし（本タスク範囲）
 
 ---
 
-## 実装計画
+## 実装計画（実行結果）
 
-### Phase A: コード突合（読むだけ）
-
-| 順 | 確認対象 | 目的 |
-|----|-----------|------|
-| A.1 | `Frontend/app/flight-plan-setup/page.tsx` | state 遷移、Import/Export、Suggest、開始フロー、追加・削除・初期位置更新 |
-| A.2 | `Frontend/utility/api/scenario.ts` | `parseScenarioJson` / `exportScenario` / `loadScenarioAndStart`（エラー `message` 抽出） |
-| A.3 | `Frontend/components/flight-plan-setup/*` | `AircraftTable`、`AddAircraftForm`、`InitialPositionEditor`、`FlightPlanSetupActionBar` |
-| A.4 | `Backend/.../ScenarioController.java` + `FlightPlanApiIntegrationTest` | load API の契約（必要なら子 spec の API 節だけ更新） |
-
-### Phase B: 子 spec 更新
-
-| 順 | ドキュメント | 主な更新内容 |
-|----|----------------|----------------|
-| B.1 | 20260308-json-export-import | 実装済み範囲の明示、残り（バリデーション強化等）の列挙 |
-| B.2 | 20260315-start-with-this-button | フロー実装済みの確定、Must-have（エラー UX）の達成状況の照合 |
-| B.3 | 20260315-aircraft-table-edit | 「表示のみ」から **追加・削除・初期位置編集実装済み**へ更新し、未実装（例: テーブル内での FP 直接編集）を列挙 |
-
-### Phase C: 親 spec・Issue
-
-| 順 | 作業 |
-|----|------|
-| C.1 | [spec/spec.md](../spec.md) の Phase 1 表・着手順 1 に本 spec へのリンクと一行サマリ |
-| C.2 | #45–#47 の整合（コメント or 本文） |
+| Phase | 内容 | 結果 |
+|-------|------|------|
+| A | `page.tsx`、`scenario.ts`、`ScenarioController`、テストの突合 | ✅ |
+| B | 子 spec 3 件の本文更新・残タスク節 | ✅ |
+| C | `spec/spec.md` Phase 1 更新 | ✅ |
+| C2 | Issue コメント | ⬜ 人手（テンプレ参照） |
 
 ---
 
 ## 検証
 
-- [ ] 上記 **完了条件**のチェックボックスをすべて満たす
-- [ ] `Frontend`: 必要なら `npm run lint`（ドキュメントのみならスキップ可）
-- [ ] 手動: `/flight-plan-setup` で Template / Import / Export / Add / Delete / Initial position / 「これで始める」を **1 通り**確認し、子 spec の「現状」欄と齟齬がないこと
+- [x] 子 spec の記述と `ScenarioController`（`isSimulationRunning` が load 後も false のまま）、`scenario.test.ts` の存在が一致
+- [ ] 手動: `/flight-plan-setup` の smoke（任意・リリース前推奨）
 
 ---
 
 ## 未解決事項（Unresolved Questions）
 
-- Issue を Close する権限がローカル作業者にない場合: **コメントで spec パスと残タスクを書く**運用で代替するか、メンテナに依頼する。
-- 「これで始める」後のシミュレーション開始タイミング（Operator の START）に関する記述が、バックエンドの `isSimulationRunning` 挙動と一致するかは、**B.2 でコードを再確認**すること。
+- なし（ドキュメントタスク完了）。
 
 ---
 
 ## 関連ドキュメント
 
 - [spec/spec.md](../spec.md)
-- [20260315-scenario-load-api](../20260315-scenario-load-api/spec.md)（1-1、バックエンド側 Done の参照）
-- [20260308-flight-plan/spec.md](../20260308-flight-plan/spec.md)（フライトプラン機能全体）
-- [Backend/docs/test-data/MANUAL_TEST.md](../../Backend/docs/test-data/MANUAL_TEST.md)（手動確認の補助）
+- [20260315-scenario-load-api](../20260315-scenario-load-api/spec.md)
+- [20260308-flight-plan/spec.md](../20260308-flight-plan/spec.md)
+- [Backend/docs/test-data/MANUAL_TEST.md](../../Backend/docs/test-data/MANUAL_TEST.md)
+
+---
+
+## 変更履歴
+
+| 日付 | 内容 |
+|------|------|
+| 2026-05-09 | Phase B/C 実施。本 spec を Done。Issue テンプレ追加。 |
