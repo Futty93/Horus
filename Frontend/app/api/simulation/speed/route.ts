@@ -1,5 +1,7 @@
 import { proxyToBackend } from "@/utility/api/backendProxy";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   return proxyToBackend("/simulation/speed", { method: "GET" });
 }
