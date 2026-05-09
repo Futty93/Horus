@@ -60,7 +60,7 @@
 ### Should-have
 
 - [x] 統合テスト: `assignFlightPlan_toExistingAircraft` 追加
-- [x] [#76](https://github.com/HorusATC/Horus/issues/76) に `gh issue comment` で完了を通知（マージ後または本コミット push 後）
+- [x] [#76](https://github.com/HorusATC/Horus/issues/76) に `gh issue comment` で完了を通知済み
 
 ### Optional
 
