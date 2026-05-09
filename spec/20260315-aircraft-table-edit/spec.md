@@ -2,26 +2,27 @@
 
 ## メタデータ
 
-- **Status**: In Progress
+- **Status**: Done（Must-have / Should-have 実装済み。手動 E2E・Optional のみ）
 - **Date**: 2026-03-15
+- **整合更新**: 2026-05-09（[20260509-phase1-flight-plan-setup-spec-alignment](../20260509-phase1-flight-plan-setup-spec-alignment/spec.md)）
 - **関連 Issue**: [#47](https://github.com/Futty93/Horus/issues/47)
 - **親 spec**: [spec/spec.md Phase 1-4](../../spec/spec.md)、[20260308-flight-plan-setup-page Phase 1](../20260308-flight-plan-setup-page/spec.md)
 
 ## 概要
 
-フライトプラン設定ページ（`/flight-plan-setup`）において、航空機の**追加**・**削除**・**初期位置の編集**を GUI で行えるようにする。現状はテンプレート読み込みまたは JSON インポートで航空機を取得するのみで、個別機の編集・削除・空からの追加ができない。
+フライトプラン設定ページ（`/flight-plan-setup`）において、航空機の**追加**・**削除**・**初期位置の編集**を GUI で行う機能。**2026-05-09 時点で実装済み**（`AddAircraftForm`、`AircraftTable` の削除列、`InitialPositionEditor`、`page.tsx` のハンドラ）。本 spec は当初の設計と完了条件の記録および残タスクの整理用。
 
 ---
 
 ## 目的（Purpose）
 
-### 背景・課題
+### 背景・課題（spec 初版時）
 
-| 項目 | 現状 | 課題 |
-|------|------|------|
-| **航空機の追加** | テンプレート or JSON インポートのみ | 空の状態から 1 機ずつ追加する UI がなく、既存シナリオに機を足す手段もない |
-| **航空機の削除** | 不可 | 不要な機を消せず、JSON 編集に頼るしかない |
-| **初期位置の編集** | 不可 | `initialPosition`（lat, lon, altitude, heading, groundSpeed, verticalSpeed）を UI で変更できない |
+| 項目 | 当時の課題 | 2026-05-09 の実装 |
+|------|------------|-------------------|
+| **航空機の追加** | UI がなかった | `AddAircraftForm`、空シナリオ時の「Add aircraft」リンク、既存シナリオでもフォーム表示 |
+| **航空機の削除** | 不可 | `AircraftTable` の Delete + `confirm` |
+| **初期位置の編集** | 不可 | `InitialPositionEditor` + `handleUpdateAircraft` |
 
 ### 期待される価値
 
@@ -33,14 +34,16 @@
 
 ## 詳細調査結果
 
-### 現状の構成
+### 現状の構成（2026-05-09）
 
 | コンポーネント | 役割 | 編集可否 |
 |----------------|------|----------|
-| **OdGroupList / OdGroupSection** | O/D グループ単位のルート編集（Suggest route, ATS ルート, waypoints, Alt, Spd） | ○ 編集可（グループ単位） |
-| **AircraftTable** | 航空機一覧表示（Callsign, Origin, Dest, Route, Alt, Spd） | × 表示のみ |
-| **RoutePreviewMap** | 選択機の経路・初期位置を地図上に表示 | × 表示のみ |
-| **FlightPlanSetupActionBar** | Load Template, Import JSON, Export, これで始める | ○ 既存アクションあり |
+| **OdGroupList / OdGroupSection** | O/D グループ単位のルート編集 | ○ |
+| **AircraftTable** | 一覧・行選択・**削除** | ○ 削除 / 行選択 |
+| **AddAircraftForm** | 新規機追加（コールサイン、O/D、初期位置、空港から座標反映） | ○ |
+| **InitialPositionEditor** | 選択機の `initialPosition` 6 項目 | ○ |
+| **RoutePreviewMap** | 選択機の経路・初期位置プレビュー | 表示（state 連動） |
+| **FlightPlanSetupActionBar** | Template, Import/Export, これで始める | ○ |
 
 ### データ構造（参照）
 
@@ -144,14 +147,14 @@ interface InitialPositionDto {
 
 ---
 
-## 影響範囲
+## 影響範囲（実装済み）
 
 - **Frontend**
-  - `app/flight-plan-setup/page.tsx`: `handleDeleteAircraft`, `handleAddAircraft`, `handleUpdateAircraft` 追加。state 更新ロジック
-  - `components/flight-plan-setup/AircraftTable.tsx`: 削除ボタン、`onDeleteAircraft` props 追加
-  - `components/flight-plan-setup/`: `AddAircraftForm.tsx`（新規）, `AircraftDetailPanel.tsx` または `InitialPositionEditor.tsx`（新規）
-  - `utility/api/`: 空港座標取得は既存 `GET /api/ats/airports` を再利用
-- **Backend**: 変更なし（`POST /api/scenario/load` の契約は現状のまま）
+  - `app/flight-plan-setup/page.tsx`: `handleDeleteAircraft`, `handleAddAircraft`, `handleUpdateAircraft`
+  - `components/flight-plan-setup/AircraftTable.tsx`: `onDeleteAircraft`
+  - `components/flight-plan-setup/AddAircraftForm.tsx`, `InitialPositionEditor.tsx`
+  - 空港座標: `GET /api/ats/airports` + `AddAircraftForm` の departure 反映
+- **Backend**: 変更なし
 
 ---
 
@@ -163,7 +166,7 @@ interface InitialPositionDto {
 - [x] 空のシナリオから「航空機を追加」で 1 機以上追加し、シナリオを構築できる
 - [x] 既存シナリオに「航空機を追加」で機を追加できる
 - [x] 航空機選択時に初期位置（lat, lon, altitude, heading, groundSpeed, verticalSpeed）を編集でき、RoutePreviewMap に即時反映される
-- [ ] 追加・編集・削除後のシナリオで「これで始める」が正常に動作する（手動検証要）
+- [ ] 追加・編集・削除後のシナリオで「これで始める」が正常に動作する（**手動 E2E 推奨**。自動テストは別途）
 
 ### Should-have
 
@@ -172,8 +175,9 @@ interface InitialPositionDto {
 
 ### Optional
 
-- [ ] 追加時の初期位置を departureAirport の座標から自動算出する
-- [ ] フライトプラン（callsign, Origin, Dest）の個別編集
+- [x] 追加時に出発空港 ICAO から座標を反映（`AddAircraftForm` の「空港から反映」相当）
+- [ ] テーブル行内での callsign / O/D / route の直接編集（現状は OdGroup 編集・フォーム追加で代替）
+- [ ] 地図ドラッグによる初期位置変更
 
 ---
 
@@ -188,10 +192,27 @@ interface InitialPositionDto {
 
 ---
 
+## 残タスク（2026-05-09 時点）
+
+| 分類 | 内容 |
+|------|------|
+| **運用** | 検証節の手動チェック（Export 往復、空から追加→load、初期位置とプレビュー連動） |
+| **Optional** | 行内 FP 編集、地図ドラッグ |
+| **別 Issue** | 仕上げを #47 コメントで本 spec 参照に更新 |
+
+---
+
 ## 未解決事項（Unresolved Questions）
 
-- 追加時の「デフォルト初期位置」を空港座標ベースにするか、固定値にするか（Phase 2 着手時に決定可）
-- フライトプラン（route, cruiseAltitude, cruiseSpeed）の個別編集は 1-4 スコープ外とし、OdGroup 編集で代替するか別タスクにするか
+- フライトプランの行内編集はスコープ外。OdGroup / 将来タスク。
+
+---
+
+## 変更履歴
+
+| 日付 | 内容 |
+|------|------|
+| 2026-05-09 | Status Done。実装済みコンポーネントを反映。Optional の空港座標を実装済に更新。 |
 
 ---
 

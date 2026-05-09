@@ -2,8 +2,9 @@
 
 ## メタデータ
 
-- **Status**: In Progress
+- **Status**: Done（コア Must-have / Should-have 充足。残りは Optional のみ）
 - **Date**: 2026-03-08
+- **整合更新**: 2026-05-09（[20260509-phase1-flight-plan-setup-spec-alignment](../20260509-phase1-flight-plan-setup-spec-alignment/spec.md)）
 - **関連 Issue**: [#45](https://github.com/Futty93/Horus/issues/45)
 - **親 spec**: [spec/spec.md Phase 1-2](../../spec/spec.md)、[20260308-flight-plan-setup-page Phase 2](../20260308-flight-plan-setup-page/spec.md)
 
@@ -101,8 +102,10 @@
 
 ### Should-have
 
-- [ ] `exportScenario` と `parseScenarioJson` のユニットテストを追加する
-- [ ] 20260308-flight-plan-setup-page の Phase 2 完了チェックを更新する
+- [x] `parseScenarioJson` / `toScenarioJsonString` / `getExportFilename` / `loadScenarioAndStart`（エラー経路）のユニットテスト — `Frontend/utility/api/scenario.test.ts`
+- [x] `hanedaTemplate` の構造検証テスト — 同上
+- [ ] `exportScenario` 自体の DOM/Blob 依存テスト（任意。`toScenarioJsonString` + `getExportFilename` で実質カバー）
+- [ ] 20260308-flight-plan-setup-page の Phase 2 完了チェックを更新する（親ページ spec の運用に従う）
 
 ### Optional
 
@@ -159,9 +162,28 @@
 
 ---
 
+## 残タスク（2026-05-09 時点）
+
+| 分類 | 内容 |
+|------|------|
+| **Optional** | インポート時の数値・必須フィールドの厳密バリデーション（現状はバックエンドが load 時に検証） |
+| **Optional** | エラー表示のトースト / モーダル化（現状は `status` テキスト） |
+| **Optional** | `exportScenario` のブラウザ API をモックした単体テスト |
+| **別タスク** | 20260308-flight-plan-setup-page Phase 2 チェックリストのメンテ |
+
+---
+
 ## 未解決事項（Unresolved Questions）
 
-- なし。基本実装は完了しており、本 spec で方針を定めた。
+- なし。基本実装とテストは完了しており、上表の Optional のみ。
+
+---
+
+## 変更履歴
+
+| 日付 | 内容 |
+|------|------|
+| 2026-05-09 | Status Done。`scenario.test.ts` の存在を反映。残タスク節を追加。 |
 
 ---
 

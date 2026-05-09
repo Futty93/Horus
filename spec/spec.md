@@ -1,7 +1,9 @@
 # Horus 実装計画
 
-- **Date**: 2026-03-11
-- **Status**: Planning
+- **Date**: 2026-05-09
+- **Status**: Planning（ロードマップ継続更新）
+
+**関連**: バックエンド再設計の詳細は [spec/20260308-backend-redesign/spec.md](20260308-backend-redesign/spec.md)。フライトプラン機能の分解は [spec/20260308-flight-plan/spec.md](20260308-flight-plan/spec.md)。
 
 ---
 
@@ -9,127 +11,204 @@
 
 - **優先度**: 🔴 高 / 🟡 中 / 🟢 低
 - **難易度**: ★☆☆ 低 / ★★☆ 中 / ★★★ 高
+- **実装状況（短縮）**: ✅ おおむね満たす / 🔄 一部・仕上げあり / ⬜ 未着手
+
+---
+
+## コードベース・マップ（2026-05-09 時点）
+
+計画をファイル名に落とすための索引。リネームされた場合は本節を更新する。
+
+### Backend（Spring Boot）
+
+| 層 | 代表パス | 内容 |
+|----|-----------|------|
+| API（`*Controller`） | `.../interfaces/api/ScenarioController.java` | `POST /api/scenario/load` |
+| | `.../interfaces/api/FlightPlanController.java` | spawn-with-flightplan, direct-to, resume-navigation, flightplan CRUD |
+| | `.../interfaces/api/ConflictAlertController.java` | コンフリクト・統計 JSON API |
+| | `.../interfaces/api/AtcClearanceController.java` | 管制メモ（クリアランス） |
+| API（`*Service` 名のまま） | `.../interfaces/api/LocationService.java` | 位置一覧（Use Case 経由） |
+| | `.../interfaces/api/ControlAircraftService.java` | 管制指示 POST |
+| | `.../interfaces/api/CreateAircraftService.java` | 航空機生成 |
+| | `.../interfaces/api/SimulationService.java` | シミュレーション開始/停止等 |
+| | `.../interfaces/api/AtsRouteService.java` | ATS ルート参照 |
+| Application | `.../application/ScenarioServiceImpl.java` | スポーン・Direct To・フライトプラン操作の中核 |
+| | `.../application/ConflictAlertService.java` | 検出結果 → DTO |
+| 定数 | `.../shared/constants/AtcSimulatorConstants.java` | `REFRESH_RATE`（現状 1Hz 相当）、`TICK_INTERVAL_MS` |
+| OpenAPI | `Backend/UranosAPI.yml` | 公開 API スキーマ |
+
+フロントの BFF は `Frontend/app/api/**/route.ts`（例: `app/api/scenario/load/route.ts`）がバックエンドへのプロキシになる。
+
+### Frontend（Next.js）
+
+| 領域 | 代表パス | 内容 |
+|------|-----------|------|
+| レーダー | `Frontend/components/radarCanvas.tsx` | ポーリング、`drawRangeRings`、速度ベクトル、`DrawAircraft` |
+| 軌跡ドット | `aircraftClass.ts`（`positionHistory`）、`drawAircraft.ts`、`trackHistoryDisplaySamples.ts` | クライアント記録・間引き表示（既定 3 点） |
+| レンジリング | `rangeRingsSettingContext.tsx`、`rangeRingsSetting.tsx`、`routeRenderer.ts`（`drawRangeRings`） | 有効化・間隔 NM、`radarCanvas` から描画 |
+| 速度ベクトル時間 | `velocityVectorLookaheadContext.tsx`、`radarCanvas.tsx` | 先読み時間（分）をベクトル長に反映 |
+| データブロック項目 | `dataBlockDisplaySettingContext.tsx`、`drawAircraft.ts` | squawk / type / ETA / メモ行の表示トグル（squawk は未連携時 `---`） |
+| 位置・リスク | `Frontend/utility/api/location.ts` | `AircraftLocationDto` → `Aircraft`、`riskLevel` をラベルに反映 |
+| フライトプラン設定 | `app/flight-plan-setup/page.tsx` ほか | `page.tsx`（state・Suggest・Import/Export・開始）、`AircraftTable`（選択・削除）、`AddAircraftForm`、`InitialPositionEditor`、`utility/api/scenario.ts`（`loadScenarioAndStart` と `parseJsonMessage`） |
+| オペレーター操作 | `Frontend/components/flightPlanControl.tsx` | Direct To / Resume 等 |
+| トップ | `Frontend/app/page.tsx` | Controller / Operator / Flight Plan Setup へのリンクのみ（JSON アップロード起動は無し） |
+
+---
+
+## 現状認識とギャップ（コードベース照合）
+
+| 観点 | コード上の事実 | 計画への反映 |
+|------|----------------|-------------|
+| **Phase 1（入口）** | 上記フローは実装済み。 | 1-1〜1-4 は**コア Done**（子 spec 2026-05-09 更新済）。**残り**: Optional・手動 E2E・Issue #45–#47 の Close 運用。1-5 は未着手。 |
+| **Phase 2（レーダー）** | 履歴ドット・レンジリング・速度ベクトル時間は **Canvas ＋ Context で動作**。データブロックは **表示トグルと描画**あり。スクオーク行は **プレースホルダ**（`drawAircraft.ts`、Backend 未連携）。 | 2-1・2-2・2-4 はロードマップ上「未着手」扱いが不整合。**残りは拡張（点数・間隔の設定、子 spec の DoD との一致確認）** と 2-3 の **実データ連携（3-1 と接続）**、2-5・2-6。 |
+| **Phase 4（安全 UI）** | `riskLevel` は API → `Aircraft` → ラベル色（赤/黄）と `R` 行表示。 | **シンボル点滅・ペア強調・Conflict API のフロント未使用**（grep で Frontend に `conflict` 呼び出し無し）。4-1 は「強調の強化」、4-2〜4-3 は **BFF + `ConflictAlertController` 利用**が次の一手。 |
+| **シミュレーション速度（5-1）** | `AtcSimulatorConstants.REFRESH_RATE` が静的。 | 動的変更 API とスケジューラの見直しが必要。 |
+| **命名負債（T-2）** | `interfaces/api` に `*Service` が複数残存。 | `FlightPlanController` / `ScenarioController` と混在。リネームは OpenAPI・BFF・README を一括追従。 |
+
+---
+
+## 実装方針（共通）
+
+1. **子 spec を正**: タスクの完了条件・調査結果は各 `spec/YYYYMMDD-*/spec.md` に書き、本ファイルはロードマップと優先度の索引に留める。コードが先行している項目は **子 spec の Status / 調査節を Done / 実装済みに更新**する。
+2. **API 契約を先に**: Backend の DTO / OpenAPI（`UranosAPI.yml`）と Frontend の型・BFF を同じ PR か直近で揃える。
+3. **統合テストで入口を守る**: `FlightPlanApiIntegrationTest`（`scenario/load` 等）、`BackendRedesignIntegrationTest` 等で退行を検知する。
+4. **レーダー変更は描画と状態を分離**: Canvas パフォーマンス（T-9）は「データ取得・状態」と「描画ループ」を分けてから最適化すると効く。
 
 ---
 
 ## フェーズ 1 — シナリオ作成・開始フロー（最重要基盤）
 
-現状 Swagger 頼みのスポーン/シナリオ登録を GUI で完結させる。研究・教育利用の入口として最優先。
-
-| # | タスク | 優先度 | 難易度 | Issue | 備考 |
-|---|--------|--------|--------|-------|------|
-| 1-1 | `POST /api/scenario/load` バックエンド実装 | 🔴 | ★★☆ | [#44](https://github.com/Futty93/Horus/issues/44) | 複数機を一括スポーン。spec 20260308-flight-plan-setup-page で未着手 |
-| 1-2 | フライトプラン設定ページ — JSON エクスポート/インポート | 🔴 | ★☆☆ | [#45](https://github.com/Futty93/Horus/issues/45) | フロントのみ。ブラウザ download API |
-| 1-3 | フライトプラン設定ページ — 「これで始める」ボタン | 🔴 | ★★☆ | [#46](https://github.com/Futty93/Horus/issues/46) | 1-1 完了後。シナリオ送信 → 空域反映 → Operator 遷移。START SIMULATION で開始 |
-| 1-4 | フライトプラン設定ページ — 航空機テーブル編集（追加/削除/初期位置） | 🔴 | ★★☆ | [#47](https://github.com/Futty93/Horus/issues/47) | 現状 OdGroupList は表示のみ |
-| 1-5 | シミュレーション開始画面での JSON アップロード起動 | 🟡 | ★☆☆ | [#48](https://github.com/Futty93/Horus/issues/48) | トップページまたは別エントリ |
+| # | タスク | 状態 | 優先度 | 難易度 | Issue | 実装の所在 / 次の具体タスク |
+|---|--------|------|--------|--------|-------|---------------------------|
+| 1-1 | `POST /api/scenario/load` | ✅ | 🔴 | ★★☆ | [#44](https://github.com/Futty93/Horus/issues/44) | `ScenarioController` + `FlightPlanApiIntegrationTest`。子 spec [20260315-scenario-load-api](20260315-scenario-load-api/spec.md)。 |
+| 1-2 | JSON エクスポート/インポート | ✅ | 🔴 | ★☆☆ | [#45](https://github.com/Futty93/Horus/issues/45) | コア Done（[20260308-json-export-import](20260308-json-export-import/spec.md)）。**残り**: Optional（厳密バリデーション・トースト）、`exportScenario` の直接テスト。 |
+| 1-3 | 「これで始める」 | ✅ | 🔴 | ★★☆ | [#46](https://github.com/Futty93/Horus/issues/46) | Must/Should 完了（[20260315-start-with-this-button](20260315-start-with-this-button/spec.md)、`scenario.test.ts`）。**残り**: 手動 E2E、ネットワーク文言 Optional。 |
+| 1-4 | 航空機テーブル編集 | ✅ | 🔴 | ★★☆ | [#47](https://github.com/Futty93/Horus/issues/47) | コア Done（[20260315-aircraft-table-edit](20260315-aircraft-table-edit/spec.md)）。**残り**: 手動 E2E、行内 FP 編集は Optional。 |
+| 1-5 | トップ等から JSON アップロード起動 | ⬜ | 🟡 | ★☆☆ | [#48](https://github.com/Futty93/Horus/issues/48) | `app/page.tsx` はリンクのみ。**新規: ファイル選択 → `parseScenarioJson` → `loadScenarioAndStart` または setup へ引き渡し**の要否を決める。 |
 
 ---
 
 ## フェーズ 2 — レーダー表示の強化
 
-管制業務の基本となる視覚情報を充実させる。実装コストが低いわりに訓練品質への貢献が大きい。
-
-| # | タスク | 優先度 | 難易度 | Issue | 備考 |
-|---|--------|--------|--------|-------|------|
-| 2-1 | 履歴ドット（過去位置の軌跡）表示 | 🔴 | ★☆☆ | [#49](https://github.com/Futty93/Horus/issues/49) | Canvas に過去 N 点を保持して描画 |
-| 2-2 | レンジリング（距離環）表示 | 🔴 | ★☆☆ | [#50](https://github.com/Futty93/Horus/issues/50) | 中心から同心円。表示 NM 数は設定可能に → [spec/20260318-range-rings-display](spec/20260318-range-rings-display/spec.md) |
-| 2-3 | データブロック（ラベル）に表示項目を追加 | 🟡 | ★☆☆ | [#51](https://github.com/Futty93/Horus/issues/51) | スクオーク・機種・ETA など選択式 → [spec/20260318-data-block-display-items](20260318-data-block-display-items/spec.md) |
-| 2-4 | 速度ベクトル線の長さ（時間）調整 | 🟡 | ★☆☆ | [#52](https://github.com/Futty93/Horus/issues/52) | 設定パネルに追加 |
-| 2-5 | セクター境界線の表示 | 🟡 | ★★☆ | [#53](https://github.com/Futty93/Horus/issues/53) | 担当空域を JSON で定義して描画 |
-| 2-6 | 指示メモをレーダーラベル隣に表示 | 🟡 | ★★☆ | [#54](https://github.com/Futty93/Horus/issues/54) | → [spec/20260326-instruction-memo-radar-label](20260326-instruction-memo-radar-label/spec.md) |
+| # | タスク | 状況 | 優先度 | 難易度 | Issue | 実装の所在 / 次の具体タスク |
+|---|--------|------|--------|--------|-------|---------------------------|
+| 2-1 | 履歴ドット（軌跡） | ✅ | 🔴 | ★☆☆ | [#49](https://github.com/Futty93/Horus/issues/49) | `aircraftClass.ts`（最大 120 点）、`trackHistoryDisplaySamples.ts`（表示 3 点・間隔）、`drawAircraft.ts`。**拡張**: 点数/間隔の設定 UI、Controller 側の更新経路確認（`updateAircraftLocationInfo`）。 |
+| 2-2 | レンジリング | ✅ | 🔴 | ★☆☆ | [#50](https://github.com/Futty93/Horus/issues/50) | `rangeRingsSettingContext` + `rangeRingsSetting.tsx` + `radarCanvas.tsx` の `drawRangeRings`。子 spec [20260318-range-rings-display](20260318-range-rings-display/spec.md) を実装に合わせ更新。 |
+| 2-3 | データブロック項目追加 | 🔄 | 🟡 | ★☆☆ | [#51](https://github.com/Futty93/Horus/issues/51) | `dataBlockDisplaySettingContext` + `drawAircraft.ts`。**スクオーク実値は 3-1 とセット**（現状 `---`）。 |
+| 2-4 | 速度ベクトル線の時間 | ✅ | 🟡 | ★☆☆ | [#52](https://github.com/Futty93/Horus/issues/52) | `velocityVectorLookaheadContext` + `radarCanvas.tsx`。子 spec [20260404-velocity-vector-line-duration](20260404-velocity-vector-line-duration/spec.md) と突合。 |
+| 2-5 | セクター境界線 | ⬜ | 🟡 | ★★☆ | [#53](https://github.com/Futty93/Horus/issues/53) | JSON 定義 + `routeRenderer` または別レイヤ描画の設計から。 |
+| 2-6 | 指示メモをラベル隣 | 🔄 | 🟡 | ★★☆ | [#54](https://github.com/Futty93/Horus/issues/54) | `drawAircraft.ts` のメモ行、`LocationService` 系 DTO の `atcClearance`。子 spec [20260326-instruction-memo-radar-label](20260326-instruction-memo-radar-label/spec.md)。 |
 
 ---
 
 ## フェーズ 3 — 管制指示の拡充
 
-現状は高度/針路/速度のみ。実際の管制業務に近づけるための指示種別追加。
-
-| # | タスク | 優先度 | 難易度 | Issue | 備考 |
-|---|--------|--------|--------|-------|------|
-| 3-1 | スクオーク（SSRコード）割り当て・表示 | 🔴 | ★☆☆ | [#55](https://github.com/Futty93/Horus/issues/55) | 値オブジェクト追加 + API 1本 |
-| 3-2 | ホールディング指示（`WaypointAction.HOLD` 実装） | 🔴 | ★★★ | [#56](https://github.com/Futty93/Horus/issues/56) | 楕円軌道の飛行計算が必要 |
-| 3-3 | 高度制限の管制官による設定・変更指示 | 🟡 | ★★☆ | [#57](https://github.com/Futty93/Horus/issues/57) | `AltitudeConstraint` は定義済み。UI と API 追加 |
-| 3-4 | ハンドオフ機能（`WaypointAction.HANDOFF` 実装） | 🟡 | ★★★ | [#58](https://github.com/Futty93/Horus/issues/58) | 単一空域内での移管表示から着手 |
-| 3-5 | Mach 数での速度指示 | 🟢 | ★☆☆ | [#59](https://github.com/Futty93/Horus/issues/59) | 変換式のみ。高高度訓練向け |
+| # | タスク | 優先度 | 難易度 | Issue | 実装方針のフック |
+|---|--------|--------|--------|-------|------------------|
+| 3-1 | スクオーク割当・表示 | 🔴 | ★☆☆ | [#55](https://github.com/Futty93/Horus/issues/55) | Backend: 航空機状態 + API。Frontend: `AircraftLocationDto` / `drawAircraft` の実値化（現プレースホルダ）。 |
+| 3-2 | ホールディング（`HOLD`） | 🔴 | ★★★ | [#56](https://github.com/Futty93/Horus/issues/56) | `WaypointAction`・`CommercialAircraft` / `FlightBehavior` の飛行ループ拡張。 |
+| 3-3 | 高度制限の指示 | 🟡 | ★★☆ | [#57](https://github.com/Futty93/Horus/issues/57) | `AltitudeConstraint` と `ControlAircraftService` / DTO の拡張。 |
+| 3-4 | ハンドオフ（`HANDOFF`） | 🟡 | ★★★ | [#58](https://github.com/Futty93/Horus/issues/58) | 表示から入るなら UI 状態のみでも可。 |
+| 3-5 | Mach 数指示 | 🟢 | ★☆☆ | [#59](https://github.com/Futty93/Horus/issues/59) | 指示 DTO と速度変換。 |
 
 ---
 
 ## フェーズ 4 — コンフリクト検出・安全機能の UI 強化
 
-バックエンドの検出ロジックは実装済み。フロントエンドへの反映が不足。
-
-| # | タスク | 優先度 | 難易度 | Issue | 備考 |
-|---|--------|--------|--------|-------|------|
-| 4-1 | STCA 警告のレーダー上での視覚的強調（点滅・色変更） | 🔴 | ★☆☆ | [#60](https://github.com/Futty93/Horus/issues/60) | `riskLevel` は既に取得済み。描画ロジックのみ |
-| 4-2 | コンフリクトペアの間隔数値表示 | 🟡 | ★★☆ | [#61](https://github.com/Futty93/Horus/issues/61) | 水平 NM・垂直 ft をラベルに表示 |
-| 4-3 | 管制間隔の自動チェック（5NM/1000ft）の明示的な違反通知 | 🟡 | ★★☆ | [#62](https://github.com/Futty93/Horus/issues/62) | `ConflictAlertService` の統計を UI に接続 |
-| 4-4 | MSAW（最低安全高度警告）— 地形データなしの簡易版 | 🟢 | ★★☆ | [#63](https://github.com/Futty93/Horus/issues/63) | 固定の最低高度を下回ったら警告 |
+| # | タスク | 状況 | 優先度 | 難易度 | Issue | 実装の所在 / 次の具体タスク |
+|---|--------|------|--------|--------|-------|---------------------------|
+| 4-1 | STCA 視覚強調 | 🔄 | 🔴 | ★☆☆ | [#60](https://github.com/Futty93/Horus/issues/60) | `riskLevel` によるラベル色・`R` 表示は実装済み。**未了**: シンボル本体の強調、点滅、閾値の設定 UI 等。 |
+| 4-2 | ペア間隔の数値表示 | ⬜ | 🟡 | ★★☆ | [#61](https://github.com/Futty93/Horus/issues/61) | Backend `ConflictAlertController` 利用。**新規**: BFF `app/api/...` + ラベル横またはサイドパネル。 |
+| 4-3 | 間隔違反の明示通知 | ⬜ | 🟡 | ★★☆ | [#62](https://github.com/Futty93/Horus/issues/62) | `ConflictStatisticsDto` を UI に接続（ポーリング間隔と負荷に注意）。 |
+| 4-4 | MSAW 簡易版 | ⬜ | 🟢 | ★★☆ | [#63](https://github.com/Futty93/Horus/issues/63) | 最低高度しきい値と `AircraftLocationDto` 拡張または別エンドポイント。 |
 
 ---
 
 ## フェーズ 5 — 訓練・評価機能
 
-研究・教育用途としての差別化機能。フェーズ 1〜4 完了後に着手推奨。
-
-| # | タスク | 優先度 | 難易度 | Issue | 備考 |
-|---|--------|--------|--------|-------|------|
-| 5-1 | シミュレーション速度変更（早送り/スロー） | 🔴 | ★★☆ | [#64](https://github.com/Futty93/Horus/issues/64) | バックエンドの `REFRESH_RATE` を動的変更 |
-| 5-2 | セッション記録（イベントログ） | 🟡 | ★★☆ | [#65](https://github.com/Futty93/Horus/issues/65) | 指示・コンフリクト発生をタイムスタンプ付きで記録 |
-| 5-3 | 採点・評価レポート（間隔違反カウント等） | 🟡 | ★★★ | [#66](https://github.com/Futty93/Horus/issues/66) | 5-2 のログを集計して表示 |
-| 5-4 | 難易度設定（トラフィック量・自動スポーン間隔） | 🟢 | ★★☆ | [#67](https://github.com/Futty93/Horus/issues/67) | 定期スポーンのスケジューラー追加 |
-| 5-5 | 緊急事態シナリオ（エンジン故障等のフラグ） | 🟢 | ★★★ | [#68](https://github.com/Futty93/Horus/issues/68) | 航空機状態に緊急フラグ追加 + UI |
+| # | タスク | 優先度 | 難易度 | Issue | 実装方針のフック |
+|---|--------|--------|--------|-------|------------------|
+| 5-1 | シミュレーション速度変更 | 🔴 | ★★☆ | [#64](https://github.com/Futty93/Horus/issues/64) | `REFRESH_RATE` / `TICK_INTERVAL_MS` の動的化、`@Scheduled` 側の取り込み。 |
+| 5-2 | セッション記録 | 🟡 | ★★☆ | [#65](https://github.com/Futty93/Horus/issues/65) | Application 層でイベント追記、永続は後から DB に差し替え可能な設計。 |
+| 5-3 | 採点・レポート | 🟡 | ★★★ | [#66](https://github.com/Futty93/Horus/issues/66) | 5-2 の集計。 |
+| 5-4 | 難易度設定 | 🟢 | ★★☆ | [#67](https://github.com/Futty93/Horus/issues/67) | スポーンスケジューラ。 |
+| 5-5 | 緊急事態フラグ | 🟢 | ★★★ | [#68](https://github.com/Futty93/Horus/issues/68) | `Aircraft` 状態 + DTO + ラベル表示。 |
 
 ---
 
 ## フェーズ 6 — 気象・環境
 
-飛行計算の現実性向上。研究用途での需要が高い場合に実施。
-
-| # | タスク | 優先度 | 難易度 | Issue | 備考 |
-|---|--------|--------|--------|-------|------|
-| 6-1 | 風向・風速の設定と対地速度への反映 | 🟡 | ★★☆ | [#69](https://github.com/Futty93/Horus/issues/69) | `FixedWingFlightBehavior` の位置計算に風ベクトル追加 |
-| 6-2 | ATIS 情報の表示（風・QNH・使用滑走路） | 🟡 | ★☆☆ | [#71](https://github.com/Futty93/Horus/issues/71) | 静的設定値をレーダー画面に表示するだけでも有用 |
-| 6-3 | 気象レーダー表示（降水域） | 🟢 | ★★★ | [#70](https://github.com/Futty93/Horus/issues/70) | 外部データ連携が必要 |
+| # | タスク | 優先度 | 難易度 | Issue | 実装方針のフック |
+|---|--------|--------|--------|-------|------------------|
+| 6-1 | 風と対地速度 | 🟡 | ★★☆ | [#69](https://github.com/Futty93/Horus/issues/69) | `FixedWingFlightBehavior`（または相当）への風ベクトル。 |
+| 6-2 | ATIS 表示 | 🟡 | ★☆☆ | [#71](https://github.com/Futty93/Horus/issues/71) | 静的 JSON + レーダー周辺パネル。 |
+| 6-3 | 気象レーダー | 🟢 | ★★★ | [#70](https://github.com/Futty93/Horus/issues/70) | 外部データ・タイル。 |
 
 ---
 
 ## フェーズ 7 — マルチユーザー・リアルタイム通信
 
-現状のポーリング方式を WebSocket に移行。大規模訓練シナリオで必要になる。
-
-| # | タスク | 優先度 | 難易度 | Issue | 備考 |
-|---|--------|--------|--------|-------|------|
-| 7-1 | WebSocket によるリアルタイム位置配信 | 🟡 | ★★★ | [#73](https://github.com/Futty93/Horus/issues/73) | Spring WebSocket + Next.js クライアント |
-| 7-2 | 複数セクターの同時管制（マルチプレイヤー） | 🟢 | ★★★ | [#72](https://github.com/Futty93/Horus/issues/72) | 7-1 完了後。セッション管理が必要 |
+| # | タスク | 優先度 | 難易度 | Issue | 実装方針のフック |
+|---|--------|--------|--------|-------|------------------|
+| 7-1 | WebSocket 位置配信 | 🟡 | ★★★ | [#73](https://github.com/Futty93/Horus/issues/73) | 現状 `fetch` ポーリング（`location.ts`）の置換。 |
+| 7-2 | マルチセクター | 🟢 | ★★★ | [#72](https://github.com/Futty93/Horus/issues/72) | 7-1 後。 |
 
 ---
 
-## 技術的負債（並行して対応）
+## 技術的負債（並行・スロット化）
 
-| # | タスク | 優先度 | 難易度 | Issue | 状態 | 備考 |
-|---|--------|--------|--------|-------|------|------|
-| T-1 | `ConflictAlertService` の DTO 化（backend-redesign 6.6 未着手） | 🟡 | ★☆☆ | [#74](https://github.com/Futty93/Horus/issues/74) | ✅ 完了 | ConflictAlertDto, ConflictStatisticsDto を interfaces/dto に切り出し |
-| T-2 | API クラス名統一（`*Service` → `*Controller`）（backend-redesign 7.3 保留） | 🟢 | ★★☆ | [#75](https://github.com/Futty93/Horus/issues/75) | - | 影響範囲大のため慎重に |
-| T-3 | テスト網羅（単体・統合）— flight-plan spec 6.1〜6.3 未着手 | 🟡 | ★★☆ | [#76](https://github.com/Futty93/Horus/issues/76) | - | サンプルシナリオ JSON 作成も含む |
-| T-4 | API 応答時間の短縮（Backend） | 🟡 | ★★☆ | - | - | カスタムシリアライザ、レスポンスキャッシュ、非同期処理 |
-| T-5 | テスタビリティの向上（Backend） | 🟡 | ★★☆ | - | - | [spec/20260317-backend-testability](spec/20260317-backend-testability/spec.md) |
-| T-6 | DDD 原則の徹底（Backend） | 🟡 | ★★★ | - | - | 集約境界明確化、値オブジェクト徹底、ドメインイベント導入 |
-| T-7 | 設定の外部化（Backend） | 🟢 | ★☆☆ | - | - | 環境変数活用、環境別設定分離 |
-| T-8 | シナリオ機能強化（Backend） | 🟢 | ★★☆ | - | - | シナリオ DSL 設計、バージョン管理、エディタ連携 API。`POST /api/scenario/load` は完了済み |
-| T-9 | RadarCanvas パフォーマンス最適化（Frontend） | 🟡 | ★★☆ | - | - | useMemo/useCallback、requestAnimationFrame 最適化、描画領域の最適化 |
-| T-10 | 状態管理の改善（Frontend） | 🟡 | ★★☆ | - | - | Context 最適化、型定義強化（`any` 排除） |
-
-**注**: 管制レーダーシステムとしての機能要件（安全管理、通信、フライト管理、空域管理など）は本 spec のフェーズ 2〜7 で定義。各 Phase の子 spec で詳細を管理する。
+| # | タスク | 優先度 | 難易度 | Issue | 状態 | コード上のフック |
+|---|--------|--------|--------|-------|------|------------------|
+| T-1 | ConflictAlert DTO 化 | 🟡 | ★☆☆ | [#74](https://github.com/Futty93/Horus/issues/74) | ✅ | `ConflictAlertDto` / `ConflictStatisticsDto` / `ConflictAlertController` |
+| T-2 | `*Service` → `*Controller` 統一 | 🟢 | ★★☆ | [#75](https://github.com/Futty93/Horus/issues/75) | - | `LocationService`, `CreateAircraftService`, `ControlAircraftService`, `SimulationService`, `AtsRouteService` 等 + BFF パス |
+| T-3 | テスト・サンプル・README | 🟡 | ★★☆ | [#76](https://github.com/Futty93/Horus/issues/76) | 🔄 | `Backend/docs/test-data/`、[20260308-flight-plan Phase 6](20260308-flight-plan/spec.md) |
+| T-4 | API 応答時間 | 🟡 | ★★☆ | - | - | 位置一覧のペイロード・シリアライズ・キャッシュ |
+| T-5 | テスタビリティ | 🟡 | ★★☆ | - | - | [20260317-backend-testability](20260317-backend-testability/spec.md) |
+| T-6 | DDD 徹底 | 🟡 | ★★★ | - | - | 集約境界・ドメインイベント |
+| T-7 | 設定外部化 | 🟢 | ★☆☆ | - | - | `application.yml` / env |
+| T-8 | シナリオ DSL 等 | 🟢 | ★★☆ | - | - | `scenario/load` とは別 |
+| T-9 | RadarCanvas 最適化 | 🟡 | ★★☆ | - | - | `radarCanvas.tsx` の rAF ループ・依存配列 |
+| T-10 | FE 状態管理 | 🟡 | ★★☆ | - | - | Context 分割・型 |
 
 ---
 
-## 推奨着手順序
+## 推奨着手順序（コードベース反映版）
 
+1. **Phase 1 の「ドキュメントと DoD の整合」** — ✅ **完了**（[20260509-phase1-flight-plan-setup-spec-alignment](20260509-phase1-flight-plan-setup-spec-alignment/spec.md)）。Issue #45–#47 へコメント・Close は人手。次は **T-3** または **Phase 4** へ。
+
+2. **（並行）T-3**  
+   `FlightPlanApiIntegrationTest` 等を足がかりに、**シナリオ・フライトプラン経路の README / サンプル JSON** を揃える。
+
+3. **Phase 4 のフロント接続（4-1 強化 → 4-2 / 4-3）**  
+   Backend は `ConflictAlertController` 済み。**BFF + ポーリング**でペア情報・統計を取り、レーダー上の強調とセットで実装すると一貫する。4-1 の「シンボル強調」は `drawAircraft.ts` の拡張。
+
+4. **Phase 2 の残り（2-5、2-6 の仕上げ、2-3 のデータ連携準備）**  
+   2-1・2-2・2-4 は実装済みのため、**新規は主に 2-5 とメモ spec の仕上げ**。2-3 のスクオーク実値は **3-1 と同一スプリント**にすると二度手間が減る。
+
+5. **Phase 3**  
+   ドメイン変更が大きいため、上記でレーダー・安全表示の土台を固めてから。
+
+6. **Phase 5 → 6 ∥ 7**  
+   5-1 は `AtcSimulatorConstants` とスケジューラ全体への影響が大きいので、短いスパイク（動的 tick の安全な切り替え）を先に。
+
+```text
+Phase 1 spec/Issue 整合 ──→ T-3（並行）
+       │
+       ├─→ Phase 4（BFF + Conflict API + 描画強化）
+       │
+       ├─→ Phase 2 残り（2-5, 2-6）＋ 3-1（スクオーク）で 2-3 完結
+       │
+       └─→ Phase 3 → Phase 5 → Phase 6 ∥ Phase 7
 ```
-フェーズ1（シナリオ作成）
-  → フェーズ2（レーダー表示）＋フェーズ4（STCA UI）  ← 並行可
-    → フェーズ3（管制指示拡充）
-      → フェーズ5（訓練・評価）
-        → フェーズ6（気象）＋フェーズ7（WebSocket）  ← 並行可
-```
+
+---
+
+## 変更履歴
+
+| 日付 | 内容 |
+|------|------|
+| 2026-05-09 | Phase 1 子 spec 整合実施（1-2〜1-4 を Done 扱いに更新）。着手順 1 を完了扱いに。 |
+| 2026-05-09 | Phase 1 着手用 spec 追加: [20260509-phase1-flight-plan-setup-spec-alignment](20260509-phase1-flight-plan-setup-spec-alignment/spec.md)。推奨着手順 1 にリンク。 |
+| 2026-05-09 | コードベース照合: Backend/Frontend マップ、Phase 1〜4 の実装状況列、着手順の更新（2-1/2-2/2-4 実装済みを反映）。 |
+| 2026-05-09 | Phase 1 の進捗・ギャップ・T-3 対応づけ。 |
+| 2026-03-11 | 初版ロードマップ |

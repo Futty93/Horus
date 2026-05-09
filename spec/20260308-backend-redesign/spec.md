@@ -126,7 +126,7 @@
 | 6.3 | `LocationService` を Use Case 経由に変更 | `LocationService` が Use Case のみを呼ぶ | 完了 |
 | 6.4 | レスポンス形式を JSON に変更 | `ResponseEntity<List<AircraftLocationDto>>` | 完了 |
 | 6.5 | フロントエンド互換性 | Frontend `location.ts` を JSON 対応に更新 | 完了 |
-| 6.6 | `ConflictAlertService` の `ConflictAlert`, `ConflictStatistics` を DTO 化 | `interfaces/dto/` へ切り出し | 未着手 |
+| 6.6 | `ConflictAlertService` の `ConflictAlert`, `ConflictStatistics` を DTO 化 | `ConflictAlertDto` / `ConflictStatisticsDto` を `interfaces/dto/` に切り出し | 完了 |
 | 6.7 | Phase 6 テスト実行 | API 統合テスト、UranosAPI 更新 | 完了 |
 
 **完了条件**: 位置情報 API が JSON を返し、Use Case が明確に分離されている
@@ -173,3 +173,4 @@
 | 2026-03-08 | Phase 5 完了。未使用の AirSpace / AirSpaceImpl を削除 |
 | 2026-03-08 | Phase 6 完了。AircraftLocationDto・GetAllAircraftLocationsWithRiskUseCase 追加、位置情報 API を JSON 化、Frontend を JSON 対応に更新 |
 | 2026-03-08 | Phase 7 完了。persistance→persistence、NextStep→nextStep、System.out→logger、jakarta.validation、README 修正 |
+| 2026-05-09 | Phase 6.6 を完了に更新（`ConflictAlertDto` / `ConflictStatisticsDto`、`ConflictAlertController` 参照）。マスター計画 [spec/spec.md](spec/spec.md) T-1 と整合 |

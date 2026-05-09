@@ -2,8 +2,9 @@
 
 ## メタデータ
 
-- **Status**: In Progress
+- **Status**: Done（Must-have / Should-have コード・テスト充足。手動 E2E・Optional のみ残り）
 - **Date**: 2026-03-15
+- **整合更新**: 2026-05-09（[20260509-phase1-flight-plan-setup-spec-alignment](../20260509-phase1-flight-plan-setup-spec-alignment/spec.md)）
 - **関連 Issue**: [#46](https://github.com/Futty93/Horus/issues/46)
 - **親 spec**: [spec/spec.md Phase 1-3](../../spec/spec.md)、[20260308-flight-plan-setup-page Phase 3](../20260308-flight-plan-setup-page/spec.md)
 
@@ -20,18 +21,18 @@
 | ステップ | 内容 |
 |---------|------|
 | 1 | シナリオ送信: 編集中の `ScenarioJson` を `POST /api/scenario/load` に送信 |
-| 2 | シミュレーション開始: バックエンドが空域クリア・航空機スポーン後、`GlobalVariables.isSimulationRunning = true` に設定 |
-| 3 | Operator 遷移: 成功時に `/operator` へルーティングし、レーダー画面で航空機を確認 |
+| 2 | 空域反映: バックエンドが `GlobalVariables.isSimulationRunning = false` のまま空域クリア・スポーン（**自動ではシミュレーションは走らない**。Operator で START SIMULATION するまで待機） |
+| 3 | Operator 遷移: 成功時に `/operator` へルーティングし、レーダーで航空機を確認 |
 
 ### 現状の実装
 
 | 項目 | 状態 | 場所・詳細 |
 |------|------|------------|
-| **「これで始める」ボタン** | 実装済み | `FlightPlanSetupActionBar.tsx` 行 87-95。`hasAircraft && !starting` のとき有効 |
-| **handleStartWithThis** | 実装済み | `flight-plan-setup/page.tsx` 行 185-201。`loadScenarioAndStart(scenario)` → 成功時 `router.push("/operator")` |
-| **loadScenarioAndStart** | 実装済み | `utility/api/scenario.ts` 行 59-76。`fetch("/api/scenario/load")` で POST |
+| **「これで始める」ボタン** | 実装済み | `FlightPlanSetupActionBar.tsx`。`hasAircraft && !starting` のとき有効 |
+| **handleStartWithThis** | 実装済み | `flight-plan-setup/page.tsx`。`loadScenarioAndStart(scenario)` → 成功時 `router.push("/operator")` |
+| **loadScenarioAndStart** | 実装済み | `utility/api/scenario.ts`。`fetch("/api/scenario/load")`、非 OK 時は `parseJsonMessage` で JSON の `message` を抽出 |
 | **BFF プロキシ** | 実装済み | `app/api/scenario/load/route.ts` → `proxyToBackend("/api/scenario/load")` |
-| **バックエンド loadScenario** | 実装済み | `ScenarioController.java`。空域クリア→スポーン→`isSimulationRunning=true` |
+| **バックエンド loadScenario** | 実装済み | `ScenarioController.java`。load 開始時に `isSimulationRunning=false`、クリア→スポーン後も **true に戻さない**（`FlightPlanApiIntegrationTest` の「load 後もシミュレーション未開始」参照） |
 | **Operator ページ** | 存在 | `app/operator/page.tsx`。RadarCanvas + 管制指示入力パネル |
 
 ### 処理フロー（現状）
@@ -44,23 +45,23 @@
         → fetch POST /api/scenario/load (Next.js BFF)
         → BFF が Backend へプロキシ
     [バックエンド] ScenarioController.loadScenario
-        → 空配列チェック、コールサイン重複チェック、Fix 存在チェック（400 返却）
-        → aircraftRepository.clear(), GlobalVariables.isSimulationRunning = false
-        → 各機スポーン（シミュレーションは開始しない。ユーザーが Operator で START SIMULATION を押すまで待機）
+        → 空配列・重複コールサイン・Fix 解決エラー時は 400 + JSON（message）
+        → GlobalVariables.isSimulationRunning = false, aircraftRepository.clear()
+        → 各機スポーン（この処理ブロック内で isSimulationRunning を true にしない）
         → 200 { success, scenarioName, aircraftCount, message }
     [フロント] 200 時: setStatus("Scenario loaded. Redirecting..."), router.push("/operator")
     [フロント] 非 200 時: setStatus(`Error: ${result.message}`)
     → setStarting(false)
 ```
 
-### 修正・改善が必要な箇所
+### 修正・改善が必要な箇所（2026-05-09 更新）
 
-| # | 箇所 | 現状 | 問題 | 重要度 |
-|---|------|------|------|--------|
-| 1 | **エラー表示** | `loadScenarioAndStart` が `!response.ok` 時に `response.text()` をそのまま `message` に格納 | バックエンドは 400 で `{"success":false,"message":"Duplicate callsign: XXX"}` などの JSON を返す。生の JSON 文字列が status に表示され、ユーザーに分かりにくい | 🔴 Must-have |
-| 2 | **単体テスト** | `loadScenarioAndStart` にテストなし | リグレッション検知ができない | 🟡 Should-have |
-| 3 | **手動検証** | spec 上「テンプレート読み込み → これで始める → Operator で航空機表示」の確認が未実施 | エンドツーエンド動作保証がない | 🟡 Should-have |
-| 4 | **ネットワークエラー** | `fetch` 失敗時に `String(e)`（例: "TypeError: Failed to fetch"）を表示 | 英語の技術的メッセージでユーザーに伝わりにくい場合あり | 🟢 Optional |
+| # | 箇所 | 状態 | 備考 |
+|---|------|------|------|
+| 1 | **エラー表示（JSON message 抽出）** | ✅ 実装済 | `scenario.ts` の `parseJsonMessage`。400 時は `message` を status に表示可能 |
+| 2 | **単体テスト** | ✅ | `Frontend/utility/api/scenario.test.ts` の `loadScenarioAndStart` describe |
+| 3 | **手動 E2E** | ⬜ 推奨 | リリース前にテンプレート → これで始める → Operator を実施（チェックリストは下節「検証」） |
+| 4 | **ネットワークエラー文言** | ⬜ Optional | 日本語の汎用メッセージへの置換は未実装 |
 
 ### 既存 spec との整合
 
@@ -169,9 +170,27 @@
 
 ---
 
+## 残タスク（2026-05-09 時点）
+
+| 分類 | 内容 |
+|------|------|
+| **運用** | 手動検証（検証節の未チェック 2 項目）をリリース前に実施 |
+| **Optional** | ネットワークエラー時の日本語メッセージ |
+| **別 spec** | 1-5（トップからの JSON 起動）との UI 一貫性 |
+
+---
+
 ## 未解決事項（Unresolved Questions）
 
 - 1-5（シミュレーション開始画面での JSON アップロード起動）との連携・UI 一貫性は別 spec で検討する
+
+---
+
+## 変更履歴
+
+| 日付 | 内容 |
+|------|------|
+| 2026-05-09 | Status Done。`ScenarioController` の `isSimulationRunning` 挙動をコードに合わせ修正。改善項目表を実装済みに更新。 |
 
 ---
 
