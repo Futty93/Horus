@@ -299,8 +299,8 @@ public class ConflictDetector {
         double dominant = Math.max(horizontalRisk, verticalRisk);
         double coupled = Math.min(horizontalRisk, verticalRisk);
 
-        // 片側のみ高い場合は dominant の 35% まで抑制、両側が高いと 100% に近づく。
-        return dominant * (0.35 + 0.65 * coupled);
+        // 片側のみ高い場合は dominant の 20% まで抑制、両側が高いと 100% に近づく。
+        return dominant * (0.20 + 0.80 * coupled);
     }
 
     /**
