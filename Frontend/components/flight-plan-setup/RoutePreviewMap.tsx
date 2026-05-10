@@ -1,13 +1,34 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { ScenarioAircraft } from "@/types/scenario";
 import type { Waypoint } from "@/utility/AtsRouteManager/RouteInterfaces/Waypoint";
 import type { RadioNavigationAid } from "@/utility/AtsRouteManager/RouteInterfaces/RadioNavigationAid";
-import { CoordinateManager } from "@/utility/coordinateManager/CoordinateManager";
-import { GLOBAL_SETTINGS } from "@/utility/globals/settings";
+import type { Route } from "@/utility/AtsRouteManager/RouteInterfaces/Route";
 import { GLOBAL_CONSTANTS } from "@/utility/globals/constants";
 import type { JapanOutline } from "@/utility/AtsRouteManager/atsRoutesLoader";
+import { drawPublishedRoutes } from "@/utility/flightPlanSetup/routePreviewCanvasDraw";
+import {
+  buildFixLookup,
+  computeBounds,
+  DEFAULT_CENTER,
+  DEFAULT_RANGE,
+  distanceToSegment,
+  nearestCatalogFix,
+  NEAREST_FIX_MAX_KM,
+  pickHitTarget,
+  previewCanvasToGeo,
+  SEGMENT_HIT_PX,
+  toCanvas,
+  type RoutePreviewPickTarget,
+} from "@/utility/flightPlanSetup/routePreviewGeometry";
+import type { RoutePreviewPickPayload } from "./routePreviewTypes";
+import { RoutePreviewMapChrome } from "./RoutePreviewMapChrome";
+import { useObservedSize } from "./useObservedSize";
+
+const RNAV_AIRWAY_COLOR = "#376";
+const ATS_LOWER_AIRWAY_COLOR = "#0ff";
+const PUBLISHED_ROUTE_ALPHA = 0.28;
 
 interface RoutePreviewMapProps {
   selectedAircraft: ScenarioAircraft | null;
@@ -15,90 +36,24 @@ interface RoutePreviewMapProps {
   radioNavAids: RadioNavigationAid[];
   airportPositions?: Map<string, { latitude: number; longitude: number }>;
   japanOutline?: JapanOutline;
+  rnavRoutes?: Route[];
+  atsLowerRoutes?: Route[];
+  className?: string;
+  onPickRoute?: (payload: RoutePreviewPickPayload) => void;
+  onPickHint?: (message: string) => void;
+  onInitialPositionGeoChange?: (latitude: number, longitude: number) => void;
 }
 
-const PREVIEW_SIZE = 420;
-const DEFAULT_CENTER = { latitude: 34.5, longitude: 138.5 };
-const DEFAULT_RANGE = 500;
-const KM_PER_DEG_LAT = 111;
-const PADDING_FACTOR = 1.4;
 const HEADING_ARROW_LENGTH = 18;
+const NOW_DRAG_HIT_PX = 14;
 
-function buildFixLookup(
-  waypoints: Waypoint[],
-  radioNavAids: RadioNavigationAid[],
-  airportPositions?: Map<string, { latitude: number; longitude: number }>
-): Map<string, { latitude: number; longitude: number }> {
-  const m = new Map<string, { latitude: number; longitude: number }>();
-  for (const w of waypoints) {
-    m.set(w.name.toUpperCase(), {
-      latitude: w.latitude,
-      longitude: w.longitude,
-    });
-  }
-  for (const r of radioNavAids) {
-    m.set(r.name.toUpperCase(), {
-      latitude: r.latitude,
-      longitude: r.longitude,
-    });
-  }
-  if (airportPositions) {
-    for (const [icao, pos] of Array.from(airportPositions)) {
-      m.set(icao.toUpperCase(), pos);
-    }
-  }
-  return m;
-}
-
-function computeBounds(points: { latitude: number; longitude: number }[]): {
-  center: { latitude: number; longitude: number };
-  range: number;
-} {
-  if (points.length === 0) {
-    return { center: DEFAULT_CENTER, range: DEFAULT_RANGE };
-  }
-  let minLat = points[0].latitude;
-  let maxLat = points[0].latitude;
-  let minLon = points[0].longitude;
-  let maxLon = points[0].longitude;
-  for (const p of points) {
-    minLat = Math.min(minLat, p.latitude);
-    maxLat = Math.max(maxLat, p.latitude);
-    minLon = Math.min(minLon, p.longitude);
-    maxLon = Math.max(maxLon, p.longitude);
-  }
-  const centerLat = (minLat + maxLat) / 2;
-  const centerLon = (minLon + maxLon) / 2;
-  const latSpanKm = (maxLat - minLat) * KM_PER_DEG_LAT;
-  const lonSpanKm =
-    (maxLon - minLon) * KM_PER_DEG_LAT * Math.cos((centerLat * Math.PI) / 180);
-  const rangeKm = Math.max(latSpanKm, lonSpanKm, 50) * PADDING_FACTOR;
-  return {
-    center: { latitude: centerLat, longitude: centerLon },
-    range: Math.round(rangeKm),
-  };
-}
-
-function toCanvas(
-  lat: number,
-  lon: number,
-  center: { latitude: number; longitude: number },
-  range: number,
-  width: number,
-  height: number
-): { x: number; y: number } {
-  const result = CoordinateManager.calculateCanvasCoordinates(
-    { latitude: lat, longitude: lon },
-    center,
-    { range }
-  );
-  const scaleX = width / GLOBAL_SETTINGS.canvasWidth;
-  const scaleY = height / GLOBAL_SETTINGS.canvasHeight;
-  return {
-    x: result.x * scaleX,
-    y: result.y * scaleY,
-  };
-}
+type SegmentPick = {
+  ax: number;
+  ay: number;
+  bx: number;
+  by: number;
+  insertIndex: number;
+};
 
 export function RoutePreviewMap({
   selectedAircraft,
@@ -106,19 +61,66 @@ export function RoutePreviewMap({
   radioNavAids,
   airportPositions,
   japanOutline = [],
+  rnavRoutes = [],
+  atsLowerRoutes = [],
+  className = "",
+  onPickRoute,
+  onPickHint,
+  onInitialPositionGeoChange,
 }: RoutePreviewMapProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const nowPosRef = useRef<{ x: number; y: number } | null>(null);
+  const draggingNowRef = useRef(false);
+  const dragMovedRef = useRef(false);
+  const suppressRouteClickRef = useRef(false);
+  const nowPointerActiveRef = useRef(false);
+  const onGeoChangeRef = useRef(onInitialPositionGeoChange);
+  onGeoChangeRef.current = onInitialPositionGeoChange;
+  const pickTargetsRef = useRef<RoutePreviewPickTarget[]>([]);
+  const segmentPickRef = useRef<SegmentPick[]>([]);
+  const pickContextRef = useRef<{
+    center: { latitude: number; longitude: number };
+    range: number;
+    dispW: number;
+    dispH: number;
+  } | null>(null);
+  const fixLookupRef = useRef<
+    Map<string, { latitude: number; longitude: number }>
+  >(new Map());
+
+  const [showRnavAirways, setShowRnavAirways] = useState(false);
+  const [showAtsLower, setShowAtsLower] = useState(false);
+  const [draggingNowMarker, setDraggingNowMarker] = useState(false);
+
+  const { w: dw, h: dh } = useObservedSize(containerRef);
 
   useEffect(() => {
+    nowPosRef.current = null;
+    pickTargetsRef.current = [];
     const fixLookup = buildFixLookup(waypoints, radioNavAids, airportPositions);
+    fixLookupRef.current = fixLookup;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    const dpr =
+      typeof window !== "undefined"
+        ? Math.min(window.devicePixelRatio || 1, 2)
+        : 1;
+    const w = dw;
+    const h = dh;
+    if (w < 2 || h < 2) return;
+    canvas.style.width = `${w}px`;
+    canvas.style.height = `${h}px`;
+    canvas.width = Math.max(1, Math.floor(w * dpr));
+    canvas.height = Math.max(1, Math.floor(h * dpr));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
     ctx.fillStyle = "#0a0a0f";
-    ctx.fillRect(0, 0, PREVIEW_SIZE, PREVIEW_SIZE);
+    ctx.fillRect(0, 0, w, h);
 
     const drawJapanOutline = (
       c: { latitude: number; longitude: number },
@@ -128,9 +130,7 @@ export function RoutePreviewMap({
       ctx.lineWidth = 1;
       ctx.globalAlpha = 0.6;
       for (const ring of japanOutline) {
-        const pts = ring.map(([la, lo]) =>
-          toCanvas(la, lo, c, r, PREVIEW_SIZE, PREVIEW_SIZE)
-        );
+        const pts = ring.map(([la, lo]) => toCanvas(la, lo, c, r, w, h));
         ctx.beginPath();
         ctx.moveTo(pts[0].x, pts[0].y);
         for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
@@ -141,14 +141,18 @@ export function RoutePreviewMap({
     };
 
     if (!selectedAircraft) {
+      pickContextRef.current = null;
+      segmentPickRef.current = [];
       drawJapanOutline(DEFAULT_CENTER, DEFAULT_RANGE);
       ctx.fillStyle = "#6b7280";
       ctx.font = "14px monospace";
       ctx.textAlign = "center";
+      ctx.fillText("Select an aircraft to preview route", w / 2, h / 2 - 8);
+      ctx.font = "11px monospace";
       ctx.fillText(
-        "Select an aircraft to preview route",
-        PREVIEW_SIZE / 2,
-        PREVIEW_SIZE / 2
+        "(table row or callsign in an expanded O/D group)",
+        w / 2,
+        h / 2 + 10
       );
       return;
     }
@@ -156,7 +160,7 @@ export function RoutePreviewMap({
     const fp = selectedAircraft.flightPlan;
     const routeFixes = [
       fp.departureAirport,
-      ...fp.route.map((w) => w.fix),
+      ...fp.route.map((x) => x.fix),
       fp.arrivalAirport,
     ];
 
@@ -184,46 +188,56 @@ export function RoutePreviewMap({
         ? computeBounds(allPointsForBounds)
         : { center: DEFAULT_CENTER, range: DEFAULT_RANGE };
 
+    pickContextRef.current = { center, range, dispW: w, dispH: h };
+
     const points: { x: number; y: number; label: string }[] = [];
     for (const c of coordsWithLabels) {
-      const { x, y } = toCanvas(
-        c.lat,
-        c.lon,
-        center,
-        range,
-        PREVIEW_SIZE,
-        PREVIEW_SIZE
-      );
-      points.push({ x, y, label: c.label });
+      const xy = toCanvas(c.lat, c.lon, center, range, w, h);
+      points.push({ x: xy.x, y: xy.y, label: c.label });
     }
 
     drawJapanOutline(center, range);
 
+    if (showAtsLower) {
+      drawPublishedRoutes(
+        ctx,
+        atsLowerRoutes,
+        ATS_LOWER_AIRWAY_COLOR,
+        PUBLISHED_ROUTE_ALPHA,
+        center,
+        range,
+        w,
+        h
+      );
+    }
+    if (showRnavAirways) {
+      drawPublishedRoutes(
+        ctx,
+        rnavRoutes,
+        RNAV_AIRWAY_COLOR,
+        PUBLISHED_ROUTE_ALPHA,
+        center,
+        range,
+        w,
+        h
+      );
+    }
+
     if (points.length < 2) {
+      pickTargetsRef.current = points.map((p) => ({
+        x: p.x,
+        y: p.y,
+        label: p.label,
+      }));
       ctx.fillStyle = "#6b7280";
       ctx.font = "12px monospace";
       ctx.textAlign = "center";
-      const centerY = PREVIEW_SIZE / 2;
-      ctx.fillText(
-        `${fp.callsign}: Waypoints not found`,
-        PREVIEW_SIZE / 2,
-        centerY - 8
-      );
+      const centerY = h / 2;
+      ctx.fillText(`${fp.callsign}: Waypoints not found`, w / 2, centerY - 8);
       if (missing.length > 0) {
-        ctx.fillText(
-          `Missing: ${missing.join(", ")}`,
-          PREVIEW_SIZE / 2,
-          centerY + 8
-        );
+        ctx.fillText(`Missing: ${missing.join(", ")}`, w / 2, centerY + 8);
       }
-      const pos = toCanvas(
-        latitude,
-        longitude,
-        center,
-        range,
-        PREVIEW_SIZE,
-        PREVIEW_SIZE
-      );
+      const pos = toCanvas(latitude, longitude, center, range, w, h);
       const hdg = selectedAircraft.initialPosition.heading;
       const rad = ((90 - hdg) * Math.PI) / 180;
       ctx.strokeStyle = "#f59e0b";
@@ -239,7 +253,26 @@ export function RoutePreviewMap({
       ctx.beginPath();
       ctx.arc(pos.x, pos.y, 5, 0, 2 * Math.PI);
       ctx.fill();
+      nowPosRef.current = { x: pos.x, y: pos.y };
+      segmentPickRef.current = [];
       return;
+    }
+
+    pickTargetsRef.current = points.map((p) => ({
+      x: p.x,
+      y: p.y,
+      label: p.label,
+    }));
+
+    segmentPickRef.current = [];
+    for (let i = 0; i < points.length - 1; i++) {
+      segmentPickRef.current.push({
+        ax: points[i].x,
+        ay: points[i].y,
+        bx: points[i + 1].x,
+        by: points[i + 1].y,
+        insertIndex: i,
+      });
     }
 
     ctx.strokeStyle = "#22c55e";
@@ -268,14 +301,7 @@ export function RoutePreviewMap({
       ctx.fillText(p.label, p.x + 8, p.y + 4);
     });
 
-    const pos = toCanvas(
-      latitude,
-      longitude,
-      center,
-      range,
-      PREVIEW_SIZE,
-      PREVIEW_SIZE
-    );
+    const pos = toCanvas(latitude, longitude, center, range, w, h);
     const hdg = selectedAircraft.initialPosition.heading;
     const hdgRad = ((90 - hdg) * Math.PI) / 180;
     ctx.strokeStyle = "#f59e0b";
@@ -294,38 +320,216 @@ export function RoutePreviewMap({
     ctx.fillStyle = "#e5e7eb";
     ctx.textAlign = "left";
     ctx.fillText("Now", pos.x + 8, pos.y + 4);
+    nowPosRef.current = { x: pos.x, y: pos.y };
   }, [
     selectedAircraft,
     waypoints,
     radioNavAids,
     airportPositions,
     japanOutline,
+    dw,
+    dh,
+    showRnavAirways,
+    showAtsLower,
+    rnavRoutes,
+    atsLowerRoutes,
   ]);
 
+  const canvasCssOffset = useCallback(
+    (
+      e:
+        | React.PointerEvent<HTMLCanvasElement>
+        | React.MouseEvent<HTMLCanvasElement>
+    ) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return null;
+      const rect = canvas.getBoundingClientRect();
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    },
+    []
+  );
+
+  const handleCanvasPointerDown = useCallback(
+    (e: React.PointerEvent<HTMLCanvasElement>) => {
+      if (!selectedAircraft || !onInitialPositionGeoChange || e.button !== 0) {
+        return;
+      }
+      const p = nowPosRef.current;
+      const off = canvasCssOffset(e);
+      if (!p || !off) return;
+      const dx = off.x - p.x;
+      const dy = off.y - p.y;
+      if (dx * dx + dy * dy > NOW_DRAG_HIT_PX * NOW_DRAG_HIT_PX) return;
+      e.currentTarget.setPointerCapture(e.pointerId);
+      draggingNowRef.current = true;
+      dragMovedRef.current = false;
+      nowPointerActiveRef.current = true;
+      setDraggingNowMarker(true);
+    },
+    [selectedAircraft, onInitialPositionGeoChange, canvasCssOffset]
+  );
+
+  const handleCanvasPointerMove = useCallback(
+    (e: React.PointerEvent<HTMLCanvasElement>) => {
+      if (!draggingNowRef.current) return;
+      const cb = onGeoChangeRef.current;
+      if (!cb) return;
+      const off = canvasCssOffset(e);
+      const pctx = pickContextRef.current;
+      if (!off || !pctx) return;
+      dragMovedRef.current = true;
+      const geo = previewCanvasToGeo(
+        off.x,
+        off.y,
+        pctx.center,
+        pctx.range,
+        pctx.dispW,
+        pctx.dispH
+      );
+      cb(geo.latitude, geo.longitude);
+    },
+    [canvasCssOffset]
+  );
+
+  const handleCanvasPointerUp = useCallback(
+    (e: React.PointerEvent<HTMLCanvasElement>) => {
+      if (draggingNowRef.current) {
+        draggingNowRef.current = false;
+        setDraggingNowMarker(false);
+        try {
+          e.currentTarget.releasePointerCapture(e.pointerId);
+        } catch {
+          /* already released */
+        }
+        if (dragMovedRef.current) {
+          suppressRouteClickRef.current = true;
+        }
+      }
+      if (nowPointerActiveRef.current) {
+        nowPointerActiveRef.current = false;
+        suppressRouteClickRef.current = true;
+      }
+    },
+    []
+  );
+
+  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (suppressRouteClickRef.current) {
+      suppressRouteClickRef.current = false;
+      return;
+    }
+    if (!onPickRoute || !selectedAircraft) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const markerLabel = pickHitTarget(x, y, pickTargetsRef.current);
+    if (markerLabel) {
+      onPickRoute({ kind: "append", fixName: markerLabel });
+      return;
+    }
+
+    const pctx = pickContextRef.current;
+    if (!pctx) return;
+
+    const geo = previewCanvasToGeo(
+      x,
+      y,
+      pctx.center,
+      pctx.range,
+      pctx.dispW,
+      pctx.dispH
+    );
+    const nearest = nearestCatalogFix(
+      geo.latitude,
+      geo.longitude,
+      fixLookupRef.current,
+      NEAREST_FIX_MAX_KM
+    );
+    if (!nearest) {
+      onPickHint?.(
+        `No waypoint/NAVAID/airport within ${NEAREST_FIX_MAX_KM} km of that point`
+      );
+      return;
+    }
+
+    let bestSeg: { insertIndex: number; dist: number } | null = null;
+    for (const seg of segmentPickRef.current) {
+      const d = distanceToSegment(x, y, seg.ax, seg.ay, seg.bx, seg.by);
+      if (d <= SEGMENT_HIT_PX && (!bestSeg || d < bestSeg.dist)) {
+        bestSeg = { insertIndex: seg.insertIndex, dist: d };
+      }
+    }
+
+    if (bestSeg) {
+      onPickRoute({
+        kind: "insert",
+        fixName: nearest.name,
+        insertIndex: bestSeg.insertIndex,
+      });
+    } else {
+      onPickRoute({ kind: "append", fixName: nearest.name });
+    }
+  };
+
+  const interactive =
+    Boolean(onPickRoute && selectedAircraft) ||
+    Boolean(onInitialPositionGeoChange && selectedAircraft);
+
   return (
-    <div className="border border-atc-border rounded-lg overflow-hidden bg-atc-bg">
-      <div className="px-3 py-2 border-b border-atc-border bg-atc-surface-elevated">
-        <h3 className="font-mono text-sm font-bold text-atc-text">
-          Route Preview
-          {selectedAircraft && (
-            <span className="ml-2 font-normal text-atc-text-muted">
-              {selectedAircraft.flightPlan.callsign}
-            </span>
-          )}
-        </h3>
-      </div>
-      <canvas
-        ref={canvasRef}
-        width={PREVIEW_SIZE}
-        height={PREVIEW_SIZE}
-        className="block w-full"
+    <div
+      className={`border border-atc-border rounded-lg overflow-hidden bg-atc-bg flex flex-col min-h-0 h-full ${className}`}
+    >
+      <RoutePreviewMapChrome
+        selectedAircraft={selectedAircraft}
+        showRnavAirways={showRnavAirways}
+        showAtsLower={showAtsLower}
+        onShowRnavAirways={setShowRnavAirways}
+        onShowAtsLower={setShowAtsLower}
       />
+      <div
+        ref={containerRef}
+        className="relative flex-1 min-h-[200px] w-full min-w-0 overflow-hidden"
+      >
+        <canvas
+          ref={canvasRef}
+          className={`block w-full h-full select-none touch-none ${
+            draggingNowMarker
+              ? "cursor-grabbing"
+              : interactive
+                ? "cursor-pointer"
+                : ""
+          }`}
+          onClick={handleCanvasClick}
+          onPointerDown={handleCanvasPointerDown}
+          onPointerMove={handleCanvasPointerMove}
+          onPointerUp={handleCanvasPointerUp}
+          onPointerCancel={handleCanvasPointerUp}
+        />
+      </div>
       {selectedAircraft && (
-        <div className="px-3 py-2 text-xs text-atc-text-muted border-t border-atc-border">
-          <span className="text-atc-accent">●</span> Origin ·{" "}
-          <span className="text-atc-danger">●</span> Dest ·{" "}
-          <span className="text-amber-500">▲</span> Current pos (arrow =
-          heading)
+        <div className="px-3 py-2 text-xs text-atc-text-muted border-t border-atc-border space-y-1 shrink-0">
+          <div>
+            <span className="text-atc-accent">●</span> Origin ·{" "}
+            <span className="text-atc-danger">●</span> Dest ·{" "}
+            <span className="text-amber-500">▲</span> Current pos (arrow =
+            heading)
+          </div>
+          {onPickRoute && (
+            <p>
+              Click a fix (dot or label) to append. Click a green leg to insert
+              the nearest DB fix at that position. Elsewhere appends the nearest
+              fix (within {NEAREST_FIX_MAX_KM} km). Already-used fixes are
+              skipped.
+            </p>
+          )}
+          {onInitialPositionGeoChange && (
+            <p>
+              Drag the <span className="text-amber-500">▲ Now</span> marker to
+              change initial latitude / longitude (also updates the form below).
+            </p>
+          )}
         </div>
       )}
     </div>

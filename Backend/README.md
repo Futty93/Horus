@@ -333,6 +333,7 @@ jp.ac.tohoku.qse.takahashi.AtcSimulator/
 - **★ `AircraftRepositoryInMemory.java`** - インメモリ航空機リポジトリ (`infrastructure/persistence/inMemory/`)
 - **`AtsRouteFixPositionRepository.java`** - Fix 位置・ATS 経路データ (`infrastructure/fix/`)
   - 読み込み元: `fix/waypoints.json`, `fix/radio_navigation_aids.json`, `fix/ats_lower_routes.json`, `fix/rnav_routes.json`, `fix/japan-outline.json`
+  - 経路提案グラフは各ルートの隣接 Fix 同士の辺のみ。ウェイポイントが **ルート定義に一度も出現しない**と最寄り Fix がグラフに載らず A\* が失敗し二点フォールバックになる。欠落は `rnav_routes.json` に **`_HORUS_GAP_*`** のブリッジ区間（各空港の最寄りウェイポイント［`airports.json` 基準］から、距離最短の既存グラフノードへ 1 本つなぐ訓練用ギャップ埋め）で補う。**テンプレ既定 O/D はすべて連結になるよう一括整備済み**（運航の公式ルート複製ではない）。
 
 ### 5. インターフェース
 

@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import type { ScenarioAircraft, InitialPositionDto } from "@/types/scenario";
+import { positionToFormStrings } from "@/utility/flightPlanSetup/initialPositionForm";
 
 interface InitialPositionEditorProps {
   aircraft: ScenarioAircraft | null;
@@ -24,15 +25,20 @@ export function InitialPositionEditor({
   const [groundSpeed, setGroundSpeed] = useState("");
   const [verticalSpeed, setVerticalSpeed] = useState("");
 
+  /**
+   * Not an external system sync: keep local string buffers aligned with props when
+   * the same aircraft is updated elsewhere (e.g. map drag). key={callsign} alone
+   * does not cover per-field updates for a fixed callsign.
+   */
   useEffect(() => {
     if (!aircraft) return;
-    const p = aircraft.initialPosition;
-    setLat(p.latitude.toString());
-    setLon(p.longitude.toString());
-    setAltitude(p.altitude.toString());
-    setHeading(p.heading.toString());
-    setGroundSpeed(p.groundSpeed.toString());
-    setVerticalSpeed(p.verticalSpeed.toString());
+    const s = positionToFormStrings(aircraft.initialPosition);
+    setLat(s.lat);
+    setLon(s.lon);
+    setAltitude(s.altitude);
+    setHeading(s.heading);
+    setGroundSpeed(s.groundSpeed);
+    setVerticalSpeed(s.verticalSpeed);
   }, [aircraft]);
 
   const applyField = useCallback(

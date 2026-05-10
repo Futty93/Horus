@@ -4,8 +4,13 @@ export { FlightPlanSetupNav } from "./FlightPlanSetupNav";
 export { OdGroupList } from "./OdGroupList";
 export { OdGroupSection } from "./OdGroupSection";
 export { AtsRouteSearch } from "./AtsRouteSearch";
+export { AircraftRouteEditor } from "./AircraftRouteEditor";
 export { AircraftTable } from "./AircraftTable";
 export { AddAircraftForm } from "./AddAircraftForm";
 export { InitialPositionEditor } from "./InitialPositionEditor";
+export type {
+  RoutePreviewPickPayload,
+  RoutePreviewPickTarget,
+} from "./routePreviewTypes";
 export { RoutePreviewMap } from "./RoutePreviewMap";
 export { AssignFlightPlansBar } from "./AssignFlightPlansBar";
