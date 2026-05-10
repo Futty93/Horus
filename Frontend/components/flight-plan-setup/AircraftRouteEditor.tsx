@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AtsRouteSearch } from "./AtsRouteSearch";
 import { suggestRoute } from "@/utility/api/ats";
 import type { ScenarioAircraft } from "@/types/scenario";
@@ -19,7 +19,10 @@ interface AircraftRouteEditorProps {
   atsRoutes: { atsLowerRoutes: Route[]; rnavRoutes: Route[] };
   /** Waypoints + navaids from loaded ATS data (names for search / add). */
   fixSources: { waypoints: Waypoint[]; radioNavAids: RadioNavigationAid[] };
-  onApplyRoute: (route: AircraftRouteDef) => void;
+  onApplyRoute: (
+    route: AircraftRouteDef,
+    applyOptions?: { callsign: string }
+  ) => void;
   onSuggestStatus?: (status: string | null) => void;
 }
 
@@ -35,6 +38,8 @@ export function AircraftRouteEditor({
   const [cruiseAlt, setCruiseAlt] = useState(35000);
   const [cruiseSpd, setCruiseSpd] = useState(450);
   const [fixSearch, setFixSearch] = useState("");
+  const selectedCallsignRef = useRef<string | null>(null);
+  selectedCallsignRef.current = aircraft?.flightPlan.callsign ?? null;
 
   const fixNameList = useMemo(() => {
     const m = new Map<string, string>();
@@ -71,12 +76,18 @@ export function AircraftRouteEditor({
     setFixSearch("");
   }, [aircraft]);
 
-  const pushRoute = (waypoints: string[]) => {
-    onApplyRoute({
-      waypoints,
-      cruiseAltitude: cruiseAlt,
-      cruiseSpeed: cruiseSpd,
-    });
+  const pushRoute = (
+    waypoints: string[],
+    applyOptions?: { callsign: string }
+  ) => {
+    onApplyRoute(
+      {
+        waypoints,
+        cruiseAltitude: cruiseAlt,
+        cruiseSpeed: cruiseSpd,
+      },
+      applyOptions
+    );
   };
 
   const appendFixFromCatalog = (rawName: string) => {
@@ -87,7 +98,17 @@ export function AircraftRouteEditor({
       .split(/[,\s]+/)
       .map((s) => s.trim().toUpperCase())
       .filter(Boolean);
-    const nextParts = parts.includes(name) ? parts : [...parts, name];
+    const fp = aircraft.flightPlan;
+    const chain = new Set([
+      fp.departureAirport.toUpperCase(),
+      fp.arrivalAirport.toUpperCase(),
+      ...parts,
+    ]);
+    if (chain.has(name)) {
+      onSuggestStatus?.(`${rawName.trim()} is already on this route`);
+      return;
+    }
+    const nextParts = [...parts, name];
     setWaypointsText(nextParts.join(", "));
     pushRoute(nextParts);
     onSuggestStatus?.(`Added ${name} to ${aircraft.flightPlan.callsign}`);
@@ -111,6 +132,7 @@ export function AircraftRouteEditor({
 
   const handleSuggestRoute = async () => {
     if (!aircraft) return;
+    const forCallsign = aircraft.flightPlan.callsign;
     const { departureAirport: origin, arrivalAirport: destination } =
       aircraft.flightPlan;
     setSuggesting(true);
@@ -118,10 +140,12 @@ export function AircraftRouteEditor({
     const result = await suggestRoute(origin, destination);
     setSuggesting(false);
     if ("waypoints" in result && result.waypoints.length > 0) {
-      setWaypointsText(result.waypoints.join(", "));
-      pushRoute(result.waypoints);
+      if (selectedCallsignRef.current === forCallsign) {
+        setWaypointsText(result.waypoints.join(", "));
+      }
+      pushRoute(result.waypoints, { callsign: forCallsign });
       onSuggestStatus?.(
-        `Suggested route for ${aircraft.flightPlan.callsign} (${result.waypoints.length} waypoints)`
+        `Suggested route for ${forCallsign} (${result.waypoints.length} waypoints)`
       );
     } else {
       onSuggestStatus?.(
@@ -234,8 +258,8 @@ export function AircraftRouteEditor({
             </ul>
           ) : null}
           <p className="text-xs text-atc-text-muted">
-            Appends to the end of the route (no duplicate). Uses loaded
-            waypoints / navaids only.
+            Appends to the end of the cruise list (rejects if it matches
+            departure, arrival, or any waypoint already in the text).
           </p>
         </div>
         <div className="flex gap-2">

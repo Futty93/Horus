@@ -409,12 +409,11 @@ export default function FlightPlanSetupPage() {
               waypoints: atsRoutes.waypoints,
               radioNavAids: atsRoutes.radioNavigationAids,
             }}
-            onApplyRoute={(route) => {
-              if (selectedAircraft) {
-                handleRouteChangeForCallsign(
-                  selectedAircraft.flightPlan.callsign,
-                  route
-                );
+            onApplyRoute={(route, applyOptions) => {
+              const callsign =
+                applyOptions?.callsign ?? selectedAircraft?.flightPlan.callsign;
+              if (callsign) {
+                handleRouteChangeForCallsign(callsign, route);
               }
             }}
             onSuggestStatus={setStatus}
