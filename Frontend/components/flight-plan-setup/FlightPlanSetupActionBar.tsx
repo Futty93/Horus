@@ -12,6 +12,8 @@ interface FlightPlanSetupActionBarProps {
   starting: boolean;
   loadingSuggest?: boolean;
   hasAircraft: boolean;
+  /** Shown when static data (e.g. ATS routes) failed to load — distinct from `status`. */
+  dataLoadWarning?: string | null;
 }
 
 export function FlightPlanSetupActionBar({
@@ -24,6 +26,7 @@ export function FlightPlanSetupActionBar({
   starting,
   loadingSuggest,
   hasAircraft,
+  dataLoadWarning,
 }: FlightPlanSetupActionBarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -92,12 +95,17 @@ export function FlightPlanSetupActionBar({
           className="px-4 py-2 text-sm font-bold bg-atc-accent text-white rounded
                      hover:opacity-90 disabled:opacity-50"
         >
-          これで始める
+          Start with this
         </button>
       </div>
+      {dataLoadWarning && (
+        <p className="text-sm text-atc-warning whitespace-pre-line">
+          {dataLoadWarning}
+        </p>
+      )}
       {status && (
         <p
-          className={`text-sm ${
+          className={`text-sm whitespace-pre-line ${
             status.startsWith("Error") ? "text-atc-danger" : "text-atc-accent"
           }`}
         >

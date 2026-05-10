@@ -5,7 +5,8 @@ export function FlightPlanSetupHeader() {
         FLIGHT PLAN SETUP
       </h1>
       <p className="text-sm text-atc-text-muted mt-1">
-        Create and assign flight plans for multiple aircraft.
+        Select an aircraft to edit its cruise route; use bulk O/D only when
+        every flight on that pair should share one path.
       </p>
     </header>
   );

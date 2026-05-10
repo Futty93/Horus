@@ -10,6 +10,10 @@ interface OdGroupSectionProps {
   origin: string;
   destination: string;
   aircraft: ScenarioAircraft[];
+  /** True when not all aircraft in this O/D share the same route / cruise. */
+  routesDiverge: boolean;
+  expanded: boolean;
+  onToggleExpanded: () => void;
   selectedCallsign: string | null;
   onSelectAircraft: (a: ScenarioAircraft) => void;
   onSuggestStatus?: (status: string | null) => void;
@@ -28,6 +32,9 @@ export function OdGroupSection({
   origin,
   destination,
   aircraft,
+  routesDiverge,
+  expanded,
+  onToggleExpanded,
   selectedCallsign,
   onSelectAircraft,
   onSuggestStatus,
@@ -35,7 +42,6 @@ export function OdGroupSection({
   routeByOd,
   onRouteChange,
 }: OdGroupSectionProps) {
-  const [expanded, setExpanded] = useState(true);
   const [suggesting, setSuggesting] = useState(false);
   const key = `${origin}→${destination}`;
   const current = routeByOd.get(key) ?? {
@@ -74,6 +80,14 @@ export function OdGroupSection({
 
   const handleAtsSelect = (waypoints: string[]) => {
     setWaypointsText(waypoints.join(", "));
+    onRouteChange(key, {
+      waypoints,
+      cruiseAltitude: cruiseAlt,
+      cruiseSpeed: cruiseSpd,
+    });
+    onSuggestStatus?.(
+      `Applied ATS to all ${aircraft.length} in group (${waypoints.length} waypoints)`
+    );
   };
 
   const handleSuggestRoute = async () => {
@@ -89,7 +103,7 @@ export function OdGroupSection({
         cruiseSpeed: cruiseSpd,
       });
       onSuggestStatus?.(
-        `Suggested and applied ${result.waypoints.length} waypoints`
+        `Suggested route for all ${aircraft.length} in group (${result.waypoints.length} waypoints)`
       );
     } else {
       onSuggestStatus?.(
@@ -104,7 +118,7 @@ export function OdGroupSection({
     <div className="border border-atc-border rounded-lg bg-atc-surface overflow-hidden">
       <button
         type="button"
-        onClick={() => setExpanded(!expanded)}
+        onClick={onToggleExpanded}
         className="w-full px-4 py-2 flex items-center justify-between text-left
                    bg-atc-surface-elevated hover:bg-atc-surface"
       >
@@ -117,6 +131,13 @@ export function OdGroupSection({
       </button>
       {expanded && (
         <div className="p-4 space-y-3 border-t border-atc-border">
+          {routesDiverge && (
+            <p className="text-xs text-atc-warning border border-atc-warning/40 rounded px-2 py-1.5 bg-atc-warning/10">
+              Aircraft in this group do not all share the same route. Fields
+              below follow the first flight in the template order. Prefer
+              &quot;Route — callsign&quot; above for per-aircraft edits.
+            </p>
+          )}
           <p className="text-xs text-atc-text-muted flex flex-wrap gap-x-1 gap-y-0.5">
             {aircraft.map((a, i) => {
               const cs = a.flightPlan.callsign;
@@ -187,14 +208,21 @@ export function OdGroupSection({
               title="Cruise speed (kts)"
             />
           </div>
-          <button
-            type="button"
-            onClick={applyToGroup}
-            className="px-3 py-1.5 text-xs font-bold bg-atc-accent text-white rounded
-                       hover:opacity-90"
-          >
-            APPLY TO GROUP
-          </button>
+          <div className="space-y-1">
+            <button
+              type="button"
+              onClick={applyToGroup}
+              className="px-3 py-1.5 text-xs font-bold bg-atc-accent text-white rounded
+                         hover:opacity-90"
+            >
+              Apply same route to all {aircraft.length} aircraft
+            </button>
+            <p className="text-xs text-atc-text-muted">
+              Overwrites every flight with this O/D. Suggest route and ATS apply
+              to the whole group immediately; use the button after manual text
+              edits only.
+            </p>
+          </div>
         </div>
       )}
     </div>

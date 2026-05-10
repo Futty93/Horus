@@ -10973,6 +10973,870 @@
           "type": "waypoint"
         }
       ]
+    },
+    {
+      "name": "_HORUS_GAP_TESAB_KAGOSHIMA",
+      "description": "Graph bridge: TESAB (RJFK vicinity, AIS waypoint) to KAGOSHIMA VOR. TESAB had no route edges so RJFK suggest fell back to two points.",
+      "points": [
+        {
+          "name": "TESAB",
+          "latitude": 31.750203,
+          "longitude": 130.658481,
+          "type": "waypoint"
+        },
+        {
+          "name": "KAGOSHIMA",
+          "latitude": 31.697222,
+          "longitude": 130.582942,
+          "type": "VOR"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_ACELA_POLIX",
+      "description": "Airport-vicinity bridge: ACELA (orphan nearest-fix) to POLIX (15km) for route graph connectivity",
+      "points": [
+        {
+          "name": "ACELA",
+          "latitude": 36.120219,
+          "longitude": 140.322097,
+          "type": "waypoint"
+        },
+        {
+          "name": "POLIX",
+          "latitude": 36.210294,
+          "longitude": 140.439592,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_ANPEP_BESMU",
+      "description": "Airport-vicinity bridge: ANPEP (orphan nearest-fix) to BESMU (28km) for route graph connectivity",
+      "points": [
+        {
+          "name": "ANPEP",
+          "latitude": 34.703408,
+          "longitude": 131.684364,
+          "type": "waypoint"
+        },
+        {
+          "name": "BESMU",
+          "latitude": 34.8126,
+          "longitude": 131.96435,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_ATSUGI_IGNOT",
+      "description": "Airport-vicinity bridge: ATSUGI (orphan nearest-fix) to IGNOT (11km) for route graph connectivity",
+      "points": [
+        {
+          "name": "ATSUGI",
+          "latitude": 35.445556,
+          "longitude": 139.453889,
+          "type": "TACAN"
+        },
+        {
+          "name": "IGNOT",
+          "latitude": 35.345378,
+          "longitude": 139.470981,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_DAIAN_AVNON",
+      "description": "Airport-vicinity bridge: DAIAN (orphan nearest-fix) to AVNON (9km) for route graph connectivity",
+      "points": [
+        {
+          "name": "DAIAN",
+          "latitude": 36.153533,
+          "longitude": 136.260417,
+          "type": "waypoint"
+        },
+        {
+          "name": "AVNON",
+          "latitude": 36.124233,
+          "longitude": 136.165578,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_EISAR_NAHA",
+      "description": "Airport-vicinity bridge: EISAR (orphan nearest-fix) to NAHA (33km) for route graph connectivity",
+      "points": [
+        {
+          "name": "EISAR",
+          "latitude": 26.482747,
+          "longitude": 127.505292,
+          "type": "waypoint"
+        },
+        {
+          "name": "NAHA",
+          "latitude": 26.208531,
+          "longitude": 127.642867,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_ENDEG_ISHIGAKIJIMA",
+      "description": "Airport-vicinity bridge: ENDEG (orphan nearest-fix) to ISHIGAKIJIMA (8km) for route graph connectivity",
+      "points": [
+        {
+          "name": "ENDEG",
+          "latitude": 24.337761,
+          "longitude": 124.198797,
+          "type": "waypoint"
+        },
+        {
+          "name": "ISHIGAKIJIMA",
+          "latitude": 24.396011,
+          "longitude": 124.237953,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_FOCUS_OKUMA",
+      "description": "Airport-vicinity bridge: FOCUS (orphan nearest-fix) to OKUMA (32km) for route graph connectivity",
+      "points": [
+        {
+          "name": "FOCUS",
+          "latitude": 26.675556,
+          "longitude": 127.712053,
+          "type": "waypoint"
+        },
+        {
+          "name": "OKUMA",
+          "latitude": 26.671383,
+          "longitude": 128.038647,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_GANDO_URUSI",
+      "description": "Airport-vicinity bridge: GANDO (orphan nearest-fix) to URUSI (14km) for route graph connectivity",
+      "points": [
+        {
+          "name": "GANDO",
+          "latitude": 36.726236,
+          "longitude": 137.238878,
+          "type": "waypoint"
+        },
+        {
+          "name": "URUSI",
+          "latitude": 36.819208,
+          "longitude": 137.131533,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_GATAN_MINAMIDAITO",
+      "description": "Airport-vicinity bridge: GATAN (orphan nearest-fix) to MINAMIDAITO (14km) for route graph connectivity",
+      "points": [
+        {
+          "name": "GATAN",
+          "latitude": 25.976081,
+          "longitude": 131.303678,
+          "type": "waypoint"
+        },
+        {
+          "name": "MINAMIDAITO",
+          "latitude": 25.854483,
+          "longitude": 131.263789,
+          "type": "VOR/DME"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_GINJO_NESKO",
+      "description": "Airport-vicinity bridge: GINJO (orphan nearest-fix) to NESKO (6km) for route graph connectivity",
+      "points": [
+        {
+          "name": "GINJO",
+          "latitude": 37.150561,
+          "longitude": 136.702914,
+          "type": "waypoint"
+        },
+        {
+          "name": "NESKO",
+          "latitude": 37.099556,
+          "longitude": 136.720747,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_GOMAF_MONBETSU",
+      "description": "Airport-vicinity bridge: GOMAF (orphan nearest-fix) to MONBETSU (11km) for route graph connectivity",
+      "points": [
+        {
+          "name": "GOMAF",
+          "latitude": 44.400361,
+          "longitude": 143.351989,
+          "type": "waypoint"
+        },
+        {
+          "name": "MONBETSU",
+          "latitude": 44.305267,
+          "longitude": 143.395092,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_HATAR_ENEOS",
+      "description": "Airport-vicinity bridge: HATAR (orphan nearest-fix) to ENEOS (5km) for route graph connectivity",
+      "points": [
+        {
+          "name": "HATAR",
+          "latitude": 36.338444,
+          "longitude": 139.606747,
+          "type": "waypoint"
+        },
+        {
+          "name": "ENEOS",
+          "latitude": 36.375203,
+          "longitude": 139.576528,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_HYAKURI_POLIX",
+      "description": "Airport-vicinity bridge: HYAKURI (orphan nearest-fix) to POLIX (3km) for route graph connectivity",
+      "points": [
+        {
+          "name": "HYAKURI",
+          "latitude": 36.187447,
+          "longitude": 140.413203,
+          "type": "TACAN"
+        },
+        {
+          "name": "POLIX",
+          "latitude": 36.210294,
+          "longitude": 140.439592,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_INGYA_MIYAKOJIMA",
+      "description": "Airport-vicinity bridge: INGYA (orphan nearest-fix) to MIYAKOJIMA (9km) for route graph connectivity",
+      "points": [
+        {
+          "name": "INGYA",
+          "latitude": 24.694003,
+          "longitude": 125.279869,
+          "type": "waypoint"
+        },
+        {
+          "name": "MIYAKOJIMA",
+          "latitude": 24.777392,
+          "longitude": 125.293408,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_IWAKUNI_MASKU",
+      "description": "Airport-vicinity bridge: IWAKUNI (orphan nearest-fix) to MASKU (3km) for route graph connectivity",
+      "points": [
+        {
+          "name": "IWAKUNI",
+          "latitude": 34.158408,
+          "longitude": 132.245503,
+          "type": "TACAN"
+        },
+        {
+          "name": "MASKU",
+          "latitude": 34.135694,
+          "longitude": 132.269428,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_IWOTO_VASKO",
+      "description": "Airport-vicinity bridge: IWOTO (orphan nearest-fix) to VASKO (77km) for route graph connectivity",
+      "points": [
+        {
+          "name": "IWOTO",
+          "latitude": 24.784544,
+          "longitude": 141.315847,
+          "type": "TACAN"
+        },
+        {
+          "name": "VASKO",
+          "latitude": 25.004394,
+          "longitude": 142.036931,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_KADENA_NAHA",
+      "description": "Airport-vicinity bridge: KADENA (orphan nearest-fix) to NAHA (21km) for route graph connectivity",
+      "points": [
+        {
+          "name": "KADENA",
+          "latitude": 26.356711,
+          "longitude": 127.768536,
+          "type": "TACAN"
+        },
+        {
+          "name": "NAHA",
+          "latitude": 26.208531,
+          "longitude": 127.642867,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_KAMAT_EDARR",
+      "description": "Airport-vicinity bridge: KAMAT (orphan nearest-fix) to EDARR (14km) for route graph connectivity",
+      "points": [
+        {
+          "name": "KAMAT",
+          "latitude": 35.564875,
+          "longitude": 139.696914,
+          "type": "waypoint"
+        },
+        {
+          "name": "EDARR",
+          "latitude": 35.55715,
+          "longitude": 139.541564,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_KAMIG_AGRIT",
+      "description": "Airport-vicinity bridge: KAMIG (orphan nearest-fix) to AGRIT (31km) for route graph connectivity",
+      "points": [
+        {
+          "name": "KAMIG",
+          "latitude": 33.000561,
+          "longitude": 129.115889,
+          "type": "waypoint"
+        },
+        {
+          "name": "AGRIT",
+          "latitude": 32.775489,
+          "longitude": 129.313467,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_KANRO_RISHIRI",
+      "description": "Airport-vicinity bridge: KANRO (orphan nearest-fix) to RISHIRI (22km) for route graph connectivity",
+      "points": [
+        {
+          "name": "KANRO",
+          "latitude": 45.185922,
+          "longitude": 140.916642,
+          "type": "waypoint"
+        },
+        {
+          "name": "RISHIRI",
+          "latitude": 45.245661,
+          "longitude": 141.186767,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_KOUGA_SELNO",
+      "description": "Airport-vicinity bridge: KOUGA (orphan nearest-fix) to SELNO (15km) for route graph connectivity",
+      "points": [
+        {
+          "name": "KOUGA",
+          "latitude": 34.3481,
+          "longitude": 139.271253,
+          "type": "waypoint"
+        },
+        {
+          "name": "SELNO",
+          "latitude": 34.284339,
+          "longitude": 139.124633,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_KOUJI_TSUSHIMA",
+      "description": "Airport-vicinity bridge: KOUJI (orphan nearest-fix) to TSUSHIMA (9km) for route graph connectivity",
+      "points": [
+        {
+          "name": "KOUJI",
+          "latitude": 34.341253,
+          "longitude": 129.266694,
+          "type": "waypoint"
+        },
+        {
+          "name": "TSUSHIMA",
+          "latitude": 34.281508,
+          "longitude": 129.337011,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_LAVON_OLVAL",
+      "description": "Airport-vicinity bridge: LAVON (orphan nearest-fix) to OLVAL (12km) for route graph connectivity",
+      "points": [
+        {
+          "name": "LAVON",
+          "latitude": 26.170406,
+          "longitude": 127.368142,
+          "type": "waypoint"
+        },
+        {
+          "name": "OLVAL",
+          "latitude": 26.069722,
+          "longitude": 127.411472,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_LAYER_EDARR",
+      "description": "Airport-vicinity bridge: LAYER (orphan nearest-fix) to EDARR (13km) for route graph connectivity",
+      "points": [
+        {
+          "name": "LAYER",
+          "latitude": 35.657056,
+          "longitude": 139.474867,
+          "type": "waypoint"
+        },
+        {
+          "name": "EDARR",
+          "latitude": 35.55715,
+          "longitude": 139.541564,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_MAYAH_KINAI",
+      "description": "Airport-vicinity bridge: MAYAH (orphan nearest-fix) to KINAI (19km) for route graph connectivity",
+      "points": [
+        {
+          "name": "MAYAH",
+          "latitude": 34.606594,
+          "longitude": 135.203056,
+          "type": "waypoint"
+        },
+        {
+          "name": "KINAI",
+          "latitude": 34.656264,
+          "longitude": 135.397761,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_MELUL_KASARI",
+      "description": "Airport-vicinity bridge: MELUL (orphan nearest-fix) to KASARI (21km) for route graph connectivity",
+      "points": [
+        {
+          "name": "MELUL",
+          "latitude": 28.295036,
+          "longitude": 129.861203,
+          "type": "waypoint"
+        },
+        {
+          "name": "KASARI",
+          "latitude": 28.434717,
+          "longitude": 129.711408,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_MILPS_RISHIRI",
+      "description": "Airport-vicinity bridge: MILPS (orphan nearest-fix) to RISHIRI (11km) for route graph connectivity",
+      "points": [
+        {
+          "name": "MILPS",
+          "latitude": 45.298731,
+          "longitude": 141.311664,
+          "type": "waypoint"
+        },
+        {
+          "name": "RISHIRI",
+          "latitude": 45.245661,
+          "longitude": 141.186767,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_MINAMI_DAITO_MINAMIDAITO",
+      "description": "Airport-vicinity bridge: MINAMI DAITO (orphan nearest-fix) to MINAMIDAITO (0km) for route graph connectivity",
+      "points": [
+        {
+          "name": "MINAMI DAITO",
+          "latitude": 25.854483,
+          "longitude": 131.263789,
+          "type": "waypoint"
+        },
+        {
+          "name": "MINAMIDAITO",
+          "latitude": 25.854483,
+          "longitude": 131.263789,
+          "type": "VOR/DME"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_MIYAZAKI_SPICA",
+      "description": "Airport-vicinity bridge: MIYAZAKI (orphan nearest-fix) to SPICA (8km) for route graph connectivity",
+      "points": [
+        {
+          "name": "MIYAZAKI",
+          "latitude": 31.878728,
+          "longitude": 131.437467,
+          "type": "waypoint"
+        },
+        {
+          "name": "SPICA",
+          "latitude": 31.947283,
+          "longitude": 131.43985,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_NANKI_EVERT",
+      "description": "Airport-vicinity bridge: NANKI (orphan nearest-fix) to EVERT (21km) for route graph connectivity",
+      "points": [
+        {
+          "name": "NANKI",
+          "latitude": 33.661264,
+          "longitude": 135.359414,
+          "type": "VOR/DME"
+        },
+        {
+          "name": "EVERT",
+          "latitude": 33.656964,
+          "longitude": 135.133069,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_NUUSI_SHUJI",
+      "description": "Airport-vicinity bridge: NUUSI (orphan nearest-fix) to SHUJI (9km) for route graph connectivity",
+      "points": [
+        {
+          "name": "NUUSI",
+          "latitude": 24.633367,
+          "longitude": 125.084694,
+          "type": "waypoint"
+        },
+        {
+          "name": "SHUJI",
+          "latitude": 24.708978,
+          "longitude": 125.098556,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_ODATE_IWASE",
+      "description": "Airport-vicinity bridge: ODATE (orphan nearest-fix) to IWASE (24km) for route graph connectivity",
+      "points": [
+        {
+          "name": "ODATE",
+          "latitude": 40.198342,
+          "longitude": 140.361856,
+          "type": "VOR/DME"
+        },
+        {
+          "name": "IWASE",
+          "latitude": 40.406036,
+          "longitude": 140.455419,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_OKADA_TRACY",
+      "description": "Airport-vicinity bridge: OKADA (orphan nearest-fix) to TRACY (11km) for route graph connectivity",
+      "points": [
+        {
+          "name": "OKADA",
+          "latitude": 34.617519,
+          "longitude": 134.656622,
+          "type": "waypoint"
+        },
+        {
+          "name": "TRACY",
+          "latitude": 34.663686,
+          "longitude": 134.763283,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_OLSOP_KANNA",
+      "description": "Airport-vicinity bridge: OLSOP (orphan nearest-fix) to KANNA (9km) for route graph connectivity",
+      "points": [
+        {
+          "name": "OLSOP",
+          "latitude": 35.517961,
+          "longitude": 134.791464,
+          "type": "waypoint"
+        },
+        {
+          "name": "KANNA",
+          "latitude": 35.503131,
+          "longitude": 134.689431,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_PHLOX_TETRA",
+      "description": "Airport-vicinity bridge: PHLOX (orphan nearest-fix) to TETRA (10km) for route graph connectivity",
+      "points": [
+        {
+          "name": "PHLOX",
+          "latitude": 35.765722,
+          "longitude": 140.379467,
+          "type": "waypoint"
+        },
+        {
+          "name": "TETRA",
+          "latitude": 35.773992,
+          "longitude": 140.265494,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_PUDAN_MIYAZU",
+      "description": "Airport-vicinity bridge: PUDAN (orphan nearest-fix) to MIYAZU (24km) for route graph connectivity",
+      "points": [
+        {
+          "name": "PUDAN",
+          "latitude": 35.421956,
+          "longitude": 135.392431,
+          "type": "waypoint"
+        },
+        {
+          "name": "MIYAZU",
+          "latitude": 35.480692,
+          "longitude": 135.137022,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_SABAK_OSHIMA",
+      "description": "Airport-vicinity bridge: SABAK (orphan nearest-fix) to OSHIMA (8km) for route graph connectivity",
+      "points": [
+        {
+          "name": "SABAK",
+          "latitude": 34.709064,
+          "longitude": 139.327872,
+          "type": "waypoint"
+        },
+        {
+          "name": "OSHIMA",
+          "latitude": 34.712253,
+          "longitude": 139.414017,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_SAGA_EKABU",
+      "description": "Airport-vicinity bridge: SAGA (orphan nearest-fix) to EKABU (10km) for route graph connectivity",
+      "points": [
+        {
+          "name": "SAGA",
+          "latitude": 33.148619,
+          "longitude": 130.292897,
+          "type": "waypoint"
+        },
+        {
+          "name": "EKABU",
+          "latitude": 33.086811,
+          "longitude": 130.208675,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_SHIMOJISHIMA_SHUJI",
+      "description": "Airport-vicinity bridge: SHIMOJISHIMA (orphan nearest-fix) to SHUJI (13km) for route graph connectivity",
+      "points": [
+        {
+          "name": "SHIMOJISHIMA",
+          "latitude": 24.821933,
+          "longitude": 125.143806,
+          "type": "waypoint"
+        },
+        {
+          "name": "SHUJI",
+          "latitude": 24.708978,
+          "longitude": 125.098556,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_SHONAI_AKNED",
+      "description": "Airport-vicinity bridge: SHONAI (orphan nearest-fix) to AKNED (14km) for route graph connectivity",
+      "points": [
+        {
+          "name": "SHONAI",
+          "latitude": 38.810781,
+          "longitude": 139.799308,
+          "type": "waypoint"
+        },
+        {
+          "name": "AKNED",
+          "latitude": 38.722803,
+          "longitude": 139.910881,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_TAIHO_HANAMAKI",
+      "description": "Airport-vicinity bridge: TAIHO (orphan nearest-fix) to HANAMAKI (21km) for route graph connectivity",
+      "points": [
+        {
+          "name": "TAIHO",
+          "latitude": 39.622878,
+          "longitude": 141.116575,
+          "type": "waypoint"
+        },
+        {
+          "name": "HANAMAKI",
+          "latitude": 39.433358,
+          "longitude": 141.1335,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_TAKOU_LAKOS",
+      "description": "Airport-vicinity bridge: TAKOU (orphan nearest-fix) to LAKOS (8km) for route graph connectivity",
+      "points": [
+        {
+          "name": "TAKOU",
+          "latitude": 34.182744,
+          "longitude": 139.22315,
+          "type": "waypoint"
+        },
+        {
+          "name": "LAKOS",
+          "latitude": 34.125069,
+          "longitude": 139.278106,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_TELMA_IGURU",
+      "description": "Airport-vicinity bridge: TELMA (orphan nearest-fix) to IGURU (23km) for route graph connectivity",
+      "points": [
+        {
+          "name": "TELMA",
+          "latitude": 24.060697,
+          "longitude": 123.803428,
+          "type": "waypoint"
+        },
+        {
+          "name": "IGURU",
+          "latitude": 23.95,
+          "longitude": 124.0,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_UGEPA_ADLEB",
+      "description": "Airport-vicinity bridge: UGEPA (orphan nearest-fix) to ADLEB (11km) for route graph connectivity",
+      "points": [
+        {
+          "name": "UGEPA",
+          "latitude": 35.398244,
+          "longitude": 133.2859,
+          "type": "waypoint"
+        },
+        {
+          "name": "ADLEB",
+          "latitude": 35.497708,
+          "longitude": 133.276322,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_YEEZY_KUMEJIMA",
+      "description": "Airport-vicinity bridge: YEEZY (orphan nearest-fix) to KUMEJIMA (13km) for route graph connectivity",
+      "points": [
+        {
+          "name": "YEEZY",
+          "latitude": 26.338367,
+          "longitude": 126.842356,
+          "type": "waypoint"
+        },
+        {
+          "name": "KUMEJIMA",
+          "latitude": 26.371869,
+          "longitude": 126.722064,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_YONAGUNI_SEDKU",
+      "description": "Airport-vicinity bridge: YONAGUNI (orphan nearest-fix) to SEDKU (114km) for route graph connectivity",
+      "points": [
+        {
+          "name": "YONAGUNI",
+          "latitude": 24.464922,
+          "longitude": 122.997739,
+          "type": "VOR/DME"
+        },
+        {
+          "name": "SEDKU",
+          "latitude": 24.933333,
+          "longitude": 124.0,
+          "type": "waypoint"
+        }
+      ]
+    },
+    {
+      "name": "_HORUS_GAP_YORON_LEXUS",
+      "description": "Airport-vicinity bridge: YORON (orphan nearest-fix) to LEXUS (9km) for route graph connectivity",
+      "points": [
+        {
+          "name": "YORON",
+          "latitude": 27.044375,
+          "longitude": 128.398025,
+          "type": "waypoint"
+        },
+        {
+          "name": "LEXUS",
+          "latitude": 27.002808,
+          "longitude": 128.324553,
+          "type": "waypoint"
+        }
+      ]
     }
   ]
 }
