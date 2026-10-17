@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.ApproachControlReleasedException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.behavior.FixedWingFlightBehavior;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.types.commercial.CommercialAircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.characteristics.AircraftCharacteristics;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.NavigationMode;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude;
@@ -75,6 +76,26 @@ class TowerHandoffTest {
                 () -> aircraft.beginTowerHandoff(35.0, 139.08));
         assertTrue(ex.getMessage().contains("final approach course"));
         assertFalse(aircraft.isTowerHandoffActive());
+    }
+
+    @Test
+    void acceptedCommercialAircraftIsRemovedByTheSimulator() {
+        CommercialAircraft aircraft = new CommercialAircraft(
+                new Callsign("TWR99"),
+                new AircraftType("B738"),
+                new AircraftPosition(new Latitude(35.0), new Longitude(139.0), new Altitude(3000)),
+                new AircraftVector(new Heading(90), new GroundSpeed(180), new VerticalSpeed(0)),
+                "HND", "RJTT", "HND", "RJTT", "2026-10-17T06:00:00Z");
+        aircraft.beginTowerHandoff(35.0, 139.08);
+        assertTrue(aircraft.isTowerHandoffActive());
+
+        boolean removed = false;
+        for (int second = 0; second < 400 && !removed; second++) {
+            aircraft.calculateNextAircraftVector(1.0);
+            aircraft.calculateNextAircraftPosition(1.0);
+            removed = aircraft.shouldBeRemovedFromSimulation();
+        }
+        assertTrue(removed);
     }
 
     @Test

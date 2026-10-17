@@ -208,7 +208,7 @@ npm run dev
 | POST | `/api/aircraft/{callsign}/hold` | Hold At Fix（初期版: 右旋回固定レーストラック、`turnDirection` は `RIGHT` のみ。同一Fixでは侵入方向に依存せず決定論的に同一トラック向きを共有） |
 | POST | `/api/aircraft/{callsign}/final-approach` | 最終進入延長線上の会合点へ向かい、到達後に進入コース針路へ移る |
 | POST | `/api/aircraft/{callsign}/go-around` | 進入復行。滑走路方位のまま上昇（上昇高度は現在高度より 500 ft 以上、末端から 120NM 以内） |
-| POST | `/api/aircraft/{callsign}/tower-handoff` | タワー移管。`HEADING` で末端 10NM 以内、かつ維持する針路の軌道が末端 0.5NM 以内を通ること。末端 0.5NM 以内でも `HEADING` は必須。移管後の進入指示は 409。末端 0.5NM 以内でシミュレーションから外れる |
+| POST | `/api/aircraft/{callsign}/tower-handoff` | タワー移管。`HEADING` で末端 10NM 以内、かつ維持する針路の予測軌道が末端 0.35NM 以内を通ること。末端 0.5NM 以内でも `HEADING` は必須。移管後の進入指示は 409。末端 0.5NM 以内でシミュレーションから外れる |
 | POST | `/api/aircraft/{callsign}/resume-navigation` | フライトプラン経路再開 |
 | GET | `/simulation/speed` | シミュレーション時間倍率と実時間ティック間隔（ms） |
 | PUT | `/simulation/speed` | JSON `{"speedMultiplier": …}`（必須。欠落・`null` は 400）。値は離散プリセットのみ（`0.25` / `0.5` / `1` / `2` / `4` / `10`）。他は 400 |

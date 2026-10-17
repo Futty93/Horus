@@ -70,6 +70,11 @@ public abstract class AircraftBase implements Aircraft {
 
     public static final double MAX_TOWER_HANDOFF_DISTANCE_NM = 10.0;
     public static final double TOWER_HANDOFF_REMOVAL_NM = 0.5;
+    /**
+     * Predicted closest approach must be inside the removal radius by this much.
+     * Indicated-airspeed conversion is not part of the prediction.
+     */
+    public static final double TOWER_HANDOFF_TRACK_MARGIN_NM = 0.15;
     private static final int TOWER_HANDOFF_TRACK_HORIZON_SECONDS = 20 * 60;
 
     private static final double WAYPOINT_PASS_THRESHOLD_MIN_NM = 1.5;
@@ -479,8 +484,9 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     /**
-     * The handoff keeps the current heading and speed targets. Accept only when that path
-     * enters the removal radius, including the turn onto the instructed heading.
+     * The handoff keeps the current heading and speed targets. The predicted path uses the
+     * same position step as the simulator and must pass inside the removal radius by
+     * {@link #TOWER_HANDOFF_TRACK_MARGIN_NM}.
      */
     private boolean maintainedTrackReachesThreshold(double thresholdLatitude, double thresholdLongitude) {
         double lat = aircraftPosition.latitude.toDouble();
@@ -497,13 +503,19 @@ public abstract class AircraftBase implements Aircraft {
                     .toDouble();
             speed = PositionUtils.calculateNextGroundSpeed(speed, targetSpeed, characteristics.getMaxAcceleration())
                     .toDouble();
-            double stepNm = Math.max(0.0, speed) / 3600.0;
-            double headingRad = Math.toRadians(heading);
-            lat += (stepNm * Math.cos(headingRad)) / 60.0;
-            double cosLat = Math.cos(Math.toRadians(lat));
-            lon += cosLat == 0.0 ? 0.0 : (stepNm * Math.sin(headingRad)) / (60.0 * cosLat);
+            AircraftPosition stepped = PositionUtils.calculateNextPosition(
+                    new AircraftPosition(
+                            new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Latitude(lat),
+                            new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Longitude(lon),
+                            new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude(0)),
+                    Math.max(0.0, speed),
+                    heading,
+                    0,
+                    1.0);
+            lat = stepped.latitude.toDouble();
+            lon = stepped.longitude.toDouble();
             double distanceNm = horizontalDistanceNm(lat, lon, thresholdLatitude, thresholdLongitude);
-            if (distanceNm <= TOWER_HANDOFF_REMOVAL_NM) {
+            if (distanceNm <= TOWER_HANDOFF_REMOVAL_NM - TOWER_HANDOFF_TRACK_MARGIN_NM) {
                 return true;
             }
             minimum = Math.min(minimum, distanceNm);
@@ -511,14 +523,14 @@ public abstract class AircraftBase implements Aircraft {
             if (aligned && distanceNm > previous) {
                 recedingSeconds++;
                 if (recedingSeconds >= 5) {
-                    return minimum <= TOWER_HANDOFF_REMOVAL_NM;
+                    return minimum <= TOWER_HANDOFF_REMOVAL_NM - TOWER_HANDOFF_TRACK_MARGIN_NM;
                 }
             } else {
                 recedingSeconds = 0;
             }
             previous = distanceNm;
         }
-        return minimum <= TOWER_HANDOFF_REMOVAL_NM;
+        return minimum <= TOWER_HANDOFF_REMOVAL_NM - TOWER_HANDOFF_TRACK_MARGIN_NM;
     }
 
     private static double horizontalDistanceNm(double latitude, double longitude,
