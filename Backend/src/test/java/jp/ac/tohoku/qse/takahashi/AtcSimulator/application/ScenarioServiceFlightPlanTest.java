@@ -142,7 +142,7 @@ class ScenarioServiceFlightPlanTest {
     @DisplayName("tower handoff keeps heading mode and rejects a later instruction")
     void handOffToTower_locksApproachInstructions() {
         Aircraft aircraft = aircraftRepository.findByCallsign(new Callsign("FP01"));
-        scenarioService.handOffToTower(new Callsign("FP01"), 35.0, 139.08, 90);
+        scenarioService.handOffToTower(new Callsign("FP01"), 35.0, 139.08);
 
         AircraftBase base = (AircraftBase) aircraft;
         assertThat(base.isTowerHandoffActive()).isTrue();
@@ -158,7 +158,7 @@ class ScenarioServiceFlightPlanTest {
     @DisplayName("tower handoff removes the aircraft on the flight update at the threshold")
     void handOffToTower_removesWhenThresholdIsReached() {
         Aircraft aircraft = aircraftRepository.findByCallsign(new Callsign("FP01"));
-        scenarioService.handOffToTower(new Callsign("FP01"), 35.0, 139.08, 90);
+        scenarioService.handOffToTower(new Callsign("FP01"), 35.0, 139.08);
         AircraftBase base = (AircraftBase) aircraft;
         base.calculateNextAircraftVector(1.0);
         assertThat(base.shouldBeRemovedFromSimulation()).isFalse();
@@ -172,7 +172,7 @@ class ScenarioServiceFlightPlanTest {
     @DisplayName("tower handoff rejects an aircraft that is still intercepting")
     void handOffToTower_rejectsWhenNotEstablished() {
         scenarioService.directToFix(new Callsign("FP01"), "ABENO", false);
-        assertThatThrownBy(() -> scenarioService.handOffToTower(new Callsign("FP01"), 35.0, 139.08, 90))
+        assertThatThrownBy(() -> scenarioService.handOffToTower(new Callsign("FP01"), 35.0, 139.08))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("final approach course");
     }

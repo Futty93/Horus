@@ -30,7 +30,7 @@ class TowerHandoffTest {
         AircraftBase aircraft = createTestAircraft();
         InstructedVector before = aircraft.getInstructedVector();
 
-        aircraft.beginTowerHandoff(35.0, 139.08, 90);
+        aircraft.beginTowerHandoff(35.0, 139.08);
 
         assertTrue(aircraft.isTowerHandoffActive());
         assertEquals(NavigationMode.HEADING, aircraft.getNavigationMode());
@@ -40,16 +40,54 @@ class TowerHandoffTest {
     }
 
     @Test
+    void headingThatMissesTheThresholdIsRejected() {
+        AircraftBase aircraft = createTestAircraft();
+        aircraft.setAircraftPosition(
+                new AircraftPosition(new Latitude(35.6327), new Longitude(139.7511), new Altitude(3000)));
+        aircraft.setAircraftVector(new AircraftVector(new Heading(143), new GroundSpeed(180), new VerticalSpeed(0)));
+        aircraft.setInstructedVector(
+                new InstructedVector(new Heading(143), new Altitude(3000), new GroundSpeed(180)));
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> aircraft.beginTowerHandoff(35.5530, 139.7810));
+        assertTrue(ex.getMessage().contains("does not reach"));
+        assertFalse(aircraft.isTowerHandoffActive());
+    }
+
+    @Test
+    void instructedHeadingThatTurnsAwayFromTheThresholdIsRejected() {
+        AircraftBase aircraft = createTestAircraft();
+        aircraft.setInstructedVector(
+                new InstructedVector(new Heading(0), new Altitude(5000), new GroundSpeed(180)));
+
+        assertThrows(IllegalArgumentException.class, () -> aircraft.beginTowerHandoff(35.0, 139.08));
+        assertFalse(aircraft.isTowerHandoffActive());
+    }
+
+    @Test
+    void nearThresholdStillRequiresHeadingMode() {
+        AircraftBase aircraft = createTestAircraft();
+        aircraft.setAircraftPosition(
+                new AircraftPosition(new Latitude(35.002), new Longitude(139.08), new Altitude(5000)));
+        aircraft.setNavigationMode(NavigationMode.DIRECT_TO);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> aircraft.beginTowerHandoff(35.0, 139.08));
+        assertTrue(ex.getMessage().contains("final approach course"));
+        assertFalse(aircraft.isTowerHandoffActive());
+    }
+
+    @Test
     void offCenterlineIsRejected() {
         AircraftBase aircraft = createTestAircraft();
-        assertThrows(IllegalArgumentException.class, () -> aircraft.beginTowerHandoff(35.1, 139.0, 90));
+        assertThrows(IllegalArgumentException.class, () -> aircraft.beginTowerHandoff(35.1, 139.0));
         assertFalse(aircraft.isTowerHandoffActive());
     }
 
     @Test
     void headingInstructionAfterHandoffIsRejected() {
         AircraftBase aircraft = createTestAircraft();
-        aircraft.beginTowerHandoff(35.0, 139.08, 90);
+        aircraft.beginTowerHandoff(35.0, 139.08);
         assertThrows(ApproachControlReleasedException.class, () -> aircraft.setInstructedVector(
                 new InstructedVector(new Heading(180), new Altitude(4000), new GroundSpeed(160))));
         assertEquals(90, aircraft.getInstructedVector().instructedHeading.toDouble(), 0.01);
@@ -58,7 +96,7 @@ class TowerHandoffTest {
     @Test
     void reachingTheThresholdMarksRemoval() {
         AircraftBase aircraft = createTestAircraft();
-        aircraft.beginTowerHandoff(35.0, 139.08, 90);
+        aircraft.beginTowerHandoff(35.0, 139.08);
         assertFalse(aircraft.markTowerHandoffArrival());
 
         aircraft.setAircraftPosition(

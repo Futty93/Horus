@@ -69,8 +69,8 @@ public abstract class AircraftBase implements Aircraft {
     protected FixPosition towerThreshold;
 
     public static final double MAX_TOWER_HANDOFF_DISTANCE_NM = 10.0;
-    public static final double TOWER_HANDOFF_HEADING_TOLERANCE_DEG = 30.0;
     public static final double TOWER_HANDOFF_REMOVAL_NM = 0.5;
+    private static final int TOWER_HANDOFF_TRACK_HORIZON_SECONDS = 20 * 60;
 
     private static final double WAYPOINT_PASS_THRESHOLD_MIN_NM = 1.5;
     private static final double WAYPOINT_PASS_THRESHOLD_MAX_NM = 5.0;
@@ -450,7 +450,7 @@ public abstract class AircraftBase implements Aircraft {
      * Release the aircraft to the tower without changing the current heading, altitude, or speed target.
      * The aircraft leaves the simulation once it reaches the runway threshold.
      */
-    public void beginTowerHandoff(double thresholdLatitude, double thresholdLongitude, double runwayHeading) {
+    public void beginTowerHandoff(double thresholdLatitude, double thresholdLongitude) {
         requireApproachControl();
         if (goAroundActive) {
             throw new IllegalArgumentException("Cancel the go-around before handing off to the tower");
@@ -459,34 +459,78 @@ public abstract class AircraftBase implements Aircraft {
                 new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Latitude(thresholdLatitude),
                 new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Longitude(thresholdLongitude));
         double distanceNm = GeodeticUtils.distanceToFix(aircraftPosition, threshold);
+        if (navigationMode != NavigationMode.HEADING) {
+            throw new IllegalArgumentException(
+                    "Establish on the final approach course before tower handoff");
+        }
         if (distanceNm > MAX_TOWER_HANDOFF_DISTANCE_NM) {
             throw new IllegalArgumentException(
                     "Aircraft is too far from the runway for tower handoff ("
                             + String.format("%.1f", distanceNm) + " NM, max "
                             + MAX_TOWER_HANDOFF_DISTANCE_NM + " NM)");
         }
-        if (distanceNm > TOWER_HANDOFF_REMOVAL_NM) {
-            if (navigationMode != NavigationMode.HEADING) {
-                throw new IllegalArgumentException(
-                        "Establish on the final approach course before tower handoff");
-            }
-            double headingDelta = smallestHeadingDelta(aircraftVector.heading.toDouble(), runwayHeading);
-            if (headingDelta > TOWER_HANDOFF_HEADING_TOLERANCE_DEG) {
-                throw new IllegalArgumentException(
-                        "Aircraft heading is not within "
-                                + (int) TOWER_HANDOFF_HEADING_TOLERANCE_DEG
-                                + " degrees of the runway course");
-            }
-            double bearingToThreshold = PositionUtils.calculateBearingToTarget(
-                    aircraftPosition, thresholdLatitude, thresholdLongitude);
-            double bearingDelta = smallestHeadingDelta(bearingToThreshold, runwayHeading);
-            if (bearingDelta > TOWER_HANDOFF_HEADING_TOLERANCE_DEG) {
-                throw new IllegalArgumentException(
-                        "Aircraft is not on the extended runway centerline");
-            }
+        if (distanceNm > TOWER_HANDOFF_REMOVAL_NM
+                && !maintainedTrackReachesThreshold(thresholdLatitude, thresholdLongitude)) {
+            throw new IllegalArgumentException(
+                    "Aircraft track does not reach the runway threshold");
         }
         this.towerThreshold = threshold;
         this.towerHandoffActive = true;
+    }
+
+    /**
+     * The handoff keeps the current heading and speed targets. Accept only when that path
+     * enters the removal radius, including the turn onto the instructed heading.
+     */
+    private boolean maintainedTrackReachesThreshold(double thresholdLatitude, double thresholdLongitude) {
+        double lat = aircraftPosition.latitude.toDouble();
+        double lon = aircraftPosition.longitude.toDouble();
+        double heading = aircraftVector.heading.toDouble();
+        double speed = aircraftVector.groundSpeed.toDouble();
+        double targetHeading = instructedVector.instructedHeading.toDouble();
+        double targetSpeed = instructedVector.instructedGroundSpeed.toDouble();
+        double previous = horizontalDistanceNm(lat, lon, thresholdLatitude, thresholdLongitude);
+        double minimum = previous;
+        int recedingSeconds = 0;
+        for (int second = 0; second < TOWER_HANDOFF_TRACK_HORIZON_SECONDS; second++) {
+            heading = flightBehavior.calculateNextHeading(heading, targetHeading, characteristics.getMaxTurnRate())
+                    .toDouble();
+            speed = PositionUtils.calculateNextGroundSpeed(speed, targetSpeed, characteristics.getMaxAcceleration())
+                    .toDouble();
+            double stepNm = Math.max(0.0, speed) / 3600.0;
+            double headingRad = Math.toRadians(heading);
+            lat += (stepNm * Math.cos(headingRad)) / 60.0;
+            double cosLat = Math.cos(Math.toRadians(lat));
+            lon += cosLat == 0.0 ? 0.0 : (stepNm * Math.sin(headingRad)) / (60.0 * cosLat);
+            double distanceNm = horizontalDistanceNm(lat, lon, thresholdLatitude, thresholdLongitude);
+            if (distanceNm <= TOWER_HANDOFF_REMOVAL_NM) {
+                return true;
+            }
+            minimum = Math.min(minimum, distanceNm);
+            boolean aligned = smallestHeadingDelta(heading, targetHeading) < 1.0;
+            if (aligned && distanceNm > previous) {
+                recedingSeconds++;
+                if (recedingSeconds >= 5) {
+                    return minimum <= TOWER_HANDOFF_REMOVAL_NM;
+                }
+            } else {
+                recedingSeconds = 0;
+            }
+            previous = distanceNm;
+        }
+        return minimum <= TOWER_HANDOFF_REMOVAL_NM;
+    }
+
+    private static double horizontalDistanceNm(double latitude, double longitude,
+                                               double thresholdLatitude, double thresholdLongitude) {
+        AircraftPosition from = new AircraftPosition(
+                new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Latitude(latitude),
+                new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Longitude(longitude),
+                new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude(0));
+        FixPosition threshold = new FixPosition(
+                new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Latitude(thresholdLatitude),
+                new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Longitude(thresholdLongitude));
+        return GeodeticUtils.distanceToFix(from, threshold);
     }
 
     /** @return true when the aircraft has reached the threshold and is marked for removal */

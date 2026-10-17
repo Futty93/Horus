@@ -17,8 +17,7 @@ public interface ScenarioService {
     void goAround(Callsign callsign, double thresholdLatitude, double thresholdLongitude,
                   double runwayHeading, double climbAltitudeFeet);
 
-    void handOffToTower(Callsign callsign, double thresholdLatitude, double thresholdLongitude,
-                        double runwayHeading);
+    void handOffToTower(Callsign callsign, double thresholdLatitude, double thresholdLongitude);
 
     void setAtcClearance(Callsign callsign, InstructedVector clearance);
 

@@ -307,8 +307,7 @@ public class FlightPlanController {
             scenarioService.handOffToTower(
                     new Callsign(callsign),
                     rwy.thresholdLatitude(),
-                    rwy.thresholdLongitude(),
-                    rwy.heading());
+                    rwy.thresholdLongitude());
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(Map.of(
                     "success", false,

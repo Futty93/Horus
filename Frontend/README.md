@@ -193,7 +193,7 @@ Operator 専用。航空機の指示先 Fix をレーダー上で選択し、`Di
 
 ### 6. フライトプラン制御 (FlightPlanControl)
 
-Operator 専用。Direct To（Fix 名入力）、Hold At Fix（初期版: 右旋回固定のレーストラック）、最終進入（`JOIN FINAL`）、進入復行（`GO AROUND`: 同じ空港・滑走路の方位で、入力した高度まで上昇。現在高度より 500 ft 以上）、タワー移管（`HAND OFF TO TOWER`: 同じ空港・滑走路。進入コース上で末端 10 NM 以内）、Resume Navigation をバックエンドへ送信。復行中の機体はレーダーラベルに `GA`、移管後は `TWR` を出す。
+Operator 専用。Direct To（Fix 名入力）、Hold At Fix（初期版: 右旋回固定のレーストラック）、最終進入（`JOIN FINAL`）、進入復行（`GO AROUND`: 同じ空港・滑走路の方位で、入力した高度まで上昇。現在高度より 500 ft 以上）、タワー移管（`HAND OFF TO TOWER`: 同じ空港・滑走路。`HEADING` で末端 10 NM 以内かつ、その針路のまま末端に入る機体）、Resume Navigation をバックエンドへ送信。復行中の機体はレーダーラベルに `GA`、移管後は `TWR` を出す。
 
 ### 7. 経路情報表示設定 (RouteInfoDisplaySetting)
 

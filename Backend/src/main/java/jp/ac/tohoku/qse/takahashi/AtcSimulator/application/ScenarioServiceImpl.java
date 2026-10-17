@@ -89,11 +89,10 @@ public class ScenarioServiceImpl implements ScenarioService {
     }
 
     @Override
-    public void handOffToTower(Callsign callsign, double thresholdLatitude, double thresholdLongitude,
-                               double runwayHeading) {
+    public void handOffToTower(Callsign callsign, double thresholdLatitude, double thresholdLongitude) {
         Aircraft aircraft = airspaceManagement.findAircraftByCallsign(callsign);
         AircraftBase base = (AircraftBase) aircraft;
-        base.beginTowerHandoff(thresholdLatitude, thresholdLongitude, runwayHeading);
+        base.beginTowerHandoff(thresholdLatitude, thresholdLongitude);
     }
 
     @Override
