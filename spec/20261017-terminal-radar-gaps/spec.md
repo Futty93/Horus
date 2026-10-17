@@ -102,7 +102,7 @@ Horus を進入・出発のターミナルレーダーとして使うときに�
 
 到着・出発の残り。
 
-- 進入復行（[go-around](../20261017-go-around/spec.md)）、SID／STAR としての公開手続き、離陸から初期上昇、タワー移管（`REMOVE_AIRCRAFT` の置換）、ホールドのレグ時間・インバウンド・左旋回・公示パターン。
+- 進入復行（[go-around](../20261017-go-around/spec.md)）、タワー移管（[tower-handoff](../20261017-tower-handoff/spec.md)。`REMOVE_AIRCRAFT` はシナリオ終端の削除として残す）、SID／STAR としての公開手続き、離陸から初期上昇、ホールドのレグ時間・インバウンド・左旋回・公示パターン。
 
 間隔・警報の残り。
 

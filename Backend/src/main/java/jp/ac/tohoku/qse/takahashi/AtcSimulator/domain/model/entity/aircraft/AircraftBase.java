@@ -2,6 +2,7 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft;
 
 import java.util.Objects;
 
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.ApproachControlReleasedException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.behavior.FlightBehavior;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.characteristics.AircraftCharacteristics;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlan;
@@ -20,6 +21,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.GeodeticUtils;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.IndicatedAirspeedConverter;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.PositionUtils;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.StringUtils;
 
 /**
@@ -62,6 +64,13 @@ public abstract class AircraftBase implements Aircraft {
     protected Double finalApproachCourseHeading;
     /** True after a go-around until the next navigation instruction. */
     protected boolean goAroundActive;
+    /** True after the approach seat has transferred the aircraft to the tower. */
+    protected boolean towerHandoffActive;
+    protected FixPosition towerThreshold;
+
+    public static final double MAX_TOWER_HANDOFF_DISTANCE_NM = 10.0;
+    public static final double TOWER_HANDOFF_HEADING_TOLERANCE_DEG = 30.0;
+    public static final double TOWER_HANDOFF_REMOVAL_NM = 0.5;
 
     private static final double WAYPOINT_PASS_THRESHOLD_MIN_NM = 1.5;
     private static final double WAYPOINT_PASS_THRESHOLD_MAX_NM = 5.0;
@@ -240,6 +249,9 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     protected void applyWaypointPassCheck() {
+        if (markTowerHandoffArrival()) {
+            return;
+        }
         FixPosition target = resolveNavigationTarget();
         if (target == null) {
             return;
@@ -417,6 +429,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setInstructedVector(final InstructedVector newInstructedVector, Integer indicatedAirspeedKnots) {
+        requireApproachControl();
         this.instructedVector = newInstructedVector;
         this.instructedIndicatedAirspeedKnots = indicatedAirspeedKnots;
     }
@@ -429,11 +442,72 @@ public abstract class AircraftBase implements Aircraft {
         return goAroundActive;
     }
 
+    public boolean isTowerHandoffActive() {
+        return towerHandoffActive;
+    }
+
+    /**
+     * Release the aircraft to the tower without changing the current heading, altitude, or speed target.
+     * The aircraft leaves the simulation once it reaches the runway threshold.
+     */
+    public void beginTowerHandoff(double thresholdLatitude, double thresholdLongitude, double runwayHeading) {
+        requireApproachControl();
+        if (goAroundActive) {
+            throw new IllegalArgumentException("Cancel the go-around before handing off to the tower");
+        }
+        FixPosition threshold = new FixPosition(
+                new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Latitude(thresholdLatitude),
+                new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Longitude(thresholdLongitude));
+        double distanceNm = GeodeticUtils.distanceToFix(aircraftPosition, threshold);
+        if (distanceNm > MAX_TOWER_HANDOFF_DISTANCE_NM) {
+            throw new IllegalArgumentException(
+                    "Aircraft is too far from the runway for tower handoff ("
+                            + String.format("%.1f", distanceNm) + " NM, max "
+                            + MAX_TOWER_HANDOFF_DISTANCE_NM + " NM)");
+        }
+        if (distanceNm > TOWER_HANDOFF_REMOVAL_NM) {
+            if (navigationMode != NavigationMode.HEADING) {
+                throw new IllegalArgumentException(
+                        "Establish on the final approach course before tower handoff");
+            }
+            double headingDelta = smallestHeadingDelta(aircraftVector.heading.toDouble(), runwayHeading);
+            if (headingDelta > TOWER_HANDOFF_HEADING_TOLERANCE_DEG) {
+                throw new IllegalArgumentException(
+                        "Aircraft heading is not within "
+                                + (int) TOWER_HANDOFF_HEADING_TOLERANCE_DEG
+                                + " degrees of the runway course");
+            }
+            double bearingToThreshold = PositionUtils.calculateBearingToTarget(
+                    aircraftPosition, thresholdLatitude, thresholdLongitude);
+            double bearingDelta = smallestHeadingDelta(bearingToThreshold, runwayHeading);
+            if (bearingDelta > TOWER_HANDOFF_HEADING_TOLERANCE_DEG) {
+                throw new IllegalArgumentException(
+                        "Aircraft is not on the extended runway centerline");
+            }
+        }
+        this.towerThreshold = threshold;
+        this.towerHandoffActive = true;
+    }
+
+    /** @return true when the aircraft has reached the threshold and is marked for removal */
+    public boolean markTowerHandoffArrival() {
+        if (!towerHandoffActive || towerThreshold == null) {
+            return false;
+        }
+        double distanceNm = GeodeticUtils.distanceToFix(aircraftPosition, towerThreshold);
+        if (distanceNm <= TOWER_HANDOFF_REMOVAL_NM) {
+            markedForRemoval = true;
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Abandon the approach and climb on the runway heading.
      * Keeps the current ground-speed target and any indicated-airspeed instruction.
      */
     public void beginGoAround(double runwayHeading, double climbAltitudeFeet) {
+        requireApproachControl();
         double currentAlt = aircraftPosition.altitude.toDouble();
         if (climbAltitudeFeet < currentAlt + 500.0) {
             throw new IllegalArgumentException(
@@ -453,6 +527,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void joinFinalApproachIntercept(FixPosition interceptPoint, String fixLabel, double approachCourseHeading) {
+        requireApproachControl();
         clearFinalApproachInterceptState();
         finalApproachCoursePending = true;
         finalApproachCourseHeading = approachCourseHeading;
@@ -469,6 +544,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setAtcClearance(final InstructedVector clearance) {
+        requireApproachControl();
         this.atcClearance = clearance;
     }
 
@@ -481,10 +557,12 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setSquawk(String squawk) {
+        requireApproachControl();
         this.squawk = squawk;
     }
 
     public void setFlightPlan(FlightPlan flightPlan) {
+        requireApproachControl();
         clearGoAroundActive();
         this.flightPlan = flightPlan;
         this.currentWaypointIndex = 0;
@@ -494,6 +572,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setDirectTo(FixPosition target, String fixName, boolean resumeFlightPlan) {
+        requireApproachControl();
         clearFinalApproachInterceptState();
         applyDirectToNavigation(target, fixName, resumeFlightPlan);
     }
@@ -509,6 +588,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setHoldAtFix(FixPosition fix, String fixName, HoldTurnDirection turnDirection) {
+        requireApproachControl();
         clearGoAroundActive();
         clearFinalApproachInterceptState();
         this.holdingFix = fix;
@@ -525,6 +605,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setResumeNavigation() {
+        requireApproachControl();
         clearGoAroundActive();
         clearFinalApproachInterceptState();
         if (flightPlan != null) {
@@ -575,6 +656,17 @@ public abstract class AircraftBase implements Aircraft {
         this.goAroundActive = false;
     }
 
+    private void requireApproachControl() {
+        if (towerHandoffActive) {
+            throw new ApproachControlReleasedException(callsign.toString());
+        }
+    }
+
+    private static double smallestHeadingDelta(double left, double right) {
+        double delta = Math.abs(GeodeticUtils.normalizeAngle(left) - GeodeticUtils.normalizeAngle(right));
+        return Math.min(delta, 360.0 - delta);
+    }
+
     private void clearHoldingState() {
         this.holdingFix = null;
         this.holdingOutboundTarget = null;
@@ -613,6 +705,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setNavigationMode(NavigationMode mode) {
+        requireApproachControl();
         clearGoAroundActive();
         if (mode != NavigationMode.DIRECT_TO) {
             clearFinalApproachInterceptState();
@@ -633,6 +726,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setCurrentWaypointIndex(int index) {
+        requireApproachControl();
         this.currentWaypointIndex = index;
         this.previousDistanceToWaypoint = Double.MAX_VALUE;
     }

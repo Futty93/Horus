@@ -98,6 +98,7 @@ public class GetAllAircraftLocationsWithRiskUseCase {
                 base.getSquawk(),
                 base.getNavigationMode().name(),
                 base.isGoAroundActive(),
+                base.isTowerHandoffActive(),
                 riskLevel
         );
     }
@@ -112,6 +113,7 @@ public class GetAllAircraftLocationsWithRiskUseCase {
                 "UNKNOWN",
                 "UNKNOWN",
                 "", "", "", "", "", null, "UNKNOWN",
+                false,
                 false,
                 riskLevel
         );

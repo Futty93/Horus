@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.ApproachControlReleasedException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftBase;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
@@ -26,6 +27,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Aircraft
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Latitude;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Longitude;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.InstructedVector;
 
@@ -134,5 +136,44 @@ class ScenarioServiceFlightPlanTest {
     void goAround_rejectsWhenTooFar() {
         assertThatThrownBy(() -> scenarioService.goAround(new Callsign("FP01"), 0, 0, 163, 6000))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("tower handoff keeps heading mode and rejects a later instruction")
+    void handOffToTower_locksApproachInstructions() {
+        Aircraft aircraft = aircraftRepository.findByCallsign(new Callsign("FP01"));
+        scenarioService.handOffToTower(new Callsign("FP01"), 35.0, 139.08, 90);
+
+        AircraftBase base = (AircraftBase) aircraft;
+        assertThat(base.isTowerHandoffActive()).isTrue();
+        assertThat(base.getNavigationMode()).isEqualTo(NavigationMode.HEADING);
+
+        assertThatThrownBy(() -> scenarioService.instructAircraft(new Callsign("FP01"),
+                new InstructedVector(new Heading(180), new Altitude(4000), new GroundSpeed(160))))
+                .isInstanceOf(ApproachControlReleasedException.class);
+        assertThat(base.getNavigationMode()).isEqualTo(NavigationMode.HEADING);
+    }
+
+    @Test
+    @DisplayName("tower handoff removes the aircraft on the flight update at the threshold")
+    void handOffToTower_removesWhenThresholdIsReached() {
+        Aircraft aircraft = aircraftRepository.findByCallsign(new Callsign("FP01"));
+        scenarioService.handOffToTower(new Callsign("FP01"), 35.0, 139.08, 90);
+        AircraftBase base = (AircraftBase) aircraft;
+        base.calculateNextAircraftVector(1.0);
+        assertThat(base.shouldBeRemovedFromSimulation()).isFalse();
+
+        base.setAircraftPosition(new AircraftPosition(new Latitude(35.0), new Longitude(139.08), new Altitude(5000)));
+        base.calculateNextAircraftVector(1.0);
+        assertThat(base.shouldBeRemovedFromSimulation()).isTrue();
+    }
+
+    @Test
+    @DisplayName("tower handoff rejects an aircraft that is still intercepting")
+    void handOffToTower_rejectsWhenNotEstablished() {
+        scenarioService.directToFix(new Callsign("FP01"), "ABENO", false);
+        assertThatThrownBy(() -> scenarioService.handOffToTower(new Callsign("FP01"), 35.0, 139.08, 90))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("final approach course");
     }
 }

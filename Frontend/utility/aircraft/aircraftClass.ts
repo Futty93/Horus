@@ -41,6 +41,8 @@ export class Aircraft {
   navigationMode: string;
   /** True while a go-around climb on runway heading is the active instruction. */
   goAround: boolean;
+  /** True after the approach seat has transferred the aircraft to the tower. */
+  towerHandoff: boolean;
   /** ISO 8601 instant from API; data block shows UTC HH:mm (see spec 20260318-data-block-display-items). */
   eta: string;
   label: { x: number; y: number };
@@ -71,7 +73,8 @@ export class Aircraft {
     riskLevel: number = 0,
     navigationMode: string = "HEADING",
     indicatedAirspeedKnots: number | null = null,
-    goAround: boolean = false
+    goAround: boolean = false,
+    towerHandoff: boolean = false
   ) {
     this.callsign = callsign;
     this.position = position;
@@ -92,6 +95,7 @@ export class Aircraft {
     this.navigationMode = navigationMode;
     this.indicatedAirspeedKnots = indicatedAirspeedKnots;
     this.goAround = goAround;
+    this.towerHandoff = towerHandoff;
     this.positionHistory = [];
   }
 
@@ -120,6 +124,7 @@ export class Aircraft {
     this.riskLevel = newAircraft.riskLevel;
     this.indicatedAirspeedKnots = newAircraft.indicatedAirspeedKnots;
     this.goAround = newAircraft.goAround;
+    this.towerHandoff = newAircraft.towerHandoff;
   }
 
   public updateAircraftLocationInfo(newAircraft: Aircraft) {
@@ -134,5 +139,6 @@ export class Aircraft {
     this.riskLevel = newAircraft.riskLevel;
     this.indicatedAirspeedKnots = newAircraft.indicatedAirspeedKnots;
     this.goAround = newAircraft.goAround;
+    this.towerHandoff = newAircraft.towerHandoff;
   }
 }

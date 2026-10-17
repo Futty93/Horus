@@ -102,4 +102,34 @@ describe("FlightPlanControl", () => {
       2000
     );
   });
+
+  it("shows the backend message when tower handoff fails", async () => {
+    (finalApproachApi.handOffToTower as jest.Mock).mockResolvedValue({
+      ok: false,
+      message: "Establish on the final approach course before tower handoff",
+    });
+    const user = userEvent.setup();
+
+    render(
+      <SelectedAircraftProvider>
+        <StateSetter callsign="JAL123" />
+        <FlightPlanControl />
+      </SelectedAircraftProvider>
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: /HAND OFF TO TOWER/i })
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Establish on the final approach course/i)
+      ).toBeInTheDocument();
+    });
+    expect(finalApproachApi.handOffToTower).toHaveBeenCalledWith(
+      "JAL123",
+      "RJTT",
+      "16R"
+    );
+  });
 });

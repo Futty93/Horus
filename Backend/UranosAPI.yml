@@ -215,6 +215,37 @@ paths:
         "400":
           description: Unknown runway, climb too low, or aircraft too far from the threshold
 
+  "/api/aircraft/{callsign}/tower-handoff":
+    post:
+      tags: ["aircraft"]
+      summary: "Hand off to the tower"
+      description: "Releases an aircraft established on the final approach course to the tower. The aircraft must be in HEADING mode, within 10 NM of the threshold, and within 30 degrees of the runway course on both heading and bearing to the threshold. After acceptance, approach instructions return 409. The aircraft is removed within 0.5 NM of the threshold. Go-around, intercept, and aircraft farther than 10 NM return 400."
+      parameters:
+        - name: callsign
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [airportIcao, runwayDesignator]
+              properties:
+                airportIcao:
+                  type: string
+                runwayDesignator:
+                  type: string
+      responses:
+        "200":
+          description: Tower handoff accepted
+        "400":
+          description: Unknown runway, or the aircraft is not established on that final
+        "409":
+          description: The aircraft has already been handed off to the tower
+
   "/api/aircraft/{callsign}/resume-navigation":
     post:
       tags: ["aircraft"]
