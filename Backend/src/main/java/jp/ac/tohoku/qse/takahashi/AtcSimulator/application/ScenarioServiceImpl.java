@@ -8,11 +8,17 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Airc
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftBase;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.HoldTurnDirection;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.NavigationMode;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Latitude;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Longitude;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.FixPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.InstructedVector;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.GeodeticUtils;
 
 public class ScenarioServiceImpl implements ScenarioService {
+
+    static final double MAX_FINAL_APPROACH_JOIN_NM = 120.0;
 
     private final AirspaceManagement airspaceManagement;
 
@@ -27,10 +33,39 @@ public class ScenarioServiceImpl implements ScenarioService {
 
     @Override
     public void instructAircraft(Callsign callsign, InstructedVector instructedVector) {
+        instructAircraft(callsign, instructedVector, null);
+    }
+
+    @Override
+    public void instructAircraft(Callsign callsign, InstructedVector instructedVector,
+                                   Integer indicatedAirspeedKnots) {
         Aircraft aircraft = airspaceManagement.findAircraftByCallsign(callsign);
         AircraftBase base = (AircraftBase) aircraft;
         base.setNavigationMode(NavigationMode.HEADING);
-        base.setInstructedVector(instructedVector);
+        base.setInstructedVector(instructedVector, indicatedAirspeedKnots);
+    }
+
+    @Override
+    public void joinFinalApproach(Callsign callsign, double interceptLatitude, double interceptLongitude,
+                                  String interceptLabel, double approachCourseHeading) {
+        Aircraft aircraft = airspaceManagement.findAircraftByCallsign(callsign);
+        AircraftBase base = (AircraftBase) aircraft;
+        AircraftPosition interceptPosition = new AircraftPosition(
+                new Latitude(interceptLatitude),
+                new Longitude(interceptLongitude),
+                base.getAircraftPosition().altitude);
+        double distanceNm = GeodeticUtils.calculateHorizontalDistance(
+                base.getAircraftPosition(), interceptPosition);
+        if (distanceNm > MAX_FINAL_APPROACH_JOIN_NM) {
+            throw new IllegalArgumentException(
+                    "Aircraft is too far from final approach intercept ("
+                            + String.format("%.1f", distanceNm) + " NM, max "
+                            + MAX_FINAL_APPROACH_JOIN_NM + " NM)");
+        }
+        FixPosition intercept = new FixPosition(
+                new Latitude(interceptLatitude),
+                new Longitude(interceptLongitude));
+        base.joinFinalApproachIntercept(intercept, interceptLabel, approachCourseHeading);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict;
 
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.SeparationStandards.ENROUTE_HORIZONTAL_NM;
+
 import java.util.Objects;
 
 /**
@@ -41,6 +43,9 @@ public class RiskAssessment {
      */
     private final AlertLevel alertLevel;
 
+    /** Minimum horizontal separation (NM) applied when evaluating this pair. */
+    private final double requiredHorizontalSeparationNm;
+
     /**
      * コンストラクタ
      *
@@ -49,21 +54,33 @@ public class RiskAssessment {
      * @param closestHorizontalDistance 最接近時の水平距離（海里）
      * @param closestVerticalDistance 最接近時の垂直距離（フィート）
      * @param isConflictPredicted 管制間隔欠如予測フラグ
+     * @param requiredHorizontalSeparationNm 当該ペアに適用した水平間隔基準（海里）
      * @throws IllegalArgumentException 無効な値が渡された場合
      */
     public RiskAssessment(double riskLevel, double timeToClosest,
                          double closestHorizontalDistance, double closestVerticalDistance,
-                         boolean isConflictPredicted) {
+                         boolean isConflictPredicted, double requiredHorizontalSeparationNm) {
         validateRiskLevel(riskLevel);
         validateDistance(closestHorizontalDistance, "水平距離");
         validateDistance(closestVerticalDistance, "垂直距離");
+        if (requiredHorizontalSeparationNm <= 0) {
+            throw new IllegalArgumentException("水平間隔基準は正の値である必要があります: " + requiredHorizontalSeparationNm);
+        }
 
         this.riskLevel = riskLevel;
         this.timeToClosest = timeToClosest;
         this.closestHorizontalDistance = closestHorizontalDistance;
         this.closestVerticalDistance = closestVerticalDistance;
         this.isConflictPredicted = isConflictPredicted;
+        this.requiredHorizontalSeparationNm = requiredHorizontalSeparationNm;
         this.alertLevel = AlertLevel.fromRiskLevel(riskLevel);
+    }
+
+    public RiskAssessment(double riskLevel, double timeToClosest,
+                         double closestHorizontalDistance, double closestVerticalDistance,
+                         boolean isConflictPredicted) {
+        this(riskLevel, timeToClosest, closestHorizontalDistance, closestVerticalDistance,
+                isConflictPredicted, ENROUTE_HORIZONTAL_NM);
     }
 
     /**
@@ -109,14 +126,18 @@ public class RiskAssessment {
         return alertLevel;
     }
 
+    public double getRequiredHorizontalSeparationNm() {
+        return requiredHorizontalSeparationNm;
+    }
+
     /**
      * 管制間隔基準に基づく危険性判定
      * 航空管制では水平と垂直の両方が同時に不足している場合のみ真の管制間隔違反となる
      *
-     * @return 水平5海里未満かつ垂直1000フィート未満の場合true
+     * @return 水平基準未満かつ垂直1000フィート未満の場合true
      */
     public boolean isSeparationViolation() {
-        return closestHorizontalDistance < 5.0 && closestVerticalDistance < 1000.0;
+        return closestHorizontalDistance < requiredHorizontalSeparationNm && closestVerticalDistance < 1000.0;
     }
 
     /**
@@ -138,13 +159,15 @@ public class RiskAssessment {
                Double.compare(that.closestHorizontalDistance, closestHorizontalDistance) == 0 &&
                Double.compare(that.closestVerticalDistance, closestVerticalDistance) == 0 &&
                isConflictPredicted == that.isConflictPredicted &&
-               alertLevel == that.alertLevel;
+               alertLevel == that.alertLevel &&
+               Double.compare(that.requiredHorizontalSeparationNm, requiredHorizontalSeparationNm) == 0;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(riskLevel, timeToClosest, closestHorizontalDistance,
-                           closestVerticalDistance, isConflictPredicted, alertLevel);
+                           closestVerticalDistance, isConflictPredicted, alertLevel,
+                           requiredHorizontalSeparationNm);
     }
 
     @Override

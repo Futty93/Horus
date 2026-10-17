@@ -204,7 +204,8 @@ public class CommercialAircraft extends AircraftBase {
             return true;
         }
         double headingDiff = Math.abs(aircraftVector.heading.toDouble() - instructedVector.instructedHeading.toDouble());
-        double speedDiff = Math.abs(aircraftVector.groundSpeed.toDouble() - instructedVector.instructedGroundSpeed.toDouble());
+        double speedDiff = Math.abs(
+                aircraftVector.groundSpeed.toDouble() - resolveEffectiveTargetGroundSpeedKnots());
 
         // 高度判定を修正: 現在高度ではなく、垂直速度ベースで判定
         // 現在高度が指示高度に近い場合（5フィート以内）かつ垂直速度が小さい場合は更新をスキップ

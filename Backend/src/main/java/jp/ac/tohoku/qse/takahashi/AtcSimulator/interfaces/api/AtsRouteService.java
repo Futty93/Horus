@@ -14,23 +14,39 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.application.RouteSuggestionService;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.fix.AtsRouteFixPositionRepository;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.fix.RunwayCatalog;
 
 @RestController
 @RequestMapping("/ats")
 public class AtsRouteService {
     private final AtsRouteFixPositionRepository atsRouteFixPositionRepository;
     private final RouteSuggestionService routeSuggestionService;
+    private final RunwayCatalog runwayCatalog;
 
     public AtsRouteService(
             AtsRouteFixPositionRepository atsRouteFixPositionRepository,
-            RouteSuggestionService routeSuggestionService) {
+            RouteSuggestionService routeSuggestionService,
+            RunwayCatalog runwayCatalog) {
         this.atsRouteFixPositionRepository = atsRouteFixPositionRepository;
         this.routeSuggestionService = routeSuggestionService;
+        this.runwayCatalog = runwayCatalog;
     }
 
     @RequestMapping(path = "/airports", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Map<String, Object>> getAirports() {
         return atsRouteFixPositionRepository.getAirportsForApi();
+    }
+
+    @RequestMapping(path = "/runways", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Map<String, Object>> getRunways(
+            @RequestParam(name = "airport", required = false) String airportIcao) {
+        if (airportIcao != null && !airportIcao.isBlank()) {
+            return runwayCatalog.findByAirportIcao(airportIcao).stream()
+                    .flatMap(rwy -> runwayCatalog.buildFinalApproachGeometry(rwy).stream())
+                    .map(RunwayCatalog.FinalApproachGeometry::toApiMap)
+                    .toList();
+        }
+        return runwayCatalog.toApiMaps();
     }
 
     @RequestMapping(path = "/route/all", method = RequestMethod.GET)

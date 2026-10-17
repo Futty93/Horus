@@ -8,6 +8,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.Fl
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.FlightPlanWaypoint;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.HoldTurnDirection;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.NavigationMode;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.WaypointAltitudeTargetResolver;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.GroundSpeed;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Heading;
@@ -18,6 +19,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.InstructedVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Type.AircraftType;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.GeodeticUtils;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.IndicatedAirspeedConverter;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.StringUtils;
 
 /**
@@ -55,6 +57,9 @@ public abstract class AircraftBase implements Aircraft {
     protected boolean holdingToOutboundLeg;
     protected boolean holdingEntryCompleted;
     protected int resumeFlightPlanIndexAfterHold;
+    protected Integer instructedIndicatedAirspeedKnots;
+    protected boolean finalApproachCoursePending;
+    protected Double finalApproachCourseHeading;
 
     private static final double WAYPOINT_PASS_THRESHOLD_MIN_NM = 1.5;
     private static final double WAYPOINT_PASS_THRESHOLD_MAX_NM = 5.0;
@@ -116,9 +121,10 @@ public abstract class AircraftBase implements Aircraft {
                         this.instructedVector.instructedHeading.toDouble(),
                         this.characteristics.getMaxTurnRate());
 
+        double targetGroundSpeedKnots = resolveEffectiveTargetGroundSpeedKnots();
         var nextGroundSpeed = flightBehavior.calculateNextGroundSpeed(
             this.aircraftVector.groundSpeed.toDouble(),
-            this.instructedVector.instructedGroundSpeed.toDouble(),
+            targetGroundSpeedKnots,
             this.characteristics.getMaxAcceleration()
         );
 
@@ -199,9 +205,25 @@ public abstract class AircraftBase implements Aircraft {
                 || flightPlan == null) {
             return instructedVector.instructedAltitude;
         }
+        double currentAlt = aircraftPosition.altitude.toDouble();
         return flightPlan.getNextWaypoint(currentWaypointIndex)
-                .map(wp -> wp.getTargetAltitude() != null ? wp.getTargetAltitude() : flightPlan.getCruiseAltitude())
+                .map(wp -> {
+                    Altitude resolved = WaypointAltitudeTargetResolver.resolveTarget(wp, currentAlt);
+                    if (resolved != null) {
+                        return resolved;
+                    }
+                    return flightPlan.getCruiseAltitude();
+                })
                 .orElse(instructedVector.instructedAltitude);
+    }
+
+    protected double resolveEffectiveTargetGroundSpeedKnots() {
+        if (instructedIndicatedAirspeedKnots == null || navigationMode != NavigationMode.HEADING) {
+            return instructedVector.instructedGroundSpeed.toDouble();
+        }
+        return IndicatedAirspeedConverter.indicatedToTrueAirspeedKnots(
+                instructedIndicatedAirspeedKnots,
+                aircraftPosition.altitude.toDouble());
     }
 
     private GroundSpeed resolveTargetSpeed() {
@@ -262,6 +284,17 @@ public abstract class AircraftBase implements Aircraft {
     private void onDirectToTargetReached() {
         directToTarget = null;
         previousDistanceToWaypoint = Double.MAX_VALUE;
+        if (finalApproachCoursePending && finalApproachCourseHeading != null) {
+            finalApproachCoursePending = false;
+            navigationMode = NavigationMode.HEADING;
+            this.instructedVector = new InstructedVector(
+                    new Heading(finalApproachCourseHeading),
+                    instructedVector.instructedAltitude,
+                    instructedVector.instructedGroundSpeed);
+            directToFixName = null;
+            resumeFlightPlanAfterDirectTo = false;
+            return;
+        }
         if (resumeFlightPlanAfterDirectTo && flightPlan != null && directToFixName != null) {
             int idx = flightPlan.findWaypointIndex(directToFixName);
             if (idx >= 0) {
@@ -278,6 +311,10 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     private void onWaypointPassed(FlightPlanWaypoint wp) {
+        if (!WaypointAltitudeTargetResolver.satisfiesConstraintAtPass(
+                wp, aircraftPosition.altitude.toDouble())) {
+            return;
+        }
         if (wp.shouldRemoveAircraft()) {
             markedForRemoval = true;
             return;
@@ -374,7 +411,28 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setInstructedVector(final InstructedVector newInstructedVector) {
+        setInstructedVector(newInstructedVector, null);
+    }
+
+    public void setInstructedVector(final InstructedVector newInstructedVector, Integer indicatedAirspeedKnots) {
         this.instructedVector = newInstructedVector;
+        this.instructedIndicatedAirspeedKnots = indicatedAirspeedKnots;
+    }
+
+    public Integer getInstructedIndicatedAirspeedKnots() {
+        return instructedIndicatedAirspeedKnots;
+    }
+
+    public void joinFinalApproachIntercept(FixPosition interceptPoint, String fixLabel, double approachCourseHeading) {
+        clearFinalApproachInterceptState();
+        finalApproachCoursePending = true;
+        finalApproachCourseHeading = approachCourseHeading;
+        applyDirectToNavigation(interceptPoint, fixLabel, false);
+    }
+
+    private void clearFinalApproachInterceptState() {
+        finalApproachCoursePending = false;
+        finalApproachCourseHeading = null;
     }
 
     public InstructedVector getAtcClearance() {
@@ -406,6 +464,11 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setDirectTo(FixPosition target, String fixName, boolean resumeFlightPlan) {
+        clearFinalApproachInterceptState();
+        applyDirectToNavigation(target, fixName, resumeFlightPlan);
+    }
+
+    private void applyDirectToNavigation(FixPosition target, String fixName, boolean resumeFlightPlan) {
         this.directToTarget = target;
         this.directToFixName = fixName;
         this.resumeFlightPlanAfterDirectTo = resumeFlightPlan;
@@ -415,6 +478,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setHoldAtFix(FixPosition fix, String fixName, HoldTurnDirection turnDirection) {
+        clearFinalApproachInterceptState();
         this.holdingFix = fix;
         this.holdTurnDirection = turnDirection;
         this.holdingToOutboundLeg = false;
@@ -429,6 +493,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setResumeNavigation() {
+        clearFinalApproachInterceptState();
         if (flightPlan != null) {
             if (resumeFlightPlanIndexAfterHold >= flightPlan.getWaypoints().size()) {
                 this.navigationMode = NavigationMode.HEADING;
@@ -511,6 +576,9 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setNavigationMode(NavigationMode mode) {
+        if (mode != NavigationMode.DIRECT_TO) {
+            clearFinalApproachInterceptState();
+        }
         this.navigationMode = mode;
     }
 

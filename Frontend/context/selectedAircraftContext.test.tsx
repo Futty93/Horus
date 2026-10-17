@@ -114,11 +114,15 @@ describe("SelectedAircraftContext", () => {
           </button>
           <button
             onClick={() =>
-              applyInstructedVectorToRadar("ANA456", {
-                altitude: 37000,
-                groundSpeed: 280,
-                heading: 180,
-              })
+              applyInstructedVectorToRadar(
+                "ANA456",
+                {
+                  altitude: 37000,
+                  groundSpeed: 280,
+                  heading: 180,
+                },
+                280
+              )
             }
           >
             Apply
@@ -137,11 +141,15 @@ describe("SelectedAircraftContext", () => {
     await user.click(screen.getByRole("button", { name: "Apply" }));
     await waitFor(() => {
       expect(handler).toHaveBeenCalledTimes(1);
-      expect(handler).toHaveBeenCalledWith("ANA456", {
-        altitude: 37000,
-        groundSpeed: 280,
-        heading: 180,
-      });
+      expect(handler).toHaveBeenCalledWith(
+        "ANA456",
+        {
+          altitude: 37000,
+          groundSpeed: 280,
+          heading: 180,
+        },
+        280
+      );
     });
   });
 
@@ -161,11 +169,15 @@ describe("SelectedAircraftContext", () => {
       return (
         <button
           onClick={() =>
-            applyInstructedVectorToRadar("XXX", {
-              altitude: 0,
-              groundSpeed: 0,
-              heading: 0,
-            })
+            applyInstructedVectorToRadar(
+              "XXX",
+              {
+                altitude: 0,
+                groundSpeed: 0,
+                heading: 0,
+              },
+              null
+            )
           }
         >
           Apply

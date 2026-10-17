@@ -18,7 +18,8 @@ export interface InstructedVector {
 
 export type ApplyInstructedVectorHandler = (
   callsign: string,
-  instructedVector: InstructedVector
+  instructedVector: InstructedVector,
+  indicatedAirspeedKnots: number | null
 ) => void;
 
 export interface SelectedAircraftContextType {
@@ -26,9 +27,12 @@ export interface SelectedAircraftContextType {
   setCallsign: (callsign: string | null) => void;
   instructedVector: InstructedVector;
   setInstructedVector: React.Dispatch<React.SetStateAction<InstructedVector>>;
+  speedAsIndicatedAirspeed: boolean;
+  setSpeedAsIndicatedAirspeed: React.Dispatch<React.SetStateAction<boolean>>;
   applyInstructedVectorToRadar: (
     callsign: string,
-    instructedVector: InstructedVector
+    instructedVector: InstructedVector,
+    indicatedAirspeedKnots: number | null
   ) => void;
   registerApplyInstructedVectorHandler: (
     handler: ApplyInstructedVectorHandler
@@ -52,12 +56,14 @@ export const SelectedAircraftProvider: React.FC<{ children: ReactNode }> = ({
   const [instructedVector, setInstructedVector] = useState<InstructedVector>(
     DEFAULT_INSTRUCTED_VECTOR
   );
+  const [speedAsIndicatedAirspeed, setSpeedAsIndicatedAirspeed] =
+    useState(false);
 
   const applyHandlerRef = useRef<ApplyInstructedVectorHandler | null>(null);
 
   const applyInstructedVectorToRadar = useCallback(
-    (c: string, v: InstructedVector) => {
-      applyHandlerRef.current?.(c, v);
+    (c: string, v: InstructedVector, ias: number | null) => {
+      applyHandlerRef.current?.(c, v, ias);
     },
     []
   );
@@ -78,12 +84,15 @@ export const SelectedAircraftProvider: React.FC<{ children: ReactNode }> = ({
       setCallsign,
       instructedVector,
       setInstructedVector,
+      speedAsIndicatedAirspeed,
+      setSpeedAsIndicatedAirspeed,
       applyInstructedVectorToRadar,
       registerApplyInstructedVectorHandler,
     }),
     [
       callsign,
       instructedVector,
+      speedAsIndicatedAirspeed,
       applyInstructedVectorToRadar,
       registerApplyInstructedVectorHandler,
     ]

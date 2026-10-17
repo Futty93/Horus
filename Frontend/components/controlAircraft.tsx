@@ -8,25 +8,48 @@ const ControlAircraft = () => {
     callsign,
     instructedVector,
     setInstructedVector,
+    speedAsIndicatedAirspeed,
+    setSpeedAsIndicatedAirspeed,
     applyInstructedVectorToRadar,
   } = useSelectedAircraft();
 
   const handleExecute = async () => {
-    const ok = await sendControlAircraft(callsign ?? "", instructedVector);
+    const ok = await sendControlAircraft(
+      callsign ?? "",
+      instructedVector,
+      speedAsIndicatedAirspeed
+    );
     if (ok && callsign) {
-      applyInstructedVectorToRadar(callsign, instructedVector);
+      applyInstructedVectorToRadar(
+        callsign,
+        instructedVector,
+        speedAsIndicatedAirspeed ? instructedVector.groundSpeed : null
+      );
     }
   };
 
   const fields = [
     { key: "altitude" as const, label: "Altitude", unit: "ft" },
-    { key: "groundSpeed" as const, label: "Speed", unit: "kts" },
+    {
+      key: "groundSpeed" as const,
+      label: speedAsIndicatedAirspeed ? "Speed (IAS)" : "Speed (GS)",
+      unit: "kts",
+    },
     { key: "heading" as const, label: "Heading", unit: "°" },
   ] as const;
 
   return (
     <div className="bg-atc-surface border border-atc-border rounded-lg p-4">
       <div className="space-y-4">
+        <label className="flex items-center gap-2 text-xs text-atc-text-muted">
+          <input
+            type="checkbox"
+            checked={speedAsIndicatedAirspeed}
+            onChange={(e) => setSpeedAsIndicatedAirspeed(e.target.checked)}
+          />
+          Interpret speed as indicated airspeed (no wind)
+        </label>
+
         {fields.map(({ key, label, unit }) => (
           <div key={key} className="group relative">
             <label

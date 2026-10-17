@@ -25,7 +25,9 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.Fl
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.flightplan.HoldTurnDirection;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign.Callsign;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.fix.AtsRouteFixPositionRepository;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.fix.RunwayCatalog;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.DirectToRequestDto;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.FinalApproachRequestDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.FlightPlanDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.HoldRequestDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.InitialPositionDto;
@@ -46,13 +48,16 @@ public class FlightPlanController {
     private final AircraftRepository aircraftRepository;
     private final FlightPlanFromDtoConverter flightPlanConverter;
     private final AtsRouteFixPositionRepository airportRepository;
+    private final RunwayCatalog runwayCatalog;
 
     public FlightPlanController(ScenarioService scenarioService, AircraftRepository aircraftRepository,
-            FlightPlanFromDtoConverter flightPlanConverter, AtsRouteFixPositionRepository airportRepository) {
+            FlightPlanFromDtoConverter flightPlanConverter, AtsRouteFixPositionRepository airportRepository,
+            RunwayCatalog runwayCatalog) {
         this.scenarioService = scenarioService;
         this.aircraftRepository = aircraftRepository;
         this.flightPlanConverter = flightPlanConverter;
         this.airportRepository = airportRepository;
+        this.runwayCatalog = runwayCatalog;
     }
 
     @Operation(
@@ -209,6 +214,42 @@ public class FlightPlanController {
                 "navigationMode", "HOLDING",
                 "turnDirection", turnDirection.name()
         ));
+    }
+
+    @PostMapping(path = "/{callsign}/final-approach", consumes = "application/json")
+    public ResponseEntity<Map<String, Object>> joinFinalApproach(
+            @PathVariable String callsign,
+            @Valid @RequestBody FinalApproachRequestDto request) {
+        if (!aircraftRepository.isAircraftExist(new Callsign(callsign))) {
+            throw new AircraftNotFoundException(callsign);
+        }
+        var runway = runwayCatalog.findRunway(request.airportIcao(), request.runwayDesignator())
+                .flatMap(runwayCatalog::buildFinalApproachGeometry);
+        if (runway.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "Runway not found: " + request.airportIcao() + " " + request.runwayDesignator()));
+        }
+        var geom = runway.get();
+        String interceptLabel = request.airportIcao() + "/" + request.runwayDesignator() + "-FA";
+        try {
+            scenarioService.joinFinalApproach(
+                    new Callsign(callsign),
+                    geom.interceptLatitude(),
+                    geom.interceptLongitude(),
+                    interceptLabel,
+                    geom.approachCourseHeading());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", ex.getMessage()));
+        }
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "callsign", callsign,
+                "navigationMode", "DIRECT_TO",
+                "interceptLabel", interceptLabel,
+                "approachCourseHeading", geom.approachCourseHeading()));
     }
 
     @GetMapping(path = "/{callsign}/flightplan", produces = "application/json")

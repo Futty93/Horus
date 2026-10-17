@@ -5,6 +5,8 @@ import loadAtsRoutes from "@/utility/AtsRouteManager/atsRoutesLoader";
 import {
   renderMap,
   drawRangeRings,
+  drawRunways,
+  type RunwayMapGeometry,
 } from "@/utility/AtsRouteManager/routeRenderer";
 import { GLOBAL_CONSTANTS } from "@/utility/globals/constants";
 import { GLOBAL_SETTINGS } from "@/utility/globals/settings";
@@ -54,6 +56,10 @@ const RadarCanvas: React.FC = () => {
   const [atsRouteData, setAtsRouteData] = useState<Awaited<
     ReturnType<typeof loadAtsRoutes>
   > | null>(null);
+  const [runwayGeometries, setRunwayGeometries] = useState<RunwayMapGeometry[]>(
+    []
+  );
+  const runwayGeometriesRef = useRef(runwayGeometries);
   const [bg, setBg] = useState(0);
   const bgRef = useRef(0);
   const draggingLabelIndexRef = useRef(-1);
@@ -85,6 +91,7 @@ const RadarCanvas: React.FC = () => {
   const {
     setCallsign,
     setInstructedVector,
+    setSpeedAsIndicatedAirspeed,
     registerApplyInstructedVectorHandler,
   } = useSelectedAircraft();
   const isSelectFixModeRef = useRef(isSelectFixMode);
@@ -103,6 +110,7 @@ const RadarCanvas: React.FC = () => {
   dataBlockDisplaySettingRef.current = dataBlockRadarSetting;
   isSelectFixModeRef.current = isSelectFixMode;
   atsRouteDataRef.current = atsRouteData;
+  runwayGeometriesRef.current = runwayGeometries;
   selectedAircraftRef.current = selectedAircraft;
   controllingAircraftsRef.current = controllingAircrafts;
   controllerClearanceAltitudeRowRef.current = pathname === "/controller";
@@ -193,11 +201,20 @@ const RadarCanvas: React.FC = () => {
         error
       );
     }
+    try {
+      const runwaysRes = await fetch("/api/ats/runways");
+      if (runwaysRes.ok) {
+        const runwaysJson = (await runwaysRes.json()) as RunwayMapGeometry[];
+        setRunwayGeometries(Array.isArray(runwaysJson) ? runwaysJson : []);
+      }
+    } catch (error) {
+      console.error("Error loading runways:", error);
+    }
   };
 
   useEffect(() => {
     const unregister = registerApplyInstructedVectorHandler(
-      (callsign, instructedVector) => {
+      (callsign, instructedVector, indicatedAirspeedKnots) => {
         const aircraft = controllingAircraftsRef.current.find(
           (a) => a.callsign === callsign
         );
@@ -207,6 +224,7 @@ const RadarCanvas: React.FC = () => {
             groundSpeed: instructedVector.groundSpeed,
             altitude: instructedVector.altitude,
           };
+          aircraft.indicatedAirspeedKnots = indicatedAirspeedKnots;
           setControllingAircrafts([...controllingAircraftsRef.current]);
         }
       }
@@ -259,6 +277,12 @@ const RadarCanvas: React.FC = () => {
       displayRangeRef.current
     );
     drawRangeRings(ctx, displayRangeRef.current, rangeRingsSettingRef.current);
+    drawRunways(
+      ctx,
+      runwayGeometriesRef.current,
+      centerCoordinateRef.current,
+      displayRangeRef.current
+    );
   };
 
   const renderAircraftsOnCanvas = (
@@ -412,9 +436,14 @@ const RadarCanvas: React.FC = () => {
 
   const changeDisplayAircraftInfo = (aircraft: Aircraft) => {
     setCallsign(aircraft.callsign);
+    const iasActive = aircraft.indicatedAirspeedKnots != null;
+    setSpeedAsIndicatedAirspeed(iasActive);
+    const speedForPanel = iasActive
+      ? Math.round(aircraft.indicatedAirspeedKnots!)
+      : Math.round(aircraft.instructedVector.groundSpeed);
     setInstructedVector({
       altitude: Math.round(aircraft.instructedVector.altitude),
-      groundSpeed: Math.round(aircraft.instructedVector.groundSpeed),
+      groundSpeed: speedForPanel,
       heading: Math.round(aircraft.instructedVector.heading),
     });
   };

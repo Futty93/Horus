@@ -250,6 +250,13 @@ class DrawAircraft {
       labelX,
       lineY
     );
+    if (aircraft.indicatedAirspeedKnots != null) {
+      ctx.fillText(
+        "I" + Math.floor(aircraft.indicatedAirspeedKnots / 10).toString(),
+        labelX + 20,
+        lineY
+      );
+    }
     ctx.fillText(
       aircraft.destinationIcao.length >= 4
         ? aircraft.destinationIcao.slice(-3)

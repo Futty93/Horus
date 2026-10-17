@@ -72,6 +72,61 @@ export function renderMap(
   });
 }
 
+export interface RunwayMapGeometry {
+  thresholdLatitude: number;
+  thresholdLongitude: number;
+  departureEndLatitude: number;
+  departureEndLongitude: number;
+  extensionEndLatitude: number;
+  extensionEndLongitude: number;
+}
+
+export function drawRunways(
+  ctx: CanvasRenderingContext2D,
+  runways: RunwayMapGeometry[],
+  centerCoordinate: Coordinate,
+  displayRange: DisplayRange
+): void {
+  if (runways.length === 0) return;
+  ctx.save();
+  ctx.strokeStyle = "#8a8";
+  ctx.lineWidth = 2;
+  for (const rwy of runways) {
+    const thr = CoordinateManager.calculateCanvasCoordinates(
+      { latitude: rwy.thresholdLatitude, longitude: rwy.thresholdLongitude },
+      centerCoordinate,
+      displayRange
+    );
+    const dep = CoordinateManager.calculateCanvasCoordinates(
+      {
+        latitude: rwy.departureEndLatitude,
+        longitude: rwy.departureEndLongitude,
+      },
+      centerCoordinate,
+      displayRange
+    );
+    const ext = CoordinateManager.calculateCanvasCoordinates(
+      {
+        latitude: rwy.extensionEndLatitude,
+        longitude: rwy.extensionEndLongitude,
+      },
+      centerCoordinate,
+      displayRange
+    );
+    ctx.beginPath();
+    ctx.moveTo(thr.x, thr.y);
+    ctx.lineTo(dep.x, dep.y);
+    ctx.stroke();
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    ctx.moveTo(thr.x, thr.y);
+    ctx.lineTo(ext.x, ext.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  ctx.restore();
+}
+
 export function drawRangeRings(
   ctx: CanvasRenderingContext2D,
   displayRange: DisplayRange,

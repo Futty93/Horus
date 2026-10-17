@@ -14,7 +14,7 @@ const InputAircraftInfo = () => {
   const handleExecute = async () => {
     const ok = await sendControlAircraft(callsign ?? "", instructedVector);
     if (ok && callsign) {
-      applyInstructedVectorToRadar(callsign, instructedVector);
+      applyInstructedVectorToRadar(callsign, instructedVector, null);
     }
   };
 

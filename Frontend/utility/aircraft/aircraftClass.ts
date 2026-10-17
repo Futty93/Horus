@@ -27,6 +27,8 @@ export class Aircraft {
    * see spec/20260326-instruction-memo-radar-label/spec.md.
    */
   instructedVector: { heading: number; groundSpeed: number; altitude: number };
+  /** Active IAS target from backend when heading-mode speed instruction uses indicated airspeed. */
+  indicatedAirspeedKnots: number | null;
   /** Controller-recorded clearance memo from POST .../atc-clearance; null if none. */
   atcClearance: AtcClearanceVector | null;
   type: string; // 航空機カテゴリ（Commercial, Military, Helicopter）
@@ -65,7 +67,8 @@ export class Aircraft {
     labelX: number = 50,
     labelY: number = 50,
     riskLevel: number = 0,
-    navigationMode: string = "HEADING"
+    navigationMode: string = "HEADING",
+    indicatedAirspeedKnots: number | null = null
   ) {
     this.callsign = callsign;
     this.position = position;
@@ -84,6 +87,7 @@ export class Aircraft {
     this.label = { x: labelX, y: labelY };
     this.riskLevel = riskLevel;
     this.navigationMode = navigationMode;
+    this.indicatedAirspeedKnots = indicatedAirspeedKnots;
     this.positionHistory = [];
   }
 
@@ -110,6 +114,7 @@ export class Aircraft {
     this.eta = newAircraft.eta;
     this.navigationMode = newAircraft.navigationMode;
     this.riskLevel = newAircraft.riskLevel;
+    this.indicatedAirspeedKnots = newAircraft.indicatedAirspeedKnots;
   }
 
   public updateAircraftLocationInfo(newAircraft: Aircraft) {
@@ -122,5 +127,6 @@ export class Aircraft {
     this.eta = newAircraft.eta;
     this.navigationMode = newAircraft.navigationMode;
     this.riskLevel = newAircraft.riskLevel;
+    this.indicatedAirspeedKnots = newAircraft.indicatedAirspeedKnots;
   }
 }

@@ -9,6 +9,11 @@ public interface ScenarioService {
     void spawnAircraft(Aircraft aircraft);
     void instructAircraft(Callsign callsign, InstructedVector instructedVector);
 
+    void instructAircraft(Callsign callsign, InstructedVector instructedVector, Integer indicatedAirspeedKnots);
+
+    void joinFinalApproach(Callsign callsign, double interceptLatitude, double interceptLongitude,
+                           String interceptLabel, double approachCourseHeading);
+
     void setAtcClearance(Callsign callsign, InstructedVector clearance);
 
     void setSquawk(Callsign callsign, String squawk);

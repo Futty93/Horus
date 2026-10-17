@@ -8,7 +8,12 @@ export interface AircraftLocationDto {
   position: { latitude: number; longitude: number; altitude: number };
   vector: { heading: number; groundSpeed: number; verticalSpeed: number };
   /** Pilot target from backend; distinct from ATC clearance memo (see spec 20260326-instruction-memo-radar-label). */
-  instructedVector: { heading: number; groundSpeed: number; altitude: number };
+  instructedVector: {
+    heading: number;
+    groundSpeed: number;
+    altitude: number;
+    indicatedAirspeed?: number | null;
+  };
   /** Controller clearance memo; omitted or null if not recorded. */
   atcClearance?: {
     heading: number;
@@ -116,7 +121,8 @@ function mapDtoToAircraft(
     50,
     50,
     dto.riskLevel ?? 0,
-    dto.navigationMode ?? "HEADING"
+    dto.navigationMode ?? "HEADING",
+    dto.instructedVector.indicatedAirspeed ?? null
   );
 }
 
@@ -165,7 +171,8 @@ function updateControllingAircrafts(
       50,
       50,
       newAircraft.riskLevel,
-      newAircraft.navigationMode
+      newAircraft.navigationMode,
+      newAircraft.indicatedAirspeedKnots
     );
     controllingAircrafts.push(newAirplane);
   });
