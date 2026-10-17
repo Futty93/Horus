@@ -122,6 +122,53 @@ describe("Aircraft", () => {
     expect(aircraft.goAround).toBe(true);
   });
 
+  it("updateAircraftLocationInfo copies towerHandoff", () => {
+    const aircraft = new Aircraft(
+      "JAL123",
+      basePosition,
+      baseGeo,
+      baseVector,
+      baseInstructedVector,
+      null,
+      "Commercial",
+      "B738",
+      "HND",
+      "RJTT",
+      "NRT",
+      "RJAA",
+      null,
+      "12:00",
+      50,
+      50,
+      0
+    );
+    const next = new Aircraft(
+      "JAL123",
+      { x: 120, y: 240, altitude: 3000 },
+      { latitude: 35.2, longitude: 139.2 },
+      baseVector,
+      baseInstructedVector,
+      null,
+      "Commercial",
+      "B738",
+      "HND",
+      "RJTT",
+      "NRT",
+      "RJAA",
+      null,
+      "12:05",
+      50,
+      50,
+      0,
+      "HEADING",
+      null,
+      false,
+      true
+    );
+    aircraft.updateAircraftLocationInfo(next);
+    expect(aircraft.towerHandoff).toBe(true);
+  });
+
   it("caps position history at POSITION_HISTORY_MAX_POINTS", () => {
     const aircraft = new Aircraft(
       "JAL999",

@@ -23,6 +23,7 @@ public record AircraftLocationDto(
     @JsonInclude(JsonInclude.Include.ALWAYS) String squawk,
     String navigationMode,
     @JsonInclude(JsonInclude.Include.ALWAYS) boolean goAround,
+    @JsonInclude(JsonInclude.Include.ALWAYS) boolean towerHandoff,
     double riskLevel
 ) {
     public record PositionDto(double latitude, double longitude, double altitude) {}

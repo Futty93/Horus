@@ -89,6 +89,13 @@ public class ScenarioServiceImpl implements ScenarioService {
     }
 
     @Override
+    public void handOffToTower(Callsign callsign, double thresholdLatitude, double thresholdLongitude) {
+        Aircraft aircraft = airspaceManagement.findAircraftByCallsign(callsign);
+        AircraftBase base = (AircraftBase) aircraft;
+        base.beginTowerHandoff(thresholdLatitude, thresholdLongitude);
+    }
+
+    @Override
     public void setAtcClearance(Callsign callsign, InstructedVector clearance) {
         Aircraft aircraft = airspaceManagement.findAircraftByCallsign(callsign);
         if (aircraft instanceof AircraftBase base) {

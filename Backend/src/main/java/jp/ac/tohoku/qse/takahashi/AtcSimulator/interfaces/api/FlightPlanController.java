@@ -33,6 +33,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.GoAroundRequestDto
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.HoldRequestDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.InitialPositionDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.SpawnWithFlightPlanDto;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.TowerHandoffRequestDto;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -286,6 +287,37 @@ public class FlightPlanController {
                 "goAround", true,
                 "heading", rwy.heading(),
                 "climbAltitudeFt", request.climbAltitudeFt()));
+    }
+
+    @PostMapping(path = "/{callsign}/tower-handoff", consumes = "application/json")
+    public ResponseEntity<Map<String, Object>> towerHandoff(
+            @PathVariable String callsign,
+            @Valid @RequestBody TowerHandoffRequestDto request) {
+        if (!aircraftRepository.isAircraftExist(new Callsign(callsign))) {
+            throw new AircraftNotFoundException(callsign);
+        }
+        var runway = runwayCatalog.findRunway(request.airportIcao(), request.runwayDesignator());
+        if (runway.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "Runway not found: " + request.airportIcao() + " " + request.runwayDesignator()));
+        }
+        var rwy = runway.get();
+        try {
+            scenarioService.handOffToTower(
+                    new Callsign(callsign),
+                    rwy.thresholdLatitude(),
+                    rwy.thresholdLongitude());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", ex.getMessage()));
+        }
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "callsign", callsign,
+                "towerHandoff", true,
+                "heading", rwy.heading()));
     }
 
     @GetMapping(path = "/{callsign}/flightplan", produces = "application/json")

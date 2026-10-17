@@ -299,6 +299,12 @@ class DrawAircraft {
       lineY += lineHeight;
     }
 
+    if (aircraft.towerHandoff) {
+      ctx.fillStyle = "#38bdf8";
+      ctx.fillText("TWR", labelX, lineY);
+      lineY += lineHeight;
+    }
+
     if (setting.aircraftType && aircraft.model) {
       ctx.fillStyle = "white";
       const modelDisplay =

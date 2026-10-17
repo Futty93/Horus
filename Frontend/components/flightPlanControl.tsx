@@ -3,7 +3,11 @@
 import React, { useState } from "react";
 import { useSelectedAircraft } from "@/context/selectedAircraftContext";
 import { resumeNavigation } from "@/utility/api/flightPlan";
-import { goAround, joinFinalApproach } from "@/utility/api/finalApproach";
+import {
+  goAround,
+  handOffToTower,
+  joinFinalApproach,
+} from "@/utility/api/finalApproach";
 
 const FlightPlanControl: React.FC = () => {
   const { callsign } = useSelectedAircraft();
@@ -20,6 +24,10 @@ const FlightPlanControl: React.FC = () => {
     "idle" | "success" | "error"
   >("idle");
   const [goAroundMessage, setGoAroundMessage] = useState("");
+  const [towerResult, setTowerResult] = useState<"idle" | "success" | "error">(
+    "idle"
+  );
+  const [towerMessage, setTowerMessage] = useState("");
 
   const handleResume = async () => {
     if (!callsign) return;
@@ -134,6 +142,35 @@ const FlightPlanControl: React.FC = () => {
         {goAroundResult === "error" && (
           <p className="text-xs text-atc-danger">
             {goAroundMessage || "Failed to go around"}
+          </p>
+        )}
+        <div className="text-xs font-semibold text-atc-text-muted pt-2">
+          TOWER (established on final, within 10 NM)
+        </div>
+        <button
+          type="button"
+          onClick={async () => {
+            if (!callsign) return;
+            setTowerResult("idle");
+            const result = await handOffToTower(
+              callsign,
+              airportIcao,
+              runwayDesignator
+            );
+            setTowerResult(result.ok ? "success" : "error");
+            setTowerMessage(result.message ?? "");
+            if (result.ok) setTimeout(() => setTowerResult("idle"), 2000);
+          }}
+          className="w-full px-4 py-2 bg-atc-surface-elevated text-atc-text font-bold text-xs rounded border border-atc-accent hover:bg-atc-accent hover:text-white"
+        >
+          HAND OFF TO TOWER
+        </button>
+        {towerResult === "success" && (
+          <p className="text-xs text-atc-accent">Handed off to the tower</p>
+        )}
+        {towerResult === "error" && (
+          <p className="text-xs text-atc-danger">
+            {towerMessage || "Failed to hand off to the tower"}
           </p>
         )}
       </div>

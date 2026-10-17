@@ -16,6 +16,33 @@ export async function joinFinalApproach(
   }
 }
 
+export async function handOffToTower(
+  callsign: string,
+  airportIcao: string,
+  runwayDesignator: string
+): Promise<{ ok: boolean; message?: string }> {
+  if (!callsign) return { ok: false, message: "No aircraft selected" };
+  try {
+    const response = await fetch(`/api/aircraft/${callsign}/tower-handoff`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ airportIcao, runwayDesignator }),
+    });
+    if (response.ok) return { ok: true };
+    const body = (await response.json().catch(() => null)) as {
+      message?: string;
+      detail?: string;
+    } | null;
+    return {
+      ok: false,
+      message:
+        body?.message ?? body?.detail ?? "Failed to hand off to the tower",
+    };
+  } catch {
+    return { ok: false, message: "Failed to hand off to the tower" };
+  }
+}
+
 export async function goAround(
   callsign: string,
   airportIcao: string,
