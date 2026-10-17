@@ -5,6 +5,8 @@ import loadAtsRoutes from "@/utility/AtsRouteManager/atsRoutesLoader";
 import {
   renderMap,
   drawRangeRings,
+  drawRunways,
+  type RunwayMapGeometry,
 } from "@/utility/AtsRouteManager/routeRenderer";
 import { GLOBAL_CONSTANTS } from "@/utility/globals/constants";
 import { GLOBAL_SETTINGS } from "@/utility/globals/settings";
@@ -54,6 +56,10 @@ const RadarCanvas: React.FC = () => {
   const [atsRouteData, setAtsRouteData] = useState<Awaited<
     ReturnType<typeof loadAtsRoutes>
   > | null>(null);
+  const [runwayGeometries, setRunwayGeometries] = useState<RunwayMapGeometry[]>(
+    []
+  );
+  const runwayGeometriesRef = useRef(runwayGeometries);
   const [bg, setBg] = useState(0);
   const bgRef = useRef(0);
   const draggingLabelIndexRef = useRef(-1);
@@ -103,6 +109,7 @@ const RadarCanvas: React.FC = () => {
   dataBlockDisplaySettingRef.current = dataBlockRadarSetting;
   isSelectFixModeRef.current = isSelectFixMode;
   atsRouteDataRef.current = atsRouteData;
+  runwayGeometriesRef.current = runwayGeometries;
   selectedAircraftRef.current = selectedAircraft;
   controllingAircraftsRef.current = controllingAircrafts;
   controllerClearanceAltitudeRowRef.current = pathname === "/controller";
@@ -185,8 +192,15 @@ const RadarCanvas: React.FC = () => {
 
   const initializeAtsRouteData = async () => {
     try {
-      const data = await loadAtsRoutes();
+      const [data, runwaysRes] = await Promise.all([
+        loadAtsRoutes(),
+        fetch("/api/ats/runways"),
+      ]);
       setAtsRouteData(data);
+      if (runwaysRes.ok) {
+        const runwaysJson = (await runwaysRes.json()) as RunwayMapGeometry[];
+        setRunwayGeometries(Array.isArray(runwaysJson) ? runwaysJson : []);
+      }
     } catch (error) {
       console.error(
         "Error loading ATS routes from initializeAtsRouteData:",
@@ -259,6 +273,12 @@ const RadarCanvas: React.FC = () => {
       displayRangeRef.current
     );
     drawRangeRings(ctx, displayRangeRef.current, rangeRingsSettingRef.current);
+    drawRunways(
+      ctx,
+      runwayGeometriesRef.current,
+      centerCoordinateRef.current,
+      displayRangeRef.current
+    );
   };
 
   const renderAircraftsOnCanvas = (

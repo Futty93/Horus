@@ -84,7 +84,8 @@ public class GetAllAircraftLocationsWithRiskUseCase {
                 new AircraftLocationDto.InstructedVectorDto(
                         base.getInstructedVector().instructedHeading.toDouble(),
                         base.getInstructedVector().instructedGroundSpeed.toDouble(),
-                        base.getInstructedVector().instructedAltitude.toDouble()
+                        base.getInstructedVector().instructedAltitude.toDouble(),
+                        base.getInstructedIndicatedAirspeedKnots()
                 ),
                 toAtcClearanceDto(base),
                 base.getCharacteristics().getCategory().name(),
@@ -105,7 +106,7 @@ public class GetAllAircraftLocationsWithRiskUseCase {
                 aircraft.getCallsign().toString(),
                 new AircraftLocationDto.PositionDto(0, 0, 0),
                 new AircraftLocationDto.VectorDto(0, 0, 0),
-                new AircraftLocationDto.InstructedVectorDto(0, 0, 0),
+                new AircraftLocationDto.InstructedVectorDto(0, 0, 0, null),
                 null,
                 "UNKNOWN",
                 "UNKNOWN",
@@ -138,7 +139,8 @@ public class GetAllAircraftLocationsWithRiskUseCase {
         return new AircraftLocationDto.InstructedVectorDto(
                 c.instructedHeading.toDouble(),
                 c.instructedGroundSpeed.toDouble(),
-                c.instructedAltitude.toDouble()
+                c.instructedAltitude.toDouble(),
+                null
         );
     }
 }

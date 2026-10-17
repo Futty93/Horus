@@ -27,10 +27,29 @@ public class ScenarioServiceImpl implements ScenarioService {
 
     @Override
     public void instructAircraft(Callsign callsign, InstructedVector instructedVector) {
+        instructAircraft(callsign, instructedVector, null);
+    }
+
+    @Override
+    public void instructAircraft(Callsign callsign, InstructedVector instructedVector,
+                                   Integer indicatedAirspeedKnots) {
         Aircraft aircraft = airspaceManagement.findAircraftByCallsign(callsign);
         AircraftBase base = (AircraftBase) aircraft;
         base.setNavigationMode(NavigationMode.HEADING);
-        base.setInstructedVector(instructedVector);
+        base.setInstructedVector(instructedVector, indicatedAirspeedKnots);
+    }
+
+    @Override
+    public void joinFinalApproach(Callsign callsign, double interceptLatitude, double interceptLongitude,
+                                  String interceptLabel, double approachCourseHeading) {
+        Aircraft aircraft = airspaceManagement.findAircraftByCallsign(callsign);
+        AircraftBase base = (AircraftBase) aircraft;
+        FixPosition intercept = new FixPosition(
+                new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Latitude(
+                        interceptLatitude),
+                new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Longitude(
+                        interceptLongitude));
+        base.joinFinalApproachIntercept(intercept, interceptLabel, approachCourseHeading);
     }
 
     @Override

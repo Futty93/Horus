@@ -250,4 +250,20 @@ public final class GeodeticUtils {
     public static double normalizeAngle(double angle) {
         return MathUtils.normalizeAngle(angle);
     }
+
+    /**
+     * @return [latitudeDeg, longitudeDeg]
+     */
+    public static double[] offsetPointNm(double latitudeDeg, double longitudeDeg, double bearingDeg, double distanceNm) {
+        double latRad = Math.toRadians(latitudeDeg);
+        double lonRad = Math.toRadians(longitudeDeg);
+        double brng = Math.toRadians(bearingDeg);
+        double angDist = distanceNm / EARTH_RADIUS_NM;
+        double lat2 = Math.asin(Math.sin(latRad) * Math.cos(angDist)
+                + Math.cos(latRad) * Math.sin(angDist) * Math.cos(brng));
+        double lon2 = lonRad + Math.atan2(
+                Math.sin(brng) * Math.sin(angDist) * Math.cos(latRad),
+                Math.cos(angDist) - Math.sin(latRad) * Math.sin(lat2));
+        return new double[] {Math.toDegrees(lat2), Math.toDegrees(lon2)};
+    }
 }

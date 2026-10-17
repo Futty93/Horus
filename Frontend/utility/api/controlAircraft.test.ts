@@ -42,6 +42,7 @@ describe("controlAircraft", () => {
           instructedAltitude: 35000,
           instructedGroundSpeed: 250,
           instructedHeading: 90,
+          instructedIndicatedAirspeed: null,
         }),
       })
     );
