@@ -1,0 +1,36 @@
+{
+  "runways": [
+    {
+      "airportIcao": "RJTT",
+      "designator": "16R",
+      "heading": 163,
+      "thresholdLatitude": 35.5342,
+      "thresholdLongitude": 139.7869,
+      "lengthM": 3360
+    },
+    {
+      "airportIcao": "RJTT",
+      "designator": "34L",
+      "heading": 343,
+      "thresholdLatitude": 35.5228,
+      "thresholdLongitude": 139.7921,
+      "lengthM": 3360
+    },
+    {
+      "airportIcao": "RJAA",
+      "designator": "16R",
+      "heading": 155,
+      "thresholdLatitude": 35.7433,
+      "thresholdLongitude": 140.3919,
+      "lengthM": 4000
+    },
+    {
+      "airportIcao": "RJAA",
+      "designator": "34L",
+      "heading": 335,
+      "thresholdLatitude": 35.7311,
+      "thresholdLongitude": 140.3861,
+      "lengthM": 4000
+    }
+  ]
+}

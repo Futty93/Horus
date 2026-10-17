@@ -4,26 +4,34 @@ export interface ControlAircraftDto {
   instructedAltitude: number;
   instructedGroundSpeed: number;
   instructedHeading: number;
+  instructedIndicatedAirspeed?: number | null;
 }
 
-function toDto(vector: InstructedVector): ControlAircraftDto {
+function toDto(
+  vector: InstructedVector,
+  speedAsIndicatedAirspeed: boolean
+): ControlAircraftDto {
   return {
     instructedAltitude: vector.altitude,
     instructedGroundSpeed: vector.groundSpeed,
     instructedHeading: vector.heading,
+    instructedIndicatedAirspeed: speedAsIndicatedAirspeed
+      ? vector.groundSpeed
+      : null,
   };
 }
 
 export async function controlAircraft(
   callsign: string,
-  instructedVector: InstructedVector
+  instructedVector: InstructedVector,
+  speedAsIndicatedAirspeed = false
 ): Promise<boolean> {
   if (!callsign || callsign.length < 2) {
     console.error("No aircraft selected");
     return false;
   }
 
-  const dto = toDto(instructedVector);
+  const dto = toDto(instructedVector, speedAsIndicatedAirspeed);
 
   try {
     const response = await fetch(`/api/aircraft/control/${callsign}`, {

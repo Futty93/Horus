@@ -13,6 +13,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.aggregate.airspace.A
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.AircraftRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.fix.FixPositionRepository;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.fix.AtsRouteFixPositionRepository;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.fix.RunwayCatalog;
 
 /**
  * Domain and application layer bean configuration.
@@ -31,6 +32,11 @@ public class AtcSimulatorDomainConfig {
     @Bean
     public AtsRouteFixPositionRepository atsRouteFixPositionRepository() {
         return new AtsRouteFixPositionRepository();
+    }
+
+    @Bean
+    public RunwayCatalog runwayCatalog() {
+        return new RunwayCatalog();
     }
 
     @Bean

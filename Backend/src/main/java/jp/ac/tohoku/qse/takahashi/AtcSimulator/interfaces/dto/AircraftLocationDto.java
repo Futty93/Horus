@@ -26,5 +26,9 @@ public record AircraftLocationDto(
 ) {
     public record PositionDto(double latitude, double longitude, double altitude) {}
     public record VectorDto(double heading, double groundSpeed, double verticalSpeed) {}
-    public record InstructedVectorDto(double heading, double groundSpeed, double altitude) {}
+    public record InstructedVectorDto(
+            double heading,
+            double groundSpeed,
+            double altitude,
+            Integer indicatedAirspeed) {}
 }

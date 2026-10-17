@@ -3,12 +3,18 @@
 import React, { useState } from "react";
 import { useSelectedAircraft } from "@/context/selectedAircraftContext";
 import { resumeNavigation } from "@/utility/api/flightPlan";
+import { joinFinalApproach } from "@/utility/api/finalApproach";
 
 const FlightPlanControl: React.FC = () => {
   const { callsign } = useSelectedAircraft();
   const [resumeResult, setResumeResult] = useState<
     "idle" | "success" | "error"
   >("idle");
+  const [airportIcao, setAirportIcao] = useState("RJTT");
+  const [runwayDesignator, setRunwayDesignator] = useState("16R");
+  const [finalResult, setFinalResult] = useState<"idle" | "success" | "error">(
+    "idle"
+  );
 
   const handleResume = async () => {
     if (!callsign) return;
@@ -38,6 +44,51 @@ const FlightPlanControl: React.FC = () => {
         Use <span className="font-semibold">DIRECT TO FIX</span> panel to select
         a fix and choose Direct/Hold.
       </p>
+
+      <div className="border-t border-atc-border pt-3 space-y-2">
+        <div className="text-xs font-semibold text-atc-text-muted">
+          FINAL APPROACH (extension intercept)
+        </div>
+        <div className="flex gap-2">
+          <input
+            className="flex-1 px-2 py-1 text-xs font-mono bg-atc-surface-elevated border border-atc-border rounded"
+            value={airportIcao}
+            onChange={(e) => setAirportIcao(e.target.value.toUpperCase())}
+            placeholder="ICAO"
+          />
+          <input
+            className="w-20 px-2 py-1 text-xs font-mono bg-atc-surface-elevated border border-atc-border rounded"
+            value={runwayDesignator}
+            onChange={(e) => setRunwayDesignator(e.target.value.toUpperCase())}
+            placeholder="RWY"
+          />
+        </div>
+        <button
+          type="button"
+          onClick={async () => {
+            if (!callsign) return;
+            setFinalResult("idle");
+            const ok = await joinFinalApproach(
+              callsign,
+              airportIcao,
+              runwayDesignator
+            );
+            setFinalResult(ok ? "success" : "error");
+            if (ok) setTimeout(() => setFinalResult("idle"), 2000);
+          }}
+          className="w-full px-4 py-2 bg-atc-surface-elevated text-atc-text font-bold text-xs rounded border border-atc-accent hover:bg-atc-accent hover:text-white"
+        >
+          JOIN FINAL
+        </button>
+        {finalResult === "success" && (
+          <p className="text-xs text-atc-accent">
+            Final approach intercept set
+          </p>
+        )}
+        {finalResult === "error" && (
+          <p className="text-xs text-atc-danger">Failed to join final</p>
+        )}
+      </div>
 
       <div className="border-t border-atc-border pt-3">
         <button

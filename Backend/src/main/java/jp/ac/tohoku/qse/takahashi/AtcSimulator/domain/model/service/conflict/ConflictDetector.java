@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.ConflictDetectionException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.InvalidParameterException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.service.conflict.HorizontalSeparationRequirements;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.AlertLevel;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.RiskAssessment;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
@@ -122,17 +123,20 @@ public class ConflictDetector {
             AircraftPosition pos2 = aircraft2.getAircraftPosition();
             double currentHorizontalNm = GeodeticUtils.calculateHorizontalDistance(pos1, pos2);
             double currentVerticalFt = GeodeticUtils.calculateVerticalDistance(pos1, pos2);
+            double minHorizontalNm = HorizontalSeparationRequirements.requiredHorizontalSeparationNm(
+                    aircraft1, aircraft2);
 
             // 危険度評価の実行（現在隔離は測地距離、最接近は CPA 結果）
-            double riskLevel = assessRiskLevel(cpaResult, currentHorizontalNm, currentVerticalFt);
-            boolean isConflictPredicted = predictSeparationViolation(cpaResult);
+            double riskLevel = assessRiskLevel(cpaResult, currentHorizontalNm, currentVerticalFt, minHorizontalNm);
+            boolean isConflictPredicted = predictSeparationViolation(cpaResult, minHorizontalNm);
 
             return new RiskAssessment(
                 riskLevel,
                 cpaResult.timeToClosest,
                 cpaResult.horizontalDistance,
                 cpaResult.verticalDistance,
-                isConflictPredicted
+                isConflictPredicted,
+                minHorizontalNm
             );
         } catch (Exception e) {
             String errorMsg = String.format("コンフリクトリスク計算エラー: %s vs %s",
@@ -225,11 +229,11 @@ public class ConflictDetector {
      * 危険度計算（時間重み付け・距離評価の組み合わせ）
      */
     private double calculateRiskLevel(double timeToClosest, double closestHorizontalDistance,
-                                    double closestVerticalDistance, double currentHorizontalDistance,
-                                    double currentVerticalDistance) {
+                                      double closestVerticalDistance, double currentHorizontalDistance,
+                                      double currentVerticalDistance, double minHorizontalNm) {
 
         // 現在の距離による基本危険度評価
-        double currentHorizontalRisk = calculateHorizontalRisk(currentHorizontalDistance);
+        double currentHorizontalRisk = calculateHorizontalRisk(currentHorizontalDistance, minHorizontalNm);
         double currentVerticalRisk = calculateVerticalRisk(currentVerticalDistance);
 
         // 垂直分離が十分な場合は水平リスクを軽減
@@ -253,7 +257,7 @@ public class ConflictDetector {
         double timeWeight = calculateTimeWeight(timeToClosest);
 
         // 予測位置での危険度評価
-        double predictedHorizontalRisk = calculateHorizontalRisk(closestHorizontalDistance);
+        double predictedHorizontalRisk = calculateHorizontalRisk(closestHorizontalDistance, minHorizontalNm);
         double predictedVerticalRisk = calculateVerticalRisk(closestVerticalDistance);
 
         // 垂直分離が十分な場合は水平リスクを軽減
@@ -264,12 +268,13 @@ public class ConflictDetector {
         double predictedRisk = calculateCoupledDimensionalRisk(predictedHorizontalRisk, predictedVerticalRisk);
 
         // 現在距離による緊急度補正
-        double urgencyFactor = calculateUrgencyFactor(currentHorizontalDistance, currentVerticalDistance);
+        double urgencyFactor = calculateUrgencyFactor(currentHorizontalDistance, currentVerticalDistance, minHorizontalNm);
 
         // すれ違った後の処理（timeToClosest < 0）
         if (timeToClosest < 0) {
             // すれ違い減衰係数（時間が経つほど急激に減衰）
-            double decayFactor = calculatePostEncounterDecay(timeToClosest, currentHorizontalDistance, currentVerticalDistance);
+            double decayFactor = calculatePostEncounterDecay(
+                    timeToClosest, currentHorizontalDistance, currentVerticalDistance, minHorizontalNm);
 
             // すれ違い後の危険度 = 現在距離リスク × 減衰係数 × 緊急度補正
             double totalRisk = currentRisk * decayFactor * urgencyFactor;
@@ -328,15 +333,13 @@ public class ConflictDetector {
     /**
      * 水平リスク評価（5海里基準）
      */
-    private double calculateHorizontalRisk(double horizontalDistance) {
-        if (horizontalDistance >= MINIMUM_HORIZONTAL_SEPARATION) {
+    private double calculateHorizontalRisk(double horizontalDistance, double minHorizontalNm) {
+        if (horizontalDistance >= minHorizontalNm) {
             return 0.0; // 安全
-        } else if (horizontalDistance >= MINIMUM_HORIZONTAL_SEPARATION * 0.6) {
-            // 3-5海里：段階的増加
-            return 0.4 * (MINIMUM_HORIZONTAL_SEPARATION - horizontalDistance) / (MINIMUM_HORIZONTAL_SEPARATION * 0.4);
+        } else if (horizontalDistance >= minHorizontalNm * 0.6) {
+            return 0.4 * (minHorizontalNm - horizontalDistance) / (minHorizontalNm * 0.4);
         } else {
-            // 3海里未満：急激な増加
-            double factor = (MINIMUM_HORIZONTAL_SEPARATION * 0.6 - horizontalDistance) / (MINIMUM_HORIZONTAL_SEPARATION * 0.6);
+            double factor = (minHorizontalNm * 0.6 - horizontalDistance) / (minHorizontalNm * 0.6);
             return 0.4 + 0.6 * factor * factor;
         }
     }
@@ -360,9 +363,9 @@ public class ConflictDetector {
     /**
      * 現在距離による緊急度補正
      */
-    private double calculateUrgencyFactor(double currentHorizontalDistance, double currentVerticalDistance) {
-        // 既に管制間隔を下回っている場合の緊急度補正
-        double horizontalFactor = currentHorizontalDistance < MINIMUM_HORIZONTAL_SEPARATION ? 1.5 : 1.0;
+    private double calculateUrgencyFactor(double currentHorizontalDistance, double currentVerticalDistance,
+                                          double minHorizontalNm) {
+        double horizontalFactor = currentHorizontalDistance < minHorizontalNm ? 1.5 : 1.0;
         double verticalFactor = currentVerticalDistance < MINIMUM_VERTICAL_SEPARATION ? 1.5 : 1.0;
 
         return Math.max(horizontalFactor, verticalFactor);
@@ -371,29 +374,28 @@ public class ConflictDetector {
     /**
      * CPA結果に基づくリスク評価
      */
-    private double assessRiskLevel(CPAResult cpaResult, double currentHorizontalNm, double currentVerticalFt) {
+    private double assessRiskLevel(CPAResult cpaResult, double currentHorizontalNm, double currentVerticalFt,
+                                   double minHorizontalNm) {
         return calculateRiskLevel(
             cpaResult.timeToClosest,
             cpaResult.horizontalDistance,
             cpaResult.verticalDistance,
             currentHorizontalNm,
-            currentVerticalFt
+            currentVerticalFt,
+            minHorizontalNm
         );
     }
 
     /**
      * CPA結果に基づく管制間隔欠如予測
      */
-    private boolean predictSeparationViolation(CPAResult cpaResult) {
+    private boolean predictSeparationViolation(CPAResult cpaResult, double minHorizontalNm) {
         if (cpaResult.timeToClosest < 0 || cpaResult.timeToClosest == Double.POSITIVE_INFINITY) {
-            // すれ違った後や並行飛行は現在距離での判定は行わない
             return false;
         }
 
-        // 予測時間範囲内かつ管制間隔基準を下回る場合
-        // 航空管制では水平と垂直の両方が同時に不足している場合のみ真の管制間隔違反
         return cpaResult.timeToClosest >= 0 && cpaResult.timeToClosest <= MAX_PREDICTION_TIME &&
-               (cpaResult.horizontalDistance < MINIMUM_HORIZONTAL_SEPARATION &&
+               (cpaResult.horizontalDistance < minHorizontalNm &&
                 cpaResult.verticalDistance < MINIMUM_VERTICAL_SEPARATION);
     }
 
@@ -529,7 +531,8 @@ public class ConflictDetector {
      * すれ違い後の危険度減衰係数計算
      * 航空機の特性上、すれ違った後は距離が急激に増加するため危険度も急激に低下する
      */
-    private double calculatePostEncounterDecay(double timeToClosest, double currentHorizontalDistance, double currentVerticalDistance) {
+    private double calculatePostEncounterDecay(double timeToClosest, double currentHorizontalDistance,
+                                               double currentVerticalDistance, double minHorizontalNm) {
         // timeToClosest は負の値（すれ違ってからの経過時間の絶対値）
         double timeSinceEncounter = Math.abs(timeToClosest);
 
@@ -550,7 +553,7 @@ public class ConflictDetector {
         }
 
         // 距離ベース減衰係数
-        double distanceDecay = calculateDistanceDecay(currentHorizontalDistance, currentVerticalDistance);
+        double distanceDecay = calculateDistanceDecay(currentHorizontalDistance, currentVerticalDistance, minHorizontalNm);
 
         // 最終減衰係数 = min(時間減衰, 距離減衰)
         return Math.min(timeDecay, distanceDecay);
@@ -560,17 +563,14 @@ public class ConflictDetector {
      * 距離ベース減衰係数計算
      * 現在の距離が安全な距離になるほど危険度を下げる
      */
-    private double calculateDistanceDecay(double currentHorizontalDistance, double currentVerticalDistance) {
-        // 水平距離による減衰
+    private double calculateDistanceDecay(double currentHorizontalDistance, double currentVerticalDistance,
+                                          double minHorizontalNm) {
         double horizontalDecay;
-        if (currentHorizontalDistance >= MINIMUM_HORIZONTAL_SEPARATION * 1.5) {
-            // 7.5海里以上：安全
+        if (currentHorizontalDistance >= minHorizontalNm * 1.5) {
             horizontalDecay = 0.0;
-        } else if (currentHorizontalDistance >= MINIMUM_HORIZONTAL_SEPARATION) {
-            // 5-7.5海里：線形減衰
-            horizontalDecay = 1.0 - 2.0 * (currentHorizontalDistance - MINIMUM_HORIZONTAL_SEPARATION) / MINIMUM_HORIZONTAL_SEPARATION;
+        } else if (currentHorizontalDistance >= minHorizontalNm) {
+            horizontalDecay = 1.0 - 2.0 * (currentHorizontalDistance - minHorizontalNm) / minHorizontalNm;
         } else {
-            // 5海里未満：高い危険度維持（ただし減衰は適用）
             horizontalDecay = 1.0;
         }
 

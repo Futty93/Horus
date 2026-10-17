@@ -61,7 +61,11 @@ public class ControlAircraftService {
                 new Altitude(controlAircraftDto.instructedAltitude()),
                 new GroundSpeed(controlAircraftDto.instructedGroundSpeed())
         );
-        scenarioService.instructAircraft(aircraftCallsign, instructedVector);
+        Integer ias = controlAircraftDto.instructedIndicatedAirspeed();
+        if (ias != null && ias <= 0) {
+            ias = null;
+        }
+        scenarioService.instructAircraft(aircraftCallsign, instructedVector, ias);
 
         logger.info("航空機制御完了: {}", callsign);
         return ResponseEntity.ok("Aircraft controlled: " + callsign);
