@@ -55,17 +55,18 @@ public final class RunwayCatalog {
     }
 
     public Optional<FinalApproachGeometry> buildFinalApproachGeometry(RunwayDefinition runway) {
-        double approachHeading = normalizeHeading(runway.heading() + 180);
+        double inboundCourseHeading = normalizeHeading(runway.heading());
+        double outboundExtensionHeading = normalizeHeading(runway.heading() + 180);
         double[] intercept = GeodeticUtils.offsetPointNm(
-                runway.thresholdLatitude(), runway.thresholdLongitude(), approachHeading, FINAL_INTERCEPT_NM);
+                runway.thresholdLatitude(), runway.thresholdLongitude(), outboundExtensionHeading, FINAL_INTERCEPT_NM);
         double lengthNm = runway.lengthM() * NM_PER_METER;
         double[] departureEnd = GeodeticUtils.offsetPointNm(
                 runway.thresholdLatitude(), runway.thresholdLongitude(), runway.heading(), lengthNm);
         double[] extensionEnd = GeodeticUtils.offsetPointNm(
-                runway.thresholdLatitude(), runway.thresholdLongitude(), approachHeading, FINAL_EXTENSION_NM);
+                runway.thresholdLatitude(), runway.thresholdLongitude(), outboundExtensionHeading, FINAL_EXTENSION_NM);
         return Optional.of(new FinalApproachGeometry(
                 runway,
-                approachHeading,
+                inboundCourseHeading,
                 intercept[0],
                 intercept[1],
                 departureEnd[0],

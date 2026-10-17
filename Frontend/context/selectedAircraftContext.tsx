@@ -18,7 +18,8 @@ export interface InstructedVector {
 
 export type ApplyInstructedVectorHandler = (
   callsign: string,
-  instructedVector: InstructedVector
+  instructedVector: InstructedVector,
+  indicatedAirspeedKnots: number | null
 ) => void;
 
 export interface SelectedAircraftContextType {
@@ -30,7 +31,8 @@ export interface SelectedAircraftContextType {
   setSpeedAsIndicatedAirspeed: React.Dispatch<React.SetStateAction<boolean>>;
   applyInstructedVectorToRadar: (
     callsign: string,
-    instructedVector: InstructedVector
+    instructedVector: InstructedVector,
+    indicatedAirspeedKnots: number | null
   ) => void;
   registerApplyInstructedVectorHandler: (
     handler: ApplyInstructedVectorHandler
@@ -60,8 +62,8 @@ export const SelectedAircraftProvider: React.FC<{ children: ReactNode }> = ({
   const applyHandlerRef = useRef<ApplyInstructedVectorHandler | null>(null);
 
   const applyInstructedVectorToRadar = useCallback(
-    (c: string, v: InstructedVector) => {
-      applyHandlerRef.current?.(c, v);
+    (c: string, v: InstructedVector, ias: number | null) => {
+      applyHandlerRef.current?.(c, v, ias);
     },
     []
   );

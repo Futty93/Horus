@@ -15,4 +15,14 @@ class WakeTurbulenceCategoryTest {
     void unknownDefaultsToMedium() {
         assertEquals(WakeTurbulenceCategory.MEDIUM, WakeTurbulenceCategory.fromAircraftType("ZZ999"));
     }
+
+    @Test
+    void e190IsMediumNotLight() {
+        assertEquals(WakeTurbulenceCategory.MEDIUM, WakeTurbulenceCategory.fromAircraftType("E190"));
+    }
+
+    @Test
+    void c172IsLight() {
+        assertEquals(WakeTurbulenceCategory.LIGHT, WakeTurbulenceCategory.fromAircraftType("C172"));
+    }
 }

@@ -39,6 +39,27 @@ class FinalApproachInterceptTest {
         assertEquals(NavigationMode.DIRECT_TO, aircraft.getNavigationMode());
     }
 
+    @Test
+    void reachingInterceptSetsInboundApproachHeading() throws Exception {
+        AircraftBase aircraft = createTestAircraft();
+        aircraft.joinFinalApproachIntercept(
+                new FixPosition(new Latitude(35.1), new Longitude(139.1)),
+                "RJTT/16R-FA",
+                163);
+
+        invokeOnDirectToTargetReached(aircraft);
+
+        assertEquals(NavigationMode.HEADING, aircraft.getNavigationMode());
+        assertFalse(pendingFlag(aircraft));
+        assertEquals(163, aircraft.getInstructedVector().instructedHeading.toDouble(), 0.01);
+    }
+
+    private static void invokeOnDirectToTargetReached(AircraftBase aircraft) throws Exception {
+        var method = AircraftBase.class.getDeclaredMethod("onDirectToTargetReached");
+        method.setAccessible(true);
+        method.invoke(aircraft);
+    }
+
     private static boolean pendingFlag(AircraftBase aircraft) throws Exception {
         Field field = AircraftBase.class.getDeclaredField("finalApproachCoursePending");
         field.setAccessible(true);

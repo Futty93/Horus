@@ -41,6 +41,19 @@ class HorizontalSeparationRequirementsTest {
         assertEquals(5.0, HorizontalSeparationRequirements.requiredHorizontalSeparationNm(a1, a2), 0.01);
     }
 
+    @Test
+    void mediumFollowerLightLeaderUsesFiveNmWakeInTerminal() {
+        assertEquals(5.0, HorizontalSeparationRequirements.wakeSeparationTableNm(
+                WakeTurbulenceCategory.MEDIUM, WakeTurbulenceCategory.LIGHT));
+    }
+
+    @Test
+    void b738AndE190InTerminalUseThreeNmWithoutWakeTrail() {
+        AircraftBase b738 = aircraftAt(35.55, 139.78, "B738");
+        AircraftBase e190 = aircraftAt(35.56, 139.79, "E190");
+        assertEquals(3.0, HorizontalSeparationRequirements.requiredHorizontalSeparationNm(b738, e190), 0.01);
+    }
+
     private static AircraftBase aircraftAt(double lat, double lon, String type) {
         var characteristics = new AircraftCharacteristics(3.0, 3.0, 1640.0, 500.0, 140.0, 42000.0, 0.0,
                 AircraftCharacteristics.AircraftCategory.COMMERCIAL_PASSENGER);

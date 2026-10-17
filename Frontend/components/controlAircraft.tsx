@@ -20,7 +20,11 @@ const ControlAircraft = () => {
       speedAsIndicatedAirspeed
     );
     if (ok && callsign) {
-      applyInstructedVectorToRadar(callsign, instructedVector);
+      applyInstructedVectorToRadar(
+        callsign,
+        instructedVector,
+        speedAsIndicatedAirspeed ? instructedVector.groundSpeed : null
+      );
     }
   };
 

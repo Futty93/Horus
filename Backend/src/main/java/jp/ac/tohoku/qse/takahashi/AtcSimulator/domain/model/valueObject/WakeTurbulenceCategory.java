@@ -34,10 +34,6 @@ public enum WakeTurbulenceCategory {
     }
 
     private static boolean matchesLight(String t) {
-        return t.startsWith("C172") || t.startsWith("C182") || t.startsWith("DA40")
-                || t.startsWith("CRJ2") || t.startsWith("CRJ7") || t.startsWith("CRJ9")
-                || t.startsWith("E135") || t.startsWith("E145") || t.startsWith("E170")
-                || t.startsWith("E175") || t.startsWith("E190") || t.startsWith("E195")
-                || t.startsWith("SF34") || t.startsWith("DH8D") || t.startsWith("AT76");
+        return t.startsWith("C172") || t.startsWith("C182") || t.startsWith("DA40");
     }
 }

@@ -214,7 +214,7 @@ const RadarCanvas: React.FC = () => {
 
   useEffect(() => {
     const unregister = registerApplyInstructedVectorHandler(
-      (callsign, instructedVector) => {
+      (callsign, instructedVector, indicatedAirspeedKnots) => {
         const aircraft = controllingAircraftsRef.current.find(
           (a) => a.callsign === callsign
         );
@@ -224,6 +224,7 @@ const RadarCanvas: React.FC = () => {
             groundSpeed: instructedVector.groundSpeed,
             altitude: instructedVector.altitude,
           };
+          aircraft.indicatedAirspeedKnots = indicatedAirspeedKnots;
           setControllingAircrafts([...controllingAircraftsRef.current]);
         }
       }

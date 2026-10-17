@@ -15,6 +15,8 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Callsign
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.InstructedVector;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.ControlAircraftDto;
 
+import jakarta.validation.Valid;
+
 /**
  * 航空機制御API
  *
@@ -45,7 +47,7 @@ public class ControlAircraftService {
     @RequestMapping(path = "/{callsign}", method = RequestMethod.POST)
     public ResponseEntity<String> controlAircraft(
         @PathVariable String callsign,
-        @RequestBody ControlAircraftDto controlAircraftDto
+        @Valid @RequestBody ControlAircraftDto controlAircraftDto
     ) {
         logger.debug("航空機制御要求: {}", callsign);
 

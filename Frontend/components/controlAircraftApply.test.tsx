@@ -18,7 +18,8 @@ function HandlerRegistrar({
 }: {
   onRegister: (
     callsign: string,
-    vec: { altitude: number; groundSpeed: number; heading: number }
+    vec: { altitude: number; groundSpeed: number; heading: number },
+    indicatedAirspeedKnots: number | null
   ) => void;
 }) {
   const { registerApplyInstructedVectorHandler } = useSelectedAircraft();
@@ -86,7 +87,7 @@ describe("applyInstructedVectorToRadar on control API success", () => {
       );
 
       await waitFor(() => {
-        expect(applySpy).toHaveBeenCalledWith(callsign, instructedVector);
+        expect(applySpy).toHaveBeenCalledWith(callsign, instructedVector, null);
       });
     }
   );

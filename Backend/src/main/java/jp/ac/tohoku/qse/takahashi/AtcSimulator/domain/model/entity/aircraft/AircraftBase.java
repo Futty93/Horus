@@ -217,7 +217,7 @@ public abstract class AircraftBase implements Aircraft {
                 .orElse(instructedVector.instructedAltitude);
     }
 
-    private double resolveEffectiveTargetGroundSpeedKnots() {
+    protected double resolveEffectiveTargetGroundSpeedKnots() {
         if (instructedIndicatedAirspeedKnots == null || navigationMode != NavigationMode.HEADING) {
             return instructedVector.instructedGroundSpeed.toDouble();
         }
