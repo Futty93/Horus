@@ -7,12 +7,8 @@ interface FlightPlanSetupActionBarProps {
   onLoadTemplateAndSuggest?: () => void;
   onImportJson: (json: string) => void;
   onExportJson: () => void;
-  onStartWithThis: () => void;
-  status: string | null;
-  starting: boolean;
   loadingSuggest?: boolean;
   hasAircraft: boolean;
-  /** Shown when static data (e.g. ATS routes) failed to load — distinct from `status`. */
   dataLoadWarning?: string | null;
 }
 
@@ -21,56 +17,53 @@ export function FlightPlanSetupActionBar({
   onLoadTemplateAndSuggest,
   onImportJson,
   onExportJson,
-  onStartWithThis,
-  status,
-  starting,
   loadingSuggest,
   hasAircraft,
   dataLoadWarning,
 }: FlightPlanSetupActionBarProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
       onImportJson(reader.result as string);
     };
     reader.readAsText(file);
-    e.target.value = "";
+    event.target.value = "";
   };
+
+  const toolClass =
+    "text-sm text-[#6b6256] underline-offset-4 hover:text-[#1c1915] hover:underline disabled:opacity-40";
 
   return (
     <div className="space-y-2">
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-x-4 gap-y-1">
         <button
           type="button"
           onClick={onLoadTemplate}
           disabled={loadingSuggest}
-          className="px-4 py-2 text-sm font-bold bg-atc-surface border border-atc-border rounded
-                     hover:border-atc-accent text-atc-text disabled:opacity-50"
+          className={toolClass}
         >
-          Load Haneda Template (28)
+          Haneda sample
         </button>
         {onLoadTemplateAndSuggest && (
           <button
             type="button"
             onClick={onLoadTemplateAndSuggest}
             disabled={loadingSuggest}
-            className="px-4 py-2 text-sm font-bold bg-atc-accent text-white rounded
-                       hover:opacity-90 disabled:opacity-50"
+            className={toolClass}
           >
-            {loadingSuggest ? "Loading routes..." : "Load & Suggest Routes"}
+            {loadingSuggest ? "Suggesting routes…" : "Sample with routes"}
           </button>
         )}
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="px-4 py-2 text-sm font-bold bg-atc-surface border border-atc-border rounded
-                     hover:border-atc-accent text-atc-text"
+          className={toolClass}
         >
-          Import JSON
+          Import
         </button>
         <input
           ref={fileInputRef}
@@ -83,33 +76,14 @@ export function FlightPlanSetupActionBar({
           type="button"
           onClick={onExportJson}
           disabled={!hasAircraft}
-          className="px-4 py-2 text-sm font-bold bg-atc-surface border border-atc-border rounded
-                     hover:border-atc-accent text-atc-text disabled:opacity-50"
+          className={toolClass}
         >
-          Export JSON
-        </button>
-        <button
-          type="button"
-          onClick={onStartWithThis}
-          disabled={!hasAircraft || starting}
-          className="px-4 py-2 text-sm font-bold bg-atc-accent text-white rounded
-                     hover:opacity-90 disabled:opacity-50"
-        >
-          Start with this
+          Export
         </button>
       </div>
       {dataLoadWarning && (
-        <p className="text-sm text-atc-warning whitespace-pre-line">
+        <p className="text-sm whitespace-pre-line text-[#b45309]">
           {dataLoadWarning}
-        </p>
-      )}
-      {status && (
-        <p
-          className={`text-sm whitespace-pre-line ${
-            status.startsWith("Error") ? "text-atc-danger" : "text-atc-accent"
-          }`}
-        >
-          {status}
         </p>
       )}
     </div>

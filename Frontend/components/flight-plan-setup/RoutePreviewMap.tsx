@@ -509,27 +509,10 @@ export function RoutePreviewMap({
         />
       </div>
       {selectedAircraft && (
-        <div className="px-3 py-2 text-xs text-atc-text-muted border-t border-atc-border space-y-1 shrink-0">
-          <div>
-            <span className="text-atc-accent">●</span> Origin ·{" "}
-            <span className="text-atc-danger">●</span> Dest ·{" "}
-            <span className="text-amber-500">▲</span> Current pos (arrow =
-            heading)
-          </div>
-          {onPickRoute && (
-            <p>
-              Click a fix (dot or label) to append. Click a green leg to insert
-              the nearest DB fix at that position. Elsewhere appends the nearest
-              fix (within {NEAREST_FIX_MAX_KM} km). Already-used fixes are
-              skipped.
-            </p>
-          )}
-          {onInitialPositionGeoChange && (
-            <p>
-              Drag the <span className="text-amber-500">▲ Now</span> marker to
-              change initial latitude / longitude (also updates the form below).
-            </p>
-          )}
+        <div className="shrink-0 border-t border-white/10 px-5 py-2 text-xs text-[#d6cbb8]">
+          <span className="text-emerald-400">●</span> Origin
+          <span className="mx-2 text-rose-400">●</span> Destination
+          <span className="mx-2 text-amber-400">▲</span> Start, arrow is heading
         </div>
       )}
     </div>

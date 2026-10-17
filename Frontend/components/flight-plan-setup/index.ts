@@ -7,6 +7,8 @@ export { AtsRouteSearch } from "./AtsRouteSearch";
 export { AircraftRouteEditor } from "./AircraftRouteEditor";
 export { AircraftTable } from "./AircraftTable";
 export { AddAircraftForm } from "./AddAircraftForm";
+export type { NewAircraftDraft } from "./AddAircraftForm";
+export type { AirportOption } from "./airportOption";
 export { InitialPositionEditor } from "./InitialPositionEditor";
 export type {
   RoutePreviewPickPayload,

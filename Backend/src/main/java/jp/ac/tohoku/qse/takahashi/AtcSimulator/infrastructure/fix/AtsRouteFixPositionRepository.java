@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,6 +33,7 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
     private final String japanOutlineJson;
     private final Map<String, double[]> airportPositions;
     private final Map<String, String> icaoToIata;
+    private final Map<String, String> icaoToName;
 
     public AtsRouteFixPositionRepository() {
         try {
@@ -43,6 +45,7 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
             var airportData = loadAirportData();
             this.airportPositions = airportData.positions();
             this.icaoToIata = airportData.icaoToIata();
+            this.icaoToName = airportData.icaoToName();
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load fix data from classpath", e);
         }
@@ -65,12 +68,24 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
     }
 
     public List<Map<String, Object>> getAirportsForApi() {
+        List<String> icaos = new ArrayList<>(airportPositions.keySet());
+        Collections.sort(icaos);
         List<Map<String, Object>> result = new ArrayList<>();
-        for (Map.Entry<String, double[]> e : airportPositions.entrySet()) {
-            result.add(Map.of(
-                    "icaoCode", e.getKey(),
-                    "latitude", e.getValue()[0],
-                    "longitude", e.getValue()[1]));
+        for (String icao : icaos) {
+            double[] pos = airportPositions.get(icao);
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("icaoCode", icao);
+            row.put("latitude", pos[0]);
+            row.put("longitude", pos[1]);
+            String name = icaoToName.get(icao);
+            if (name != null && !name.isBlank()) {
+                row.put("name", name);
+            }
+            String iata = icaoToIata.get(icao);
+            if (iata != null && !iata.isBlank()) {
+                row.put("iataCode", iata);
+            }
+            result.add(row);
         }
         return result;
     }
@@ -94,7 +109,10 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
         return icaoToIata.getOrDefault(key, key);
     }
 
-    private record AirportData(Map<String, double[]> positions, Map<String, String> icaoToIata) {
+    private record AirportData(
+            Map<String, double[]> positions,
+            Map<String, String> icaoToIata,
+            Map<String, String> icaoToName) {
     }
 
     private AirportData loadAirportData() throws IOException {
@@ -103,6 +121,7 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
             JsonNode airportsNode = root.get("airports");
             Map<String, double[]> positions = new HashMap<>();
             Map<String, String> icaoToIata = new HashMap<>();
+            Map<String, String> icaoToName = new HashMap<>();
             if (airportsNode != null && airportsNode.isArray()) {
                 for (JsonNode a : airportsNode) {
                     String icao = a.get("icaoCode").asText().toUpperCase();
@@ -113,9 +132,13 @@ public class AtsRouteFixPositionRepository implements FixPositionRepository {
                     if (iataNode != null && !iataNode.isNull() && !iataNode.asText().isBlank()) {
                         icaoToIata.put(icao, iataNode.asText().toUpperCase());
                     }
+                    JsonNode nameNode = a.get("name");
+                    if (nameNode != null && !nameNode.isNull() && !nameNode.asText().isBlank()) {
+                        icaoToName.put(icao, nameNode.asText());
+                    }
                 }
             }
-            return new AirportData(positions, icaoToIata);
+            return new AirportData(positions, icaoToIata, icaoToName);
         }
     }
 

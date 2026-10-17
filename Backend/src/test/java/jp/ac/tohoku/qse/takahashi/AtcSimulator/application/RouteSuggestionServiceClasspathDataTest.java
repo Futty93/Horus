@@ -2,6 +2,8 @@ package jp.ac.tohoku.qse.takahashi.AtcSimulator.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -34,5 +36,16 @@ class RouteSuggestionServiceClasspathDataTest {
     @DisplayName("RJOO–RJTT: Itami–Haneda (KAMAT vic. bridge)")
     void rjooToRjtt_isConnectedInGraph() {
         assertAStarOk("RJOO", "RJTT");
+    }
+
+    @Test
+    @DisplayName("GET /ats/airports includes the published name and IATA code")
+    void airportsApiIncludesNameAndIata() {
+        Map<String, Object> haneda = new AtsRouteFixPositionRepository().getAirportsForApi().stream()
+                .filter(row -> "RJTT".equals(row.get("icaoCode")))
+                .findFirst()
+                .orElseThrow();
+        assertThat(haneda).containsEntry("name", "Tokyo International Airport");
+        assertThat(haneda).containsEntry("iataCode", "HND");
     }
 }

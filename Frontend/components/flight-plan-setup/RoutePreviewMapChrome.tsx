@@ -3,9 +3,6 @@
 import React from "react";
 import type { ScenarioAircraft } from "@/types/scenario";
 
-const RNAV_AIRWAY_COLOR = "#376";
-const ATS_LOWER_AIRWAY_COLOR = "#0ff";
-
 interface RoutePreviewMapChromeProps {
   selectedAircraft: ScenarioAircraft | null;
   showRnavAirways: boolean;
@@ -21,37 +18,41 @@ export function RoutePreviewMapChrome({
   onShowRnavAirways,
   onShowAtsLower,
 }: RoutePreviewMapChromeProps) {
+  const callsign = selectedAircraft?.flightPlan.callsign;
   return (
-    <div className="px-3 py-2 border-b border-atc-border bg-atc-surface-elevated shrink-0 space-y-2">
-      <h3 className="font-mono text-sm font-bold text-atc-text">
-        Route Preview
-        {selectedAircraft && (
-          <span className="ml-2 font-normal text-atc-text-muted">
-            {selectedAircraft.flightPlan.callsign}
-          </span>
-        )}
-      </h3>
-      <div className="flex flex-wrap gap-3 text-xs text-atc-text-muted">
-        <label className="inline-flex items-center gap-1.5 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            className="rounded border-atc-border"
-            checked={showRnavAirways}
-            onChange={(e) => onShowRnavAirways(e.target.checked)}
-          />
-          <span style={{ color: RNAV_AIRWAY_COLOR }}>RNAV</span> published
-        </label>
-        <label className="inline-flex items-center gap-1.5 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            className="rounded border-atc-border"
-            checked={showAtsLower}
-            onChange={(e) => onShowAtsLower(e.target.checked)}
-          />
-          <span style={{ color: ATS_LOWER_AIRWAY_COLOR }}>ATS Lower</span>{" "}
-          published
-        </label>
+    <div className="shrink-0 space-y-2 border-b border-white/10 bg-[#1c1915]/80 px-5 py-4 text-[#f4efe4] backdrop-blur-sm">
+      <div className="flex items-baseline justify-between gap-4">
+        <h3 className="font-[family-name:var(--font-geist-sans)] text-lg font-semibold">
+          Chart
+          {callsign && (
+            <span className="ml-2 font-[family-name:var(--font-geist-mono)] text-sm font-normal text-[#d6cbb8]">
+              {callsign}
+            </span>
+          )}
+        </h3>
+        <div className="flex gap-4 text-xs text-[#d6cbb8]">
+          <label className="inline-flex cursor-pointer items-center gap-1.5">
+            <input
+              type="checkbox"
+              checked={showRnavAirways}
+              onChange={(event) => onShowRnavAirways(event.target.checked)}
+            />
+            RNAV
+          </label>
+          <label className="inline-flex cursor-pointer items-center gap-1.5">
+            <input
+              type="checkbox"
+              checked={showAtsLower}
+              onChange={(event) => onShowAtsLower(event.target.checked)}
+            />
+            ATS lower
+          </label>
+        </div>
       </div>
+      <p className="max-w-xl text-sm text-[#d6cbb8]">
+        Click a fix to add it at the end. Click a green leg to insert the
+        nearest fix. Drag the orange Now marker to move where the flight starts.
+      </p>
     </div>
   );
 }
