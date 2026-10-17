@@ -210,6 +210,7 @@ Phase 1 spec/Issue 整合 ──→ T-3（並行）
 |------|------|
 | 2026-10-17 | ターミナルレーダーの不足台帳を追加（[20261017-terminal-radar-gaps](20261017-terminal-radar-gaps/spec.md)）。実装は子 spec に分割する。 |
 | 2026-10-17 | フライトプラン作成を、空港選択と提案経路で 1 機置ける計画ストリップに変える（[20261017-flight-plan-setup-ux](20261017-flight-plan-setup-ux/spec.md)）。 |
+| 2026-10-17 | 進入復行の子 spec を追加（[20261017-go-around](20261017-go-around/spec.md)）。1-4 の次段。 |
 | 2026-10-17 | Phase 1 子 spec 4本（IAS / waypoint / separation / runway）を実装完了。 |
 | 2026-05-09 | Phase 5-1（シミュレーション速度変更）の着手用 spec を追加（[20260509-phase5-simulation-speed](20260509-phase5-simulation-speed/spec.md)）。ロードマップ 5-1 行にリンク。 |
 | 2026-05-09 | Phase 4-1（STCA 視覚強調）は既存の点滅・リング強調で当面運用し、残タスク（閾値 UI・ペア連動強調）は優先度を 🟢 に下げて後回し方針を明記。 |

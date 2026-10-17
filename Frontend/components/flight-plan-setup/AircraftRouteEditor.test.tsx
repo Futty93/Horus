@@ -52,6 +52,46 @@ describe("AircraftRouteEditor", () => {
     );
   });
 
+  it("keeps the saved cruise altitude until the field is left with a positive number", async () => {
+    const user = userEvent.setup();
+    const onApplyRoute = jest.fn();
+    render(
+      <AircraftRouteEditor
+        aircraft={aircraft}
+        atsRoutes={{ atsLowerRoutes: [], rnavRoutes: [] }}
+        fixSources={{ waypoints: [], radioNavAids: [] }}
+        onApplyRoute={onApplyRoute}
+      />
+    );
+
+    await user.clear(
+      screen.getByRole("spinbutton", { name: "Cruise altitude (ft)" })
+    );
+    expect(onApplyRoute).not.toHaveBeenCalled();
+    await user.tab();
+    expect(onApplyRoute).not.toHaveBeenCalled();
+    expect(
+      screen.getByRole("spinbutton", { name: "Cruise altitude (ft)" })
+    ).toHaveValue(31000);
+
+    await user.clear(
+      screen.getByRole("spinbutton", { name: "Cruise altitude (ft)" })
+    );
+    await user.type(
+      screen.getByRole("spinbutton", { name: "Cruise altitude (ft)" }),
+      "32000"
+    );
+    await user.tab();
+    expect(onApplyRoute).toHaveBeenCalledWith(
+      {
+        waypoints: ["KOITO", "BOKJO"],
+        cruiseAltitude: 32000,
+        cruiseSpeed: 450,
+      },
+      undefined
+    );
+  });
+
   it("removes a fix immediately", async () => {
     const user = userEvent.setup();
     const onApplyRoute = jest.fn();

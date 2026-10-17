@@ -35,11 +35,11 @@ export function AircraftRouteEditor({
   onSuggestStatus,
 }: AircraftRouteEditorProps) {
   const [suggesting, setSuggesting] = useState(false);
-  const [cruiseAlt, setCruiseAlt] = useState(
-    () => aircraft?.flightPlan.cruiseAltitude ?? 31000
+  const [cruiseAltText, setCruiseAltText] = useState(() =>
+    String(aircraft?.flightPlan.cruiseAltitude ?? 31000)
   );
-  const [cruiseSpd, setCruiseSpd] = useState(
-    () => aircraft?.flightPlan.cruiseSpeed ?? 450
+  const [cruiseSpdText, setCruiseSpdText] = useState(() =>
+    String(aircraft?.flightPlan.cruiseSpeed ?? 450)
   );
   const [fixSearch, setFixSearch] = useState("");
 
@@ -71,24 +71,68 @@ export function AircraftRouteEditor({
 
   useEffect(() => {
     if (!aircraft) return;
-    setCruiseAlt(aircraft.flightPlan.cruiseAltitude);
-    setCruiseSpd(aircraft.flightPlan.cruiseSpeed);
+    setCruiseAltText(String(aircraft.flightPlan.cruiseAltitude));
+    setCruiseSpdText(String(aircraft.flightPlan.cruiseSpeed));
     setFixSearch("");
   }, [aircraft]);
 
+  const positiveNumber = (text: string): number | null => {
+    const value = Number(text);
+    if (!Number.isFinite(value) || value <= 0) return null;
+    return value;
+  };
+
   const commit = (
     waypoints: string[],
-    altitude = cruiseAlt,
-    speed = cruiseSpd,
+    altitude?: number,
+    speed?: number,
     applyOptions?: { callsign: string }
   ) => {
     onApplyRoute(
       {
         waypoints,
-        cruiseAltitude: altitude,
-        cruiseSpeed: speed,
+        cruiseAltitude:
+          altitude ??
+          positiveNumber(cruiseAltText) ??
+          aircraft?.flightPlan.cruiseAltitude ??
+          31000,
+        cruiseSpeed:
+          speed ??
+          positiveNumber(cruiseSpdText) ??
+          aircraft?.flightPlan.cruiseSpeed ??
+          450,
       },
       applyOptions
+    );
+  };
+
+  const commitCruiseField = (field: "altitude" | "speed") => {
+    if (!aircraft) return;
+    const fp = aircraft.flightPlan;
+    const altitude =
+      field === "altitude"
+        ? positiveNumber(cruiseAltText)
+        : (positiveNumber(cruiseAltText) ?? fp.cruiseAltitude);
+    const speed =
+      field === "speed"
+        ? positiveNumber(cruiseSpdText)
+        : (positiveNumber(cruiseSpdText) ?? fp.cruiseSpeed);
+    if (field === "altitude" && altitude == null) {
+      setCruiseAltText(String(fp.cruiseAltitude));
+      return;
+    }
+    if (field === "speed" && speed == null) {
+      setCruiseSpdText(String(fp.cruiseSpeed));
+      return;
+    }
+    if (altitude == null || speed == null) return;
+    setCruiseAltText(String(altitude));
+    setCruiseSpdText(String(speed));
+    if (altitude === fp.cruiseAltitude && speed === fp.cruiseSpeed) return;
+    commit(
+      fp.route.map((waypoint) => waypoint.fix),
+      altitude,
+      speed
     );
   };
 
@@ -135,7 +179,9 @@ export function AircraftRouteEditor({
     const result = await suggestRoute(origin, destination);
     setSuggesting(false);
     if ("waypoints" in result && result.waypoints.length > 0) {
-      commit(result.waypoints, cruiseAlt, cruiseSpd, { callsign: forCallsign });
+      commit(result.waypoints, undefined, undefined, {
+        callsign: forCallsign,
+      });
       onSuggestStatus?.(
         `Suggested route for ${forCallsign} (${result.waypoints.length} waypoints)`
       );
@@ -248,14 +294,9 @@ export function AircraftRouteEditor({
           </span>
           <input
             type="number"
-            value={cruiseAlt}
-            onChange={(event) => {
-              const altitude = Number(event.target.value);
-              setCruiseAlt(altitude);
-              if (Number.isFinite(altitude)) {
-                commit(waypoints, altitude, cruiseSpd);
-              }
-            }}
+            value={cruiseAltText}
+            onChange={(event) => setCruiseAltText(event.target.value)}
+            onBlur={() => commitCruiseField("altitude")}
             className="w-full rounded-xl border border-[#e4d8c4] bg-white px-3 py-2 text-sm text-[#1c1915] outline-none focus:border-[#c2410c]"
           />
         </label>
@@ -265,14 +306,9 @@ export function AircraftRouteEditor({
           </span>
           <input
             type="number"
-            value={cruiseSpd}
-            onChange={(event) => {
-              const speed = Number(event.target.value);
-              setCruiseSpd(speed);
-              if (Number.isFinite(speed)) {
-                commit(waypoints, cruiseAlt, speed);
-              }
-            }}
+            value={cruiseSpdText}
+            onChange={(event) => setCruiseSpdText(event.target.value)}
+            onBlur={() => commitCruiseField("speed")}
             className="w-full rounded-xl border border-[#e4d8c4] bg-white px-3 py-2 text-sm text-[#1c1915] outline-none focus:border-[#c2410c]"
           />
         </label>
