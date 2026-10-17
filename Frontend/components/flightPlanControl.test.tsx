@@ -9,8 +9,10 @@ import {
   useSelectedAircraft,
 } from "@/context/selectedAircraftContext";
 import * as flightPlanApi from "@/utility/api/flightPlan";
+import * as finalApproachApi from "@/utility/api/finalApproach";
 
 jest.mock("@/utility/api/flightPlan");
+jest.mock("@/utility/api/finalApproach");
 
 function StateSetter({ callsign }: { callsign: string | null }) {
   const { setCallsign } = useSelectedAircraft();
@@ -67,5 +69,37 @@ describe("FlightPlanControl", () => {
     await waitFor(() => {
       expect(screen.getByText(/Resume applied/i)).toBeInTheDocument();
     });
+  });
+
+  it("shows the backend message when go-around fails", async () => {
+    (finalApproachApi.goAround as jest.Mock).mockResolvedValue({
+      ok: false,
+      message:
+        "Go-around climb altitude must be at least 500 ft above current altitude",
+    });
+    const user = userEvent.setup();
+
+    render(
+      <SelectedAircraftProvider>
+        <StateSetter callsign="JAL123" />
+        <FlightPlanControl />
+      </SelectedAircraftProvider>
+    );
+
+    await user.clear(screen.getByPlaceholderText(/Climb altitude ft/i));
+    await user.type(screen.getByPlaceholderText(/Climb altitude ft/i), "2000");
+    await user.click(screen.getByRole("button", { name: /GO AROUND/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/at least 500 ft above current altitude/i)
+      ).toBeInTheDocument();
+    });
+    expect(finalApproachApi.goAround).toHaveBeenCalledWith(
+      "JAL123",
+      "RJTT",
+      "16R",
+      2000
+    );
   });
 });

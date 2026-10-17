@@ -69,6 +69,26 @@ public class ScenarioServiceImpl implements ScenarioService {
     }
 
     @Override
+    public void goAround(Callsign callsign, double thresholdLatitude, double thresholdLongitude,
+                         double runwayHeading, double climbAltitudeFeet) {
+        Aircraft aircraft = airspaceManagement.findAircraftByCallsign(callsign);
+        AircraftBase base = (AircraftBase) aircraft;
+        AircraftPosition threshold = new AircraftPosition(
+                new Latitude(thresholdLatitude),
+                new Longitude(thresholdLongitude),
+                base.getAircraftPosition().altitude);
+        double distanceNm = GeodeticUtils.calculateHorizontalDistance(
+                base.getAircraftPosition(), threshold);
+        if (distanceNm > MAX_FINAL_APPROACH_JOIN_NM) {
+            throw new IllegalArgumentException(
+                    "Aircraft is too far from the runway for a go-around ("
+                            + String.format("%.1f", distanceNm) + " NM, max "
+                            + MAX_FINAL_APPROACH_JOIN_NM + " NM)");
+        }
+        base.beginGoAround(runwayHeading, climbAltitudeFeet);
+    }
+
+    @Override
     public void setAtcClearance(Callsign callsign, InstructedVector clearance) {
         Aircraft aircraft = airspaceManagement.findAircraftByCallsign(callsign);
         if (aircraft instanceof AircraftBase base) {
