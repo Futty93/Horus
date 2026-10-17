@@ -79,6 +79,50 @@ class TowerHandoffTest {
     }
 
     @Test
+    void indicatedAirspeedTurnThatMissesTheThresholdIsRejected() {
+        AircraftBase aircraft = new AircraftBase(
+                new Callsign("TWRIAS"),
+                new AircraftType("B738"),
+                new AircraftPosition(new Latitude(35.03), new Longitude(139.00), new Altitude(10000)),
+                new AircraftVector(new Heading(270), new GroundSpeed(180), new VerticalSpeed(0)),
+                new FixedWingFlightBehavior(),
+                new AircraftCharacteristics(3.0, 3.0, 1640.0, 500.0, 140.0, 42000.0, 0.0,
+                        AircraftCharacteristics.AircraftCategory.COMMERCIAL_PASSENGER)) {
+        };
+        aircraft.setInstructedVector(
+                new InstructedVector(new Heading(90), new Altitude(10000), new GroundSpeed(180)),
+                200);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> aircraft.beginTowerHandoff(35.00, 139.08));
+        assertTrue(ex.getMessage().contains("does not reach"));
+        assertFalse(aircraft.isTowerHandoffActive());
+    }
+
+    @Test
+    void acceptedIndicatedAirspeedAircraftIsRemovedByTheSimulator() {
+        CommercialAircraft aircraft = new CommercialAircraft(
+                new Callsign("TWRIA2"),
+                new AircraftType("B738"),
+                new AircraftPosition(new Latitude(35.0), new Longitude(139.0), new Altitude(3000)),
+                new AircraftVector(new Heading(90), new GroundSpeed(180), new VerticalSpeed(0)),
+                "HND", "RJTT", "HND", "RJTT", "2026-10-17T06:00:00Z");
+        aircraft.setInstructedVector(
+                new InstructedVector(new Heading(90), new Altitude(3000), new GroundSpeed(180)),
+                180);
+        aircraft.beginTowerHandoff(35.0, 139.08);
+        assertTrue(aircraft.isTowerHandoffActive());
+
+        boolean removed = false;
+        for (int second = 0; second < 400 && !removed; second++) {
+            aircraft.calculateNextAircraftVector(1.0);
+            aircraft.calculateNextAircraftPosition(1.0);
+            removed = aircraft.shouldBeRemovedFromSimulation();
+        }
+        assertTrue(removed);
+    }
+
+    @Test
     void acceptedCommercialAircraftIsRemovedByTheSimulator() {
         CommercialAircraft aircraft = new CommercialAircraft(
                 new Callsign("TWR99"),

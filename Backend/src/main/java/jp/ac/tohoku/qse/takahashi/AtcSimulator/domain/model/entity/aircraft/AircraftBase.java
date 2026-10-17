@@ -70,11 +70,6 @@ public abstract class AircraftBase implements Aircraft {
 
     public static final double MAX_TOWER_HANDOFF_DISTANCE_NM = 10.0;
     public static final double TOWER_HANDOFF_REMOVAL_NM = 0.5;
-    /**
-     * Predicted closest approach must be inside the removal radius by this much.
-     * Indicated-airspeed conversion is not part of the prediction.
-     */
-    public static final double TOWER_HANDOFF_TRACK_MARGIN_NM = 0.15;
     private static final int TOWER_HANDOFF_TRACK_HORIZON_SECONDS = 20 * 60;
 
     private static final double WAYPOINT_PASS_THRESHOLD_MIN_NM = 1.5;
@@ -484,53 +479,66 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     /**
-     * The handoff keeps the current heading and speed targets. The predicted path uses the
-     * same position step as the simulator and must pass inside the removal radius by
-     * {@link #TOWER_HANDOFF_TRACK_MARGIN_NM}.
+     * Steps heading, indicated-airspeed conversion, vertical speed, and position in the same
+     * order as a live tick. Acceptance is the removal radius, not a wider margin.
      */
     private boolean maintainedTrackReachesThreshold(double thresholdLatitude, double thresholdLongitude) {
         double lat = aircraftPosition.latitude.toDouble();
         double lon = aircraftPosition.longitude.toDouble();
+        double altitude = aircraftPosition.altitude.toDouble();
         double heading = aircraftVector.heading.toDouble();
         double speed = aircraftVector.groundSpeed.toDouble();
+        double verticalSpeed = aircraftVector.verticalSpeed.toDouble();
         double targetHeading = instructedVector.instructedHeading.toDouble();
-        double targetSpeed = instructedVector.instructedGroundSpeed.toDouble();
+        double targetAltitude = instructedVector.instructedAltitude.toDouble();
+        double fallbackGroundSpeed = instructedVector.instructedGroundSpeed.toDouble();
         double previous = horizontalDistanceNm(lat, lon, thresholdLatitude, thresholdLongitude);
         double minimum = previous;
         int recedingSeconds = 0;
         for (int second = 0; second < TOWER_HANDOFF_TRACK_HORIZON_SECONDS; second++) {
+            if (previous <= TOWER_HANDOFF_REMOVAL_NM) {
+                return true;
+            }
             heading = flightBehavior.calculateNextHeading(heading, targetHeading, characteristics.getMaxTurnRate())
                     .toDouble();
-            speed = PositionUtils.calculateNextGroundSpeed(speed, targetSpeed, characteristics.getMaxAcceleration())
-                    .toDouble();
+            double targetSpeed = instructedIndicatedAirspeedKnots == null
+                    ? fallbackGroundSpeed
+                    : IndicatedAirspeedConverter.indicatedToTrueAirspeedKnots(
+                            instructedIndicatedAirspeedKnots, altitude);
+            speed = flightBehavior.calculateNextGroundSpeed(
+                    speed, targetSpeed, characteristics.getMaxAcceleration()).toDouble();
+            verticalSpeed = flightBehavior.calculateNextVerticalSpeed(
+                    altitude, targetAltitude, characteristics.getMaxClimbRate(), 1.0).toDouble();
+            if (Math.abs(altitude - targetAltitude) <= 5.0 && Math.abs(verticalSpeed) <= 50.0) {
+                altitude = targetAltitude;
+                verticalSpeed = 0.0;
+            }
             AircraftPosition stepped = PositionUtils.calculateNextPosition(
                     new AircraftPosition(
                             new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Latitude(lat),
                             new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Longitude(lon),
-                            new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude(0)),
+                            new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude(altitude)),
                     Math.max(0.0, speed),
                     heading,
-                    0,
+                    verticalSpeed,
                     1.0);
             lat = stepped.latitude.toDouble();
             lon = stepped.longitude.toDouble();
+            altitude = stepped.altitude.toDouble();
             double distanceNm = horizontalDistanceNm(lat, lon, thresholdLatitude, thresholdLongitude);
-            if (distanceNm <= TOWER_HANDOFF_REMOVAL_NM - TOWER_HANDOFF_TRACK_MARGIN_NM) {
-                return true;
-            }
             minimum = Math.min(minimum, distanceNm);
             boolean aligned = smallestHeadingDelta(heading, targetHeading) < 1.0;
             if (aligned && distanceNm > previous) {
                 recedingSeconds++;
                 if (recedingSeconds >= 5) {
-                    return minimum <= TOWER_HANDOFF_REMOVAL_NM - TOWER_HANDOFF_TRACK_MARGIN_NM;
+                    return minimum <= TOWER_HANDOFF_REMOVAL_NM;
                 }
             } else {
                 recedingSeconds = 0;
             }
             previous = distanceNm;
         }
-        return minimum <= TOWER_HANDOFF_REMOVAL_NM - TOWER_HANDOFF_TRACK_MARGIN_NM;
+        return minimum <= TOWER_HANDOFF_REMOVAL_NM;
     }
 
     private static double horizontalDistanceNm(double latitude, double longitude,
