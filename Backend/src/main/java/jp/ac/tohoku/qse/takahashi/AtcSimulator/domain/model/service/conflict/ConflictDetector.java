@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.ConflictDetectionException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.exception.InvalidParameterException;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
-import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.service.conflict.HorizontalSeparationRequirements;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.AlertLevel;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict.RiskAssessment;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
