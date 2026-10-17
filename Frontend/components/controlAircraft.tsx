@@ -8,15 +8,16 @@ const ControlAircraft = () => {
     callsign,
     instructedVector,
     setInstructedVector,
+    speedAsIndicatedAirspeed,
+    setSpeedAsIndicatedAirspeed,
     applyInstructedVectorToRadar,
   } = useSelectedAircraft();
-  const [speedAsIas, setSpeedAsIas] = React.useState(false);
 
   const handleExecute = async () => {
     const ok = await sendControlAircraft(
       callsign ?? "",
       instructedVector,
-      speedAsIas
+      speedAsIndicatedAirspeed
     );
     if (ok && callsign) {
       applyInstructedVectorToRadar(callsign, instructedVector);
@@ -27,7 +28,7 @@ const ControlAircraft = () => {
     { key: "altitude" as const, label: "Altitude", unit: "ft" },
     {
       key: "groundSpeed" as const,
-      label: speedAsIas ? "Speed (IAS)" : "Speed (GS)",
+      label: speedAsIndicatedAirspeed ? "Speed (IAS)" : "Speed (GS)",
       unit: "kts",
     },
     { key: "heading" as const, label: "Heading", unit: "°" },
@@ -39,8 +40,8 @@ const ControlAircraft = () => {
         <label className="flex items-center gap-2 text-xs text-atc-text-muted">
           <input
             type="checkbox"
-            checked={speedAsIas}
-            onChange={(e) => setSpeedAsIas(e.target.checked)}
+            checked={speedAsIndicatedAirspeed}
+            onChange={(e) => setSpeedAsIndicatedAirspeed(e.target.checked)}
           />
           Interpret speed as indicated airspeed (no wind)
         </label>

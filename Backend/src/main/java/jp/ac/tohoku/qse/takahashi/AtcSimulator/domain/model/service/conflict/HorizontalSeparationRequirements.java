@@ -1,8 +1,12 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.service.conflict;
 
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.entity.aircraft.Aircraft;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Latitude;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Longitude;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Position.AircraftPosition;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.WakeTurbulenceCategory;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.SeparationStandards;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.GeodeticUtils;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.PositionUtils;
 
@@ -11,7 +15,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.utility.PositionUtils;
  */
 public final class HorizontalSeparationRequirements {
 
-    public static final double ENROUTE_HORIZONTAL_NM = 5.0;
+    public static final double ENROUTE_HORIZONTAL_NM = SeparationStandards.ENROUTE_HORIZONTAL_NM;
     public static final double TERMINAL_HORIZONTAL_NM = 3.0;
     public static final double TERMINAL_AREA_RADIUS_NM = 40.0;
     /** Default terminal radar site until scenario defines one (Haneda). */
@@ -21,6 +25,11 @@ public final class HorizontalSeparationRequirements {
     private static final double WAKE_TRAIL_MAX_NM = 15.0;
     private static final double WAKE_HEADING_TOLERANCE_DEG = 30.0;
     private static final double WAKE_VERTICAL_MAX_FT = 1000.0;
+
+    private static final AircraftPosition DEFAULT_RADAR_SITE = new AircraftPosition(
+            new Latitude(DEFAULT_RADAR_SITE_LAT),
+            new Longitude(DEFAULT_RADAR_SITE_LON),
+            new Altitude(0));
 
     private HorizontalSeparationRequirements() {
     }
@@ -43,13 +52,7 @@ public final class HorizontalSeparationRequirements {
     }
 
     static double distanceToRadarSiteNm(AircraftPosition position) {
-        AircraftPosition radar = new AircraftPosition(
-                new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Latitude(
-                        DEFAULT_RADAR_SITE_LAT),
-                new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Longitude(
-                        DEFAULT_RADAR_SITE_LON),
-                new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Altitude(0));
-        return GeodeticUtils.calculateHorizontalDistance(position, radar);
+        return GeodeticUtils.calculateHorizontalDistance(position, DEFAULT_RADAR_SITE);
     }
 
     private static double wakeTrailSeparationNm(Aircraft a1, Aircraft a2) {

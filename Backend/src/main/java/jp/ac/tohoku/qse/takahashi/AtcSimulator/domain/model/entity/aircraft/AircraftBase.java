@@ -218,7 +218,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     private double resolveEffectiveTargetGroundSpeedKnots() {
-        if (instructedIndicatedAirspeedKnots == null) {
+        if (instructedIndicatedAirspeedKnots == null || navigationMode != NavigationMode.HEADING) {
             return instructedVector.instructedGroundSpeed.toDouble();
         }
         return IndicatedAirspeedConverter.indicatedToTrueAirspeedKnots(
@@ -313,7 +313,6 @@ public abstract class AircraftBase implements Aircraft {
     private void onWaypointPassed(FlightPlanWaypoint wp) {
         if (!WaypointAltitudeTargetResolver.satisfiesConstraintAtPass(
                 wp, aircraftPosition.altitude.toDouble())) {
-            previousDistanceToWaypoint = Double.MAX_VALUE;
             return;
         }
         if (wp.shouldRemoveAircraft()) {
@@ -412,7 +411,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setInstructedVector(final InstructedVector newInstructedVector) {
-        this.instructedVector = newInstructedVector;
+        setInstructedVector(newInstructedVector, null);
     }
 
     public void setInstructedVector(final InstructedVector newInstructedVector, Integer indicatedAirspeedKnots) {
@@ -425,9 +424,15 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void joinFinalApproachIntercept(FixPosition interceptPoint, String fixLabel, double approachCourseHeading) {
+        clearFinalApproachInterceptState();
         finalApproachCoursePending = true;
         finalApproachCourseHeading = approachCourseHeading;
-        setDirectTo(interceptPoint, fixLabel, false);
+        applyDirectToNavigation(interceptPoint, fixLabel, false);
+    }
+
+    private void clearFinalApproachInterceptState() {
+        finalApproachCoursePending = false;
+        finalApproachCourseHeading = null;
     }
 
     public InstructedVector getAtcClearance() {
@@ -459,6 +464,11 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setDirectTo(FixPosition target, String fixName, boolean resumeFlightPlan) {
+        clearFinalApproachInterceptState();
+        applyDirectToNavigation(target, fixName, resumeFlightPlan);
+    }
+
+    private void applyDirectToNavigation(FixPosition target, String fixName, boolean resumeFlightPlan) {
         this.directToTarget = target;
         this.directToFixName = fixName;
         this.resumeFlightPlanAfterDirectTo = resumeFlightPlan;
@@ -468,6 +478,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setHoldAtFix(FixPosition fix, String fixName, HoldTurnDirection turnDirection) {
+        clearFinalApproachInterceptState();
         this.holdingFix = fix;
         this.holdTurnDirection = turnDirection;
         this.holdingToOutboundLeg = false;
@@ -482,6 +493,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setResumeNavigation() {
+        clearFinalApproachInterceptState();
         if (flightPlan != null) {
             if (resumeFlightPlanIndexAfterHold >= flightPlan.getWaypoints().size()) {
                 this.navigationMode = NavigationMode.HEADING;
@@ -564,6 +576,9 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setNavigationMode(NavigationMode mode) {
+        if (mode != NavigationMode.DIRECT_TO) {
+            clearFinalApproachInterceptState();
+        }
         this.navigationMode = mode;
     }
 

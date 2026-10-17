@@ -14,8 +14,9 @@ public final class WaypointAltitudeTargetResolver {
         double constraintAlt = waypoint.getTargetAltitude().toDouble();
         return switch (waypoint.getAltitudeConstraint()) {
             case NONE, AT, BETWEEN -> new Altitude(constraintAlt);
-            case AT_OR_ABOVE -> new Altitude(Math.max(currentAltitudeFeet, constraintAlt));
-            case AT_OR_BELOW -> new Altitude(Math.min(currentAltitudeFeet, constraintAlt));
+            case AT_OR_ABOVE -> new Altitude(
+                    currentAltitudeFeet >= constraintAlt ? currentAltitudeFeet : constraintAlt);
+            case AT_OR_BELOW -> new Altitude(constraintAlt);
         };
     }
 

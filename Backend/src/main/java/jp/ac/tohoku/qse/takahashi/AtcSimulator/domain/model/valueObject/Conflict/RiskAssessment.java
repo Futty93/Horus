@@ -1,6 +1,6 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.Conflict;
 
-import static jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.service.conflict.HorizontalSeparationRequirements.ENROUTE_HORIZONTAL_NM;
+import static jp.ac.tohoku.qse.takahashi.AtcSimulator.shared.constants.SeparationStandards.ENROUTE_HORIZONTAL_NM;
 
 import java.util.Objects;
 

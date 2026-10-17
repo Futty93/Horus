@@ -7,5 +7,5 @@ public record ControlAircraftDto(
         @Min(0) @Max(360) int instructedHeading,
         @Min(0) int instructedAltitude,
         @Min(0) int instructedGroundSpeed,
-        Integer instructedIndicatedAirspeed) {
+        @Min(1) @Max(600) Integer instructedIndicatedAirspeed) {
 }

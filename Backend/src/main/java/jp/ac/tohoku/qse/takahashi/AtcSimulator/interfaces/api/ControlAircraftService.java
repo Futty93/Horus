@@ -62,9 +62,6 @@ public class ControlAircraftService {
                 new GroundSpeed(controlAircraftDto.instructedGroundSpeed())
         );
         Integer ias = controlAircraftDto.instructedIndicatedAirspeed();
-        if (ias != null && ias <= 0) {
-            ias = null;
-        }
         scenarioService.instructAircraft(aircraftCallsign, instructedVector, ias);
 
         logger.info("航空機制御完了: {}", callsign);

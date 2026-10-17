@@ -19,7 +19,7 @@ public final class IndicatedAirspeedConverter {
             return 0;
         }
         double altitude = Math.max(0, pressureAltitudeFeet);
-        double densityRatio = Math.pow(1.0 - 0.0000068756 * altitude, 5.2561);
+        double densityRatio = Math.pow(1.0 - 0.0000068756 * altitude, 4.2561);
         if (densityRatio <= 0) {
             return indicatedAirspeedKnots;
         }

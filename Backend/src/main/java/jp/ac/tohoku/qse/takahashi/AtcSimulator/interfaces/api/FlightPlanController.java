@@ -232,12 +232,18 @@ public class FlightPlanController {
         }
         var geom = runway.get();
         String interceptLabel = request.airportIcao() + "/" + request.runwayDesignator() + "-FA";
-        scenarioService.joinFinalApproach(
-                new Callsign(callsign),
-                geom.interceptLatitude(),
-                geom.interceptLongitude(),
-                interceptLabel,
-                geom.approachCourseHeading());
+        try {
+            scenarioService.joinFinalApproach(
+                    new Callsign(callsign),
+                    geom.interceptLatitude(),
+                    geom.interceptLongitude(),
+                    interceptLabel,
+                    geom.approachCourseHeading());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", ex.getMessage()));
+        }
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "callsign", callsign,

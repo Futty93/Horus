@@ -91,6 +91,7 @@ const RadarCanvas: React.FC = () => {
   const {
     setCallsign,
     setInstructedVector,
+    setSpeedAsIndicatedAirspeed,
     registerApplyInstructedVectorHandler,
   } = useSelectedAircraft();
   const isSelectFixModeRef = useRef(isSelectFixMode);
@@ -192,20 +193,22 @@ const RadarCanvas: React.FC = () => {
 
   const initializeAtsRouteData = async () => {
     try {
-      const [data, runwaysRes] = await Promise.all([
-        loadAtsRoutes(),
-        fetch("/api/ats/runways"),
-      ]);
+      const data = await loadAtsRoutes();
       setAtsRouteData(data);
-      if (runwaysRes.ok) {
-        const runwaysJson = (await runwaysRes.json()) as RunwayMapGeometry[];
-        setRunwayGeometries(Array.isArray(runwaysJson) ? runwaysJson : []);
-      }
     } catch (error) {
       console.error(
         "Error loading ATS routes from initializeAtsRouteData:",
         error
       );
+    }
+    try {
+      const runwaysRes = await fetch("/api/ats/runways");
+      if (runwaysRes.ok) {
+        const runwaysJson = (await runwaysRes.json()) as RunwayMapGeometry[];
+        setRunwayGeometries(Array.isArray(runwaysJson) ? runwaysJson : []);
+      }
+    } catch (error) {
+      console.error("Error loading runways:", error);
     }
   };
 
@@ -432,9 +435,14 @@ const RadarCanvas: React.FC = () => {
 
   const changeDisplayAircraftInfo = (aircraft: Aircraft) => {
     setCallsign(aircraft.callsign);
+    const iasActive = aircraft.indicatedAirspeedKnots != null;
+    setSpeedAsIndicatedAirspeed(iasActive);
+    const speedForPanel = iasActive
+      ? Math.round(aircraft.indicatedAirspeedKnots!)
+      : Math.round(aircraft.instructedVector.groundSpeed);
     setInstructedVector({
       altitude: Math.round(aircraft.instructedVector.altitude),
-      groundSpeed: Math.round(aircraft.instructedVector.groundSpeed),
+      groundSpeed: speedForPanel,
       heading: Math.round(aircraft.instructedVector.heading),
     });
   };

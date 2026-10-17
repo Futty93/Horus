@@ -26,6 +26,8 @@ export interface SelectedAircraftContextType {
   setCallsign: (callsign: string | null) => void;
   instructedVector: InstructedVector;
   setInstructedVector: React.Dispatch<React.SetStateAction<InstructedVector>>;
+  speedAsIndicatedAirspeed: boolean;
+  setSpeedAsIndicatedAirspeed: React.Dispatch<React.SetStateAction<boolean>>;
   applyInstructedVectorToRadar: (
     callsign: string,
     instructedVector: InstructedVector
@@ -52,6 +54,8 @@ export const SelectedAircraftProvider: React.FC<{ children: ReactNode }> = ({
   const [instructedVector, setInstructedVector] = useState<InstructedVector>(
     DEFAULT_INSTRUCTED_VECTOR
   );
+  const [speedAsIndicatedAirspeed, setSpeedAsIndicatedAirspeed] =
+    useState(false);
 
   const applyHandlerRef = useRef<ApplyInstructedVectorHandler | null>(null);
 
@@ -78,12 +82,15 @@ export const SelectedAircraftProvider: React.FC<{ children: ReactNode }> = ({
       setCallsign,
       instructedVector,
       setInstructedVector,
+      speedAsIndicatedAirspeed,
+      setSpeedAsIndicatedAirspeed,
       applyInstructedVectorToRadar,
       registerApplyInstructedVectorHandler,
     }),
     [
       callsign,
       instructedVector,
+      speedAsIndicatedAirspeed,
       applyInstructedVectorToRadar,
       registerApplyInstructedVectorHandler,
     ]

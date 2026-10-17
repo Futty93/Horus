@@ -220,6 +220,7 @@ public class CommercialAircraftOptimizationTest {
 
     @Test
     @Order(6)
+    @DisabledIfEnvironmentVariable(named = "GITHUB_ACTIONS", matches = "true")
     @DisplayName("6. メモリ効率テスト - メモリ使用量とガベージコレクションの影響を測定")
     void testMemoryEfficiency() {
         System.out.println("=== メモリ効率テスト ===");

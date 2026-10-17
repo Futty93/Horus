@@ -121,7 +121,8 @@ function mapDtoToAircraft(
     50,
     50,
     dto.riskLevel ?? 0,
-    dto.navigationMode ?? "HEADING"
+    dto.navigationMode ?? "HEADING",
+    dto.instructedVector.indicatedAirspeed ?? null
   );
 }
 
@@ -170,7 +171,8 @@ function updateControllingAircrafts(
       50,
       50,
       newAircraft.riskLevel,
-      newAircraft.navigationMode
+      newAircraft.navigationMode,
+      newAircraft.indicatedAirspeedKnots
     );
     controllingAircrafts.push(newAirplane);
   });
