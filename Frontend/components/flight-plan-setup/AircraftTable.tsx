@@ -14,67 +14,63 @@ export function AircraftTable({
   onDeleteAircraft,
 }: AircraftTableProps) {
   return (
-    <div className="border border-atc-border rounded-lg overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="bg-atc-surface-elevated">
-            <th className="px-3 py-2 text-left font-mono">Callsign</th>
-            <th className="px-3 py-2 text-left">Origin</th>
-            <th className="px-3 py-2 text-left">Dest</th>
-            <th className="px-3 py-2 text-left">Route</th>
-            <th className="px-3 py-2 text-left">Alt</th>
-            <th className="px-3 py-2 text-left">Spd</th>
-            {onDeleteAircraft && (
-              <th className="px-2 py-2 text-right w-12">—</th>
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {aircraft.map((a) => {
-            const fp = a.flightPlan;
-            const routeStr = fp.route.length
-              ? fp.route.map((wp) => wp.fix).join(" → ")
-              : "—";
-            const isSelected = selectedCallsign === fp.callsign;
-            return (
-              <tr
-                key={fp.callsign}
-                className={`border-t border-atc-border cursor-pointer transition-colors ${
-                  isSelected
-                    ? "bg-atc-accent/20"
-                    : "hover:bg-atc-surface-elevated"
-                }`}
-                onClick={() => onSelectAircraft(a)}
+    <ul className="space-y-2">
+      {aircraft.map((aircraftItem) => {
+        const fp = aircraftItem.flightPlan;
+        const selected = selectedCallsign === fp.callsign;
+        const route =
+          fp.route.length > 0
+            ? fp.route.map((waypoint) => waypoint.fix).join(" · ")
+            : "Route not set";
+        return (
+          <li key={fp.callsign}>
+            <div
+              className={`flex items-start gap-3 rounded-2xl px-3 py-3 ${
+                selected
+                  ? "bg-[#1c1915] text-[#f4efe4]"
+                  : "bg-white text-[#1c1915]"
+              }`}
+            >
+              <button
+                type="button"
+                onClick={() => onSelectAircraft(aircraftItem)}
+                className="min-w-0 flex-1 text-left"
               >
-                <td className="px-3 py-2 font-mono">{fp.callsign}</td>
-                <td className="px-3 py-2">{fp.departureAirport}</td>
-                <td className="px-3 py-2">{fp.arrivalAirport}</td>
-                <td className="px-3 py-2 font-mono text-atc-text-muted">
-                  {routeStr}
-                </td>
-                <td className="px-3 py-2">{fp.cruiseAltitude}</td>
-                <td className="px-3 py-2">{fp.cruiseSpeed}</td>
-                {onDeleteAircraft && (
-                  <td
-                    className="px-2 py-2 text-right"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => onDeleteAircraft(fp.callsign)}
-                      className="px-2 py-1 text-xs font-bold text-atc-danger hover:bg-atc-danger/20 rounded
-                                 focus:outline-none focus:ring-1 focus:ring-atc-danger"
-                      title="Delete aircraft"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                )}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+                <span className="block font-[family-name:var(--font-geist-mono)] text-sm">
+                  {fp.callsign}
+                </span>
+                <span
+                  className={`mt-0.5 block text-xs ${
+                    selected ? "text-[#d6cbb8]" : "text-[#6b6256]"
+                  }`}
+                >
+                  {fp.departureAirport} → {fp.arrivalAirport}
+                </span>
+                <span
+                  className={`mt-1 block truncate font-[family-name:var(--font-geist-mono)] text-[11px] ${
+                    selected ? "text-[#f4efe4]/70" : "text-[#8a7d6b]"
+                  }`}
+                >
+                  {route}
+                </span>
+              </button>
+              {onDeleteAircraft && (
+                <button
+                  type="button"
+                  onClick={() => onDeleteAircraft(fp.callsign)}
+                  className={`text-xs ${
+                    selected
+                      ? "text-[#f4efe4]/70 hover:text-white"
+                      : "text-[#c2410c] hover:underline"
+                  }`}
+                >
+                  Delete
+                </button>
+              )}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
   );
 }

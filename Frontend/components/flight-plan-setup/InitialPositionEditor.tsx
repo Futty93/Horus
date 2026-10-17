@@ -53,51 +53,53 @@ export function InitialPositionEditor({
 
   if (!aircraft) return null;
 
+  const fieldClass =
+    "w-full rounded-xl border border-[#e4d8c4] bg-white px-3 py-2 text-sm text-[#1c1915] outline-none focus:border-[#c2410c]";
+
   return (
-    <div className="mt-4 border border-atc-border rounded-lg p-4 bg-atc-surface">
-      <h3 className="font-mono text-sm font-bold text-atc-text mb-2">
-        Initial Position — {aircraft.flightPlan.callsign}
+    <div>
+      <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8a7d6b]">
+        Start state
       </h3>
-      <div className="grid grid-cols-2 gap-2 text-sm">
+      <p className="mt-1 mb-3 text-sm text-[#6b6256]">
+        Drag Now on the chart to move {aircraft.flightPlan.callsign}. These
+        numbers stay in sync.
+      </p>
+      <div className="grid grid-cols-2 gap-3 text-sm">
         <label>
-          <span className="block text-atc-text-muted text-xs mb-1">Lat</span>
+          <span className="mb-1 block text-xs text-[#6b6256]">Lat</span>
           <input
             type="number"
             value={lat}
             onChange={(e) => setLat(e.target.value)}
             onBlur={(e) => applyField("latitude", e.target.value)}
             step="any"
-            className="w-full px-2 py-1.5 bg-atc-bg border border-atc-border rounded text-atc-text
-                       focus:outline-none focus:border-atc-accent"
+            className={fieldClass}
           />
         </label>
         <label>
-          <span className="block text-atc-text-muted text-xs mb-1">Lon</span>
+          <span className="mb-1 block text-xs text-[#6b6256]">Lon</span>
           <input
             type="number"
             value={lon}
             onChange={(e) => setLon(e.target.value)}
             onBlur={(e) => applyField("longitude", e.target.value)}
             step="any"
-            className="w-full px-2 py-1.5 bg-atc-bg border border-atc-border rounded text-atc-text
-                       focus:outline-none focus:border-atc-accent"
+            className={fieldClass}
           />
         </label>
         <label>
-          <span className="block text-atc-text-muted text-xs mb-1">
-            Alt (ft)
-          </span>
+          <span className="mb-1 block text-xs text-[#6b6256]">Alt (ft)</span>
           <input
             type="number"
             value={altitude}
             onChange={(e) => setAltitude(e.target.value)}
             onBlur={(e) => applyField("altitude", e.target.value)}
-            className="w-full px-2 py-1.5 bg-atc-bg border border-atc-border rounded text-atc-text
-                       focus:outline-none focus:border-atc-accent"
+            className={fieldClass}
           />
         </label>
         <label>
-          <span className="block text-atc-text-muted text-xs mb-1">Hdg</span>
+          <span className="mb-1 block text-xs text-[#6b6256]">Hdg</span>
           <input
             type="number"
             value={heading}
@@ -105,32 +107,27 @@ export function InitialPositionEditor({
             onBlur={(e) => applyField("heading", e.target.value)}
             min={0}
             max={359}
-            className="w-full px-2 py-1.5 bg-atc-bg border border-atc-border rounded text-atc-text
-                       focus:outline-none focus:border-atc-accent"
+            className={fieldClass}
           />
         </label>
         <label>
-          <span className="block text-atc-text-muted text-xs mb-1">
-            GS (kts)
-          </span>
+          <span className="mb-1 block text-xs text-[#6b6256]">GS (kt)</span>
           <input
             type="number"
             value={groundSpeed}
             onChange={(e) => setGroundSpeed(e.target.value)}
             onBlur={(e) => applyField("groundSpeed", e.target.value)}
-            className="w-full px-2 py-1.5 bg-atc-bg border border-atc-border rounded text-atc-text
-                       focus:outline-none focus:border-atc-accent"
+            className={fieldClass}
           />
         </label>
         <label>
-          <span className="block text-atc-text-muted text-xs mb-1">VS</span>
+          <span className="mb-1 block text-xs text-[#6b6256]">VS</span>
           <input
             type="number"
             value={verticalSpeed}
             onChange={(e) => setVerticalSpeed(e.target.value)}
             onBlur={(e) => applyField("verticalSpeed", e.target.value)}
-            className="w-full px-2 py-1.5 bg-atc-bg border border-atc-border rounded text-atc-text
-                       focus:outline-none focus:border-atc-accent"
+            className={fieldClass}
           />
         </label>
       </div>

@@ -51,18 +51,17 @@ export function AtsRouteSearch({
   if (matches.length === 0) {
     return (
       <div className="space-y-2">
-        <label className="block text-xs text-atc-text-muted">
+        <label className="block text-xs text-[#6b6256]">
           <span className="block mb-1">Filter routes</span>
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Route name or description…"
-            className="w-full px-2 py-1 text-sm bg-atc-bg border border-atc-border rounded
-                       text-atc-text focus:outline-none focus:border-atc-accent"
+            className="w-full rounded-xl border border-[#e4d8c4] bg-white px-3 py-2 text-sm text-[#1c1915] outline-none focus:border-[#c2410c]"
           />
         </label>
-        <p className="text-xs text-atc-text-muted">
+        <p className="text-xs text-[#8a7d6b]">
           No ATS routes match. Enter waypoints manually (e.g. KOITO, BOKJO,
           AOIKU for T09).
         </p>
@@ -72,18 +71,17 @@ export function AtsRouteSearch({
 
   return (
     <div className="space-y-2">
-      <label className="block text-xs text-atc-text-muted">
+      <label className="block text-xs text-[#6b6256]">
         <span className="block mb-1">Filter routes</span>
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Route name or description…"
-          className="w-full px-2 py-1 text-sm bg-atc-bg border border-atc-border rounded
-                     text-atc-text focus:outline-none focus:border-atc-accent"
+          className="w-full rounded-xl border border-[#e4d8c4] bg-white px-3 py-2 text-sm text-[#1c1915] outline-none focus:border-[#c2410c]"
         />
       </label>
-      <p className="text-xs text-atc-text-muted">
+      <p className="text-xs text-[#8a7d6b]">
         Select a route ({matches.length} shown):
       </p>
       <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto pr-1">
@@ -94,8 +92,7 @@ export function AtsRouteSearch({
               key={`${r.name}-${idx}`}
               type="button"
               onClick={() => onSelect(wps)}
-              className="px-2 py-1 text-xs bg-atc-surface-elevated border border-atc-border rounded
-                         hover:border-atc-accent text-atc-text text-left max-w-full"
+              className="max-w-full rounded-full bg-white px-3 py-1 text-left text-xs text-[#1c1915] hover:bg-[#1c1915] hover:text-[#f4efe4]"
             >
               {r.name}: {wps.slice(0, 3).join(" → ")}
               {wps.length > 3 ? " …" : ""}

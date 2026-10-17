@@ -68,31 +68,29 @@ export function OdGroupList({
   return (
     <section>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <h2 className="font-mono text-sm font-bold">Bulk by O/D (optional)</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8a7d6b]">
+          Same airports, one path
+        </h2>
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={expandAll}
-            className="px-2 py-1 text-xs font-bold bg-atc-surface border border-atc-border rounded
-                       text-atc-text hover:border-atc-accent"
+            className="text-xs text-[#6b6256] underline-offset-4 hover:underline"
           >
             Expand all
           </button>
           <button
             type="button"
             onClick={collapseAll}
-            className="px-2 py-1 text-xs font-bold bg-atc-surface border border-atc-border rounded
-                       text-atc-text hover:border-atc-accent"
+            className="text-xs text-[#6b6256] underline-offset-4 hover:underline"
           >
             Collapse all
           </button>
         </div>
       </div>
-      <p className="text-xs text-atc-text-muted mb-3">
-        Use when every flight sharing the same airports should get one identical
-        cruise path. Per-aircraft routes are edited in{" "}
-        <span className="font-mono text-atc-text">Route — callsign</span> above.
-        Sections start collapsed.
+      <p className="mb-3 text-sm text-[#6b6256]">
+        Overwrites every flight that shares this origin and destination. Each
+        flight’s own route is edited above.
       </p>
       <div className="space-y-3">
         {odPairs.map((pair) => {
