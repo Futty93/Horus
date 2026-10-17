@@ -206,6 +206,8 @@ npm run dev
 | GET | `/api/aircraft/{callsign}/flightplan` | ナビモード・残ウェイポイント等 |
 | POST | `/api/aircraft/{callsign}/direct-to` | Direct To |
 | POST | `/api/aircraft/{callsign}/hold` | Hold At Fix（初期版: 右旋回固定レーストラック、`turnDirection` は `RIGHT` のみ。同一Fixでは侵入方向に依存せず決定論的に同一トラック向きを共有） |
+| POST | `/api/aircraft/{callsign}/final-approach` | 最終進入延長線上の会合点へ向かい、到達後に進入コース針路へ移る |
+| POST | `/api/aircraft/{callsign}/go-around` | 進入復行。滑走路方位のまま上昇（上昇高度は現在高度より 500 ft 以上、末端から 120NM 以内） |
 | POST | `/api/aircraft/{callsign}/resume-navigation` | フライトプラン経路再開 |
 | GET | `/simulation/speed` | シミュレーション時間倍率と実時間ティック間隔（ms） |
 | PUT | `/simulation/speed` | JSON `{"speedMultiplier": …}`（必須。欠落・`null` は 400）。値は離散プリセットのみ（`0.25` / `0.5` / `1` / `2` / `4` / `10`）。他は 400 |

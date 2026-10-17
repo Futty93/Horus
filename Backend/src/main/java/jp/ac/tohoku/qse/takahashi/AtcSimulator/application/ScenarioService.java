@@ -14,6 +14,9 @@ public interface ScenarioService {
     void joinFinalApproach(Callsign callsign, double interceptLatitude, double interceptLongitude,
                            String interceptLabel, double approachCourseHeading);
 
+    void goAround(Callsign callsign, double thresholdLatitude, double thresholdLongitude,
+                  double runwayHeading, double climbAltitudeFeet);
+
     void setAtcClearance(Callsign callsign, InstructedVector clearance);
 
     void setSquawk(Callsign callsign, String squawk);

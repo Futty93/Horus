@@ -60,6 +60,8 @@ public abstract class AircraftBase implements Aircraft {
     protected Integer instructedIndicatedAirspeedKnots;
     protected boolean finalApproachCoursePending;
     protected Double finalApproachCourseHeading;
+    /** True after a go-around until the next navigation instruction. */
+    protected boolean goAroundActive;
 
     private static final double WAYPOINT_PASS_THRESHOLD_MIN_NM = 1.5;
     private static final double WAYPOINT_PASS_THRESHOLD_MAX_NM = 5.0;
@@ -423,6 +425,33 @@ public abstract class AircraftBase implements Aircraft {
         return instructedIndicatedAirspeedKnots;
     }
 
+    public boolean isGoAroundActive() {
+        return goAroundActive;
+    }
+
+    /**
+     * Abandon the approach and climb on the runway heading.
+     * Keeps the current ground-speed target and any indicated-airspeed instruction.
+     */
+    public void beginGoAround(double runwayHeading, double climbAltitudeFeet) {
+        double currentAlt = aircraftPosition.altitude.toDouble();
+        if (climbAltitudeFeet < currentAlt + 500.0) {
+            throw new IllegalArgumentException(
+                    "Go-around climb altitude must be at least 500 ft above current altitude");
+        }
+        setNavigationMode(NavigationMode.HEADING);
+        clearHoldingState();
+        this.directToTarget = null;
+        this.directToFixName = null;
+        this.resumeFlightPlanAfterDirectTo = false;
+        this.previousDistanceToWaypoint = Double.MAX_VALUE;
+        this.instructedVector = new InstructedVector(
+                new Heading(runwayHeading),
+                new Altitude(climbAltitudeFeet),
+                this.instructedVector.instructedGroundSpeed);
+        this.goAroundActive = true;
+    }
+
     public void joinFinalApproachIntercept(FixPosition interceptPoint, String fixLabel, double approachCourseHeading) {
         clearFinalApproachInterceptState();
         finalApproachCoursePending = true;
@@ -456,6 +485,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setFlightPlan(FlightPlan flightPlan) {
+        clearGoAroundActive();
         this.flightPlan = flightPlan;
         this.currentWaypointIndex = 0;
         this.navigationMode = flightPlan != null ? NavigationMode.FLIGHT_PLAN : NavigationMode.HEADING;
@@ -469,6 +499,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     private void applyDirectToNavigation(FixPosition target, String fixName, boolean resumeFlightPlan) {
+        clearGoAroundActive();
         this.directToTarget = target;
         this.directToFixName = fixName;
         this.resumeFlightPlanAfterDirectTo = resumeFlightPlan;
@@ -478,6 +509,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setHoldAtFix(FixPosition fix, String fixName, HoldTurnDirection turnDirection) {
+        clearGoAroundActive();
         clearFinalApproachInterceptState();
         this.holdingFix = fix;
         this.holdTurnDirection = turnDirection;
@@ -493,6 +525,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setResumeNavigation() {
+        clearGoAroundActive();
         clearFinalApproachInterceptState();
         if (flightPlan != null) {
             if (resumeFlightPlanIndexAfterHold >= flightPlan.getWaypoints().size()) {
@@ -538,6 +571,10 @@ public abstract class AircraftBase implements Aircraft {
                 new jp.ac.tohoku.qse.takahashi.AtcSimulator.domain.model.valueObject.AircraftAttributes.Longitude(lonDeg + deltaLonDeg));
     }
 
+    private void clearGoAroundActive() {
+        this.goAroundActive = false;
+    }
+
     private void clearHoldingState() {
         this.holdingFix = null;
         this.holdingOutboundTarget = null;
@@ -576,6 +613,7 @@ public abstract class AircraftBase implements Aircraft {
     }
 
     public void setNavigationMode(NavigationMode mode) {
+        clearGoAroundActive();
         if (mode != NavigationMode.DIRECT_TO) {
             clearFinalApproachInterceptState();
         }

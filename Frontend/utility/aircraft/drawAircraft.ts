@@ -293,6 +293,12 @@ class DrawAircraft {
       lineY += lineHeight;
     }
 
+    if (aircraft.goAround) {
+      ctx.fillStyle = "#f43f5e";
+      ctx.fillText("GA", labelX, lineY);
+      lineY += lineHeight;
+    }
+
     if (setting.aircraftType && aircraft.model) {
       ctx.fillStyle = "white";
       const modelDisplay =

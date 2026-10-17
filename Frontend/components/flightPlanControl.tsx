@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useSelectedAircraft } from "@/context/selectedAircraftContext";
 import { resumeNavigation } from "@/utility/api/flightPlan";
-import { joinFinalApproach } from "@/utility/api/finalApproach";
+import { goAround, joinFinalApproach } from "@/utility/api/finalApproach";
 
 const FlightPlanControl: React.FC = () => {
   const { callsign } = useSelectedAircraft();
@@ -15,6 +15,11 @@ const FlightPlanControl: React.FC = () => {
   const [finalResult, setFinalResult] = useState<"idle" | "success" | "error">(
     "idle"
   );
+  const [climbAltitudeFt, setClimbAltitudeFt] = useState("3000");
+  const [goAroundResult, setGoAroundResult] = useState<
+    "idle" | "success" | "error"
+  >("idle");
+  const [goAroundMessage, setGoAroundMessage] = useState("");
 
   const handleResume = async () => {
     if (!callsign) return;
@@ -87,6 +92,49 @@ const FlightPlanControl: React.FC = () => {
         )}
         {finalResult === "error" && (
           <p className="text-xs text-atc-danger">Failed to join final</p>
+        )}
+        <div className="text-xs font-semibold text-atc-text-muted pt-2">
+          GO AROUND (runway heading climb)
+        </div>
+        <input
+          className="w-full px-2 py-1 text-xs font-mono bg-atc-surface-elevated border border-atc-border rounded"
+          value={climbAltitudeFt}
+          onChange={(e) => setClimbAltitudeFt(e.target.value)}
+          inputMode="numeric"
+          placeholder="Climb altitude ft"
+        />
+        <button
+          type="button"
+          onClick={async () => {
+            if (!callsign) return;
+            const altitude = Number(climbAltitudeFt);
+            if (!Number.isFinite(altitude)) {
+              setGoAroundResult("error");
+              setGoAroundMessage("Enter a climb altitude in feet");
+              return;
+            }
+            setGoAroundResult("idle");
+            const result = await goAround(
+              callsign,
+              airportIcao,
+              runwayDesignator,
+              altitude
+            );
+            setGoAroundResult(result.ok ? "success" : "error");
+            setGoAroundMessage(result.message ?? "");
+            if (result.ok) setTimeout(() => setGoAroundResult("idle"), 2000);
+          }}
+          className="w-full px-4 py-2 bg-atc-surface-elevated text-atc-text font-bold text-xs rounded border border-atc-danger hover:bg-atc-danger hover:text-white"
+        >
+          GO AROUND
+        </button>
+        {goAroundResult === "success" && (
+          <p className="text-xs text-atc-accent">Go-around set</p>
+        )}
+        {goAroundResult === "error" && (
+          <p className="text-xs text-atc-danger">
+            {goAroundMessage || "Failed to go around"}
+          </p>
         )}
       </div>
 

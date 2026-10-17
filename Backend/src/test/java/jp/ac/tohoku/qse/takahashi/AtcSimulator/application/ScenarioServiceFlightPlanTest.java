@@ -1,6 +1,7 @@
 package jp.ac.tohoku.qse.takahashi.AtcSimulator.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 
@@ -109,5 +110,29 @@ class ScenarioServiceFlightPlanTest {
                 new InstructedVector(new Heading(180), new Altitude(10000), new GroundSpeed(250)));
 
         assertThat(((AircraftBase) aircraft).getNavigationMode()).isEqualTo(NavigationMode.HEADING);
+    }
+
+    @Test
+    @DisplayName("goAround climbs on runway heading and a later heading instruction clears it")
+    void goAround_setsHeadingClimbThenClearsOnInstruct() {
+        Aircraft aircraft = aircraftRepository.findByCallsign(new Callsign("FP01"));
+        scenarioService.goAround(new Callsign("FP01"), 35.553, 139.781, 163, 6000);
+
+        AircraftBase base = (AircraftBase) aircraft;
+        assertThat(base.isGoAroundActive()).isTrue();
+        assertThat(base.getNavigationMode()).isEqualTo(NavigationMode.HEADING);
+        assertThat(base.getInstructedVector().instructedHeading.toDouble()).isEqualTo(163);
+        assertThat(base.getInstructedVector().instructedAltitude.toDouble()).isEqualTo(6000);
+
+        scenarioService.instructAircraft(new Callsign("FP01"),
+                new InstructedVector(new Heading(90), new Altitude(7000), new GroundSpeed(200)));
+        assertThat(base.isGoAroundActive()).isFalse();
+    }
+
+    @Test
+    @DisplayName("goAround rejects aircraft farther than 120 NM from the threshold")
+    void goAround_rejectsWhenTooFar() {
+        assertThatThrownBy(() -> scenarioService.goAround(new Callsign("FP01"), 0, 0, 163, 6000))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

@@ -30,6 +30,7 @@ export interface AircraftLocationDto {
   eta: string;
   squawk?: string | null;
   navigationMode: string;
+  goAround?: boolean;
   riskLevel: number;
 }
 
@@ -122,7 +123,8 @@ function mapDtoToAircraft(
     50,
     dto.riskLevel ?? 0,
     dto.navigationMode ?? "HEADING",
-    dto.instructedVector.indicatedAirspeed ?? null
+    dto.instructedVector.indicatedAirspeed ?? null,
+    dto.goAround === true
   );
 }
 
@@ -172,7 +174,8 @@ function updateControllingAircrafts(
       50,
       newAircraft.riskLevel,
       newAircraft.navigationMode,
-      newAircraft.indicatedAirspeedKnots
+      newAircraft.indicatedAirspeedKnots,
+      newAircraft.goAround
     );
     controllingAircrafts.push(newAirplane);
   });

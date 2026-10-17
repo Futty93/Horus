@@ -182,6 +182,39 @@ paths:
         "200":
           description: Direct to instruction applied
 
+  "/api/aircraft/{callsign}/go-around":
+    post:
+      tags: ["aircraft"]
+      summary: "Go around on runway heading"
+      description: "Abandons the approach and climbs on the runway heading. Climb altitude must be at least 500 ft above the current altitude. Aircraft more than 120 NM from the threshold are rejected."
+      parameters:
+        - name: callsign
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [airportIcao, runwayDesignator, climbAltitudeFt]
+              properties:
+                airportIcao:
+                  type: string
+                runwayDesignator:
+                  type: string
+                climbAltitudeFt:
+                  type: integer
+                  minimum: 1000
+                  maximum: 45000
+      responses:
+        "200":
+          description: Go-around applied
+        "400":
+          description: Unknown runway, climb too low, or aircraft too far from the threshold
+
   "/api/aircraft/{callsign}/resume-navigation":
     post:
       tags: ["aircraft"]

@@ -29,6 +29,7 @@ import jp.ac.tohoku.qse.takahashi.AtcSimulator.infrastructure.fix.RunwayCatalog;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.DirectToRequestDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.FinalApproachRequestDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.FlightPlanDto;
+import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.GoAroundRequestDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.HoldRequestDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.InitialPositionDto;
 import jp.ac.tohoku.qse.takahashi.AtcSimulator.interfaces.dto.SpawnWithFlightPlanDto;
@@ -250,6 +251,41 @@ public class FlightPlanController {
                 "navigationMode", "DIRECT_TO",
                 "interceptLabel", interceptLabel,
                 "approachCourseHeading", geom.approachCourseHeading()));
+    }
+
+    @PostMapping(path = "/{callsign}/go-around", consumes = "application/json")
+    public ResponseEntity<Map<String, Object>> goAround(
+            @PathVariable String callsign,
+            @Valid @RequestBody GoAroundRequestDto request) {
+        if (!aircraftRepository.isAircraftExist(new Callsign(callsign))) {
+            throw new AircraftNotFoundException(callsign);
+        }
+        var runway = runwayCatalog.findRunway(request.airportIcao(), request.runwayDesignator());
+        if (runway.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "Runway not found: " + request.airportIcao() + " " + request.runwayDesignator()));
+        }
+        var rwy = runway.get();
+        try {
+            scenarioService.goAround(
+                    new Callsign(callsign),
+                    rwy.thresholdLatitude(),
+                    rwy.thresholdLongitude(),
+                    rwy.heading(),
+                    request.climbAltitudeFt());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", ex.getMessage()));
+        }
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "callsign", callsign,
+                "navigationMode", "HEADING",
+                "goAround", true,
+                "heading", rwy.heading(),
+                "climbAltitudeFt", request.climbAltitudeFt()));
     }
 
     @GetMapping(path = "/{callsign}/flightplan", produces = "application/json")
